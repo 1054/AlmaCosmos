@@ -1,0 +1,4 @@
+#!/usr/bin/python2.7
+# EASY-INSTALL-SCRIPT: 'bdsf==1.8.12','pybdsf'
+__requires__ = 'bdsf==1.8.12'
+__import__('pkg_resources').run_script('bdsf==1.8.12', 'pybdsf')
