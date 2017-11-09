@@ -11,6 +11,9 @@ fi
 if [[ $PATH != *"$ALMACOSMOS"* ]]; then
     export PATH="$ALMACOSMOS":$PATH
 fi
+if [[ $PATH != *"$ALMACOSMOS/3rd/bin"* ]]; then
+    export PATH="$ALMACOSMOS/3rd/bin":$PATH
+fi
 #
 # LIST
 ALMACOSMOSCMD=("almacosmos-sky-coverage" "almacosmos-fits-image-to-coverage-polyogn" "almacosmos-analyze-fits-image-pixel-histogram" "almacosmos-generate-PSF-Gaussian-2D" "almacosmos-highz-galaxy-crossmatcher" "almacosmos-highz-galaxy-crossmatcher-read-results")
