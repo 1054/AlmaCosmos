@@ -12,7 +12,8 @@ This is how we compile and install PyBDSF into our 'Crab.Toolkit.CAAP' directory
 First, install necessary python package dependencies. 
 
 ```
-pip-2.7 install --ignore-installed --prefix="$HOME/Cloud/Github/Crab.Toolkit.CAAP/bin/3rd_party/python_packages/" pyfits pywcs
+pip-2.7 install --ignore-installed --prefix="$HOME/Cloud/Github/AlmaCosmos/Softwares/3rd/" pyfits pywcs
+pip-2.7 install --ignore-installed --prefix="$HOME/Cloud/Github/AlmaCosmos/Softwares/3rd/" backports.shutil_get_terminal_size
 ```
 
 Here we assume that you alread have 'numpy', 'scipy' in your python path. 
@@ -27,15 +28,15 @@ cd PyBDSF
 rm -rf build/
 brew install boost --with-python
 brew install boost-python
-export PYTHONPATH="$HOME/Cloud/Github/Crab.Toolkit.CAAP/bin/3rd_party/python_packages/lib/python2.7/site-packages"
-python2.7 setup.py build_ext --inplace --include-dirs="/opt/local/include" --library-dirs="/opt/local/lib/gcc48:/opt/local/lib" install --prefix="$HOME/Cloud/Github/Crab.Toolkit.CAAP/bin/3rd_party/python_packages"
+export PYTHONPATH="$HOME/Cloud/Github/AlmaCosmos/Softwares/3rd/lib/python2.7/site-packages"
+python2.7 setup.py build_ext --inplace --include-dirs="/opt/local/include" --library-dirs="/opt/local/lib/gcc48:/opt/local/lib" install --prefix="$HOME/Cloud/Github/AlmaCosmos/Softwares/3rd"
 ```
 
 Then, we still need to copy some library files manually
 
 ```
-cp bdsf/*.so        "/Users/dzliu/Cloud/Github/Crab.Toolkit.CAAP/bin/3rd_party/python_packages/lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg/bdsf/"
-cp bdsf/nat/*.so    "/Users/dzliu/Cloud/Github/Crab.Toolkit.CAAP/bin/3rd_party/python_packages/lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg/bdsf/nat/"
+cp bdsf/*.so        "/Users/dzliu/Cloud/Github/AlmaCosmos/Softwares/3rd/lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg/bdsf/"
+cp bdsf/nat/*.so    "/Users/dzliu/Cloud/Github/AlmaCosmos/Softwares/3rd/lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg/bdsf/nat/"
 ```
 
 
