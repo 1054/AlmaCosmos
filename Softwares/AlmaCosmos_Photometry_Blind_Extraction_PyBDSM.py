@@ -167,12 +167,14 @@ for i in range(len(input_fits_files)):
     # 
     # process fits image
     if input_rms_value > 0.0:
-        fit_result = bdsf.process_image(input_fits_file, thresh_isl = 2.0, thresh_pix = 3.5, \
+        fit_result = bdsf.process_image(input_fits_file, thresh_isl = 3.0, thresh_pix = 3.5, \
                                         group_by_isl = True, \
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
                                         rms_map = False, rms_value = input_rms_value, mean_map = 'zero') # <20171105> allow input rms value
     else:
-        fit_result = bdsf.process_image(input_fits_file, thresh_isl = 2.0, thresh_pix = 3.5) # rms_map=False, rms_value=1e-5, 
+        fit_result = bdsf.process_image(input_fits_file, thresh_isl = 3.0, thresh_pix = 3.5, \
+                                        ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
+                                        mean_map = 'zero') # rms_map=False, rms_value=1e-5, 
     # 
     fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat0.fits', format = 'fits', clobber = True) # clobber = True means overwrite existing file. 
     fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat0.ds9.reg', format = 'ds9', clobber = True)
