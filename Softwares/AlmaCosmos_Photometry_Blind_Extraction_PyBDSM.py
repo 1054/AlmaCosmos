@@ -16,7 +16,7 @@ else:
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages')
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg')
-#print sys.path
+print sys.path
 
 import numpy
 import scipy
