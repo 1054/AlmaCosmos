@@ -9,11 +9,12 @@
 # before runing this code, make sure you have created credential via the following link: 
 # https://console.developers.google.com/start/api?id=drive
 
+from __future__ import print_function
+
 import os, sys, io, re
 import pkg_resources
 pkg_resources.require('google-api-python-client')
 
-from __future__ import print_function
 import httplib2
 
 from apiclient import discovery
