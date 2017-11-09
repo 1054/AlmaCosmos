@@ -523,7 +523,7 @@ class CAAP_Google_Drive_Operator(object):
                 file_id = file_resource.get('id')
                 time.sleep(0.15) # Google Drive has a limit of 10 query per second per user
                 request = self.service.files().get_media(fileId=file_id, quotaUser=self.quota_user)
-                print('Requesting "%s"'%(request.to_json()))
+                #<DEBUG><20171108># print('Requesting "%s"'%(request.to_json()))
                 #<BytesIO># fh = io.BytesIO()
                 fh = io.FileIO(file_resource.get('name'), mode='wb')
                 downloader = MediaIoBaseDownload(fh, request, chunksize=5*1024*1024)

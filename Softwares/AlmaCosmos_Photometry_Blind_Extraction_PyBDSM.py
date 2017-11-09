@@ -8,8 +8,14 @@
 import os, sys, re
 import logging
 
-sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg')
-sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
+import platform
+if platform.system() == 'Darwin':
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_mac'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_mac'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg')
+else:
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages')
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg')
 #print sys.path
 
 import numpy
@@ -166,7 +172,7 @@ for i in range(len(input_fits_files)):
                                         rms_map = False, rms_value = input_rms_value, mean_map = 'zero') # <20171105> allow input rms value
     else:
         fit_result = bdsf.process_image(input_fits_file, thresh_isl = 2.0, thresh_pix = 3.5) # rms_map=False, rms_value=1e-5, 
-    fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat.fits', format = 'fits', clobber = True) # clobber = True means overwrite existing file. 
+    fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat.fits', catalog_type = 'srl', format = 'fits', clobber = True) # clobber = True means overwrite existing file. 
     fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat.ds9.reg', format = 'ds9', clobber = True)
     fit_result.export_image(outfile = output_dir + os.sep + 'pybdsm_img_gaus_resid.fits',        img_type = 'gaus_resid',       clobber = True) # Gaussian model residual image
     fit_result.export_image(outfile = output_dir + os.sep + 'pybdsm_img_rms.fits',               img_type = 'rms',              clobber = True)
