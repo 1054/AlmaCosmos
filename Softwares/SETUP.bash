@@ -9,10 +9,17 @@ fi
 #
 # PATH
 if [[ $PATH != *"$ALMACOSMOS"* ]]; then
-    export PATH="$ALMACOSMOS":$PATH
+    export PATH="$ALMACOSMOS:$PATH"
 fi
 if [[ $PATH != *"$ALMACOSMOS/3rd/bin"* ]]; then
-    export PATH="$ALMACOSMOS/3rd/bin":$PATH
+    export PATH="$ALMACOSMOS/3rd/bin:$PATH"
+fi
+if [[ x"$PYTHONPATH" != x*"$ALMACOSMOS/3rd/lib/python2.7/site-packages"* ]]; then
+    if [[ -z "$PYTHONPATH" ]]; then
+        export PYTHONPATH="$ALMACOSMOS/3rd/lib/python2.7/site-packages:$ALMACOSMOS/3rd/lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg"
+    else
+        export PYTHONPATH="$ALMACOSMOS/3rd/lib/python2.7/site-packages:$ALMACOSMOS/3rd/lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg:$PYTHONPATH"
+    fi
 fi
 #
 # LIST
