@@ -1,0 +1,19 @@
+cp gd2jd.py gd2mjd.py
+
+open gd2mjd.py
+
+edit 
+
+
+
+Verification: 
+
+# https://heasarc.gsfc.nasa.gov/cgi-bin/Tools/xTime/xTime.pl?time_in_i=2017-02-22&time_in_c=&time_in_d=&time_in_j=&time_in_m=&time_in_sf=&time_in_wf=&time_in_sl=&time_in_snu=&time_in_s=&time_in_h=&time_in_n=&time_in_f=&time_in_sz=&time_in_ss=&time_in_sn=&timesys_in=u&timesys_out=u&apply_clock_offset=yes
+# --> 57806
+# this code
+# --> 57806.0
+
+
+
+
+
