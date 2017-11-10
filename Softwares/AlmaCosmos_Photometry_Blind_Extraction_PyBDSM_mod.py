@@ -75,7 +75,7 @@ input_peak_fit = True # whether to find and fit peaks of large islands before fi
 input_verbose_fitting = False
 input_incl_empty = False
 input_flag_maxsize_bm = 25.0 # flag (discard) a Gaussian if its area is larger than 25.0 times the beam area. <20171109><NOTE><DZLIU> THIS IS NOT GAUSSIAN_SIZE/BEAM_SIZE BUT GAUSSIAN_AREA/BEAM_AREA!!!
-input_flag_maxsize_fwhm = None # 0.3 # flag (discard) a Gaussian if ... -- see -- http://www.astron.nl/citt/pybdsm/process_image.html#flagging-options
+input_flag_maxsize_fwhm = [] # 0.3 # flag (discard) a Gaussian if ... -- see -- http://www.astron.nl/citt/pybdsm/process_image.html#flagging-options
 output_root = 'Output_Blind_Extraction_Photometry_PyBDSM'
 
 i = 1
