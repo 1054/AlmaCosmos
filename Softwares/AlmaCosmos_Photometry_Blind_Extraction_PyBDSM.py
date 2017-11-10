@@ -75,6 +75,7 @@ input_peak_fit = True # whether to find and fit peaks of large islands before fi
 input_verbose_fitting = False
 input_incl_empty = False
 input_flag_maxsize_bm = 25.0 # flag (discard) a Gaussian if its area is larger than 25.0 times the beam area. <20171109><NOTE><DZLIU> THIS IS NOT GAUSSIAN_SIZE/BEAM_SIZE BUT GAUSSIAN_AREA/BEAM_AREA!!!
+input_flag_maxsize_fwhm = 0.3 # flag (discard) a Gaussian if ... -- see -- http://www.astron.nl/citt/pybdsm/process_image.html#flagging-options
 output_root = 'Output_Blind_Extraction_Photometry_PyBDSM'
 
 i = 1
@@ -112,10 +113,15 @@ while i < len(sys.argv):
                 print('Setting ini_gausfit to %s'%(input_ini_gausfit))
                 i = i + 1
         elif sys.argv[i].lower() == '--max-gaussian-area' or sys.argv[i].lower() == '-agmax' or sys.argv[i].lower() == '-maxarea' or \
-            sys.argv[i].lower() == '-maxsize' or sys.argv[i].lower() == '--flag-maxsize' or sys.argv[i].lower() == '--flag-maxsize-bm':
+            sys.argv[i].lower() == '-maxsize' or sys.argv[i].lower() == '--flag-maxsize' or sys.argv[i].lower() == '--flag-maxsize-bm' or sys.argv[i].lower() == '--flag_maxsize_bm':
             if i+1 <= len(sys.argv)-1:
                 input_flag_maxsize_bm = float(sys.argv[i+1])
                 print('Setting flag_maxsize_bm to %s'%(input_flag_maxsize_bm))
+                i = i + 1
+        elif sys.argv[i].lower() == '--flag-maxsize-fwhm' or sys.argv[i].lower() == '--flag_maxsize_fwhm':
+            if i+1 <= len(sys.argv)-1:
+                input_flag_maxsize_fwhm = float(sys.argv[i+1])
+                print('Setting flag_maxsize_fwhm to %s'%(input_flag_maxsize_fwhm))
                 i = i + 1
         elif sys.argv[i].lower() == '-verbose' or \
             sys.argv[i].lower() == '--verbose' or sys.argv[i].lower() == '--verbose-fitting':
@@ -196,12 +202,14 @@ for i in range(len(input_fits_files)):
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
                                         rms_map = False, rms_value = input_rms_value, mean_map = 'zero', \
                                         flag_maxsize_bm = input_flag_maxsize_bm, \
+                                        flag_maxsize_fwhm = input_flag_maxsize_fwhm, \
                                         verbose_fitting = input_verbose_fitting) # <20171105> allow input rms value
     else:
         fit_result = bdsf.process_image(input_fits_file, thresh_isl = 3.0, thresh_pix = 3.5, \
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
                                         mean_map = 'zero', \
                                         flag_maxsize_bm = input_flag_maxsize_bm, \
+                                        flag_maxsize_fwhm = input_flag_maxsize_fwhm, \
                                         verbose_fitting = input_verbose_fitting) # rms_map=False, rms_value=1e-5, 
     # 
     fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat0.fits', format = 'fits', clobber = True) # clobber = True means overwrite existing file. 
