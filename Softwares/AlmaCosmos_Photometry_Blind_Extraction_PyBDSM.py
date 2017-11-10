@@ -31,7 +31,13 @@ if len(sys.argv) <= 1:
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Images.fits"                              # providing a FITS image')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Images.fits" "ALMA_Image_List.txt"        # or providing text file which contains a list of FITS images')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --rms-value 0.00015       # we can also input a constant rms value for all input FITS images')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --max-numb-gaussian 1     # we can also constrain the maximum number of fitted Gaussian to one Island')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -rms 0.00015              # (same as above)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --max-gaussian-number 1   # we can also constrain the maximum number of fitted Gaussian to one Island')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -ngmax 1                  # (same as above)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --max-gaussian-area 1     # we can also set the maximum area of a Gaussian in unit of beam area, above which the Gaussian will be flagged/discarded.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -agmax 1                  # (same as above)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --include-empty-islands   # we can also specify that we want to output empty islands which do not contain any valid Gaussian and have negative Source_id.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -incl-empty               # (same as above)')
     sys.exit()
 
 
@@ -66,6 +72,9 @@ input_loop_end = -1
 input_rms_value = -99
 input_ini_gausfit = 'default'
 input_peak_fit = True # whether to find and fit peaks of large islands before fitting entire island
+input_verbose_fitting = False
+input_incl_empty = False
+input_flag_maxsize_bm = 25.0 # flag (discard) a Gaussian if its area is larger than 25.0 times the beam area. <20171109><NOTE><DZLIU> THIS IS NOT GAUSSIAN_SIZE/BEAM_SIZE BUT GAUSSIAN_AREA/BEAM_AREA!!!
 output_root = 'Output_Blind_Extraction_Photometry_PyBDSM'
 
 i = 1
@@ -95,12 +104,27 @@ while i < len(sys.argv):
             if i+1 <= len(sys.argv)-1:
                 output_root = str(sys.argv[i+1])
                 i = i + 1
-        elif sys.argv[i].lower() == '-ngmax' or sys.argv[i].lower() == '--number-gaussian' or sys.argv[i].lower() == '--numb-gauss' or sys.argv[i].lower() == '--max-numb-gaussian' or sys.argv[i].lower() == '--max-numb-gauss':
+        elif sys.argv[i].lower() == '--max-gaussian-number' or sys.argv[i].lower() == '-ngmax' or \
+            sys.argv[i].lower() == '--number-gaussian' or sys.argv[i].lower() == '--numb-gauss' or sys.argv[i].lower() == '--max-numb-gaussian' or sys.argv[i].lower() == '--max-numb-gauss' or sys.argv[i].lower() == '--max-gaussian-numb':
             if i+1 <= len(sys.argv)-1:
                 input_ini_gausfit = 'ngmax'+' '+(sys.argv[i+1])
                 input_peak_fit = False
                 print('Setting ini_gausfit to %s'%(input_ini_gausfit))
                 i = i + 1
+        elif sys.argv[i].lower() == '--max-gaussian-area' or sys.argv[i].lower() == '-agmax' or sys.argv[i].lower() == '-maxarea' or \
+            sys.argv[i].lower() == '-maxsize' or sys.argv[i].lower() == '--flag-maxsize' or sys.argv[i].lower() == '--flag-maxsize-bm':
+            if i+1 <= len(sys.argv)-1:
+                input_flag_maxsize_bm = float(sys.argv[i+1])
+                print('Setting flag_maxsize_bm to %s'%(input_flag_maxsize_bm))
+                i = i + 1
+        elif sys.argv[i].lower() == '-verbose' or \
+            sys.argv[i].lower() == '--verbose' or sys.argv[i].lower() == '--verbose-fitting':
+            input_verbose_fitting = True
+            print('Setting verbose_fitting to %s'%(input_verbose_fitting))
+        elif sys.argv[i].lower() == '-incl-empty' or \
+            sys.argv[i].lower() == '--include-empty-island' or sys.argv[i].lower() == '--include-empty-islands':
+            input_incl_empty = True
+            print('Setting incl_empty to %s'%(input_incl_empty))
     else:
         if os.path.isfile(sys.argv[i]):
             with open(sys.argv[i]) as fp:
@@ -128,7 +152,7 @@ while i < len(sys.argv):
 
 # create output directory if it does not exist
 if not os.path.isdir(output_root):
-    os.mkdir(output_root)
+    os.makedirs(output_root)
 
 output_list_of_catalog = output_root + os.sep + 'output_list_of_catalog.txt'
 if os.path.isfile(output_list_of_catalog):
@@ -170,16 +194,20 @@ for i in range(len(input_fits_files)):
         fit_result = bdsf.process_image(input_fits_file, thresh_isl = 3.0, thresh_pix = 3.5, \
                                         group_by_isl = True, \
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
-                                        rms_map = False, rms_value = input_rms_value, mean_map = 'zero') # <20171105> allow input rms value
+                                        rms_map = False, rms_value = input_rms_value, mean_map = 'zero', \
+                                        flag_maxsize_bm = input_flag_maxsize_bm, \
+                                        verbose_fitting = input_verbose_fitting) # <20171105> allow input rms value
     else:
         fit_result = bdsf.process_image(input_fits_file, thresh_isl = 3.0, thresh_pix = 3.5, \
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
-                                        mean_map = 'zero') # rms_map=False, rms_value=1e-5, 
+                                        mean_map = 'zero', \
+                                        flag_maxsize_bm = input_flag_maxsize_bm, \
+                                        verbose_fitting = input_verbose_fitting) # rms_map=False, rms_value=1e-5, 
     # 
     fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat0.fits', format = 'fits', clobber = True) # clobber = True means overwrite existing file. 
     fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat0.ds9.reg', format = 'ds9', clobber = True)
-    fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat.fits', catalog_type = 'srl', format = 'fits', clobber = True) # 
-    fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat.ds9.reg', catalog_type = 'srl', format = 'ds9', clobber = True)
+    fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat.fits', catalog_type = 'srl', incl_empty = input_incl_empty, format = 'fits', clobber = True) # 
+    fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat.ds9.reg', catalog_type = 'srl', incl_empty = input_incl_empty, format = 'ds9', clobber = True)
     fit_result.export_image(outfile = output_dir + os.sep + 'pybdsm_img_gaus_resid.fits',        img_type = 'gaus_resid',       clobber = True) # Gaussian model residual image
     fit_result.export_image(outfile = output_dir + os.sep + 'pybdsm_img_rms.fits',               img_type = 'rms',              clobber = True)
     fit_result.export_image(outfile = output_dir + os.sep + 'pybdsm_img_mean.fits',              img_type = 'mean',             clobber = True)
@@ -190,12 +218,12 @@ for i in range(len(input_fits_files)):
     os.system('echo "%s" >> "%s"'%(input_fits_base + os.sep + 'pybdsm_cat.fits', output_list_of_catalog))
     # 
     os.system('echo "#!/bin/bash" > "%s"'%(output_dir + os.sep + 'pybdsm_cat0.ds9.sh'))
-    os.system('echo "cd \\\"%s\\\"" >> "%s"'%(os.path.abspath(output_dir), output_dir + os.sep + 'pybdsm_cat0.ds9.sh'))
+    os.system('echo "cd \\$(dirname \\\"\\${BASH_SOURCE[0]}\\\")" >> "%s"'%(output_dir + os.sep + 'pybdsm_cat0.ds9.sh'))
     os.system('echo "ds9 -lock frame image -mecube pybdsm_img_*.fits -frame 2 -regions load pybdsm_cat0.ds9.reg -regions showtext no -zoom to fit -saveimage eps pybdsm_cat0.ds9.eps" >> "%s"'%(output_dir + os.sep + 'pybdsm_cat0.ds9.sh'))
     os.system('chmod +x "%s"'%(output_dir + os.sep + 'pybdsm_cat0.ds9.sh'))
     # 
     os.system('echo "#!/bin/bash" > "%s"'%(output_dir + os.sep + 'pybdsm_cat.ds9.sh'))
-    os.system('echo "cd \\\"%s\\\"" >> "%s"'%(os.path.abspath(output_dir), output_dir + os.sep + 'pybdsm_cat.ds9.sh'))
+    os.system('echo "cd \\$(dirname \\\"\\${BASH_SOURCE[0]}\\\")" >> "%s"'%(output_dir + os.sep + 'pybdsm_cat.ds9.sh'))
     os.system('echo "ds9 -lock frame image -mecube pybdsm_img_*.fits -frame 2 -regions load pybdsm_cat.ds9.reg -regions showtext no -zoom to fit -saveimage eps pybdsm_cat.ds9.eps" >> "%s"'%(output_dir + os.sep + 'pybdsm_cat.ds9.sh'))
     os.system('chmod +x "%s"'%(output_dir + os.sep + 'pybdsm_cat.ds9.sh'))
     # 
