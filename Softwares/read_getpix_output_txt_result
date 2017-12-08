@@ -1,0 +1,12 @@
+#!/bin/bash
+# 
+
+if [[ $# -gt 0 ]]; then
+    readgresult_tmp="._.AstroGalfit._.ReadGalfitResult._."
+    CrabFitsHeader "$1" -ext 2 | sed -n -e '/COMP_/,/COMMENT/p' > "fit.header"
+    cat "fit.header" |cut -d\' -f2 |sed -E 's/\[(.*)\]/\1 0/g' |sed -e 's%+/-%%g' |sed -e 's%*%%g' > "$readgresult_tmp" #' #<20170210># |sed -e 's%*%%g'
+    echo "# ResultType ResultPosX ResultPosXErr ResultPosY ResultPosYErr ResultMags ResultMagsErr " > "fit.result"
+    echo "# " >> "fit.result"
+    cat "$readgresult_tmp" |while read line;do if [[ "$line" != "COMMENT"* ]];then echo -n "$line ";else echo "";fi;done >> "fit.result"
+fi
+

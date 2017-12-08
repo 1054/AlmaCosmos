@@ -1,0 +1,202 @@
+go
+    # 
+    # Usage:
+    #   echo "macro read a_dzliu_code_compile_simu_data.sm go" | sm
+    # 
+    compile_simu_data
+
+
+compile_simu_data
+    # 
+    load rfile.sm
+    
+    if(!is_file("datatable_Simulated.txt")) {
+        print 'Error! \"datatable_Simulated.txt\" was not found under current directory!\n' {}
+        return
+    }
+    rfile "datatable_Simulated.txt"
+    set image_dir = sim_dir_str
+    foreach var {id ra dec z lgMstar lgSFR Maj Min PA Maj_pix Min_pix flux image_dir} {
+        if(!is_vector($var)) {print 'Error! Vector $var is invalid!\n' {} exit}
+        set sim_$var = $var
+    }
+    
+    
+    if(!is_file("datatable_Recovered_getpix.txt")) {
+        print 'Error! \"datatable_Recovered_getpix.txt\" was not found under current directory!\n' {}
+        return
+    }
+    rfile "datatable_Recovered_getpix.txt"
+    set getpix_image_dir = image_dir
+    set getpix_pb_corr = pb_corr
+    set getpix_pix_scale = pix_scale
+    set getpix_id = id
+    load checkVectorSize.sm
+    if(!checkVectorSize(getpix_image_dir,getpix_pb_corr,getpix_pix_scale,getpix_id)) {
+        exit
+    }    
+    
+    if(!is_file("datatable_Recovered_galfit.txt")) {
+        print 'Error! \"datatable_Recovered_galfit.txt\" was not found under current directory!\n' {}
+        return
+    }
+    rfile "datatable_Recovered_galfit.txt"
+    foreach var {id ra dec Maj Min PA Maj_err Min_err PA_err f_total df_galfit df_total snr_total f_peak df_peak snr_peak pb_corr fpeak fres rms convol_area_in_beam image_file image_dir} {
+        if(!is_vector($var)) {print 'Error! Vector $var is invalid!\n' {} exit}
+        set fit_$var = $var
+        # fpeak is the source model image measured peak pixel value * 1e3 -> mJy
+        # fres is the source residual image measured 1.0 arcsec diameter aperture sum of absolute pixel values
+    }
+    set fit_Area = fit_convol_area_in_beam
+    
+    
+    # get rms
+    stats fit_rms rms_mean rms_sigma rms_kurt
+    stats_med fit_rms rms_median rms_siqr
+    
+    
+    
+    
+    
+    
+    # match id
+    foreach var {sim_flux sim_id sim_z sim_ra sim_dec sim_Maj sim_Min sim_lgMstar sim_lgSFR sim_pb_corr sim_pix_scale} {
+        declare x_$var 0.f
+    }
+    foreach var {fit_f_total fit_df_total fit_df_galfit fit_fpeak fit_snr_peak fit_snr_total fit_Maj fit_Min fit_Area fit_fres fit_pb_corr fit_rms} {
+        # fit_df_total is combined rms and fit_df_galfit (df_galfit)
+        # fit_df_galfit is just df_galfit
+        declare x_$var 0.f
+    }
+    foreach var {fit_image_file fit_image_dir sim_image_dir} {
+        declare x_$var 0.s
+    }
+    set fit_index = 0,dimen(fit_id)-1
+    echo dimen(sim_id) = $(dimen(sim_id))
+    do i=0,dimen(sim_id)-1 {
+        # get pb_corr for sim_id
+        set x_match = (getpix_id==sim_id[$i] && getpix_image_dir==sim_image_dir[$i])
+        if(sum(x_match)>0) {
+            set x_pb_corr = getpix_pb_corr if(x_match)
+            set x_pix_scale = getpix_pix_scale if(x_match)
+            
+            # get outpuf flux for sim_id
+            set x_match = (fit_id==sim_id[$i] && fit_image_dir==sim_image_dir[$i] && x_pb_corr[0]<16.0)
+            # if(sum(x_match)>0 && sim_flux[$i]>$rms_median)
+            # [20171015] --> 
+            # if(sum(x_match)>0 && sim_flux[$i]>$rms_median)
+            # [20171015] --> 
+            # x_pb_corr[0]<16.0
+            if(sum(x_match)>0) {
+                # 
+                set x_index = fit_index if(x_match)
+                set x_index = x_index[0] # make sure one image only has one fit_id matched to sim_id
+                # 
+                set x_sim_pb_corr = x_sim_pb_corr concat x_pb_corr[0]
+                set x_sim_pix_scale = x_sim_pix_scale concat x_pix_scale[0]
+                # 
+                foreach var {sim_flux sim_id sim_z sim_ra sim_dec sim_Maj sim_Min sim_lgMstar sim_lgSFR sim_image_dir} {
+                    set x_var = $var[$i]
+                    set x_$var = x_$var concat (x_var)
+                    unset x_var
+                }
+                foreach var {fit_f_total fit_df_total fit_df_galfit fit_fpeak fit_snr_peak fit_snr_total fit_Maj fit_Min fit_Area fit_fres fit_pb_corr fit_rms} {
+                    set x_var = $var[x_index]
+                    set x_$var = x_$var concat (x_var)
+                    unset x_var
+                }
+                foreach var {fit_image_file fit_image_dir} {
+                    set x_var = $var[x_index]
+                    set x_$var = x_$var concat (x_var)
+                    unset x_var
+                }
+            } else {
+                # 
+                set x_sim_pb_corr = x_sim_pb_corr concat x_pb_corr[0]
+                set x_sim_pix_scale = x_sim_pix_scale concat x_pix_scale[0]
+                # 
+                foreach var {sim_flux sim_id sim_z sim_ra sim_dec sim_Maj sim_Min sim_lgMstar sim_lgSFR sim_image_dir} {
+                    set x_var = $var[$i] # not fitted by galfit, but still add this sim source
+                    set x_$var = x_$var concat (x_var)
+                    unset x_var
+                }
+                foreach var {fit_f_total fit_df_total fit_df_galfit fit_fpeak fit_snr_peak fit_snr_total fit_Maj fit_Min fit_Area fit_fres fit_pb_corr fit_rms} {
+                    if('$var'=='fit_df_total') {
+                        set x_var = $rms_median # not fitted by galfit, set the output flux to zero
+                    } else {
+                        set x_var = 0.0 # not fitted by galfit, set the output flux to zero
+                    }
+                    set x_$var = x_$var concat (x_var)
+                    unset x_var
+                }
+                foreach var {fit_image_file fit_image_dir} {
+                    set x_var = 'none' # not fitted by galfit, set the output string to none
+                    set x_$var = x_$var concat (x_var)
+                    unset x_var
+                }
+            }
+        }
+    }
+    set Xf = x_sim_flux
+    set id = x_sim_id
+    set z = x_sim_z
+    set ra = x_sim_ra
+    set dec = x_sim_dec
+    set major = x_sim_Maj
+    set minor = x_sim_Min
+    set lgMstar = x_sim_lgMstar
+    set lgSFR = x_sim_lgSFR
+    set pb_corr = x_sim_pb_corr
+    set pix_scale = x_sim_pix_scale
+    set f = x_fit_f_total
+    set df = x_fit_df_total
+    set df_galfit = x_fit_df_galfit
+    set fpeak = x_fit_fpeak
+    set snr_peak = x_fit_snr_peak
+    set snr_total = x_fit_snr_total
+    set Maj = x_fit_Maj
+    set Min = x_fit_Min
+    set Area = x_fit_Area
+    set fres = x_fit_fres
+    set pbc = x_fit_pb_corr
+    set rms = x_fit_rms
+    set noise = (x_fit_rms < $rms_median) ? $rms_median : x_fit_rms
+    set sim_image_dir_STR = x_sim_image_dir
+    set fit_image_dir_STR = x_fit_image_dir
+    set checkdim = dimen(id)
+    foreach var {id z ra dec major minor lgMstar lgSFR Xf f df df_galfit rms noise fres fpeak Maj Min Area pbc pb_corr pix_scale sim_image_dir_STR fit_image_dir_STR} {
+        echo dimen($var) = $(dimen($var))
+    }
+    foreach var {id z ra dec major minor lgMstar lgSFR Xf f df df_galfit rms noise fres fpeak Maj Min Area pbc pb_corr pix_scale sim_image_dir_STR fit_image_dir_STR} {
+        if(checkdim!=dimen($var)) {
+            exit
+        }
+    }
+    # 
+    # 
+    # 
+    # 
+    # 
+    # 
+    # Print datatable
+    set id = float(id)
+    !basename \$(dirname \$(pwd -P)) | sed -e 's% %_%g' > sim_data_dir_STR.tmp
+    data "sim_data_dir_STR.tmp" read {sim_data_dir_STR_TMP 1.s}
+    set sim_data_dir_STR = (id>=0) ? sim_data_dir_STR_TMP : sim_data_dir_STR_TMP
+    !rm "sim_data_dir_STR.tmp" 2>/dev/null
+    print "simu_data_input.txt" '%20.0f %15g %15g %15g %15g %15g %15g %15g %15g %15g %15g %15g %15g %15g %15g %15g %15g %15g %40s %40s    %-15s\n' \
+        {id major minor Xf f snr_total fpeak noise fres Maj Min Area pbc pb_corr pix_scale z lgMstar lgSFR sim_image_dir_STR fit_image_dir_STR sim_data_dir_STR}
+    # 
+    # 
+    # 
+    # 
+    # 
+    # Analyze statistics
+    #macro read run_simu_stats_v11.sm
+    #analyze_statistics
+    #--> output fALMA dfALMA
+
+
+
+
+

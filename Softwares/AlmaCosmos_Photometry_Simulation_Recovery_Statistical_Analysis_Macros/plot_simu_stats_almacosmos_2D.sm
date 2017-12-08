@@ -1,0 +1,225 @@
+plot_simu_stats_2D
+    # 
+    #  echo "macro read plot_simu_stats_almacosmos_2D.sm plot_simu_stats_2D" | sm
+    # 
+    plot_simu_stats_2D_fbias
+    #plot_simu_stats_2D_dfcorr
+
+
+
+plot_simu_stats_2D_fbias
+    # 
+    #  echo "macro read plot_simu_stats_almacosmos_2D.sm plot_simu_stats_2D_fbias" | sm
+    # 
+    load rfile.sm
+    rfile "datatable_corrected.txt"
+    #rfile "datatable_cell_median.txt"
+    #rfile "datatable_cell_parameters.txt"
+    # 
+    # check variables 
+    define check_columns 1
+    foreach var {id Xf f_uncorr0 f fbias fpeak noise Maj Min beam_maj beam_min sim_alma_image_STR sim_repetition_STR} {
+        if(!is_vector($var)) {
+            define check_columns 0
+            print 'Column $var was not found in the input file!\n' {}
+        }
+    }
+    if($check_columns==0) {return}
+    # 
+    # set variables
+    set MajBeam = Maj/beam_maj
+    set fpeakRMS = fpeak/noise
+    # 
+    # make plots
+    # 
+    load crabPlot.sm
+    load crabPlotColorbar.sm
+    crabPlotOpenPS "Plot_fbias_against_fpeakRMS.eps"
+    crabPlotDefaultPenForBox
+    location 7000 30500 7000 30500
+    limits 0 3 -2 2
+    ticksize -1 10 0 0
+    box
+    crabPlotDefaultPenForTitle
+    xlabel "S_{peak}/rms"
+    ylabel "(S_{in}-S_{out})/S_{in}"
+    # 
+    plotColorBar 0.6 0.85 0 0 MajBeam 0 0 "Maj_{\,source}/Maj_{\,beam}"
+    # 
+    crabPlotDefaultPenForPoints
+    ptype 4 1
+    lweight 0.8
+    expand 0.5
+    do i=0,dimen(Xf)-1 {
+        ctype $(MajBeam_Colors[$i])
+        set plot_x = lg(fpeakRMS[$i])
+        set plot_y = (Xf[$i]-f_uncorr0[$i])/(Xf[$i])
+        points plot_x plot_y
+    }
+    # 
+    # plot bin cell median and sigma (error bar)
+    data "datatable_cell_median_with_par.txt"
+    read {bin_cell_id 1 bin_cell_median 2 bin_cell_par_1 3 bin_cell_par_2 4}
+    data "datatable_cell_sigma_L68_with_par.txt"
+    read {bin_cell_id 1 bin_cell_sigma_L68 2}
+    data "datatable_cell_sigma_H68_with_par.txt"
+    read {bin_cell_id 1 bin_cell_sigma_H68 2}
+    set bin_cell_sigma_L68 = (bin_cell_sigma_L68==0 && bin_cell_sigma_H68!=0) ? (bin_cell_sigma_H68) : bin_cell_sigma_L68
+    set bin_cell_sigma_H68 = (bin_cell_sigma_H68==0 && bin_cell_sigma_L68!=0) ? (bin_cell_sigma_L68) : bin_cell_sigma_H68
+    crabPlotDefaultPenForPoints
+    do i=0,dimen(bin_cell_id)-1 {
+        set plot_x = lg(bin_cell_par_2[$i])
+        set plot_y = bin_cell_median[$i]
+        set plot_err_H68 = bin_cell_sigma_H68[$i]
+        set plot_err_L68 = bin_cell_sigma_L68[$i]
+        ctype white lweight 6.5
+        points plot_x plot_y
+        errorbar plot_x plot_y plot_err_H68 2
+        errorbar plot_x plot_y plot_err_L68 4
+        ctype $(plotColorBar_value2color(bin_cell_par_1[$i])) lweight 3.5
+        points plot_x plot_y
+        errorbar plot_x plot_y plot_err_H68 2
+        errorbar plot_x plot_y plot_err_L68 4
+    }
+    # 
+    # plot minimum chi2 fit
+    set bin_cell_par_1_uniq = {0.25 0.75 1.25 1.75 2.25 2.75 3.25 3.75}# uniq(bin_cell_par_1)
+    crabPlotDefaultPenForConnect
+    foreach MajBeam_val bin_cell_par_1_uniq {
+        ctype $(plotColorBar_value2color($MajBeam_val))
+        set fit_x = $fx1,$fx2,0.05
+        set data_x2 = 10**fit_x
+        set data_x1 = $MajBeam_val
+        input "datatable_cell_median_function.txt"
+        #set fit_y = fit_a/((10**fit_x)**fit_b)/((10**plot_x2[0])**fit_c)
+        #print {plot_x plot_y fit_y}
+        connect fit_x fit_y
+    }
+    # 
+    crabPlotDefaultPenForConnect
+    ctype default
+    ltype 1
+    rel $fx1 0 draw $fx2 0
+    # 
+    location 6500 31000 6500 31000
+    crabPlotClosePS
+
+
+
+plot_simu_stats_2D_dfcorr
+    # 
+    #  echo "macro read plot_simu_stats_almacosmos_2D.sm plot_simu_stats_2D" | sm
+    # 
+    load rfile.sm
+    rfile "datatable_corrected.txt"
+    #rfile "datatable_cell_median.txt"
+    #rfile "datatable_cell_parameters.txt"
+    # 
+    # check variables 
+    define check_columns 1
+    foreach var {id Xf f_uncorr0 f fbias fpeak noise Maj Min beam_maj beam_min sim_alma_image_STR sim_repetition_STR} {
+        if(!is_vector($var)) {
+            define check_columns 0
+            print 'Column $var was not found in the input file!\n' {}
+        }
+    }
+    if($check_columns==0) {return}
+    # 
+    # set variables
+    set MajBeam = Maj/beam_maj
+    set fpeakRMS = fpeak/noise
+    set ftotalSNR = snr_total
+    # 
+    # make plots
+    # 
+    load crabPlot.sm
+    load crabPlotColorbar.sm
+    crabPlotOpenPS "Plot_dfcorr_against_fpeakRMS.eps"
+    crabPlotDefaultPenForBox
+    location 7000 30500 7000 30500
+    limits 0 3 -1 1
+    ticksize -1 10 0 0
+    box
+    crabPlotDefaultPenForTitle
+    xlabel "S_{peak}/rms (uncorr.)"
+    ylabel "(S_{in}-S_{out,corr.})/S_{in}"
+    # 
+    plotColorBar 0.6 0.85 0 0 MajBeam 0 0 "Maj_{\,source}/Maj_{\,beam}"
+    # 
+    crabPlotDefaultPenForPoints
+    ptype 4 1
+    lweight 0.5
+    expand 0.5
+    do i=0,dimen(Xf)-1 {
+        ctype $(MajBeam_Colors[$i])
+        set plot_x = lg(snr_total[$i])
+        set plot_y = (Xf[$i]-f[$i])/(Xf[$i])
+        points plot_x plot_y
+    }
+    # 
+    # plot bin cell median and sigma (error bar)
+    data "datatable_cell_median_with_par.txt"
+    read {bin_cell_id 1 bin_cell_median 2 bin_cell_par_1 3 bin_cell_par_2 4}
+    data "datatable_cell_sigma_L68_with_par.txt"
+    read {bin_cell_id 1 bin_cell_sigma_L68 2}
+    data "datatable_cell_sigma_H68_with_par.txt"
+    read {bin_cell_id 1 bin_cell_sigma_H68 2}
+    set bin_cell_sigma_L68 = (bin_cell_sigma_L68==0 && bin_cell_sigma_H68!=0) ? (bin_cell_sigma_H68) : bin_cell_sigma_L68
+    set bin_cell_sigma_H68 = (bin_cell_sigma_H68==0 && bin_cell_sigma_L68!=0) ? (bin_cell_sigma_L68) : bin_cell_sigma_H68
+    crabPlotDefaultPenForPoints
+    expand 1.5
+    do i=0,dimen(bin_cell_id)-1 {
+        if((bin_cell_par_1[$i]>0.0 && bin_cell_par_1[$i]<=1.5) || \
+            (bin_cell_par_1[$i]>3.0 && bin_cell_par_1[$i]<=4.0)) {
+        set plot_x = lg(bin_cell_par_2[$i])
+        set plot_y = 0.0
+        set plot_err_H68 = bin_cell_sigma_H68[$i]
+        set plot_err_L68 = bin_cell_sigma_L68[$i]
+        ctype white lweight 6.5
+        points plot_x plot_y
+        errorbar plot_x plot_y plot_err_H68 2
+        errorbar plot_x plot_y plot_err_L68 4
+        ctype $(plotColorBar_value2color(bin_cell_par_1[$i])) lweight 3.5
+        points plot_x plot_y
+        errorbar plot_x plot_y plot_err_H68 2
+        errorbar plot_x plot_y plot_err_L68 4
+        }
+    }
+    # 
+    # plot minimum chi2 fit
+    set bin_cell_par_1_uniq = {0.25 0.75 1.25 1.75 2.25 2.75 3.25 3.75}# uniq(bin_cell_par_1)
+    crabPlotDefaultPenForConnect
+    foreach MajBeam_val bin_cell_par_1_uniq {
+        ctype $(plotColorBar_value2color($MajBeam_val))
+        set fit_x = $fx1,$fx2,0.05
+        set data_x2 = 10**fit_x
+        set data_x1 = $MajBeam_val
+        input "datatable_cell_sigma_L68_function.txt"
+        #set fit_y = fit_a/((10**fit_x)**fit_b)/((10**plot_x2[0])**fit_c)
+        #print {plot_x plot_y fit_y}
+        connect fit_x (-fit_y)
+    }
+    foreach MajBeam_val bin_cell_par_1_uniq {
+        ctype $(plotColorBar_value2color($MajBeam_val))
+        set fit_x = $fx1,$fx2,0.05
+        set data_x2 = 10**fit_x
+        set data_x1 = $MajBeam_val
+        input "datatable_cell_sigma_H68_function.txt"
+        #set fit_y = fit_a/((10**fit_x)**fit_b)/((10**plot_x2[0])**fit_c)
+        #print {plot_x plot_y fit_y}
+        connect fit_x fit_y
+    }
+    # 
+    crabPlotDefaultPenForConnect
+    ctype default
+    ltype 1
+    rel $fx1 0 draw $fx2 0
+    # 
+    location 6500 31000 6500 31000
+    crabPlotClosePS
+
+
+
+
+
+

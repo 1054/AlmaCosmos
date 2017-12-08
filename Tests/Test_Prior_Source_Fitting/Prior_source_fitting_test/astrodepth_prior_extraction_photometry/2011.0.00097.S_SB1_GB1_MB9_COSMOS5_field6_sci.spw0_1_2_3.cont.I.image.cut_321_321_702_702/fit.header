@@ -1,0 +1,169 @@
+COMP_1  = 'psf     '           / Component type                                 
+1_XC    = '[109.7780]'         / X center [pixel]                               
+1_YC    = '[4.2380]'           / Y center [pixel]                               
+1_MAG   = '6.4249 +/- 0.5813'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_2  = 'psf     '           / Component type                                 
+2_XC    = '[312.6240]'         / X center [pixel]                               
+2_YC    = '[28.0480]'          / Y center [pixel]                               
+2_MAG   = '4.9963 +/- 0.1551'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_3  = 'psf     '           / Component type                                 
+3_XC    = '[75.8320]'          / X center [pixel]                               
+3_YC    = '[21.8170]'          / Y center [pixel]                               
+3_MAG   = '9.6182 +/- 10.9399' / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_4  = 'psf     '           / Component type                                 
+4_XC    = '[205.1000]'         / X center [pixel]                               
+4_YC    = '[52.3410]'          / Y center [pixel]                               
+4_MAG   = '6.2734 +/- 0.5025'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_5  = 'psf     '           / Component type                                 
+5_XC    = '[23.5770]'          / X center [pixel]                               
+5_YC    = '[81.2200]'          / Y center [pixel]                               
+5_MAG   = '7.9330 +/- 2.3191'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_6  = 'psf     '           / Component type                                 
+6_XC    = '[189.7180]'         / X center [pixel]                               
+6_YC    = '[88.2620]'          / Y center [pixel]                               
+6_MAG   = '5.7565 +/- 0.3123'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_7  = 'sersic  '           / Component type                                 
+7_XC    = '204.0145 +/- 0.4502' / X center [pixel]                              
+7_YC    = '105.1830 +/- 1.2444' / Y center [pixel]                              
+7_MAG   = '3.2380 +/- 0.1229'  / Integrated magnitude [mag]                     
+7_RE    = '14.7341 +/- 2.4358' / Effective radius Re [pixels]                   
+7_N     = '[1.0000]'           / Sersic index                                   
+7_AR    = '0.2000 +/- 0.0361'  / Axis ratio (b/a)                               
+7_PA    = '20.3452 +/- 3.1798' / Position Angle (PA) [degrees: Up=0, Left=90]   
+COMMENT ------------------------------------------------------------------------
+COMP_8  = 'psf     '           / Component type                                 
+8_XC    = '[221.1750]'         / X center [pixel]                               
+8_YC    = '[102.3990]'         / Y center [pixel]                               
+8_MAG   = '30.0000 +/- 1555761536.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_9  = 'psf     '           / Component type                                 
+9_XC    = '[154.0310]'         / X center [pixel]                               
+9_YC    = '[151.1390]'         / Y center [pixel]                               
+9_MAG   = '30.0000 +/- 1554361344.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_10 = 'psf     '           / Component type                                 
+10_XC   = '[377.7820]'         / X center [pixel]                               
+10_YC   = '[149.3290]'         / Y center [pixel]                               
+10_MAG  = '5.9535 +/- 0.3744'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_11 = 'sersic  '           / Component type                                 
+11_XC   = '226.7060 +/- 0.5123' / X center [pixel]                              
+11_YC   = '183.8651 +/- 0.8743' / Y center [pixel]                              
+11_MAG  = '5.0625 +/- 0.2346'  / Integrated magnitude [mag]                     
+11_RE   = '1.0000 +/- 1.2107'  / Effective radius Re [pixels]                   
+11_N    = '[1.0000]'           / Sersic index                                   
+11_AR   = '0.2000 +/- 5.9327'  / Axis ratio (b/a)                               
+11_PA   = '-70.0068 +/- 104.6746' / Position Angle (PA) [degrees: Up=0, Left=90]
+COMMENT ------------------------------------------------------------------------
+COMP_12 = 'psf     '           / Component type                                 
+12_XC   = '[161.1740]'         / X center [pixel]                               
+12_YC   = '[132.7470]'         / Y center [pixel]                               
+12_MAG  = '30.0000 +/- 1555249280.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_13 = 'psf     '           / Component type                                 
+13_XC   = '[80.6080]'          / X center [pixel]                               
+13_YC   = '[204.2610]'         / Y center [pixel]                               
+13_MAG  = '30.0000 +/- 1556412416.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_14 = 'psf     '           / Component type                                 
+14_XC   = '[146.1050]'         / X center [pixel]                               
+14_YC   = '[205.6150]'         / Y center [pixel]                               
+14_MAG  = '5.8700 +/- 0.3466'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_15 = 'psf     '           / Component type                                 
+15_XC   = '[184.2190]'         / X center [pixel]                               
+15_YC   = '[225.8650]'         / Y center [pixel]                               
+15_MAG  = '5.7601 +/- 0.3132'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_16 = 'psf     '           / Component type                                 
+16_XC   = '[74.6530]'          / X center [pixel]                               
+16_YC   = '[235.0990]'         / Y center [pixel]                               
+16_MAG  = '30.0000 +/- 1555853440.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_17 = 'psf     '           / Component type                                 
+17_XC   = '[175.3540]'         / X center [pixel]                               
+17_YC   = '[217.3540]'         / Y center [pixel]                               
+17_MAG  = '6.6322 +/- 0.6999'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_18 = 'psf     '           / Component type                                 
+18_XC   = '[17.8920]'          / X center [pixel]                               
+18_YC   = '[241.6000]'         / Y center [pixel]                               
+18_MAG  = '7.1828 +/- 1.1612'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_19 = 'psf     '           / Component type                                 
+19_XC   = '[149.1510]'         / X center [pixel]                               
+19_YC   = '[235.5990]'         / Y center [pixel]                               
+19_MAG  = '30.0000 +/- 1555410816.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_20 = 'psf     '           / Component type                                 
+20_XC   = '[20.7580]'          / X center [pixel]                               
+20_YC   = '[147.5680]'         / Y center [pixel]                               
+20_MAG  = '6.3197 +/- 0.5247'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_21 = 'psf     '           / Component type                                 
+21_XC   = '[190.7360]'         / X center [pixel]                               
+21_YC   = '[199.5670]'         / Y center [pixel]                               
+21_MAG  = '5.6582 +/- 0.2853'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_22 = 'psf     '           / Component type                                 
+22_XC   = '[53.3520]'          / X center [pixel]                               
+22_YC   = '[323.2410]'         / Y center [pixel]                               
+22_MAG  = '30.0000 +/- 1556209920.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_23 = 'psf     '           / Component type                                 
+23_XC   = '[152.5530]'         / X center [pixel]                               
+23_YC   = '[275.0690]'         / Y center [pixel]                               
+23_MAG  = '6.8490 +/- 0.8544'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_24 = 'psf     '           / Component type                                 
+24_XC   = '[277.8860]'         / X center [pixel]                               
+24_YC   = '[320.4620]'         / Y center [pixel]                               
+24_MAG  = '30.0000 +/- 1555273088.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_25 = 'psf     '           / Component type                                 
+25_XC   = '[73.2610]'          / X center [pixel]                               
+25_YC   = '[283.5910]'         / Y center [pixel]                               
+25_MAG  = '7.4524 +/- 1.4893'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_26 = 'sersic  '           / Component type                                 
+26_XC   = '276.6006 +/- 0.6049' / X center [pixel]                              
+26_YC   = '299.4297 +/- 0.3537' / Y center [pixel]                              
+26_MAG  = '4.2179 +/- 0.1197'  / Integrated magnitude [mag]                     
+26_RE   = '4.6328 +/- 1.1822'  / Effective radius Re [pixels]                   
+26_N    = '[1.0000]'           / Sersic index                                   
+26_AR   = '0.2000 +/- 0.2762'  / Axis ratio (b/a)                               
+26_PA   = '65.5608 +/- 9.9429' / Position Angle (PA) [degrees: Up=0, Left=90]   
+COMMENT ------------------------------------------------------------------------
+COMP_27 = 'psf     '           / Component type                                 
+27_XC   = '[7.3050]'           / X center [pixel]                               
+27_YC   = '[346.1770]'         / Y center [pixel]                               
+27_MAG  = '8.3667 +/- 3.4565'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_28 = 'psf     '           / Component type                                 
+28_XC   = '[275.4190]'         / X center [pixel]                               
+28_YC   = '[346.8530]'         / Y center [pixel]                               
+28_MAG  = '30.0000 +/- 1556208384.0000' / Integrated magnitude                  
+COMMENT ------------------------------------------------------------------------
+COMP_29 = 'psf     '           / Component type                                 
+29_XC   = '[375.8790]'         / X center [pixel]                               
+29_YC   = '[331.3230]'         / Y center [pixel]                               
+29_MAG  = '6.0703 +/- 0.4168'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_30 = 'psf     '           / Component type                                 
+30_XC   = '[236.1430]'         / X center [pixel]                               
+30_YC   = '[261.6340]'         / Y center [pixel]                               
+30_MAG  = '4.6721 +/- 0.1150'  / Integrated magnitude                           
+COMMENT ------------------------------------------------------------------------
+COMP_31 = 'sky     '           / Component type                                 
+31_XC   = '[191.5000]'         / X center [pixel]                               
+31_YC   = '[191.5000]'         / Y center [pixel]                               
+31_SKY  = '[0.000e+00]'        / Sky background [ADUs]                          
+31_DSDX = '[0.000e+00]'        / x sky gradient [ADUs]                          
+31_DSDY = '[0.000e+00]'        / y sky gradient [ADUs]                          
+COMMENT ------------------------------------------------------------------------

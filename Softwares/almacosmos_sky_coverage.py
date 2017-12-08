@@ -8,8 +8,10 @@
 import os, sys
 if len(sys.argv) <= 1:
     print("Usage: ")
-    print("  almacosmos_sky_coverage.py \"fits_image.fits\"")
-    print("  almacosmos_sky_coverage.py \"fits_image.fits\" \"more_coverage_polygon.txt\"")
+    print("  AlmaCosmos_Sky_Coverage.py \"fits_image.fits\"")
+    print("  AlmaCosmos_Sky_Coverage.py \"fits_image.fits\" \"more_coverage_polygon.txt\"")
+    print("  # The first input is the background image.")
+    print("  # The second and later inputs are more polygons to show in addition to ALMA archive sky coverage polygons.")
     print("")
     sys.exit()
 

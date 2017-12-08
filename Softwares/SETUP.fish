@@ -1,26 +1,33 @@
-#!/usr/bin/fish
+#!/usr/bin/env fish
 # 
-# CURRENT DIR
-set -gx ALMACOSMOS (dirname (perl -MCwd -e 'print Cwd::abs_path shift' (status --current-filename)))
-if [ x"$ALMACOSMOS" = x"" ]
-    echo "Failed to source "(status --current-filename)"!"; exit
+
+
+set BIN_SETUP_SCRIPT (dirname (status --current-filename))/bin_setup.bash
+
+#echo 
+#echo "PATH = $PATH"
+#echo 
+
+set -x PATH (string split ":" (bash -c "source $BIN_SETUP_SCRIPT -print" | tail -n 1))
+
+if test -d "$HOME/Softwares/Supermongo"
+    set -x PATH (string split ":" (bash -c "source $BIN_SETUP_SCRIPT -var PATH -path $HOME/Softwares/Supermongo -print" | tail -n 1))
 end
-#
-# PATH
-if not contains "$ALMACOSMOS" $PATH
-    set -gx PATH "$ALMACOSMOS" $PATH
+
+if test -d "lib_python_dzliu/crabtable" ]]
+    set -x PYTHONPATH (string split ":" (bash -c "source $BIN_SETUP_SCRIPT -var PYTHONPATH -path lib_python_dzliu/crabtable -print" | tail -n 1))
 end
-#
-# LIST
-set -x ALMACOSMOSCMD "almacosmos-sky-coverage" "almacosmos-fits-image-to-coverage-polyogn" "almacosmos-analyze-fits-image-pixel-histogram" "caap-generate-PSF-Gaussian-2D" "almacosmos-highz-galaxy-crossmatcher" "almacosmos-highz-galaxy-crossmatcher-read-results"
-# 
-# CHECK
-# -- 20160427 only for interactive shell
-# -- http://stackoverflow.com/questions/12440287/scp-doesnt-work-when-echo-in-bashrc
-if status --is-interactive
-  for TEMPTOOLKITCMD in {$ALMACOSMOSCMD}
-    type $TEMPTOOLKITCMD
-  end
-end
+
+type gethead
+type getpix
+type sky2xy
+type xy2sky
+type galfit
+type lumdist
+type sm
+
+#echo 
+#echo "PATH = $PATH"
+#echo 
 
 

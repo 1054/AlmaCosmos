@@ -1,0 +1,17 @@
+Read lines 1 to 1292876 from prior_x_y.txt
+Read lines 1 to 1 from image_sci_pixscale.txt
+Read lines 1 to 1 from image_sci_pixnoise.txt
+Read lines 1 to 1 from image_sci_pixnoise.txt
+Read lines 1 to 1292876 from prior_id.txt
+Read lines 1 to 66 from getpix.radius.0.0000.arcsec.output
+Read lines 1 to 66 from getpix.radius.0.2500.arcsec.output
+Read lines 1 to 66 from getpix.radius.0.5000.arcsec.output
+Read lines 1 to 66 from getpix.radius.0.7500.arcsec.output
+Read lines 1 to 66 from getpix.radius.1.0000.arcsec.output
+Read lines 1 to 66 from getpix.radius.1.2500.arcsec.output
+Read lines 1 to 66 from getpix.radius.1.5000.arcsec.output
+Read lines 1 to 66 from getpix.radius.1.7500.arcsec.output
+Read lines 1 to 66 from getpix.radius.2.0000.arcsec.output
+Read lines 1 to 1 from image_sci_sky_frequency.tmp
+Read lines 1 to 1 from image_sci_phase_center.tmp
+Read lines 1 to 61 from image_pba_primary_beam_correction.getpix.output.txt

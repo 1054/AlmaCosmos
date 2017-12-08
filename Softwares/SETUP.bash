@@ -1,55 +1,37 @@
 #!/bin/bash
 #
-# CURRENT DIR
-#export ALMACOSMOS=$(dirname $(perl -MCwd -e 'print Cwd::abs_path shift' "${BASH_SOURCE[0]}"))
-export ALMACOSMOS=$(bash -c "cd \$(dirname \"${BASH_SOURCE[0]}\"); pwd -P;")
-if [[ x"$ALMACOSMOS" = x"" ]]; then
-    echo "Failed to source ${BASH_SOURCE[0]}!"; exit 1
-fi
-#
-# PATH
-if [[ $PATH != *"$ALMACOSMOS"* ]]; then
-    export PATH="$ALMACOSMOS:$PATH"
-fi
-if [[ $PATH != *"$ALMACOSMOS/3rd/bin"* ]]; then
-    export PATH="$ALMACOSMOS/3rd/bin:$PATH"
-fi
-if [[ $(uname) == "Darwin" ]]; then
-    if [[ $PATH != *"$ALMACOSMOS/3rd_mac/bin"* ]]; then
-        export PATH="$ALMACOSMOS/3rd_mac/bin:$PATH"
-    fi
-    if [[ x"$PYTHONPATH" != x*"$ALMACOSMOS/3rd_mac/lib/python2.7/site-packages"* ]]; then
-        if [[ -z "$PYTHONPATH" ]]; then
-            export PYTHONPATH="$ALMACOSMOS/3rd_mac/lib/python2.7/site-packages:$ALMACOSMOS/3rd_mac/lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg"
-        else
-            export PYTHONPATH="$ALMACOSMOS/3rd_mac/lib/python2.7/site-packages:$ALMACOSMOS/3rd_mac/lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg:$PYTHONPATH"
-        fi
-    fi
-else
-    if [[ $PATH != *"$ALMACOSMOS/3rd_linux/bin"* ]]; then
-        export PATH="$ALMACOSMOS/3rd_linux/bin:$PATH"
-    fi
-    if [[ x"$PYTHONPATH" != x*"$ALMACOSMOS/3rd_linux/lib/python2.7/site-packages"* ]]; then
-        if [[ -z "$PYTHONPATH" ]]; then
-            export PYTHONPATH="$ALMACOSMOS/3rd_linux/lib/python2.7/site-packages:$ALMACOSMOS/3rd_linux/lib64/python2.7/site-packages:$ALMACOSMOS/3rd_linux/lib64/python2.7/site-packages/bdsf-1.8.12-py2.7-linux-x86_64.egg"
-        else
-            export PYTHONPATH="$ALMACOSMOS/3rd_linux/lib/python2.7/site-packages:$ALMACOSMOS/3rd_linux/lib64/python2.7/site-packages:$ALMACOSMOS/3rd_linux/lib64/python2.7/site-packages/bdsf-1.8.12-py2.7-linux-x86_64.egg:$PYTHONPATH"
-        fi
-    fi
-fi
-    
 
-#
-# LIST
-ALMACOSMOSCMD=("almacosmos-sky-coverage" "almacosmos-fits-image-to-coverage-polyogn" "almacosmos-analyze-fits-image-pixel-histogram" "almacosmos-generate-PSF-Gaussian-2D" "almacosmos-highz-galaxy-crossmatcher" "almacosmos-highz-galaxy-crossmatcher-read-results")
-# 
-# CHECK
-# -- 20160427 only for interactive shell
-# -- http://stackoverflow.com/questions/12440287/scp-doesnt-work-when-echo-in-bashrc
-if [[ $- =~ "i" ]]; then 
-  for TEMPTOOLKITCMD in ${ALMACOSMOSCMD[@]}; do
-    type $TEMPTOOLKITCMD
-  done
+BIN_SETUP_FOLDER=$(dirname "${BASH_SOURCE[0]}")
+BIN_SETUP_SCRIPT=$(dirname "${BASH_SOURCE[0]}")/bin_setup.bash
+
+# Supermongo
+if [[ -d "$HOME/Softwares/Supermongo" ]]; then
+    source "$BIN_SETUP_SCRIPT" -var PATH -path "$HOME/Softwares/Supermongo"
 fi
+
+# Python lib
+if [[ -d "$BIN_SETUP_FOLDER/lib_python_dzliu/crabtable" ]]; then
+    source "$BIN_SETUP_SCRIPT" -var PYTHONPATH -path "$BIN_SETUP_FOLDER/lib_python_dzliu/crabtable"
+fi
+
+# PyBDSF
+# if [[ $(uname) == "Darwin" ]]; then
+#     if [[ -d "$BIN_SETUP_FOLDER/3rd_pybdsf/mac_python2.7/lib/python2.7/site-packages/bdsf-1.8.13-py2.7-macosx-10.12-x86_64.egg/bdsf" ]]; then
+#         source "$BIN_SETUP_SCRIPT" -var PATH                -path "$BIN_SETUP_FOLDER/3rd_pybdsf/mac_python2.7/bin"
+#         source "$BIN_SETUP_SCRIPT" -var PYTHONPATH          -path "$BIN_SETUP_FOLDER/3rd_pybdsf/mac_python2.7/lib/python2.7/site-packages"
+#         source "$BIN_SETUP_SCRIPT" -var PYTHONPATH          -path "$BIN_SETUP_FOLDER/3rd_pybdsf/mac_python2.7/lib/python2.7/site-packages/bdsf-1.8.13-py2.7-macosx-10.12-x86_64.egg"
+#         source "$BIN_SETUP_SCRIPT" -var DYLD_LIBRARY_PATH   -path "$BIN_SETUP_FOLDER/3rd_pybdsf/mac_python2.7/lib"
+#     fi
+# else
+#     if [[ -d "$BIN_SETUP_FOLDER/3rd_pybdsf/linux_python2.7/lib/python2.7/site-packages/bdsf-1.8.13-py2.7-linux-10.12-x86_64.egg/bdsf" ]]; then
+#         source "$BIN_SETUP_SCRIPT" -var PATH                -path "$BIN_SETUP_FOLDER/3rd_pybdsf/linux_python2.7/bin"
+#         source "$BIN_SETUP_SCRIPT" -var PYTHONPATH          -path "$BIN_SETUP_FOLDER/3rd_pybdsf/linux_python2.7/lib/python2.7/site-packages"
+#         source "$BIN_SETUP_SCRIPT" -var PYTHONPATH          -path "$BIN_SETUP_FOLDER/3rd_pybdsf/linux_python2.7/lib/python2.7/site-packages/bdsf-1.8.13-py2.7-linux-10.12-x86_64.egg"
+#         source "$BIN_SETUP_SCRIPT" -var DYLD_LIBRARY_PATH   -path "$BIN_SETUP_FOLDER/3rd_pybdsf/linux_python2.7/lib"
+#     fi
+# fi
+
+# Check commands
+source "$BIN_SETUP_SCRIPT" -check gethead getpix sky2xy xy2sky galfit lumdist sm
 
 

@@ -30,14 +30,13 @@ if len(sys.argv) <= 1:
     print('Usage: ')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Images.fits"                              # providing a FITS image')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Images.fits" "ALMA_Image_List.txt"        # or providing text file which contains a list of FITS images')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --rms-value 0.00015       # we can also input a constant rms value for all input FITS images')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -rms 0.00015              # (same as above)')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --max-gaussian-number 1   # we can also constrain the maximum number of fitted Gaussian to one Island')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -ngmax 1                  # (same as above)')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --max-gaussian-area 1     # we can also set the maximum area of a Gaussian in unit of beam area, above which the Gaussian will be flagged/discarded.')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -agmax 1                  # (same as above)')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --include-empty-islands   # we can also specify that we want to output empty islands which do not contain any valid Gaussian and have negative Source_id.')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -incl-empty               # (same as above)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -rms 0.00015              # we can also input a constant rms value for all input FITS images')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -ngmax 1                  # we can also constrain the maximum number of fitted Gaussian to one Island')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -agmax 1                  # we can also set the maximum area of a Gaussian in unit of beam area, above which the Gaussian will be flagged/discarded.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -flag_maxsize_fwhm 0.3    # we can also set the minimum size ratio of an island to a Gaussian therein, below which the Gaussian will be flagged/discarded. Gaussian can be larger than the island, so this ratio can be <1. Larger value will lead to more flagged Gaussians.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -incl-empty               # we can also specify that we want to output empty islands which do not contain any valid Gaussian and have negative Source_id.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -verbose                  # verbose output.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -start 1 -end 100         # we can specify the start end range for the input fits files including listed fits files in any input text file.')
     sys.exit()
 
 
@@ -75,7 +74,8 @@ input_peak_fit = True # whether to find and fit peaks of large islands before fi
 input_verbose_fitting = False
 input_incl_empty = False
 input_flag_maxsize_bm = 25.0 # flag (discard) a Gaussian if its area is larger than 25.0 times the beam area. <20171109><NOTE><DZLIU> THIS IS NOT GAUSSIAN_SIZE/BEAM_SIZE BUT GAUSSIAN_AREA/BEAM_AREA!!!
-input_flag_maxsize_fwhm = 0.3 # flag (discard) a Gaussian if ... -- see -- http://www.astron.nl/citt/pybdsm/process_image.html#flagging-options
+input_flag_maxsize_fwhm = 0.5 # flag (discard) a Gaussian if ... -- see -- http://www.astron.nl/citt/pybdsm/process_image.html#flagging-options
+                              # DOCUMENTATION IS WRONG! THE DEFAULT VALUE IS 0.5.
 output_root = 'Output_Blind_Extraction_Photometry_PyBDSM'
 
 i = 1
@@ -105,26 +105,43 @@ while i < len(sys.argv):
             if i+1 <= len(sys.argv)-1:
                 output_root = str(sys.argv[i+1])
                 i = i + 1
-        elif sys.argv[i].lower() == '--max-gaussian-number' or sys.argv[i].lower() == '-ngmax' or \
-            sys.argv[i].lower() == '--number-gaussian' or sys.argv[i].lower() == '--numb-gauss' or sys.argv[i].lower() == '--max-numb-gaussian' or sys.argv[i].lower() == '--max-numb-gauss' or sys.argv[i].lower() == '--max-gaussian-numb':
+        elif sys.argv[i].lower() == '--max-gaussian-number' or \
+            sys.argv[i].lower() == '-ngmax' or \
+            sys.argv[i].lower() == '--number-gaussian' or \
+            sys.argv[i].lower() == '--numb-gauss' or \
+            sys.argv[i].lower() == '--max-numb-gaussian' or \
+            sys.argv[i].lower() == '--max-numb-gauss' or \
+            sys.argv[i].lower() == '--max-gaussian-numb':
             if i+1 <= len(sys.argv)-1:
                 input_ini_gausfit = 'ngmax'+' '+(sys.argv[i+1])
                 input_peak_fit = False
                 print('Setting ini_gausfit to %s'%(input_ini_gausfit))
                 i = i + 1
-        elif sys.argv[i].lower() == '--max-gaussian-area' or sys.argv[i].lower() == '-agmax' or sys.argv[i].lower() == '-maxarea' or \
-            sys.argv[i].lower() == '-maxsize' or sys.argv[i].lower() == '--flag-maxsize' or sys.argv[i].lower() == '--flag-maxsize-bm' or sys.argv[i].lower() == '--flag_maxsize_bm':
+        elif sys.argv[i].lower() == '--max-gaussian-area' or \
+            sys.argv[i].lower() == '-agmax' or \
+            sys.argv[i].lower() == '-maxarea' or \
+            sys.argv[i].lower() == '-maxsize' or \
+            sys.argv[i].lower() == '--flag-maxsize' or \
+            sys.argv[i].lower() == '-flag-maxsize-bm' or \
+            sys.argv[i].lower() == '-flag_maxsize_bm' or \
+            sys.argv[i].lower() == '--flag-maxsize-bm' or \
+            sys.argv[i].lower() == '--flag_maxsize_bm':
             if i+1 <= len(sys.argv)-1:
                 input_flag_maxsize_bm = float(sys.argv[i+1])
                 print('Setting flag_maxsize_bm to %s'%(input_flag_maxsize_bm))
                 i = i + 1
-        elif sys.argv[i].lower() == '--flag-maxsize-fwhm' or sys.argv[i].lower() == '--flag_maxsize_fwhm':
+        elif sys.argv[i].lower() == '-igmin' or \
+            sys.argv[i].lower() == '-flag-maxsize-fwhm' or \
+            sys.argv[i].lower() == '-flag_maxsize_fwhm' or \
+            sys.argv[i].lower() == '--flag-maxsize-fwhm' or \
+            sys.argv[i].lower() == '--flag_maxsize_fwhm':
             if i+1 <= len(sys.argv)-1:
                 input_flag_maxsize_fwhm = float(sys.argv[i+1])
                 print('Setting flag_maxsize_fwhm to %s'%(input_flag_maxsize_fwhm))
                 i = i + 1
         elif sys.argv[i].lower() == '-verbose' or \
-            sys.argv[i].lower() == '--verbose' or sys.argv[i].lower() == '--verbose-fitting':
+            sys.argv[i].lower() == '--verbose' or \
+            sys.argv[i].lower() == '--verbose-fitting':
             input_verbose_fitting = True
             print('Setting verbose_fitting to %s'%(input_verbose_fitting))
         elif sys.argv[i].lower() == '-incl-empty' or \

@@ -1,0 +1,178 @@
+A) image_sci.fits 
+B) fit_0.fits 
+C) image_rms.fits 
+D) image_psf.fits 
+E) 1 				# PSF fine sampling factor relative to data
+F) none 			# Bad pixel mask, can be FITS image or ASCII coord list
+G) fit_0.limit 
+H) 1 382 1 382 		# Image region to fit (xmin xmax ymin ymax)
+I) 51 51 		# convolution box size (x y)
+J) 0 				# Magnitude photometric zeropoint
+K) 1.000 1.000 		# Pixel scale in arcsec (dx dy)
+O) regular 			# Display type (regular, curses, both)
+P) 0 				# Choose: 0=optimize, 1=model, 2=imgblock, 3=subcomps
+
+
+#) COMP_1 # 841034
+0) psf 
+1) 200.061 19.359 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_2 # 841157
+0) psf 
+1) 224.034 3.242 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_3 # 841213
+0) psf 
+1) 241.444 14.647 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_4 # 841389
+0) psf 
+1) 81.424 32.362 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_5 # 841675
+0) psf 
+1) 184.600 50.614 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_6 # 842153
+0) psf 
+1) 75.486 51.766 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_7 # 842274
+0) psf 
+1) 353.895 70.290 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_8 # 842300
+0) psf 
+1) 53.397 84.227 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_9 # 842345
+0) psf 
+1) 316.565 41.025 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_10 # 842679
+0) psf 
+1) 234.535 77.507 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_11 # 843373
+0) psf 
+1) 328.356 141.019 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_12 # 843614
+0) psf 
+1) 36.782 149.329 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_13 # 843731
+0) psf 
+1) 362.787 163.847 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_14 # 844144
+0) psf 
+1) 94.144 79.601 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_15 # 844433
+0) psf 
+1) 182.024 140.719 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_16 # 844747
+0) psf 
+1) 210.230 219.595 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_17 # 845137
+0) psf 
+1) 361.229 226.411 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_18 # 845235
+0) psf 
+1) 233.412 247.794 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_19 # 845292
+0) psf 
+1) 271.565 214.786 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_20 # 845344
+0) psf 
+1) 72.306 250.968 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_21 # 845907
+0) psf 
+1) 57.515 211.249 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_22 # 846958
+0) psf 
+1) 100.357 343.182 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_23 # 847165
+0) psf 
+1) 345.588 348.516 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_24 # 848100
+0) psf 
+1) 111.528 322.759 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_25 # 1224764
+0) psf 
+1) 115.275 317.575 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+#) COMP_26 # 1238534
+0) psf 
+1) 284.267 299.253 0 0
+3) 8.000 1 # Mags
+Z) 0 
+
+
+0) sky 
+1) 0 0 # sky value (flux density)
+2) 0 0 # sky gradient in x
+3) 0 0 # sky gradient in y
+Z) 0 
+

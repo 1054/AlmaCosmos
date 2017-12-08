@@ -1,0 +1,1878 @@
+
+GALFIT Version 3.0.5 -- Apr. 23, 2013
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#  Input menu file: fit_2.input
+
+
+================================================================================
+# IMAGE and GALFIT CONTROL PARAMETERS
+A) image_sci.fits      # Input data image (FITS file)
+B) fit_2.fits          # Output data image block
+C) image_rms.fits      # Sigma image name (made from data if blank or "none") 
+D) image_psf.fits          # Input PSF image and (optional) diffusion kernel
+E) 1                   # PSF fine sampling factor relative to data 
+F) none                # Bad pixel mask (FITS image or ASCII coord list)
+G) fit_2.limit         # File with parameter constraints (ASCII file) 
+H) 1    382  1    382  # Image region to fit (xmin xmax ymin ymax)
+I) 51     51           # Size of the convolution box (x y)
+J) 0.000               # Magnitude photometric zeropoint 
+K) 1.000  1.000        # Plate scale (dx dy)   [arcsec per pixel]
+O) regular             # Display type (regular, curses, both)
+P) 0                   # Choose: 0=optimize, 1=model, 2=imgblock, 3=subcomps
+
+# INITIAL FITTING PARAMETERS
+#
+#   For component type, the allowed functions are: 
+#       sersic, expdisk, edgedisk, devauc, king, nuker, psf, 
+#       gaussian, moffat, ferrer, and sky. 
+#  
+#   Hidden parameters will only appear when they're specified:
+#       Bn (n=integer, Bending Modes).
+#       C0 (diskyness/boxyness), 
+#       Fn (n=integer, Azimuthal Fourier Modes).
+#       R0-R10 (coordinate rotation, for creating spiral structures).
+#       To, Ti, T0-T10 (truncation function).
+# 
+# ------------------------------------------------------------------------------
+#   par)    par value(s)    fit toggle(s)    # parameter description 
+# ------------------------------------------------------------------------------
+
+# Component number: 1
+ 0) psf                    #  Component type
+ 1) 23.5290  29.5900  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 2
+ 0) psf                    #  Component type
+ 1) 8.7190   30.1700  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 3
+ 0) psf                    #  Component type
+ 1) 160.9860 21.5010  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 4
+ 0) psf                    #  Component type
+ 1) 367.0810 62.3750  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 5
+ 0) gaussian               #  Component type
+ 1) 146.0470 47.3630  1 1  #  Position x, y 
+ 3) 4.7940      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 6
+ 0) psf                    #  Component type
+ 1) 362.3260 79.6700  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 7
+ 0) gaussian               #  Component type
+ 1) 294.9160 36.9990  1 1  #  Position x, y 
+ 3) 4.7980      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 8
+ 0) gaussian               #  Component type
+ 1) 303.3130 67.6170  1 1  #  Position x, y 
+ 3) 5.1420      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 9
+ 0) gaussian               #  Component type
+ 1) 26.7730  100.1430 1 1  #  Position x, y 
+ 3) 4.6700      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 10
+ 0) gaussian               #  Component type
+ 1) 230.7600 29.3850  1 1  #  Position x, y 
+ 3) 4.7820      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 11
+ 0) psf                    #  Component type
+ 1) 347.8260 103.2570 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 12
+ 0) psf                    #  Component type
+ 1) 270.8130 152.4870 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 13
+ 0) psf                    #  Component type
+ 1) 15.5960  151.1760 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 14
+ 0) gaussian               #  Component type
+ 1) 38.0410  158.7900 1 1  #  Position x, y 
+ 3) 4.6480      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 15
+ 0) psf                    #  Component type
+ 1) 199.5760 105.9570 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 16
+ 0) psf                    #  Component type
+ 1) 272.5610 53.3710  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 17
+ 0) psf                    #  Component type
+ 1) 331.2530 193.6460 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 18
+ 0) gaussian               #  Component type
+ 1) 6.4500   190.5570 1 1  #  Position x, y 
+ 3) 4.9810      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 19
+ 0) psf                    #  Component type
+ 1) 378.2790 258.6730 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 20
+ 0) psf                    #  Component type
+ 1) 268.7520 254.5030 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 21
+ 0) psf                    #  Component type
+ 1) 235.1400 267.4420 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 22
+ 0) psf                    #  Component type
+ 1) 133.3740 278.7600 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 23
+ 0) psf                    #  Component type
+ 1) 229.7420 279.8110 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 24
+ 0) gaussian               #  Component type
+ 1) 165.6300 314.3710 1 1  #  Position x, y 
+ 3) 5.0610      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 25
+ 0) psf                    #  Component type
+ 1) 343.8150 277.0720 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 26
+ 0) psf                    #  Component type
+ 1) 47.5610  321.9750 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 27
+ 0) psf                    #  Component type
+ 1) 268.2730 276.3990 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 28
+ 0) psf                    #  Component type
+ 1) 173.7210 334.8990 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 29
+ 0) psf                    #  Component type
+ 1) 109.7780 345.2380 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 30
+ 0) psf                    #  Component type
+ 1) 247.1450 368.6770 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 31
+ 0) gaussian               #  Component type
+ 1) 312.6240 369.0480 1 1  #  Position x, y 
+ 3) 4.7220      1          #  Integrated magnitude 
+ 4) 2.5070      1          #     FWHM       [pix]
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      1          #  Axis ratio (b/a)  
+10) 0.0000      1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 32
+ 0) psf                    #  Component type
+ 1) 75.8320  362.8170 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 33
+ 0) sky                    #  Component type
+ 1) 0.000e+00      0       #  Sky background at center of fitting region [ADUs]
+ 2) 0.000e+00      0       #  dsky/dx (sky gradient in x)     [ADUs/pix]
+ 3) 0.000e+00      0       #  dsky/dy (sky gradient in y)     [ADUs/pix]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+================================================================================
+
+
+
+-- WARNING: The exposure time header is missing.  Default to 1 second.
+
+-- No CCD charge diffusion kernel found or applied.
+-- No bad pixel mask image used.
+
+================================================================================
+Initial parameters:
+ psf       : (  [23.53],  [29.59])   8.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   8.00     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])   8.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   8.00     ---     ---     ---     ---
+ gaussian  : (  146.05,    47.36)    4.79      2.51     ---    1.00     0.00
+ psf       : ( [362.33],  [79.67])   8.00     ---     ---     ---     ---
+ gaussian  : (  294.92,    37.00)    4.80      2.51     ---    1.00     0.00
+ gaussian  : (  303.31,    67.62)    5.14      2.51     ---    1.00     0.00
+ gaussian  : (   26.77,   100.14)    4.67      2.51     ---    1.00     0.00
+ gaussian  : (  230.76,    29.39)    4.78      2.51     ---    1.00     0.00
+ psf       : ( [347.83], [103.26])   8.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])   8.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   8.00     ---     ---     ---     ---
+ gaussian  : (   38.04,   158.79)    4.65      2.51     ---    1.00     0.00
+ psf       : ( [199.58], [105.96])   8.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   8.00     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])   8.00     ---     ---     ---     ---
+ gaussian  : (    6.45,   190.56)    4.98      2.51     ---    1.00     0.00
+ psf       : ( [378.28], [258.67])   8.00     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])   8.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])   8.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])   8.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])   8.00     ---     ---     ---     ---
+ gaussian  : (  165.63,   314.37)    5.06      2.51     ---    1.00     0.00
+ psf       : ( [343.82], [277.07])   8.00     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   8.00     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.00     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])   8.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   8.00     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])   8.00     ---     ---     ---     ---
+ gaussian  : (  312.62,   369.05)    4.72      2.51     ---    1.00     0.00
+ psf       : (  [75.83], [362.82])   8.00     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+================================================================================
+
+Iteration : 1     Chi2nu: 9.809e-01     dChi2/Chi2: -6.99e+21   alamda: 1e-01     
+ psf       : (  [23.53],  [29.59])   8.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   8.00     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])   8.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   8.00     ---     ---     ---     ---
+ gaussian  : (  146.05,    47.36)    4.79      2.51     ---    1.00     0.00
+ psf       : ( [362.33],  [79.67])   8.00     ---     ---     ---     ---
+ gaussian  : (  294.92,    37.00)    4.80      2.51     ---    1.00     0.00
+ gaussian  : (  303.31,    67.62)    5.14      2.51     ---    1.00     0.00
+ gaussian  : (   26.77,   100.14)    4.67      2.51     ---    1.00     0.00
+ gaussian  : (  230.76,    29.39)    4.78      2.51     ---    1.00     0.00
+ psf       : ( [347.83], [103.26])   8.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])   8.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   8.00     ---     ---     ---     ---
+ gaussian  : (   38.04,   158.79)    4.65      2.51     ---    1.00     0.00
+ psf       : ( [199.58], [105.96])   8.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   8.00     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])   8.00     ---     ---     ---     ---
+ gaussian  : (    6.45,   190.56)    4.98      2.51     ---    1.00     0.00
+ psf       : ( [378.28], [258.67])   8.00     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])   8.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])   8.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])   8.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])   8.00     ---     ---     ---     ---
+ gaussian  : (  165.63,   314.37)    5.06      2.51     ---    1.00     0.00
+ psf       : ( [343.82], [277.07])   8.00     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   8.00     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.00     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])   8.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   8.00     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])   8.00     ---     ---     ---     ---
+ gaussian  : (  312.62,   369.05)    4.72      2.51     ---    1.00     0.00
+ psf       : (  [75.83], [362.82])   8.00     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 99 
+
+Iteration : 2     Chi2nu: 9.809e-01     dChi2/Chi2: 3.23e-08    alamda: 1e+00     
+ psf       : (  [23.53],  [29.59])   8.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   8.00     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])   8.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   8.00     ---     ---     ---     ---
+ gaussian  : (  146.05,    47.36)    4.79      2.51     ---    1.00     0.00
+ psf       : ( [362.33],  [79.67])   8.00     ---     ---     ---     ---
+ gaussian  : (  294.92,    37.00)    4.80      2.51     ---    1.00     0.00
+ gaussian  : (  303.31,    67.62)    5.14      2.51     ---    1.00     0.00
+ gaussian  : (   26.77,   100.14)    4.67      2.51     ---    1.00     0.00
+ gaussian  : (  230.76,    29.39)    4.78      2.51     ---    1.00     0.00
+ psf       : ( [347.83], [103.26])   8.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])   8.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   8.00     ---     ---     ---     ---
+ gaussian  : (   38.04,   158.79)    4.65      2.51     ---    1.00     0.00
+ psf       : ( [199.58], [105.96])   8.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   8.00     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])   8.00     ---     ---     ---     ---
+ gaussian  : (    6.45,   190.56)    4.98      2.51     ---    1.00     0.00
+ psf       : ( [378.28], [258.67])   8.00     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])   8.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])   8.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])   8.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])   8.00     ---     ---     ---     ---
+ gaussian  : (  165.63,   314.37)    5.06      2.51     ---    1.00     0.00
+ psf       : ( [343.82], [277.07])   8.00     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   8.00     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.00     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])   8.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   8.00     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])   8.00     ---     ---     ---     ---
+ gaussian  : (  312.62,   369.05)    4.72      2.51     ---    1.00     0.00
+ psf       : (  [75.83], [362.82])   8.00     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 3     Chi2nu: 9.798e-01     dChi2/Chi2: -1.19e-03   alamda: 1e-01     
+ psf       : (  [23.53],  [29.59])  15.38     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.31     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  19.27     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.05     ---     ---     ---     ---
+ gaussian  : (  146.33,    46.82)    4.76      3.80     ---    0.94   -52.00
+ psf       : ( [362.33],  [79.67])   9.69     ---     ---     ---     ---
+ gaussian  : (  295.51,    37.87)    4.81      2.89     ---    0.76    57.00
+ gaussian  : (  303.81,    67.90)    5.27      1.00     ---    0.35   -13.00
+ gaussian  : (   27.51,   100.50)    4.78      4.50     ---    0.49    -4.00
+ gaussian  : (  230.38,    29.45)    4.75      3.06     ---    0.20    68.00
+ psf       : ( [347.83], [103.26])  20.61     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])   8.95     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.29     ---     ---     ---     ---
+ gaussian  : (   38.53,   159.13)    4.59      4.40     ---    0.51    24.00
+ psf       : ( [199.58], [105.96])  15.41     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   7.09     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  13.08     ---     ---     ---     ---
+ gaussian  : (    5.37,   190.06)    5.04      3.06     ---    0.74    20.12
+ psf       : ( [378.28], [258.67])   8.25     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])   8.89     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  10.03     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  13.07     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  11.74     ---     ---     ---     ---
+ gaussian  : (  165.50,   313.23)    5.05      3.79     ---    0.59    64.00
+ psf       : ( [343.82], [277.07])   7.46     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.29     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.32     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  12.03     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.30     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  13.43     ---     ---     ---     ---
+ gaussian  : (  311.26,   368.35)    4.87      2.20     ---    0.20   -88.00
+ psf       : (  [75.83], [362.82])   8.42     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 97 
+
+Iteration : 4     Chi2nu: 9.797e-01     dChi2/Chi2: -1.06e-04   alamda: 1e-02     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.80     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.31    62.07
+ psf       : ( [362.33],  [79.67])  20.52     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.45
+ gaussian  : (  302.64,    67.56)    5.48      1.00     ---    0.20   -74.35
+ gaussian  : (   29.14,   102.41)    4.52      7.83     ---    0.58    81.43
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    84.28
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.68     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.21     ---    0.71    -1.60
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.36
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.30     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  28.58     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.75)    5.10     10.32     ---    0.20   -39.52
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.23)    5.06      1.00     ---    0.29   -44.56
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 96 
+
+Iteration : 5     Chi2nu: 9.797e-01     dChi2/Chi2: -1.10e-08   alamda: 1e-01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.80     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.31    62.07
+ psf       : ( [362.33],  [79.67])  20.52     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.45
+ gaussian  : (  302.64,    67.56)    5.48      1.00     ---    0.20   -74.35
+ gaussian  : (   29.14,   102.41)    4.52      7.83     ---    0.58    81.43
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    84.28
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.68     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.21     ---    0.71    -1.60
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.36
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.30     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  28.58     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.75)    5.10     10.32     ---    0.20   -39.52
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.23)    5.06      1.00     ---    0.29   -44.56
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 6     Chi2nu: 9.797e-01     dChi2/Chi2: -1.10e-08   alamda: 1e+00     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.80     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.31    62.07
+ psf       : ( [362.33],  [79.67])  20.52     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.45
+ gaussian  : (  302.64,    67.56)    5.48      1.00     ---    0.20   -74.35
+ gaussian  : (   29.14,   102.41)    4.52      7.83     ---    0.58    81.43
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    84.28
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.68     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.21     ---    0.71    -1.60
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.36
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.30     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  28.58     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.75)    5.10     10.32     ---    0.20   -39.52
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.23)    5.06      1.00     ---    0.29   -44.56
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 9 
+
+Iteration : 7     Chi2nu: 9.797e-01     dChi2/Chi2: -1.10e-08   alamda: 1e+01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.80     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.31    62.07
+ psf       : ( [362.33],  [79.67])  20.52     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.45
+ gaussian  : (  302.64,    67.56)    5.48      1.00     ---    0.20   -74.35
+ gaussian  : (   29.14,   102.41)    4.52      7.83     ---    0.58    81.43
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    84.28
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.68     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.21     ---    0.71    -1.60
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.36
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.30     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  28.58     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.75)    5.10     10.32     ---    0.20   -39.52
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.23)    5.06      1.00     ---    0.29   -44.56
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 8 
+
+Iteration : 8     Chi2nu: 9.797e-01     dChi2/Chi2: -1.10e-08   alamda: 1e+02     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.80     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.31    62.07
+ psf       : ( [362.33],  [79.67])  20.52     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.45
+ gaussian  : (  302.64,    67.56)    5.48      1.00     ---    0.20   -74.35
+ gaussian  : (   29.14,   102.41)    4.52      7.83     ---    0.58    81.43
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    84.28
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.68     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.21     ---    0.71    -1.60
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.36
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.30     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  28.58     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.75)    5.10     10.32     ---    0.20   -39.52
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.23)    5.06      1.00     ---    0.29   -44.56
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 7 
+
+Iteration : 9     Chi2nu: 9.797e-01     dChi2/Chi2: -1.10e-08   alamda: 1e+03     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.80     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.31    62.07
+ psf       : ( [362.33],  [79.67])  20.52     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.45
+ gaussian  : (  302.64,    67.56)    5.48      1.00     ---    0.20   -74.35
+ gaussian  : (   29.14,   102.41)    4.52      7.83     ---    0.58    81.43
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    84.28
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.68     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.21     ---    0.71    -1.60
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.36
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.30     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  28.58     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.75)    5.10     10.32     ---    0.20   -39.52
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.23)    5.06      1.00     ---    0.29   -44.56
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 6 
+
+Iteration : 10    Chi2nu: 9.797e-01     dChi2/Chi2: -1.10e-08   alamda: 1e+04     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.80     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.31    62.07
+ psf       : ( [362.33],  [79.67])  20.52     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.45
+ gaussian  : (  302.64,    67.56)    5.48      1.00     ---    0.20   -74.35
+ gaussian  : (   29.14,   102.41)    4.52      7.83     ---    0.58    81.43
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    84.28
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.68     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.21     ---    0.71    -1.60
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.36
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.30     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  28.58     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.75)    5.10     10.32     ---    0.20   -39.52
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.23)    5.06      1.00     ---    0.29   -44.56
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 5 
+
+Iteration : 11    Chi2nu: 9.797e-01     dChi2/Chi2: -1.59e-07   alamda: 1e+03     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.80     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.31    62.05
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.44
+ gaussian  : (  302.64,    67.53)    5.48      1.00     ---    0.20   -74.07
+ gaussian  : (   29.14,   102.40)    4.52      7.83     ---    0.58    81.42
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    84.24
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.69     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.21     ---    0.71    -1.61
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.33
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.30     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.75)    5.10     10.32     ---    0.20   -39.51
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.23)    5.06      1.00     ---    0.29   -44.47
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 4 
+
+Iteration : 12    Chi2nu: 9.797e-01     dChi2/Chi2: -1.24e-07   alamda: 1e+02     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.81     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.91)    4.53      1.24     ---    0.32    61.78
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.77,    38.61)    4.75      5.77     ---    0.20    48.36
+ gaussian  : (  302.64,    67.28)    5.48      1.00     ---    0.20   -71.32
+ gaussian  : (   29.14,   102.40)    4.52      7.83     ---    0.58    81.24
+ gaussian  : (  230.16,    29.72)    4.57      2.13     ---    0.20    83.80
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.71     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.20     ---    0.71    -1.68
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.37)    4.84      3.68     ---    0.91    41.02
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.32     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  165.99,   312.74)    5.10     10.32     ---    0.20   -39.46
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.41,   365.24)    5.06      1.00     ---    0.29   -43.61
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 3 
+
+Iteration : 13    Chi2nu: 9.796e-01     dChi2/Chi2: -2.84e-05   alamda: 1e+01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.81     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.78,    45.90)    4.53      1.26     ---    0.45    59.15
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.76,    38.61)    4.75      5.79     ---    0.20    47.55
+ gaussian  : (  302.66,    66.97)    5.48      1.00     ---    0.20   -51.70
+ gaussian  : (   29.15,   102.38)    4.52      7.79     ---    0.58    79.47
+ gaussian  : (  230.16,    29.74)    4.57      2.13     ---    0.23    79.30
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  11.97     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.84,   159.85)    4.13     10.17     ---    0.70    -2.46
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.50,   189.36)    4.84      3.67     ---    0.91    37.95
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  11.47     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.02,   312.72)    5.10     10.28     ---    0.20   -38.97
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.78     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.42,   365.27)    5.06      1.01     ---    0.30   -35.25
+ psf       : (  [75.83], [362.82])   9.08     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 2 
+
+Iteration : 14    Chi2nu: 9.794e-01     dChi2/Chi2: -2.93e-04   alamda: 1e+00     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.83     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.29     ---     ---     ---     ---
+ gaussian  : (  146.79,    45.85)    4.55      1.43     ---    0.84    28.23
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.71,    38.66)    4.72      5.96     ---    0.20    40.65
+ gaussian  : (  302.93,    67.25)    5.46      1.00     ---    0.20   -52.77
+ gaussian  : (   29.27,   102.20)    4.52      7.43     ---    0.59    62.81
+ gaussian  : (  230.17,    29.78)    4.58      2.19     ---    0.65    56.77
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  14.90     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.79,   159.86)    4.09      9.91     ---    0.62    -8.78
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.94     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.49,   189.33)    4.83      3.63     ---    0.92     7.19
+ psf       : ( [378.28], [258.67])   8.56     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  13.11     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.29,   312.53)    5.10      9.97     ---    0.20   -34.71
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.43     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.80     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.44     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.45,   365.50)    5.06      1.29     ---    0.20    25.94
+ psf       : (  [75.83], [362.82])   9.12     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 86 
+
+Iteration : 15    Chi2nu: 9.791e-01     dChi2/Chi2: -2.54e-04   alamda: 1e-01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.93     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.32     ---     ---     ---     ---
+ gaussian  : (  146.85,    45.62)    4.64      2.48     ---    0.57   -58.73
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.37,    38.94)    4.57      8.61     ---    0.20    20.23
+ gaussian  : (  304.00,    68.36)    5.47      1.00     ---    0.20   -23.48
+ gaussian  : (   29.98,   101.35)    4.56      6.27     ---    0.28   -29.56
+ gaussian  : (  230.21,    29.85)    4.60      3.27     ---    0.83    33.86
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.71,   159.76)    3.99     10.31     ---    0.30   -16.03
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.44,   189.15)    4.79      3.71     ---    0.84   -40.59
+ psf       : ( [378.28], [258.67])   8.61     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.94,   312.01)    5.15      9.71     ---    0.20   -27.15
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.44     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.89     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.45     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.85,   366.58)    5.02      3.91     ---    0.20    16.56
+ psf       : (  [75.83], [362.82])   9.32     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 85 
+
+Iteration : 16    Chi2nu: 9.791e-01     dChi2/Chi2: -1.16e-08   alamda: 1e+00     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.93     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.32     ---     ---     ---     ---
+ gaussian  : (  146.85,    45.62)    4.64      2.48     ---    0.57   -58.73
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.37,    38.94)    4.57      8.61     ---    0.20    20.23
+ gaussian  : (  304.00,    68.36)    5.47      1.00     ---    0.20   -23.48
+ gaussian  : (   29.98,   101.35)    4.56      6.27     ---    0.28   -29.56
+ gaussian  : (  230.21,    29.85)    4.60      3.27     ---    0.83    33.86
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.71,   159.76)    3.99     10.31     ---    0.30   -16.03
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.44,   189.15)    4.79      3.71     ---    0.84   -40.59
+ psf       : ( [378.28], [258.67])   8.61     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.94,   312.01)    5.15      9.71     ---    0.20   -27.15
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.44     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.89     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.45     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.85,   366.58)    5.02      3.91     ---    0.20    16.56
+ psf       : (  [75.83], [362.82])   9.32     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 17    Chi2nu: 9.788e-01     dChi2/Chi2: -2.96e-04   alamda: 1e-01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.99     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.33     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.44)    4.68      2.09     ---    0.85    52.20
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.04,    39.41)    4.40     11.01     ---    0.20    48.17
+ gaussian  : (  302.88,    67.70)    5.34      1.00     ---    0.20   -22.30
+ gaussian  : (   29.78,   100.88)    4.63      2.77     ---    0.74    -5.72
+ gaussian  : (  230.17,    29.84)    4.60      3.88     ---    0.48    63.66
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.77,   159.32)    3.91     11.83     ---    0.23    -8.19
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.38,   189.08)    4.76      4.08     ---    0.70    28.12
+ psf       : ( [378.28], [258.67])   8.63     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.53,   312.81)    5.21      8.77     ---    0.20   -57.63
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.94     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.45     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.52,   367.50)    4.88      4.86     ---    0.20     4.12
+ psf       : (  [75.83], [362.82])   9.45     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 83 
+
+Iteration : 18    Chi2nu: 9.788e-01     dChi2/Chi2: -2.09e-08   alamda: 1e+00     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   5.99     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.33     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.44)    4.68      2.09     ---    0.85    52.20
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.04,    39.41)    4.40     11.01     ---    0.20    48.17
+ gaussian  : (  302.88,    67.70)    5.34      1.00     ---    0.20   -22.30
+ gaussian  : (   29.78,   100.88)    4.63      2.77     ---    0.74    -5.72
+ gaussian  : (  230.17,    29.84)    4.60      3.88     ---    0.48    63.66
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.77,   159.32)    3.91     11.83     ---    0.23    -8.19
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.38,   189.08)    4.76      4.08     ---    0.70    28.12
+ psf       : ( [378.28], [258.67])   8.63     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.53,   312.81)    5.21      8.77     ---    0.20   -57.63
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.94     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.45     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.52,   367.50)    4.88      4.86     ---    0.20     4.12
+ psf       : (  [75.83], [362.82])   9.45     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 19    Chi2nu: 9.786e-01     dChi2/Chi2: -2.45e-04   alamda: 1e-01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.03     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.89,    45.32)    4.71      1.83     ---    0.79   -43.43
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.08,    40.05)    4.28     10.75     ---    0.20    23.73
+ gaussian  : (  310.33,    67.85)    5.41      1.00     ---    0.20    20.11
+ gaussian  : (   30.11,   100.81)    4.62      2.86     ---    0.79    66.62
+ gaussian  : (  230.12,    29.87)    4.60      3.63     ---    0.85   -14.14
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.68,   159.02)    3.87     12.07     ---    0.20   -10.16
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.41,   188.99)    4.72      4.13     ---    0.95   -19.66
+ psf       : ( [378.28], [258.67])   8.64     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  167.98,   312.53)    5.32      1.62     ---    0.20   -66.56
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.96     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.38,   367.90)    4.75      4.77     ---    0.20    29.21
+ psf       : (  [75.83], [362.82])   9.53     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 81 
+
+Iteration : 20    Chi2nu: 9.786e-01     dChi2/Chi2: -5.42e-08   alamda: 1e+00     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.03     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.89,    45.32)    4.71      1.83     ---    0.79   -43.43
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  295.08,    40.05)    4.28     10.75     ---    0.20    23.73
+ gaussian  : (  310.33,    67.85)    5.41      1.00     ---    0.20    20.11
+ gaussian  : (   30.11,   100.81)    4.62      2.86     ---    0.79    66.62
+ gaussian  : (  230.12,    29.87)    4.60      3.63     ---    0.85   -14.14
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.68,   159.02)    3.87     12.07     ---    0.20   -10.16
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.41,   188.99)    4.72      4.13     ---    0.95   -19.66
+ psf       : ( [378.28], [258.67])   8.64     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  167.98,   312.53)    5.32      1.62     ---    0.20   -66.56
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.96     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.38,   367.90)    4.75      4.77     ---    0.20    29.21
+ psf       : (  [75.83], [362.82])   9.53     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 21    Chi2nu: 9.784e-01     dChi2/Chi2: -2.05e-04   alamda: 1e-01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.22)    4.74      1.94     ---    0.59    -8.74
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.63,    39.91)    4.19     12.43     ---    0.20    36.50
+ gaussian  : (  310.33,    66.63)    5.27      7.73     ---    0.20   -76.04
+ gaussian  : (   30.34,   100.56)    4.65      4.11     ---    0.20    72.96
+ gaussian  : (  230.12,    29.81)    4.59      3.96     ---    0.61    -7.25
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.82)    3.84     12.21     ---    0.20   -10.44
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.87)    4.70      4.47     ---    0.72    -7.75
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  167.17,   312.03)    5.32      1.26     ---    0.20   -13.14
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.47,   368.11)    4.75      4.41     ---    0.20   -14.66
+ psf       : (  [75.83], [362.82])   9.57     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 79 
+
+Iteration : 22    Chi2nu: 9.784e-01     dChi2/Chi2: -4.67e-09   alamda: 1e+00     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.22)    4.74      1.94     ---    0.59    -8.74
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.63,    39.91)    4.19     12.43     ---    0.20    36.50
+ gaussian  : (  310.33,    66.63)    5.27      7.73     ---    0.20   -76.04
+ gaussian  : (   30.34,   100.56)    4.65      4.11     ---    0.20    72.96
+ gaussian  : (  230.12,    29.81)    4.59      3.96     ---    0.61    -7.25
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.82)    3.84     12.21     ---    0.20   -10.44
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.87)    4.70      4.47     ---    0.72    -7.75
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  167.17,   312.03)    5.32      1.26     ---    0.20   -13.14
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.47,   368.11)    4.75      4.41     ---    0.20   -14.66
+ psf       : (  [75.83], [362.82])   9.57     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 23    Chi2nu: 9.784e-01     dChi2/Chi2: -4.67e-09   alamda: 1e+01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.22)    4.74      1.94     ---    0.59    -8.74
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.63,    39.91)    4.19     12.43     ---    0.20    36.50
+ gaussian  : (  310.33,    66.63)    5.27      7.73     ---    0.20   -76.04
+ gaussian  : (   30.34,   100.56)    4.65      4.11     ---    0.20    72.96
+ gaussian  : (  230.12,    29.81)    4.59      3.96     ---    0.61    -7.25
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.82)    3.84     12.21     ---    0.20   -10.44
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.87)    4.70      4.47     ---    0.72    -7.75
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  167.17,   312.03)    5.32      1.26     ---    0.20   -13.14
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.47,   368.11)    4.75      4.41     ---    0.20   -14.66
+ psf       : (  [75.83], [362.82])   9.57     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 9 
+
+Iteration : 24    Chi2nu: 9.784e-01     dChi2/Chi2: -4.67e-09   alamda: 1e+02     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.22)    4.74      1.94     ---    0.59    -8.74
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.63,    39.91)    4.19     12.43     ---    0.20    36.50
+ gaussian  : (  310.33,    66.63)    5.27      7.73     ---    0.20   -76.04
+ gaussian  : (   30.34,   100.56)    4.65      4.11     ---    0.20    72.96
+ gaussian  : (  230.12,    29.81)    4.59      3.96     ---    0.61    -7.25
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.82)    3.84     12.21     ---    0.20   -10.44
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.87)    4.70      4.47     ---    0.72    -7.75
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  167.17,   312.03)    5.32      1.26     ---    0.20   -13.14
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.47,   368.11)    4.75      4.41     ---    0.20   -14.66
+ psf       : (  [75.83], [362.82])   9.57     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 8 
+
+Iteration : 25    Chi2nu: 9.783e-01     dChi2/Chi2: -2.97e-05   alamda: 1e+01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.22)    4.74      1.94     ---    0.57    -7.67
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.63,    39.91)    4.19     12.41     ---    0.20    36.29
+ gaussian  : (  310.33,    66.61)    5.26      7.68     ---    0.20   -77.42
+ gaussian  : (   30.35,   100.56)    4.65      4.11     ---    0.20    71.19
+ gaussian  : (  230.12,    29.81)    4.59      3.97     ---    0.61    -6.33
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.81)    3.84     12.20     ---    0.20   -10.45
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.86)    4.70      4.48     ---    0.72    -8.46
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.82,   312.04)    5.32      1.02     ---    0.20   -29.44
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.47,   368.11)    4.75      4.37     ---    0.20   -13.32
+ psf       : (  [75.83], [362.82])   9.57     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 7 
+
+Iteration : 26    Chi2nu: 9.782e-01     dChi2/Chi2: -1.42e-04   alamda: 1e+00     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 74 
+
+Iteration : 27    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+01     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 28    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+02     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 9 
+
+Iteration : 29    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+03     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 8 
+
+Iteration : 30    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+04     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 7 
+
+Iteration : 31    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+05     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 6 
+
+Iteration : 32    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+06     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 5 
+
+Iteration : 33    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+07     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 4 
+
+Iteration : 34    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+08     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 3 
+
+Iteration : 35    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+07     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 2 
+
+Iteration : 36    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+08     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 1 
+
+Iteration : 37    Chi2nu: 9.782e-01     dChi2/Chi2: -4.43e-08   alamda: 1e+07     
+ psf       : (  [23.53],  [29.59])  30.00     ---     ---     ---     ---
+ psf       : (   [8.72],  [30.17])   6.05     ---     ---     ---     ---
+ psf       : ( [160.99],  [21.50])  30.00     ---     ---     ---     ---
+ psf       : ( [367.08],  [62.38])   6.34     ---     ---     ---     ---
+ gaussian  : (  146.91,    45.20)    4.74      2.00     ---    0.40     0.22
+ psf       : ( [362.33],  [79.67])  30.00     ---     ---     ---     ---
+ gaussian  : (  294.64,    39.98)    4.16     12.29     ---    0.20    34.45
+ gaussian  : (  310.33,    66.50)    5.20      7.30     ---    0.20   -89.52
+ gaussian  : (   30.39,   100.51)    4.64      4.15     ---    0.20    55.45
+ gaussian  : (  230.13,    29.80)    4.58      4.05     ---    0.58     1.72
+ psf       : ( [347.83], [103.26])  30.00     ---     ---     ---     ---
+ psf       : ( [270.81], [152.49])  30.00     ---     ---     ---     ---
+ psf       : (  [15.60], [151.18])   7.09     ---     ---     ---     ---
+ gaussian  : (   38.64,   158.80)    3.84     12.18     ---    0.20   -10.49
+ psf       : ( [199.58], [105.96])  30.00     ---     ---     ---     ---
+ psf       : ( [272.56],  [53.37])   6.93     ---     ---     ---     ---
+ psf       : ( [331.25], [193.65])  30.00     ---     ---     ---     ---
+ gaussian  : (    4.34,   188.85)    4.70      4.58     ---    0.71   -14.58
+ psf       : ( [378.28], [258.67])   8.65     ---     ---     ---     ---
+ psf       : ( [268.75], [254.50])  30.00     ---     ---     ---     ---
+ psf       : ( [235.14], [267.44])  30.00     ---     ---     ---     ---
+ psf       : ( [133.37], [278.76])  30.00     ---     ---     ---     ---
+ psf       : ( [229.74], [279.81])  30.00     ---     ---     ---     ---
+ gaussian  : (  166.76,   312.09)    5.30      1.00     ---    0.20   -81.65
+ psf       : ( [343.82], [277.07])   7.25     ---     ---     ---     ---
+ psf       : (  [47.56], [321.98])   6.45     ---     ---     ---     ---
+ psf       : ( [268.27], [276.40])   8.98     ---     ---     ---     ---
+ psf       : ( [173.72], [334.90])  30.00     ---     ---     ---     ---
+ psf       : ( [109.78], [345.24])   6.46     ---     ---     ---     ---
+ psf       : ( [247.15], [368.68])  30.00     ---     ---     ---     ---
+ gaussian  : (  311.43,   368.10)    4.73      4.11     ---    0.20    -1.70
+ psf       : (  [75.83], [362.82])   9.58     ---     ---     ---     ---
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 0 
+
+
+Fit summary is now being saved into `fit.log'.
+
+

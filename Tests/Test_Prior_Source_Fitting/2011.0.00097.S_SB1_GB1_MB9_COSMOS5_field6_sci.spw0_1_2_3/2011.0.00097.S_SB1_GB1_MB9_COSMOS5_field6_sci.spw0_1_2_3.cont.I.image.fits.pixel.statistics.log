@@ -1,0 +1,20 @@
+# 20171207 01h17m30s CET
+almacosmos_get_fits_image_pixel_histogram.py "/Users/dzliu/Cloud/Github/AlmaCosmos/Tests/Test_Prior_Source_Fitting/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3.cont.I.image.fits"
+/Users/dzliu/Library/Python/3.6/lib/python/site-packages/matplotlib/axes/_base.py:3245: UserWarning: Attempted to set non-positive ylimits for log-scale axis; invalid limits will be ignored.
+  'Attempted to set non-positive ylimits for log-scale axis; '
+Input fits file: /Users/dzliu/Cloud/Github/AlmaCosmos/Tests/Test_Prior_Source_Fitting/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3.cont.I.image.fits
+
+Min    = -0.0008975915262
+Max    = 0.0009058292489
+Mean   = 1.601291899e-07
+Median = 1.938300613e-07
+Mode   = 0.0001200530314
+Sigma  = 0.0001925834513
+Inner_mu    = 1.601291899e-07   # FitInnerSigma = 5.0
+Inner_sigma = 0.0001925834513   # FitInnerSigma = 5.0
+Fitting_range = -0.0008967311155 0.0009049688383 (nbins = 1048, ndata = 1048576)
+Gaussian_A     = 3734.64707
+Gaussian_mu    = 1.836745583e-07
+Gaussian_sigma = 0.0001927877914
+Saving to /Users/dzliu/Cloud/Github/AlmaCosmos/Tests/Test_Prior_Source_Fitting/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3.cont.I.image.fits.pixel.histogram.eps
+Done!

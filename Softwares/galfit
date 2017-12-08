@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+#${BASH_SOURCE[0]}
+#
+# Linux
+if [[ $(uname -s) == Linux ]]; then
+    if [[ $(bc <<< "$(ldd --version | head -n 1 | tr -s ' ' | cut -d ' ' -f 4 | cut -d '.' -f 2)<12") -eq 1 ]]; then
+        # the supercomputer planer has an old GLIBC version 2.5
+        $(dirname $(readlink -f $0))/galfit_linux_Glibc_2.10/galfit3rhel "$@"
+    else
+        if [[ $(hostname) == "sapherschel"* ]]; then
+            export LD_LIBRARY_PATH=$(dirname $(readlink -f $0))/galfit_linux_Glibc_2.12:$LD_LIBRARY_PATH
+        fi
+        $(dirname $(readlink -f $0))/galfit_linux_Glibc_2.12/galfit3redhat "$@"
+    fi
+fi
+# Darwin
+if [[ $(uname -s) == Darwin ]]; then
+    $(dirname $0)/galfit_mac/galfit "$@"
+fi
+

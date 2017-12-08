@@ -1,0 +1,6 @@
+macro read astrodepth_go_getpix.sm go_getpix
+QUIT
+macro read astrodepth_go_getpix.sm print_result
+QUIT
+macro read astrodepth_go_galfit.sm print_result_final
+QUIT

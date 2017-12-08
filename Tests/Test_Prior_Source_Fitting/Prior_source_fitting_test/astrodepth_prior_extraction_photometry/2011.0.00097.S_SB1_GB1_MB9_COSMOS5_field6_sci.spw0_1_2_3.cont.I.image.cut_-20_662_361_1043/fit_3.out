@@ -1,0 +1,1260 @@
+
+GALFIT Version 3.0.5 -- Apr. 23, 2013
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#  Input menu file: fit_3.input
+
+
+================================================================================
+# IMAGE and GALFIT CONTROL PARAMETERS
+A) image_sci.fits      # Input data image (FITS file)
+B) fit_3.fits          # Output data image block
+C) image_rms.fits      # Sigma image name (made from data if blank or "none") 
+D) image_psf.fits          # Input PSF image and (optional) diffusion kernel
+E) 1                   # PSF fine sampling factor relative to data 
+F) none                # Bad pixel mask (FITS image or ASCII coord list)
+G) fit_3.limit         # File with parameter constraints (ASCII file) 
+H) 1    382  1    382  # Image region to fit (xmin xmax ymin ymax)
+I) 51     51           # Size of the convolution box (x y)
+J) 0.000               # Magnitude photometric zeropoint 
+K) 1.000  1.000        # Plate scale (dx dy)   [arcsec per pixel]
+O) regular             # Display type (regular, curses, both)
+P) 0                   # Choose: 0=optimize, 1=model, 2=imgblock, 3=subcomps
+
+# INITIAL FITTING PARAMETERS
+#
+#   For component type, the allowed functions are: 
+#       sersic, expdisk, edgedisk, devauc, king, nuker, psf, 
+#       gaussian, moffat, ferrer, and sky. 
+#  
+#   Hidden parameters will only appear when they're specified:
+#       Bn (n=integer, Bending Modes).
+#       C0 (diskyness/boxyness), 
+#       Fn (n=integer, Azimuthal Fourier Modes).
+#       R0-R10 (coordinate rotation, for creating spiral structures).
+#       To, Ti, T0-T10 (truncation function).
+# 
+# ------------------------------------------------------------------------------
+#   par)    par value(s)    fit toggle(s)    # parameter description 
+# ------------------------------------------------------------------------------
+
+# Component number: 1
+ 0) psf                    #  Component type
+ 1) 32.7550  4.2400   0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 2
+ 0) psf                    #  Component type
+ 1) 125.6590 6.7800   0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 3
+ 0) psf                    #  Component type
+ 1) 73.3610  16.9040  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 4
+ 0) psf                    #  Component type
+ 1) 328.8160 17.3020  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 5
+ 0) psf                    #  Component type
+ 1) 32.2840  17.4550  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 6
+ 0) psf                    #  Component type
+ 1) 348.3050 5.1770   0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 7
+ 0) psf                    #  Component type
+ 1) 96.6080  28.9750  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 8
+ 0) psf                    #  Component type
+ 1) 36.5610  85.8120  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 9
+ 0) psf                    #  Component type
+ 1) 343.8460 103.5830 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 10
+ 0) psf                    #  Component type
+ 1) 21.9710  116.1570 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 11
+ 0) sersic                 #  Component type
+ 1) 242.3140 117.7350 1 1  #  Position x, y
+ 3) 3.8330      1          #  Integrated magnitude 
+ 4) 3.3050      1          #  R_e (effective radius)   [pix]
+ 5) 1.0000      0          #  Sersic index n (de Vaucouleurs n=4) 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 0.7260      1          #  Axis ratio (b/a)  
+10) 53.1210     1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 12
+ 0) psf                    #  Component type
+ 1) 227.6800 37.7680  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 13
+ 0) psf                    #  Component type
+ 1) 134.1970 71.9650  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 14
+ 0) sersic                 #  Component type
+ 1) 35.9070  133.0730 1 1  #  Position x, y
+ 3) 3.6180      1          #  Integrated magnitude 
+ 4) 5.5220      1          #  R_e (effective radius)   [pix]
+ 5) 1.0000      0          #  Sersic index n (de Vaucouleurs n=4) 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 0.7130      1          #  Axis ratio (b/a)  
+10) -38.2990    1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 15
+ 0) psf                    #  Component type
+ 1) 324.9610 85.1190  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 16
+ 0) psf                    #  Component type
+ 1) 48.0200  164.9720 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 17
+ 0) psf                    #  Component type
+ 1) 94.2140  89.9770  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 18
+ 0) psf                    #  Component type
+ 1) 312.4000 188.8490 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 19
+ 0) psf                    #  Component type
+ 1) 113.1520 83.5250  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 20
+ 0) psf                    #  Component type
+ 1) 51.3900  218.1550 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 21
+ 0) psf                    #  Component type
+ 1) 314.7150 131.3970 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 22
+ 0) psf                    #  Component type
+ 1) 183.4830 250.0570 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 23
+ 0) psf                    #  Component type
+ 1) 164.9330 273.8100 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 24
+ 0) psf                    #  Component type
+ 1) 324.9800 288.4830 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 25
+ 0) psf                    #  Component type
+ 1) 135.5400 241.1010 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 26
+ 0) psf                    #  Component type
+ 1) 57.8320  307.9350 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 27
+ 0) psf                    #  Component type
+ 1) 292.4910 328.5540 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 28
+ 0) psf                    #  Component type
+ 1) 344.7850 342.2090 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 29
+ 0) psf                    #  Component type
+ 1) 118.9140 227.2230 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 30
+ 0) psf                    #  Component type
+ 1) 373.5270 362.6890 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 31
+ 0) psf                    #  Component type
+ 1) 185.1790 60.1680  0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 32
+ 0) psf                    #  Component type
+ 1) 226.5370 80.9400  1 1  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 33
+ 0) psf                    #  Component type
+ 1) 277.2450 127.6670 0 0  #  Position x, y 
+ 3) 8.0000      1          #  Integrated magnitude 
+ 4) 0.0000      0          #     ----- 
+ 5) 0.0000      0          #     ----- 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 1.0000      0          #  Axis ratio (b/a)  
+10) 0.0000      0          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 34
+ 0) sersic                 #  Component type
+ 1) 171.1540 101.5680 1 1  #  Position x, y
+ 3) 4.6340      1          #  Integrated magnitude 
+ 4) 1.6040      1          #  R_e (effective radius)   [pix]
+ 5) 1.0000      0          #  Sersic index n (de Vaucouleurs n=4) 
+ 6) 0.0000      0          #     ----- 
+ 7) 0.0000      0          #     ----- 
+ 8) 0.0000      0          #     ----- 
+ 9) 0.5300      1          #  Axis ratio (b/a)  
+10) -26.9330    1          #  Position angle (PA) [deg: Up=0, Left=90]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+# Component number: 35
+ 0) sky                    #  Component type
+ 1) 0.000e+00      0       #  Sky background at center of fitting region [ADUs]
+ 2) 0.000e+00      0       #  dsky/dx (sky gradient in x)     [ADUs/pix]
+ 3) 0.000e+00      0       #  dsky/dy (sky gradient in y)     [ADUs/pix]
+ Z) 0                      #  Skip this model in output image?  (yes=1, no=0)
+
+================================================================================
+
+
+
+-- WARNING: The exposure time header is missing.  Default to 1 second.
+
+-- No CCD charge diffusion kernel found or applied.
+-- No bad pixel mask image used.
+
+================================================================================
+Initial parameters:
+ psf       : (  [32.76],   [4.24])   8.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   8.00     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   8.00     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   8.00     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   8.00     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.00     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   8.00     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])   8.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])   8.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   8.00     ---     ---     ---     ---
+ sersic    : (  242.31,   117.74)    3.83      3.31   [1.00]   0.73    53.12
+ psf       : ( [227.68],  [37.77])   8.00     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])   8.00     ---     ---     ---     ---
+ sersic    : (   35.91,   133.07)    3.62      5.52   [1.00]   0.71   -38.30
+ psf       : ( [324.96],  [85.12])   8.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   8.00     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])   8.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])   8.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])   8.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])   8.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])   8.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   8.00     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   8.00     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])   8.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   8.00     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])   8.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   8.00     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   8.00     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   8.00     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   8.00     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   8.00     ---     ---     ---     ---
+ psf       : (  226.54,    80.94)    8.00     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])   8.00     ---     ---     ---     ---
+ sersic    : (  171.15,   101.57)    4.63      1.60   [1.00]   0.53   -26.93
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+================================================================================
+
+Iteration : 1     Chi2nu: 9.148e-01     dChi2/Chi2: -7.49e+21   alamda: 1e-01     
+ psf       : (  [32.76],   [4.24])   8.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   8.00     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   8.00     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   8.00     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   8.00     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.00     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   8.00     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])   8.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])   8.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   8.00     ---     ---     ---     ---
+ sersic    : (  242.31,   117.74)    3.83      3.31   [1.00]   0.73    53.12
+ psf       : ( [227.68],  [37.77])   8.00     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])   8.00     ---     ---     ---     ---
+ sersic    : (   35.91,   133.07)    3.62      5.52   [1.00]   0.71   -38.30
+ psf       : ( [324.96],  [85.12])   8.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   8.00     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])   8.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])   8.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])   8.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])   8.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])   8.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   8.00     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   8.00     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])   8.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   8.00     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])   8.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   8.00     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   8.00     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   8.00     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   8.00     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   8.00     ---     ---     ---     ---
+ psf       : (  226.54,    80.94)    8.00     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])   8.00     ---     ---     ---     ---
+ sersic    : (  171.15,   101.57)    4.63      1.60   [1.00]   0.53   -26.93
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 99 
+
+Iteration : 2     Chi2nu: 9.148e-01     dChi2/Chi2: 3.43e-08    alamda: 1e+00     
+ psf       : (  [32.76],   [4.24])   8.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   8.00     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   8.00     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   8.00     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   8.00     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.00     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   8.00     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])   8.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])   8.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   8.00     ---     ---     ---     ---
+ sersic    : (  242.31,   117.74)    3.83      3.31   [1.00]   0.73    53.12
+ psf       : ( [227.68],  [37.77])   8.00     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])   8.00     ---     ---     ---     ---
+ sersic    : (   35.91,   133.07)    3.62      5.52   [1.00]   0.71   -38.30
+ psf       : ( [324.96],  [85.12])   8.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   8.00     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])   8.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])   8.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])   8.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])   8.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])   8.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   8.00     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   8.00     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])   8.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   8.00     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])   8.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   8.00     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   8.00     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   8.00     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   8.00     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   8.00     ---     ---     ---     ---
+ psf       : (  226.54,    80.94)    8.00     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])   8.00     ---     ---     ---     ---
+ sersic    : (  171.15,   101.57)    4.63      1.60   [1.00]   0.53   -26.93
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 3     Chi2nu: 9.148e-01     dChi2/Chi2: 3.43e-08    alamda: 1e+01     
+ psf       : (  [32.76],   [4.24])   8.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   8.00     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   8.00     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   8.00     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   8.00     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.00     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   8.00     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])   8.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])   8.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   8.00     ---     ---     ---     ---
+ sersic    : (  242.31,   117.74)    3.83      3.31   [1.00]   0.73    53.12
+ psf       : ( [227.68],  [37.77])   8.00     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])   8.00     ---     ---     ---     ---
+ sersic    : (   35.91,   133.07)    3.62      5.52   [1.00]   0.71   -38.30
+ psf       : ( [324.96],  [85.12])   8.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   8.00     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])   8.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])   8.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])   8.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])   8.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])   8.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   8.00     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   8.00     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])   8.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   8.00     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])   8.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   8.00     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   8.00     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   8.00     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   8.00     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   8.00     ---     ---     ---     ---
+ psf       : (  226.54,    80.94)    8.00     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])   8.00     ---     ---     ---     ---
+ sersic    : (  171.15,   101.57)    4.63      1.60   [1.00]   0.53   -26.93
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 9 
+
+Iteration : 4     Chi2nu: 9.139e-01     dChi2/Chi2: -9.42e-04   alamda: 1e+00     
+ psf       : (  [32.76],   [4.24])  10.09     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   7.25     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   7.75     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   7.80     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   7.53     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.03     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   7.74     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])   9.64     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])   8.12     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   7.36     ---     ---     ---     ---
+ sersic    : (  242.10,   117.96)    3.86      3.48   [1.00]   0.75    53.39
+ psf       : ( [227.68],  [37.77])   7.47     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])   9.56     ---     ---     ---     ---
+ sersic    : (   35.61,   133.22)    3.64      5.68   [1.00]   0.74   -47.63
+ psf       : ( [324.96],  [85.12])   8.33     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   7.58     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])   9.54     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])   8.41     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])   9.20     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])   8.92     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])   9.22     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   7.81     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   6.58     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])   8.21     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   6.57     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])   8.36     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   7.63     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   7.66     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   6.96     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   6.84     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   7.74     ---     ---     ---     ---
+ psf       : (  224.34,    81.35)    7.38     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])   8.60     ---     ---     ---     ---
+ sersic    : (  171.37,   101.67)    4.66      1.70   [1.00]   0.46   -23.68
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 96 
+
+Iteration : 5     Chi2nu: 9.127e-01     dChi2/Chi2: -1.33e-03   alamda: 1e-01     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.45     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.77     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.99     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.04     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.18     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.73     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])   8.78     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.65     ---     ---     ---     ---
+ sersic    : (  240.73,   119.30)    3.92      4.23   [1.00]   0.70    43.39
+ psf       : ( [227.68],  [37.77])   5.90     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   33.83,   133.78)    3.68      6.27   [1.00]   0.72    89.99
+ psf       : ( [324.96],  [85.12])  10.57     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.18     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  11.49     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  28.08     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  19.91     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  28.67     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   7.01     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   4.87     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])   9.52     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   4.86     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  10.86     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.34     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.44     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.10     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.00     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.73     ---     ---     ---     ---
+ psf       : (  223.68,    83.27)    4.18     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  13.92     ---     ---     ---     ---
+ sersic    : (  172.47,   102.32)    4.77      2.24   [1.00]   0.20    -6.85
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 95 
+
+Iteration : 6     Chi2nu: 9.115e-01     dChi2/Chi2: -1.33e-03   alamda: 1e-02     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.62     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.64     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.09     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.35     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.61     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  10.17     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.80     ---     ---     ---     ---
+ sersic    : (  238.32,   121.56)    3.70      4.83   [1.00]   0.47    29.40
+ psf       : ( [227.68],  [37.77])   5.98     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.94,   133.98)    3.51      5.86   [1.00]   0.95   -19.62
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.01     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  15.10     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.00     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.39     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.30     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.19     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  223.68,    82.90)    4.81     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  173.32,   103.52)    4.64      2.72   [1.00]   0.20   -18.53
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 94 
+
+Iteration : 7     Chi2nu: 9.114e-01     dChi2/Chi2: -1.77e-04   alamda: 1e-03     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  12.81     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.85     ---     ---     ---     ---
+ sersic    : (  238.05,   121.78)    3.45      6.47   [1.00]   0.21    28.99
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.94,   132.83)    3.49      6.29   [1.00]   0.64   -58.75
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.34     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  223.70,    82.44)    5.18     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  172.89,   103.23)    4.68      1.60   [1.00]   0.20     1.43
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 93 
+
+Iteration : 8     Chi2nu: 9.113e-01     dChi2/Chi2: -2.46e-05   alamda: 1e-04     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.89     ---     ---     ---     ---
+ sersic    : (  237.61,   122.41)    3.39      6.10   [1.00]   0.45    28.33
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.81,   132.35)    3.49      6.31   [1.00]   0.63   -23.28
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  224.00,    82.35)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  173.15,   103.46)    4.55      2.15   [1.00]   0.20    -7.56
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 10 
+
+Iteration : 9     Chi2nu: 9.113e-01     dChi2/Chi2: -1.89e-05   alamda: 1e-05     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.90     ---     ---     ---     ---
+ sersic    : (  237.84,   122.12)    3.48      7.26   [1.00]   0.20    22.15
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.38,   132.22)    3.50      5.98   [1.00]   0.66   -55.49
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  223.99,    82.32)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  172.98,   103.41)    4.55      1.82   [1.00]   0.38    -3.18
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 9 
+
+Iteration : 10    Chi2nu: 9.113e-01     dChi2/Chi2: 1.25e-08    alamda: 1e-04     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.90     ---     ---     ---     ---
+ sersic    : (  237.84,   122.12)    3.48      7.26   [1.00]   0.20    22.15
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.38,   132.22)    3.50      5.98   [1.00]   0.66   -55.49
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  223.99,    82.32)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  172.98,   103.41)    4.55      1.82   [1.00]   0.38    -3.18
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 8 
+
+Iteration : 11    Chi2nu: 9.113e-01     dChi2/Chi2: 1.25e-08    alamda: 1e-03     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.90     ---     ---     ---     ---
+ sersic    : (  237.84,   122.12)    3.48      7.26   [1.00]   0.20    22.15
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.38,   132.22)    3.50      5.98   [1.00]   0.66   -55.49
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  223.99,    82.32)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  172.98,   103.41)    4.55      1.82   [1.00]   0.38    -3.18
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 7 
+
+Iteration : 12    Chi2nu: 9.113e-01     dChi2/Chi2: 1.25e-08    alamda: 1e-02     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.90     ---     ---     ---     ---
+ sersic    : (  237.84,   122.12)    3.48      7.26   [1.00]   0.20    22.15
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.38,   132.22)    3.50      5.98   [1.00]   0.66   -55.49
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  223.99,    82.32)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  172.98,   103.41)    4.55      1.82   [1.00]   0.38    -3.18
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 6 
+
+Iteration : 13    Chi2nu: 9.113e-01     dChi2/Chi2: 1.25e-08    alamda: 1e-01     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.90     ---     ---     ---     ---
+ sersic    : (  237.84,   122.12)    3.48      7.26   [1.00]   0.20    22.15
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.38,   132.22)    3.50      5.98   [1.00]   0.66   -55.49
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  223.99,    82.32)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  172.98,   103.41)    4.55      1.82   [1.00]   0.38    -3.18
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 5 
+
+Iteration : 14    Chi2nu: 9.113e-01     dChi2/Chi2: -1.82e-05   alamda: 1e-02     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.91     ---     ---     ---     ---
+ sersic    : (  237.51,   122.31)    3.38      6.64   [1.00]   0.37    18.63
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.55,   132.07)    3.50      6.35   [1.00]   0.60   -19.88
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  224.00,    82.31)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  173.05,   103.44)    4.61      1.88   [1.00]   0.20    -2.95
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 4 
+
+Iteration : 15    Chi2nu: 9.113e-01     dChi2/Chi2: -9.21e-06   alamda: 1e-03     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.92     ---     ---     ---     ---
+ sersic    : (  237.57,   122.07)    3.42      7.61   [1.00]   0.20    20.19
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.21,   132.16)    3.50      5.95   [1.00]   0.68   -53.15
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  224.00,    82.31)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  173.00,   103.45)    4.55      1.89   [1.00]   0.35    -1.57
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 3 
+
+Iteration : 16    Chi2nu: 9.113e-01     dChi2/Chi2: -4.23e-08   alamda: 1e-02     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.92     ---     ---     ---     ---
+ sersic    : (  237.57,   122.07)    3.42      7.61   [1.00]   0.20    20.19
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.21,   132.16)    3.50      5.95   [1.00]   0.68   -53.15
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  224.00,    82.31)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  173.00,   103.45)    4.55      1.89   [1.00]   0.35    -1.57
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 2 
+
+Iteration : 17    Chi2nu: 9.113e-01     dChi2/Chi2: -4.23e-08   alamda: 1e-01     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.92     ---     ---     ---     ---
+ sersic    : (  237.57,   122.07)    3.42      7.61   [1.00]   0.20    20.19
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.21,   132.16)    3.50      5.95   [1.00]   0.68   -53.15
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  224.00,    82.31)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  173.00,   103.45)    4.55      1.89   [1.00]   0.35    -1.57
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 1 
+
+Iteration : 18    Chi2nu: 9.113e-01     dChi2/Chi2: -6.89e-06   alamda: 1e-02     
+ psf       : (  [32.76],   [4.24])  30.00     ---     ---     ---     ---
+ psf       : ( [125.66],   [6.78])   5.66     ---     ---     ---     ---
+ psf       : (  [73.36],  [16.90])   6.63     ---     ---     ---     ---
+ psf       : ( [328.82],  [17.30])   6.81     ---     ---     ---     ---
+ psf       : (  [32.28],  [17.45])   6.10     ---     ---     ---     ---
+ psf       : ( [348.30],   [5.18])   8.38     ---     ---     ---     ---
+ psf       : (  [96.61],  [28.98])   6.60     ---     ---     ---     ---
+ psf       : (  [36.56],  [85.81])  30.00     ---     ---     ---     ---
+ psf       : ( [343.85], [103.58])  30.00     ---     ---     ---     ---
+ psf       : (  [21.97], [116.16])   5.91     ---     ---     ---     ---
+ sersic    : (  237.41,   122.32)    3.38      6.98   [1.00]   0.31    15.46
+ psf       : ( [227.68],  [37.77])   5.99     ---     ---     ---     ---
+ psf       : ( [134.20],  [71.96])  30.00     ---     ---     ---     ---
+ sersic    : (   30.48,   132.01)    3.50      6.38   [1.00]   0.58   -19.37
+ psf       : ( [324.96],  [85.12])  30.00     ---     ---     ---     ---
+ psf       : (  [48.02], [164.97])   6.20     ---     ---     ---     ---
+ psf       : (  [94.21],  [89.98])  30.00     ---     ---     ---     ---
+ psf       : ( [312.40], [188.85])  30.00     ---     ---     ---     ---
+ psf       : ( [113.15],  [83.53])  30.00     ---     ---     ---     ---
+ psf       : (  [51.39], [218.15])  30.00     ---     ---     ---     ---
+ psf       : ( [314.71], [131.40])  30.00     ---     ---     ---     ---
+ psf       : ( [183.48], [250.06])   6.83     ---     ---     ---     ---
+ psf       : ( [164.93], [273.81])   5.03     ---     ---     ---     ---
+ psf       : ( [324.98], [288.48])  30.00     ---     ---     ---     ---
+ psf       : ( [135.54], [241.10])   5.03     ---     ---     ---     ---
+ psf       : (  [57.83], [307.93])  30.00     ---     ---     ---     ---
+ psf       : ( [292.49], [328.55])   6.31     ---     ---     ---     ---
+ psf       : ( [344.79], [342.21])   6.38     ---     ---     ---     ---
+ psf       : ( [118.91], [227.22])   5.35     ---     ---     ---     ---
+ psf       : ( [373.53], [362.69])   5.23     ---     ---     ---     ---
+ psf       : ( [185.18],  [60.17])   6.60     ---     ---     ---     ---
+ psf       : (  224.00,    82.31)    5.25     ---     ---     ---     ---
+ psf       : ( [277.24], [127.67])  30.00     ---     ---     ---     ---
+ sersic    : (  173.04,   103.44)    4.60      1.87   [1.00]   0.20    -3.28
+ sky       : [191.50, 191.50]  [0.00e+00]  [0.00e+00]  [0.00e+00]
+COUNTDOWN = 0 
+
+
+Fit summary is now being saved into `fit.log'.
+
+

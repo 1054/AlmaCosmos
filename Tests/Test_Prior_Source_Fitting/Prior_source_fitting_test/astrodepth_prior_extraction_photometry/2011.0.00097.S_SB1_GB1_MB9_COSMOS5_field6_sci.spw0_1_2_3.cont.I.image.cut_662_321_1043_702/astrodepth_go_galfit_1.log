@@ -1,0 +1,67 @@
+Read lines 1 to 1292876 from prior_x_y.txt
+Read lines 1 to 1 from image_sci_pixscale.txt
+Read lines 1 to 1 from image_sci_pixscale.txt
+Read lines 1 to 1 from image_sci_pixnoise.txt
+Read lines 1 to 3 from image_sci_fluxconv.txt
+Read lines 1 to 43 from getpix.txt
+Read lines 1 to 43 from getpix.result
+Read lines 1 to 3 from fit_galfit_prior_peak_snr
+Read lines 1 to 3 from fit_galfit_prior_total_snr
+Read lines 1 to 3 from fit_galfit_prior_combined_peak_and_total_snr
+Read lines 1 to 43 from image_sci_primary_beam_correction.txt
+Read lines 1 to 43 from image_pba_primary_beam_correction.txt
+Read lines 1 to 28 from fit_0.result
+Read lines 1 to 28 from fit_0.result.chisq.txt
+
+Initialized value vectors with 26 objects:
+       IObj        PosX        PosY        Type        Mags        Rads        Sers        Elli        Roti        Note
+
+           1       200.1       19.36         psf           5           0           0           1           0           _
+           2         224       3.242         psf           5           0           0           1           0           _
+           3       241.4       14.65         psf           5           0           0           1           0           _
+           4       81.42       32.36         psf           5           0           0           1           0           _
+           5       184.6       50.61         psf           5           0           0           1           0           _
+           6       75.49       51.77         psf           5           0           0           1           0           _
+           7       353.9       70.29         psf           5           0           0           1           0           _
+           8        53.4       84.23         psf           5           0           0           1           0           _
+           9       316.6       41.03         psf           5           0           0           1           0           _
+          10       234.5       77.51         psf           5           0           0           1           0           _
+          11       328.4         141         psf           5           0           0           1           0           _
+          12       36.78       149.3         psf           5           0           0           1           0           _
+          13       362.8       163.8         psf           5           0           0           1           0           _
+          14       94.14        79.6         psf           5           0           0           1           0           _
+          15         182       140.7         psf           5           0           0           1           0           _
+          16       210.2       219.6         psf           5           0           0           1           0           _
+          17       361.2       226.4         psf           5           0           0           1           0           _
+          18       233.4       247.8         psf           5           0           0           1           0           _
+          19       271.6       214.8         psf           5           0           0           1           0           _
+          20       72.31         251         psf           5           0           0           1           0           _
+          21       57.52       211.2         psf           5           0           0           1           0           _
+          22       100.4       343.2         psf           5           0           0           1           0           _
+          23       345.6       348.5         psf           5           0           0           1           0           _
+          24       111.5       322.8         psf           5           0           0           1           0           _
+          25       115.3       317.6         psf           5           0           0           1           0           _
+          26       284.3       299.3         psf           5           0           0           1           0           _
+
+Initialized paramter vectors with 26 objects:
+    ParamMinPosX ParamMaxPosX ParamFitPosX ParamMinPosY ParamMaxPosY ParamFitPosY ParamMinMags ParamMaxMags ParamFitMags
+    ParamMinRads ParamMaxRads ParamFitRads ParamMinSers ParamMaxSers ParamFitSers
+    ParamMinElli ParamMaxElli ParamFitElli ParamMinRoti ParamMaxRoti ParamFitRoti
+Initialized paramter vectors for sky background:
+    SkyValue ParamFitSkyValue
+
+astroGalfit::writeGalfitParam: Checked vector IObj PosX PosY Mags Rads Sers Elli Roti Type ParamFitPosX ParamMinPosX ParamMaxPosX ParamFitPosY ParamMinPosY ParamMaxPosY ParamFitMags ParamMinMags ParamMaxMags ParamFitRads ParamMinRads ParamMaxRads ParamFitSers ParamMinSers ParamMaxSers ParamFitElli ParamMinElli ParamMaxElli ParamFitRoti ParamMinRoti ParamMaxRoti Note
+astroGalfit::writeGalfitParam: Galfit parameters has been written into fit_1.param
+
+Read these vectors: ResultType ResultPosX ResultPosXErr ResultPosY ResultPosYErr ResultMags ResultMagsErr ResultRads ResultRadsErr ResultSers ResultSersErr ResultElli ResultElliErr ResultRoti ResultRotiErr 
+
+Read lines 1 to 1 from image_sci_pixscale.txt
+Read lines 1 to 1 from image_sci_pixscale.txt
+Read lines 1 to 1 from image_sci_pixnoise.txt
+Read lines 1 to 1 from image_sci_beamarea.txt
+Read lines 1 to 3 from image_sci_beamsize.txt
+Read lines 1 to 3 from image_sci_fluxconv.txt
+fresidual_inPixel: Running CrabPhotAperPhot fit_1.residual.fits -ext 0 none "aaa_fresidual_aperphot_input" > "aaa_fresidual_aperphot_output"
+Read lines 1 to 28 from fit_1.cat_index.txt
+Read lines 1 to 1 from buffer_x_y.txt
+Read lines 1 to 1 from buffer_size_limit.txt

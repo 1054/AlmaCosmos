@@ -1,0 +1,292 @@
+plot_simu_stats_2D
+    # 
+    #  echo "macro read plot_simu_stats_almacosmos_2D.sm plot_simu_stats_2D" | sm
+    # 
+    #plot_simu_stats_2D_fbias
+    plot_simu_stats_2D_dfcorr
+
+
+
+plot_simu_stats_2D_fbias
+    # 
+    #  echo "macro read plot_simu_stats_almacosmos_2D.sm plot_simu_stats_2D" | sm
+    # 
+    load rfile.sm
+    rfile "datatable_corrected.txt"
+    rfile "datatable_correction_per_cell.txt"
+    rfile "datatable_parameters_per_cell.txt"
+    # 
+    # check variables 
+    define check_columns 1
+    foreach var {id Xf f_uncorr0 f fbias ferr_L68 ferr_H68 cell_id snr_total fpeak noise fres Maj Min beam_maj beam_min sim_image_dir_STR fit_image_dir_STR sim_data_dir_STR bin_cell_id bin_diff_median bin_diff_mean asym_bin_scatter_L68 asym_bin_scatter_H68} {
+        if(!is_vector($var)) {
+            define check_columns 0
+            print 'Column $var was not found in the input file!\n' {}
+        }
+    }
+    if($check_columns==0) {return}
+    # 
+    # set variables
+    set MajBeam = Maj/beam_maj
+    set fpeakRMS = fpeak/noise
+    # 
+    # make plots
+    # 
+    load crabPlot.sm
+    load crabPlotColorbar.sm
+    crabPlotOpenPS "Plot_fbias_against_fpeakRMS.eps"
+    crabPlotDefaultPenForBox
+    limits 0 3 -2 2
+    ticksize -1 10 0 0
+    box
+    crabPlotDefaultPenForTitle
+    xlabel "S_{peak}/rms"
+    ylabel "(S_{in}-S_{out})/S_{in}"
+    # 
+    plotColorBar 0.6 0.9 0 0 MajBeam 0 0 "MajBeam"
+    # 
+    crabPlotDefaultPenForPoints
+    ptype 4 1
+    lweight 0.8
+    expand 0.5
+    do i=0,dimen(Xf)-1 {
+        ctype $(MajBeam_Colors[$i])
+        set plot_x = lg(fpeakRMS[$i])
+        set plot_y = (Xf[$i]-f_uncorr0[$i])/(Xf[$i])
+        points plot_x plot_y
+    }
+    # 
+    !rm "Table_fbias_against_fpeakRMS_with_MajBeam_"*
+    declare MajBeam_list_str 0.s
+    # 
+    crabPlotDefaultPenForPoints
+    do i=0,dimen(bin_cell_id)-1 {
+        set bin_color = MajBeam_Colors if(cell_id==bin_cell_id[$i])
+        set bin_par_1_lo = (par_1_lo) if(bin_cell_id_par==bin_cell_id[$i])
+        set bin_par_1_hi = (par_1_hi) if(bin_cell_id_par==bin_cell_id[$i])
+        set bin_par_1_lg = lg((bin_par_1_lo+bin_par_1_hi)/2.0)
+        set bin_par_2 = ((par_2_lo+par_2_hi)/2.0) if(bin_cell_id_par==bin_cell_id[$i])
+        ctype $(bin_color[0])
+        set plot_x = lg(bin_par_2[0])
+        set plot_y = bin_diff_median[$i]
+        points plot_x plot_y
+        set MajBeam_str = sprintf('%0.3f',bin_par_1_lo[0]) + '_' + sprintf('%0.3f',bin_par_1_hi[0])
+        define print_noheader 1
+        print +"Table_fbias_against_fpeakRMS_with_MajBeam_"$(MajBeam_str)".txt" '$(bin_cell_id[$i])\t$(plot_x)\t$(bin_par_1_lg)\t$(plot_y)\t$(bin_color)\n' {}
+        define print_noheader 0
+        set MajBeam_list_str = MajBeam_list_str concat MajBeam_str
+    }
+    # 
+    crabPlotDefaultPenForConnect
+    sort {MajBeam_list_str}
+    set MajBeam_list_str = uniq(MajBeam_list_str)
+    # fit function -- y = a/fpeakRMS**b/MajBeam**c
+    declare fit_a 0.f
+    declare fit_b 0.f
+    declare fit_c 0.f
+    declare fit_chi2 0.f
+    declare fit_norm 0.f
+    do fit_a_ = 5.0,-15.0,-1.0 {
+        do fit_b_ = 0.0,5.0,0.1 {
+            do fit_c_ = 0.0,-5.0,-0.1 {
+                set fit_chi2_ = 0.0
+                verbose 0
+                do i=0,dimen(MajBeam_list_str)-1 {
+                    set MajBeam_str = MajBeam_list_str[$i]
+                    data "Table_fbias_against_fpeakRMS_with_MajBeam_"$(MajBeam_str)".txt"
+                    read {plot_x 2 plot_x2 3 plot_y 4 plot_color 5.s}
+                    set fit_y = $fit_a_/((10**plot_x)**$fit_b_)/((10**plot_x2)**$fit_c_)
+                    #set fit_norm_ = sum(plot_y-fit_y)/dimen(plot_y)
+                    #set fit_y = fit_y + fit_norm_
+                    #set fit_norm = fit_norm concat fit_norm_
+                    set fit_chi2_ = fit_chi2_ + $(sum((plot_y-fit_y)**2)) # fitting (A/x**B) equation
+                }
+                set fit_chi2 = fit_chi2 concat fit_chi2_
+                set fit_a = fit_a concat $fit_a_
+                set fit_b = fit_b concat $fit_b_
+                set fit_c = fit_c concat $fit_c_
+            }
+        }
+    }
+    sort {fit_chi2 fit_a fit_b fit_c}
+    print "Table_fbias_against_fpeakRMS_with_MajBeam_fitted_chi2.txt" {fit_chi2 fit_a fit_b fit_c}
+    foreach var {fit_chi2 fit_a fit_b fit_c} {set $var = $var[0]}
+    define print_noheader 1
+    print "Table_fbias_against_fpeakRMS_with_MajBeam_fitted_function.txt" 'set fit_a = %0.20g\n' {fit_a}
+    print +"Table_fbias_against_fpeakRMS_with_MajBeam_fitted_function.txt" 'set fit_b = %0.20g\n' {fit_b}
+    print +"Table_fbias_against_fpeakRMS_with_MajBeam_fitted_function.txt" 'set fit_c = %0.20g\n' {fit_c}
+    print +"Table_fbias_against_fpeakRMS_with_MajBeam_fitted_function.txt" 'set fit_y = fit_a / fpeakRMS**fit_b / MajBeam**fit_c\n' {}
+    define print_noheader 0
+    print {fit_chi2 fit_a fit_b fit_c}
+    # plot minimum chi2 fit
+    do i=0,dimen(MajBeam_list_str)-1 {
+        set MajBeam_str = MajBeam_list_str[$i]
+        data "Table_fbias_against_fpeakRMS_with_MajBeam_"$(MajBeam_str)".txt"
+        read {plot_x 2 plot_x2 3 plot_y 4 plot_color 5.s}
+        ctype $(plot_color[0])
+        set fit_x = $fx1,$fx2,0.05
+        set fit_y = fit_a/((10**fit_x)**fit_b)/((10**plot_x2[0])**fit_c)
+        #print {plot_x plot_y fit_y}
+        connect fit_x fit_y
+    }
+    #do i=0,dimen(MajBeam_list_str)-1 {
+    #    set MajBeam_str = MajBeam_list_str[$i]
+    #    data "Table_fbias_against_fpeakRMS_with_MajBeam_"$(MajBeam_str)".txt"
+    #    read {plot_x 2 plot_y 3 plot_color 4.s}
+    #    ctype $(plot_color[0])
+    #    declare fit_a 0.f
+    #    declare fit_b 0.f
+    #    declare fit_chi2 0.f
+    #    declare fit_norm 0.f
+    #    do fit_a_ = -1.0,-22.0,-1.0 {
+    #        do fit_b_ = 1.0,5.0,0.5 {
+    #            set fit_a = fit_a concat $fit_a_
+    #            set fit_b = fit_b concat $fit_b_
+    #            set fit_y = $fit_a_/((10**plot_x)**$fit_b_)
+    #            set fit_norm_ = sum(plot_y-fit_y)/dimen(plot_y)
+    #            set fit_y = fit_y + fit_norm_
+    #            set fit_norm = fit_norm concat fit_norm_
+    #            set fit_chi2 = fit_chi2 concat $(sum((plot_y-fit_y)**2)) # fitting (A/x**B) equation
+    #            #print {plot_x plot_y fit_y}
+    #        }
+    #    }
+    #    sort {fit_chi2 fit_a fit_b fit_norm}
+    #    print {fit_chi2 fit_a fit_b fit_norm}
+    #    set fit_x = $fx1,$fx2,0.05
+    #    set fit_y = fit_a[0]/((10**fit_x)**fit_b[0])+fit_norm[0]
+    #    #print {plot_x plot_y fit_y}
+    #    connect fit_x fit_y
+    #}
+    # 
+    crabPlotClosePS
+
+
+
+plot_simu_stats_2D_dfcorr
+    # 
+    #  echo "macro read plot_simu_stats_almacosmos_2D.sm plot_simu_stats_2D" | sm
+    # 
+    load rfile.sm
+    rfile "datatable_corrected.txt"
+    rfile "datatable_correction_per_cell.txt"
+    rfile "datatable_parameters_per_cell.txt"
+    # 
+    # check variables 
+    define check_columns 1
+    foreach var {id Xf f_uncorr0 f fbias ferr_L68 ferr_H68 cell_id snr_total fpeak noise fres Maj Min beam_maj beam_min sim_image_dir_STR fit_image_dir_STR sim_data_dir_STR bin_cell_id bin_diff_median bin_diff_mean asym_bin_scatter_L68 asym_bin_scatter_H68} {
+        if(!is_vector($var)) {
+            define check_columns 0
+            print 'Column $var was not found in the input file!\n' {}
+        }
+    }
+    if($check_columns==0) {return}
+    # 
+    # set variables
+    set MajBeam = Maj/beam_maj
+    set fpeakRMS = fpeak/noise
+    # 
+    # make plots
+    # 
+    load crabPlot.sm
+    load crabPlotColorbar.sm
+    crabPlotOpenPS "Plot_dfcorr_against_fpeakRMS.eps"
+    crabPlotDefaultPenForBox
+    limits 0 3 -2 2
+    ticksize -1 10 0 0
+    box
+    crabPlotDefaultPenForTitle
+    xlabel "S_{peak}/rms"
+    ylabel "(S_{in}-S_{out})/S_{in}"
+    # 
+    plotColorBar 0.6 0.9 0 0 MajBeam 0 0 "MajBeam"
+    # 
+    crabPlotDefaultPenForPoints
+    ptype 4 1
+    lweight 0.8
+    expand 0.5
+    do i=0,dimen(Xf)-1 {
+        ctype $(MajBeam_Colors[$i])
+        set plot_x = lg(fpeakRMS[$i])
+        set plot_y = (Xf[$i]-f_uncorr0[$i])/(Xf[$i])
+        points plot_x plot_y
+    }
+    # 
+    !rm "Table_dfcorr_against_fpeakRMS_with_MajBeam_"*
+    declare MajBeam_list_str 0.s
+    # 
+    crabPlotDefaultPenForPoints
+    do i=0,dimen(bin_cell_id)-1 {
+        set bin_color = MajBeam_Colors if(cell_id==bin_cell_id[$i])
+        set bin_par_1_lo = (par_1_lo) if(bin_cell_id_par==bin_cell_id[$i])
+        set bin_par_1_hi = (par_1_hi) if(bin_cell_id_par==bin_cell_id[$i])
+        set bin_par_1_lg = lg((bin_par_1_lo+bin_par_1_hi)/2.0)
+        set bin_par_2 = ((par_2_lo+par_2_hi)/2.0) if(bin_cell_id_par==bin_cell_id[$i])
+        ctype $(bin_color[0])
+        set plot_x = lg(bin_par_2[0])
+        set plot_y = bin_diff_median[$i]
+        points plot_x plot_y
+        set MajBeam_str = sprintf('%0.3f',bin_par_1_lo[0]) + '_' + sprintf('%0.3f',bin_par_1_hi[0])
+        define print_noheader 1
+        print +"Table_dfcorr_against_fpeakRMS_with_MajBeam_"$(MajBeam_str)".txt" '$(bin_cell_id[$i])\t$(plot_x)\t$(bin_par_1_lg)\t$(plot_y)\t$(bin_color)\n' {}
+        define print_noheader 0
+        set MajBeam_list_str = MajBeam_list_str concat MajBeam_str
+    }
+    # 
+    crabPlotDefaultPenForConnect
+    sort {MajBeam_list_str}
+    set MajBeam_list_str = uniq(MajBeam_list_str)
+    # fit function -- y = a/fpeakRMS**b/MajBeam**c
+    declare fit_a 0.f
+    declare fit_b 0.f
+    declare fit_c 0.f
+    declare fit_chi2 0.f
+    declare fit_norm 0.f
+    do fit_a_ = 5.0,-15.0,-1.0 {
+        do fit_b_ = 0.0,5.0,0.1 {
+            do fit_c_ = 0.0,-5.0,-0.1 {
+                set fit_chi2_ = 0.0
+                verbose 0
+                do i=0,dimen(MajBeam_list_str)-1 {
+                    set MajBeam_str = MajBeam_list_str[$i]
+                    data "Table_dfcorr_against_fpeakRMS_with_MajBeam_"$(MajBeam_str)".txt"
+                    read {plot_x 2 plot_x2 3 plot_y 4 plot_color 5.s}
+                    set fit_y = $fit_a_/((10**plot_x)**$fit_b_)/((10**plot_x2)**$fit_c_)
+                    #set fit_norm_ = sum(plot_y-fit_y)/dimen(plot_y)
+                    #set fit_y = fit_y + fit_norm_
+                    #set fit_norm = fit_norm concat fit_norm_
+                    set fit_chi2_ = fit_chi2_ + $(sum((plot_y-fit_y)**2)) # fitting (A/x**B) equation
+                }
+                set fit_chi2 = fit_chi2 concat fit_chi2_
+                set fit_a = fit_a concat $fit_a_
+                set fit_b = fit_b concat $fit_b_
+                set fit_c = fit_c concat $fit_c_
+            }
+        }
+    }
+    sort {fit_chi2 fit_a fit_b fit_c}
+    print "Table_dfcorr_against_fpeakRMS_with_MajBeam_fitted_chi2.txt" {fit_chi2 fit_a fit_b fit_c}
+    foreach var {fit_chi2 fit_a fit_b fit_c} {set $var = $var[0]}
+    define print_noheader 1
+    print "Table_dfcorr_against_fpeakRMS_with_MajBeam_fitted_function.txt" 'set fit_a = %0.20g\n' {fit_a}
+    print +"Table_dfcorr_against_fpeakRMS_with_MajBeam_fitted_function.txt" 'set fit_b = %0.20g\n' {fit_b}
+    print +"Table_dfcorr_against_fpeakRMS_with_MajBeam_fitted_function.txt" 'set fit_c = %0.20g\n' {fit_c}
+    print +"Table_dfcorr_against_fpeakRMS_with_MajBeam_fitted_function.txt" 'set fit_y = fit_a / fpeakRMS**fit_b / MajBeam**fit_c\n' {}
+    define print_noheader 0
+    print {fit_chi2 fit_a fit_b fit_c}
+    # plot minimum chi2 fit
+    do i=0,dimen(MajBeam_list_str)-1 {
+        set MajBeam_str = MajBeam_list_str[$i]
+        data "Table_dfcorr_against_fpeakRMS_with_MajBeam_"$(MajBeam_str)".txt"
+        read {plot_x 2 plot_x2 3 plot_y 4 plot_color 5.s}
+        ctype $(plot_color[0])
+        set fit_x = $fx1,$fx2,0.05
+        set fit_y = fit_a/((10**fit_x)**fit_b)/((10**plot_x2[0])**fit_c)
+        #print {plot_x plot_y fit_y}
+        connect fit_x fit_y
+    }
+    # 
+    crabPlotClosePS
+
+
+
+
