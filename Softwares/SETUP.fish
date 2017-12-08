@@ -11,7 +11,7 @@ set BIN_SETUP_SCRIPT (dirname (status --current-filename))/bin_setup.bash
 set -x PATH (string split ":" (bash -c "source $BIN_SETUP_SCRIPT -print" | tail -n 1))
 
 if test -d "$HOME/Softwares/Supermongo"
-    set -x PATH (string split ":" (bash -c "source $BIN_SETUP_SCRIPT -var PATH -path $HOME/Softwares/Supermongo -print" | tail -n 1))
+    set -x PATH (string split ":" (bash -c "source $BIN_SETUP_SCRIPT -var PATH -prepend -path $HOME/Softwares/Supermongo -print" | tail -n 1))
 end
 
 if test -d "lib_python_dzliu/crabtable" ]]
