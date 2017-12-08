@@ -6,7 +6,7 @@ BIN_SETUP_SCRIPT=$(dirname "${BASH_SOURCE[0]}")/bin_setup.bash
 
 # Supermongo
 if [[ -d "$HOME/Softwares/Supermongo" ]]; then
-    source "$BIN_SETUP_SCRIPT" -var PATH -path "$HOME/Softwares/Supermongo"
+    source "$BIN_SETUP_SCRIPT" -var PATH -prepend -path "$HOME/Softwares/Supermongo"
 fi
 
 # Python lib

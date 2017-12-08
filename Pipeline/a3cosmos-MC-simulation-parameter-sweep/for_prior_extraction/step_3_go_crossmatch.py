@@ -23,8 +23,8 @@ else:
 # 
 # Warning message
 # 
-print("This code should be ran on aida42198 machine and under '/disk1/ALMA_COSMOS/A3COSMOS/simulations/' directory.")
-print("It also needs IDL, Supermongo and astroGalfit.sm macros, and github.com/1054/AlmaCosmos tools. Please ask liudz1054@gmail.com if you don't have them. ")
+print("This code should be ran on aida42198 machine and under \"/disk1/ALMA_COSMOS/A3COSMOS/simulations/\" directory.")
+print("It also needs IDL, Supermongo and astroGalfit.sm macros, and \"github.com/1054/AlmaCosmos\" tools. Please ask liudz1054@gmail.com if you don't have them. ")
 
 if not os.path.isdir('models'):
     print('Error! "models" was not found under current directory!')
