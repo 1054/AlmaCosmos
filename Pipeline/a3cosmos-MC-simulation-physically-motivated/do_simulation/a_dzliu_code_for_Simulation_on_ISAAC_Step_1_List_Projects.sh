@@ -20,6 +20,8 @@ echo "SLURM_ARRAY_JOB_ID: "$SLURM_ARRAY_JOB_ID
 echo "SLURMTMPDIR: "$SLURMTMPDIR
 echo "SLURM_SUBMIT_DIR: "$SLURM_SUBMIT_DIR
 
+Work_Dir="$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2"
+
 
 
 # 
@@ -30,9 +32,9 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
-if [[ ! -d "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong" ]]; then
-    echo "mkdir -p $HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
-    mkdir -p "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
+if [[ ! -d "$Work_Dir" ]]; then
+    echo "mkdir -p $Work_Dir"
+    mkdir -p "$Work_Dir"
 fi
 
 if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
@@ -42,7 +44,7 @@ fi
 
 source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
 
-cd "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
+cd "$Work_Dir"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
     module load anaconda
