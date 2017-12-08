@@ -18,7 +18,7 @@
 # sbatch --array=1-1%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh
 # 
 echo "Hostname: "$(/bin/hostname)
-echo "PWD: "$(/bin/pwd -P)
+echo "PWD: "$(/bin/pwd)
 echo "SLURM_JOBID: "$SLURM_JOBID
 echo "SLURM_JOB_NODELIST: "$SLURM_JOB_NODELIST
 echo "SLURM_NNODES: "$SLURM_NNODES

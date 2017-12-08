@@ -13,10 +13,10 @@
 
 # 
 # to run this script in Slurm job array mode
-# sbatch --array=1-1%1 -N1 ~/Cloud/Github/Crab.Toolkit.CAAP/batch/a_dzliu_code_for_ISAAC_Simulation_Step_1_List_Projects.sh
+# sbatch --array=1-1%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh
 # 
 echo "Hostname: "$(/bin/hostname)
-echo "PWD: "$(/bin/pwd -P)
+echo "PWD: "$(/bin/pwd)
 echo "SLURM_JOBID: "$SLURM_JOBID
 echo "SLURM_JOB_NODELIST: "$SLURM_JOB_NODELIST
 echo "SLURM_NNODES: "$SLURM_NNODES
@@ -78,6 +78,8 @@ if [[ ! -f "list_projects.txt" ]]; then
     echo "Error! Failed to get \"list_project_rms_for_v20170604.sort_V.image_file.txt\" from Google Drive and create \"list_projects.txt\"!"
     exit 1
 fi
+
+echo "Prepared \"$(pwd)/list_projects.txt\"!"
 
 
 
