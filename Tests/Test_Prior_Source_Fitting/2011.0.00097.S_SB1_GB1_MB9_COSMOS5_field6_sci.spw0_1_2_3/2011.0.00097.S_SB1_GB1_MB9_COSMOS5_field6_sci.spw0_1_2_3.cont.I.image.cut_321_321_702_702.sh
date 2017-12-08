@@ -1,2 +1,0 @@
-#!/bin/bash
-CrabFitsImageCrop "/Users/dzliu/Cloud/Github/AlmaCosmos/Tests/Test_Prior_Source_Fitting/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3.cont.I.image.fits" -rect 321 321 702 702 -out "/Users/dzliu/Cloud/Github/AlmaCosmos/Tests/Test_Prior_Source_Fitting/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3/2011.0.00097.S_SB1_GB1_MB9_COSMOS5_field6_sci.spw0_1_2_3.cont.I.image.cut_321_321_702_702.fits"
