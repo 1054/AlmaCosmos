@@ -7,6 +7,11 @@
 #SBATCH --output=log_Step_1_TASK_ID_%a_JOB_ID_%A.out
 
 # 
+# This script will download list_of_project.txt
+# from "Google Drive"
+# 
+
+# 
 # to run this script in Slurm job array mode
 # sbatch --array=1-1%1 -N1 ~/Cloud/Github/Crab.Toolkit.CAAP/batch/a_dzliu_code_for_ISAAC_Simulation_Step_1_List_Projects.sh
 # 

@@ -27,6 +27,9 @@ echo "SLURM_ARRAY_JOB_ID: "$SLURM_ARRAY_JOB_ID
 echo "SLURMTMPDIR: "$SLURMTMPDIR
 echo "SLURM_SUBMIT_DIR: "$SLURM_SUBMIT_DIR
 
+Work_Dir="$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2"
+Input_Galaxy_Modelling_Dir="$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS"
+
 
 
 # 
@@ -37,13 +40,13 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
-if [[ ! -d "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
-    echo "Error! \"$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS\" was not found! Please prepare that directory then run this code again!"
+if [[ ! -d "$Input_Galaxy_Modelling_Dir" ]]; then
+    echo "Error! \"$Input_Galaxy_Modelling_Dir\" was not found! Please ask liudz1054@gmail.com to copy that directory then run this code again!"
     exit 1
 fi
 
-if [[ ! -d "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong" ]]; then
-    echo "Error! \"$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong\" was not found! Please create that directory then run this code again!"
+if [[ ! -d "$Work_Dir" ]]; then
+    echo "Error! \"$Work_Dir\" was not found! Please create that directory then run this code again!"
     exit 1
 fi
 
@@ -61,7 +64,7 @@ source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/
 
 source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash"
 
-cd "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
+cd "$Work_Dir"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
     module load anaconda
@@ -87,7 +90,6 @@ fi
 # 
 # prepare physical parameter grid
 # 
-Input_Galaxy_Modelling_Dir="$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS"
 Input_z=("1.000" "2.000" "3.000" "4.000" "5.000" "6.000")
 Input_lgMstar=("09.00" "09.50" "10.00" "10.50" "11.00" "11.50" "12.00")
 Input_Type_SED=("MS" "SB")
