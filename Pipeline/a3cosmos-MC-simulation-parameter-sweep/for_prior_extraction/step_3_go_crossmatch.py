@@ -187,7 +187,7 @@ for alma_image_name in alma_image_list:
                 os.system('echo "%0.15e" > "%s/image_sci_pixscale.txt"'%(sim_pixsc, temp_dir))
                 os.system('echo "#!/bin/bash" > %s/temp.bash'%(temp_dir))
                 os.system('echo "source $HOME/Cloud/Github/AlmaCosmos/Softwares/SETUP.bash" >> %s/temp.bash'%(temp_dir))
-                os.system('echo "echo \"macro read temp.sm go\" | sm" >> %s/temp.bash'%(temp_dir))
+                os.system('echo "echo \\\"macro read temp.sm go\\\" | sm" >> %s/temp.bash'%(temp_dir))
                 os.system('echo "go" > %s/temp.sm'%(temp_dir))
                 os.system('echo "    load astroGalfit.sm" >> %s/temp.sm'%(temp_dir))
                 os.system('echo "    readGalfitResult temp.fits" >> %s/temp.sm'%(temp_dir))
@@ -226,6 +226,7 @@ for alma_image_name in alma_image_list:
                 os.system('echo "    wfile out.txt" >> %s/temp.sm'%(temp_dir))
                 os.system('echo "    " >> %s/temp.sm'%(temp_dir))
                 os.system('echo "    " >> %s/temp.sm'%(temp_dir))
+                print('# Running %s/temp.bash'%(temp_dir))
                 os.system('chmod +x %s/temp.bash; cd %s; ./temp.bash > temp.log'%(temp_dir, temp_dir))
                 # 
                 if not os.path.isfile(temp_dir+os.sep+'out.txt'):
