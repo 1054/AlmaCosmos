@@ -262,6 +262,55 @@ calc_peak2total
 
 
 
+
+calc_Condon1997_errors 02
+    # Condon 1997 - Errors of Gaussian Fitting - 1997PASP..109..166C.pdf
+    # see also '/Users/dzliu/Cloud/Github/AlmaCosmos/Softwares/3rd_pybdsf/PyBDSF/bdsf/functions.py' def get_errors()
+    if(is_vector(convol_maj) && is_vector(convol_min) && is_vector(beam_maj) && is_vector(beam_min) && is_vector(pixscale) && is_vector(pixnoise) && is_vector(f)) {
+        set source_total_err = f*0.0 + pixnoise
+        set source_peak_err = f*0.0 + pixnoise
+        set source_major_err = f*0.0
+        set source_minor_err = f*0.0
+        set source_gaussian_snr = f*0.0
+        # 
+        set Condon_i = 0,dimen(f)-1
+        set Condon_i = Condon_i if(convol_maj>0 && convol_min>0)
+        set Condon_h_area = pi/(2*ln(2))*(beam_maj/pixscale)*(beam_min/pixscale) # Condon1997 Eq(41,42)
+        set Condon_s_area = pi/(2*ln(2))*(convol_maj[Condon_i]/pixscale)*(convol_min[Condon_i]/pixscale) # Condon1997 Eq(41,42)
+        set Condon_h_maj = (1.0+(beam_maj*beam_min)/(convol_maj[Condon_i]**2)) # Condon1997 Eq(40,41)
+        set Condon_h_min = (1.0+(beam_maj*beam_min)/(convol_min[Condon_i]**2)) # Condon1997 Eq(40,41)
+        set Condon_h_e = sqrt(Condon_h_area * Condon_h_maj**(-0.5) * Condon_h_min**(-0.5)) # Condon1997 Eq(40), the effective noise correlation area
+        set Condon_mu = pixnoise
+        set Condon_A = source_peak[Condon_i]
+        set Condon_rho = calc_Condon1997_rho(1.5,1.5) # Condon1997 Eq(41)
+        set source_peak_err[Condon_i] = Condon_A * sqrt(2.0) / Condon_rho # Condon1997 Eq(21)
+        set source_major_err[Condon_i] = convol_maj[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21)
+        set source_minor_err[Condon_i] = convol_min[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21)
+        set source_total_err_item_1 = (source_peak_err[Condon_i]/source_peak[Condon_i])**2
+        set source_total_err_item_2 = (Condon_h_area/Condon_s_area)*((source_major_err[Condon_i]/convol_maj[Condon_i])**2)
+        set source_total_err_item_3 = (Condon_h_area/Condon_s_area)*((source_minor_err[Condon_i]/convol_min[Condon_i])**2)
+        set source_total_err[Condon_i] = f[Condon_i] * sqrt( source_total_err_item_1 + source_total_err_item_2 + source_total_err_item_3 ) # Condon1997 Eq(42)
+        set source_gaussian_snr[Condon_i] = Condon_rho
+    }
+
+calc_Condon1997_rho 02
+    if($?2) {
+        # $1 is alpha_M
+        # $2 is alpha_m
+        # They are determined by Monte-Carlo simulations in Condon1997
+        set $0 = sqrt((Condon_s_area)/(4*Condon_h_area) * Condon_h_maj**($1) * Condon_h_min**($2)) * Condon_A / Condon_mu # Condon1997 Eq(21,41)
+        return
+    }
+
+
+
+
+
+
+
+
+
+
 mask_prior_sources 01
     # 
     # This subroutine reads the "getpix.txt" and "getpix.result" files
@@ -738,6 +787,7 @@ print_result 02
         set convol_area_in_arcsec = pi/(4*ln(2)) * convol_maj * convol_min
         set convol_area_in_beam = convol_area_in_arcsec / beam_area
         set source_peak = f / convol_area_in_beam #<BUG><CORRECTED><20171123># dzliu, Yoshinobu, Philipp
+        calc_Condon1997_errors 
         #<20171123># See Gaussian convolved sigma here -- http://www.tina-vision.net/docs/memos/2003-003.pdf -- Page 7 Top
         #set f_peak = f / pix_area # now this is the peak pixel flux with unit of Jy/pixel
         #set f_peak = f_peak / (pixscale**2) * beamarea
@@ -773,6 +823,12 @@ print_result 02
         #<below><added><20170923><dzliu>#
         print $1.result.source_area.txt '%25g %25g %25g %25g %25g %25g %15.0f %15s\n' \
             {source_area_in_pix source_area_in_arcsec source_area_in_beam convol_area_in_pix convol_area_in_arcsec convol_area_in_beam cat_index cat_id}
+        #<above><added><20170923><dzliu>#
+        # 
+        # 
+        #<below><added><20170923><dzliu>#
+        print $1.result.source_err.txt '%25g %25g %25g %25g %25g %25g %25g %25g %25g %15.0f %15s\n' \
+            {f source_total_err source_peak source_peak_err maj source_major_err min source_minor_err source_gaussian_snr cat_index cat_id}
         #<above><added><20170923><dzliu>#
         # 
         # 

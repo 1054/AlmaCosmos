@@ -7,8 +7,15 @@
 #SBATCH --output=log_Step_2_TASK_ID_%a_JOB_ID_%A.out
 
 # 
+# This script will load galaxy modeling results from "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS"
+# and read ALMA images from "Google Drive"
+# and read source-removed ALMA residual images from "Google Drive"
+# and output simulated images to "Simulated/"
+# 
+
+# 
 # to run this script in Slurm job array mode
-# sbatch --array=1-1%1 -N1 ~/Cloud/Github/Crab.Toolkit.CAAP/batch/a_dzliu_code_for_ISAAC_Simulation_Step_2_Simulate.sh
+# sbatch --array=1-1%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh
 # 
 echo "Hostname: "$(/bin/hostname)
 echo "PWD: "$(/bin/pwd -P)
@@ -30,19 +37,31 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
-if [[ ! -d "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong" ]]; then
-    echo "Error! \"$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong\" was not found! Please create that directory then run this code again!"
-    exit 1
-fi
-
 if [[ ! -d "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
     echo "Error! \"$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS\" was not found! Please prepare that directory then run this code again!"
     exit 1
 fi
 
-cd "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
+if [[ ! -d "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong" ]]; then
+    echo "Error! \"$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong\" was not found! Please create that directory then run this code again!"
+    exit 1
+fi
+
+if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
+    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found!"
+    exit 1
+fi
+
+if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash" ]]; then
+    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash\" was not found!"
+    exit 1
+fi
 
 source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
+
+source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash"
+
+cd "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
     module load anaconda

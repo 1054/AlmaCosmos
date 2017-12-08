@@ -23,6 +23,7 @@ wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/gethead -O gethead
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/sethead -O sethead
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/getpix  -O getpix
+wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/sumpix  -O sumpix
 
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/galfit -O galfit
 
@@ -42,6 +43,7 @@ wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_mac/gethead -O wcstools_mac/gethead
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_mac/sethead -O wcstools_mac/sethead
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_mac/getpix  -O wcstools_mac/getpix
+wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_mac/sumpix  -O wcstools_mac/sumpix
 
 mkdir wcstools_linux_Glibc_2.14
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_linux_Glibc_2.14/sky2xy  -O wcstools_linux_Glibc_2.14/sky2xy
@@ -49,6 +51,7 @@ wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_linux_Glibc_2.14/gethead -O wcstools_linux_Glibc_2.14/gethead
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_linux_Glibc_2.14/sethead -O wcstools_linux_Glibc_2.14/sethead
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_linux_Glibc_2.14/getpix  -O wcstools_linux_Glibc_2.14/getpix
+wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/wcstools_linux_Glibc_2.14/sumpix  -O wcstools_linux_Glibc_2.14/sumpix
 
 mkdir galfit_mac
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/galfit_mac/galfit    -O galfit_mac/galfit

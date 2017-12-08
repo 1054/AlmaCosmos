@@ -35,11 +35,28 @@ if [[ ! -d "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Dai
     mkdir -p "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
 fi
 
-cd "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
+if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
+    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found!"
+    exit 1
+fi
 
 source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
 
-if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then module load anaconda; fi
+cd "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
+
+if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
+    module load anaconda
+fi
+
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then 
+    echo "Error! Supermongo was not installed!"
+    exit
+fi
+
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then 
+    echo "Error! Supermongo does not contain necessary macros! Please contact liudz1054@gmail.com!"
+    exit
+fi
 
 
 

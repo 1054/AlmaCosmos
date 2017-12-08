@@ -343,7 +343,7 @@ for alma_image_name in alma_image_list:
     # 
     # 
     ofs.close()
-    os.system('date +"%Y-%m-%d %H:%M:%S %Z" > %s'%('statistics_GALFIT/done_output_sim_data_table_%s'%(alma_image_name)))
+    os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s'%('statistics_GALFIT/done_output_sim_data_table_%s'%(alma_image_name)))
 
 
 

@@ -80,11 +80,15 @@ for alma_image_name in alma_image_list:
         print('Error! The recovered list of catalog "%s" was not found!'%(recovered_list_of_catalog))
         sys.exit()
     
-    input_fits_file = []
+    # Prepare output data table
     has_print_header = False
     has_print_lines = 0
     output_data_table = 'statistics_PyBDSM/output_sim_data_table_%s.txt'%(alma_image_name)
+    if not os.path.isdir(os.path.dirname(output_data_table)):
+        os.makedirs(os.path.dirname(output_data_table))
     ofs = open(output_data_table, 'w')
+    
+    # Ready to read galfit output fits file
     with open(recovered_list_of_catalog) as fp:
         input_list_files = fp.readlines()
         #<DEBUG># input_list_files = input_list_files[214:216]
@@ -263,7 +267,7 @@ for alma_image_name in alma_image_list:
     # 
     # 
     ofs.close()
-    os.system('date +"%Y-%m-%d %H:%M:%S %Z" > %s'%('statistics_PyBDSM/done_output_sim_data_table_%s'%(alma_image_name)))
+    os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s'%('statistics_PyBDSM/done_output_sim_data_table_%s'%(alma_image_name)))
 
 
 

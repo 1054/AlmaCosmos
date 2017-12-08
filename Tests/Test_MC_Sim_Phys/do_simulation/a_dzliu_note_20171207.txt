@@ -1,4 +1,13 @@
 
 
+# 
+# Copy galaxy modeling package
+# 
+/Users/dzliu/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_rsync_with_ISAAC.sh
+
+
+# 
+# Test simulation code
+# 
 /Users/dzliu/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh test
 

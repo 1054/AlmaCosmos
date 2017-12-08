@@ -29,33 +29,39 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
-if [[ ! -f ~/Cloud/Github/DeepFields.SuperDeblending/Softwares/SETUP ]]; then
-    echo "Error! \"~/Cloud/Github/DeepFields.SuperDeblending/Softwares/SETUP\" was not found! Please clone to there from \"https://github.com/1054/DeepFields.SuperDeblending\"!"
+if [[ ! -d "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong" ]]; then
+    echo "Error! \"$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong\" was not found! Please create that directory then run this code again!"
     exit 1
 fi
 
-if [[ ! -f ~/Cloud/Github/Crab.Toolkit.CAAP/SETUP.bash ]]; then
-    echo "Error! \"~/Cloud/Github/Crab.Toolkit.CAAP/SETUP.bash\" was not found! Please clone to there from \"https://github.com/1054/Crab.Toolkit.CAAP\"!"
+if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
+    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found!"
     exit 1
 fi
 
-if [[ ! -d ~/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/ ]]; then
-    echo "Error! \"~/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/\" was not found! Please create that directory then run this code again!"
+if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash" ]]; then
+    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash\" was not found!"
     exit 1
 fi
 
-cd ~/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/
-source ~/Cloud/Github/DeepFields.SuperDeblending/Softwares/SETUP
-source ~/Cloud/Github/Crab.Toolkit.CAAP/SETUP.bash
-script_dir=~/Cloud/Github/Crab.Toolkit.CAAP/batch
+source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
 
-if [[ $(type getpix 2>/dev/null | wc -l) -eq 0 ]]; then
-    echo "Error! WCSTOOLS was not installed or loaded?"
-    exit 1
-fi
+source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash"
+
+cd "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
     module load anaconda
+fi
+
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then 
+    echo "Error! Supermongo was not installed!"
+    exit
+fi
+
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then 
+    echo "Error! Supermongo does not contain necessary macros! Please contact liudz1054@gmail.com!"
+    exit
 fi
 
 if [[ ! -f "list_projects.txt" ]]; then
@@ -63,14 +69,11 @@ if [[ ! -f "list_projects.txt" ]]; then
     exit 1
 fi
 
-if [[ ! -f "$script_dir/a_dzliu_code_for_Google_Drive_download_Data.py" ]]; then
-    echo "Error! \"$script_dir/a_dzliu_code_for_Google_Drive_download_Data.py\" was not found!"
-    exit 1
-fi
 
 
-
+# 
 # prepare physical parameter grid
+# 
 #Input_Galaxy_Modelling_Dir="$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS"
 Input_z=("1.000" "2.000" "3.000" "4.000" "5.000" "6.000")
 Input_lgMstar=("09.00" "09.50" "10.00" "10.50" "11.00" "11.50" "12.00")
@@ -102,8 +105,10 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     FitsName="${FitsNames[i]}"
     
     # check parallel
-    if [[ $SLURM_ARRAY_TASK_ID -ne $((i+1)) ]]; then
-        continue
+    if [[ ! -z $SLURM_ARRAY_TASK_ID ]]; then
+        if [[ $SLURM_ARRAY_TASK_ID -ne $((i+1)) ]]; then
+            continue
+        fi
     fi
     
     # check non-COSMOS fields
@@ -212,10 +217,10 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                         fi
                     fi
                     
-                    # Run caap-prior-extraction-photometry
+                    # Run a3cosmos-prior-extraction-photometry
                     if [[ ! -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" ]] || [[ $do_Photometry -eq 1 ]]; then
                         # 
-                        echo "caap-prior-extraction-photometry \\"
+                        echo "a3cosmos-prior-extraction-photometry \\"
                         echo "    -out \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\" \\"
                         echo "    >> \"log_w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}.log\""
                         # 
@@ -228,7 +233,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                         echo ""                                              >> "log_w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}.log"
                         # 
                         if [[ ! -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" ]]; then
-                            caap-prior-extraction-photometry \
+                            a3cosmos-prior-extraction-photometry \
                                 -cat "../../Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/galaxy_model_id_ra_dec.txt" \
                                 -sci "../../Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/image_sim.fits" \
                                 -out                           "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" \
@@ -236,23 +241,23 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                                 >>                         "log_w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}.log" \
                                 &
                         else
-                            caap-prior-extraction-photometry \
+                            a3cosmos-prior-extraction-photometry \
                                 -out                           "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" \
                                 -unlock getpix galfit gaussian sersic final \
                                 >>                         "log_w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}.log" \
                                 &
                         fi
                         sleep 10
-                        #ps aux | grep "caap-prior-extraction-photometry"
-                        #ps aux | grep "caap-prior-extraction-photometry" | grep -v "grep"
-                        #ps aux | grep "caap-prior-extraction-photometry" | grep -v "grep" | wc -l
-                        check_simultaneous_processes=$(ps aux | grep "caap-prior-extraction-photometry" | grep -v "grep" | wc -l)
-                        echo "Checking current simultaneous processes of caap-prior-extraction-photometry $FitsName ($check_simultaneous_processes)"
+                        #ps aux | grep "a3cosmos-prior-extraction-photometry"
+                        #ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep"
+                        #ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l
+                        check_simultaneous_processes=$(ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l)
+                        echo "Checking current simultaneous processes of a3cosmos-prior-extraction-photometry $FitsName ($check_simultaneous_processes)"
                         limit_simultaneous_processes=15 # 20171106 20
                         while [[ $check_simultaneous_processes -ge $limit_simultaneous_processes ]]; do
                             sleep 30
-                            check_simultaneous_processes=$(ps aux | grep "caap-prior-extraction-photometry" | grep -v "grep" | wc -l)
-                            echo "Checking current simultaneous processes of caap-prior-extraction-photometry $FitsName ($check_simultaneous_processes)"
+                            check_simultaneous_processes=$(ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l)
+                            echo "Checking current simultaneous processes of a3cosmos-prior-extraction-photometry $FitsName ($check_simultaneous_processes)"
                         done
                     fi
                 done
