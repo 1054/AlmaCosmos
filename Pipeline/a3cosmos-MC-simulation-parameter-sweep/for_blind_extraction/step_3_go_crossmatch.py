@@ -9,11 +9,11 @@ import astropy.io.ascii as asciitable
 
 # pip install --user pidly pexpect # see -- http://www.bdnyc.org/2013/10/using-idl-within-python/
 import pidly
-if os.path.isdir('/Applications/exelis/idl/bin/idl'): 
+if os.path.isfile('/Applications/exelis/idl/bin/idl'): 
     idl = pidly.IDL('/Applications/exelis/idl/bin/idl')
-elif os.path.isdir('/usr/local2/bin/idl'): 
+elif os.path.isfile('/usr/local2/bin/idl'): 
     idl = pidly.IDL('/usr/local2/bin/idl')
-elif os.path.isdir('/usr/local/bin/idl'): 
+elif os.path.isfile('/usr/local/bin/idl'): 
     idl = pidly.IDL('/usr/local/bin/idl')
 else:
     print('Error! Could not find IDL (Interative Data Language)!')
