@@ -61,8 +61,8 @@ function dzreadlink() {
     if [[ $# -gt 1 ]]; then if [[ "$1" == "-f" ]]; then shift; fi; fi
     DIR="$1"; if [[ "$DIR" != *"/"* ]]; then DIR="./$DIR"; fi # 20170228: fixed bug: path without "/"
     DIR=$(echo "${DIR%/*}") # 20160410: fixed bug: source SETUP just under the Softwares dir
-    if [[ -d "$DIR" ]]; then cd "$DIR" && echo "$(pwd -P)/$(basename ${1})"; 
-    else echo "$(pwd -P)/$(basename ${1})"; fi
+    if [[ -d "$DIR" ]]; then cd "$DIR" && echo "$(pwd)/$(basename ${1})"; 
+    else echo "$(pwd)/$(basename ${1})"; fi
 }
 
 
@@ -92,11 +92,7 @@ fi
 #<20170807>#         CRAB_BIN_SETUP_PATH=$(readlink -f "$CRAB_BIN_SETUP_INPUT_PATH")
 #<20170807>#     fi
 #<20170807># fi
-if [[ "$CRAB_BIN_SETUP_INPUT_PATH" == "/"* ]]; then
-    CRAB_BIN_SETUP_PATH="$CRAB_BIN_SETUP_INPUT_PATH"
-else
-    CRAB_BIN_SETUP_PATH=$(dzreadlink "$CRAB_BIN_SETUP_INPUT_PATH")
-fi
+CRAB_BIN_SETUP_PATH=$(dzreadlink "$CRAB_BIN_SETUP_INPUT_PATH")
 
 if [[ $CRAB_BIN_SETUP_DEBUG_FLAG -eq 1 ]]; then
     echo "CRAB_BIN_SETUP_PATH=$CRAB_BIN_SETUP_PATH"
