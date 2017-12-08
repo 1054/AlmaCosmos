@@ -227,7 +227,7 @@ for alma_image_name in alma_image_list:
                 os.system('echo "    " >> %s/temp.sm'%(temp_dir))
                 os.system('echo "    " >> %s/temp.sm'%(temp_dir))
                 print('# Running %s/temp.bash'%(temp_dir))
-                os.system('chmod +x %s/temp.bash; cd %s; ./temp.bash > temp.log'%(temp_dir, temp_dir))
+                os.system('chmod +x %s/temp.bash; cd %s; ./temp.bash > temp.log 2>&1'%(temp_dir, temp_dir))
                 print('# Finished %s/temp.bash'%(temp_dir))
                 # 
                 if not os.path.isfile(temp_dir+os.sep+'out.txt'):
