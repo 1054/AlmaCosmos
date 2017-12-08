@@ -9,10 +9,15 @@ import astropy.io.ascii as asciitable
 
 # pip install --user pidly pexpect # see -- http://www.bdnyc.org/2013/10/using-idl-within-python/
 import pidly
-if platform.system() == 'Darwin':
+if os.path.isdir('/Applications/exelis/idl/bin/idl'): 
     idl = pidly.IDL('/Applications/exelis/idl/bin/idl')
-else:
+elif os.path.isdir('/usr/local2/bin/idl'): 
     idl = pidly.IDL('/usr/local2/bin/idl')
+elif os.path.isdir('/usr/local/bin/idl'): 
+    idl = pidly.IDL('/usr/local/bin/idl')
+else:
+    print('Error! Could not find IDL (Interative Data Language)!')
+    sys.exit()
 
 
 # 
@@ -20,6 +25,14 @@ else:
 # 
 print("This code should be ran on aida42198 machine and under '/disk1/ALMA_COSMOS/A3COSMOS/simulations/' directory.")
 print("It also needs Supermongo and astroGalfit.sm macros, and github.com/1054/AlmaCosmos tools. Please ask liudz1054@gmail.com if you don't have them. ")
+
+if not os.path.isdir('models'):
+    print('Error! "models" was not found under current directory!')
+    sys.exit()
+
+if not os.path.isdir('output_GALFIT'):
+    print('Error! "output_GALFIT" was not found under current directory!')
+    sys.exit()
 
 
 # 
@@ -50,7 +63,11 @@ for alma_image_name in alma_image_list:
     #recovered_dir = 'caap_blind_extraction_photometry_pybdsf'
     simulated_dir = 'models' + os.sep + alma_image_name
     recovered_dir = 'output_GALFIT' + os.sep + alma_image_name
-    print('# %s'%(alma_image_name))
+    if os.path.isfile('statistics_GALFIT/done_output_sim_data_table_%s'%(alma_image_name)):
+        print('# %s (already done, skip!)'%(alma_image_name))
+        continue
+    else:
+        print('# %s'%(alma_image_name))
     
     # DEBUG
     if alma_image_name != '2015.1.01495.S_SB1_GB1_MB1_COSMOS-16199':
@@ -321,6 +338,7 @@ for alma_image_name in alma_image_list:
     # 
     # 
     ofs.close()
+    os.system('date +"%Y-%m-%d %H:%M:%S %Z" > %s'%('statistics_GALFIT/done_output_sim_data_table_%s'%(alma_image_name)))
 
 
 

@@ -9,15 +9,30 @@ import astropy.io.ascii as asciitable
 
 # pip install --user pidly pexpect # see -- http://www.bdnyc.org/2013/10/using-idl-within-python/
 import pidly
-if platform.system() == 'Darwin':
+if os.path.isdir('/Applications/exelis/idl/bin/idl'): 
     idl = pidly.IDL('/Applications/exelis/idl/bin/idl')
-else:
+elif os.path.isdir('/usr/local2/bin/idl'): 
     idl = pidly.IDL('/usr/local2/bin/idl')
+elif os.path.isdir('/usr/local/bin/idl'): 
+    idl = pidly.IDL('/usr/local/bin/idl')
+else:
+    print('Error! Could not find IDL (Interative Data Language)!')
+    sys.exit()
 
 
 # 
-# This code should be ran on aida42198 machine and under '/disk1/ALMA_COSMOS/A3COSMOS/simulations/' directory.
+# Warning message
 # 
+print('This code should be ran on aida42198 machine and under "/disk1/ALMA_COSMOS/A3COSMOS/simulations/" directory.')
+print("It also needs IDL.")
+
+if not os.path.isdir('models'):
+    print('Error! "models" was not found under current directory!')
+    sys.exit()
+
+if not os.path.isdir('output_PyBDSM'):
+    print('Error! "output_PyBDSM" was not found under current directory!')
+    sys.exit()
 
 
 # 
@@ -48,7 +63,11 @@ for alma_image_name in alma_image_list:
     #recovered_dir = 'caap_blind_extraction_photometry_pybdsf'
     simulated_dir = 'models' + os.sep + alma_image_name
     recovered_dir = 'output_PyBDSM' + os.sep + alma_image_name
-    print('# %s'%(alma_image_name))
+    if os.path.isfile('statistics_PyBDSM/done_output_sim_data_table_%s'%(alma_image_name)):
+        print('# %s (already done, skip!)'%(alma_image_name))
+        continue
+    else:
+        print('# %s'%(alma_image_name))
     
     recovered_list_of_catalog = recovered_dir + os.sep + 'output_list_of_catalog.txt'
     if not os.path.isdir(simulated_dir):
@@ -64,7 +83,7 @@ for alma_image_name in alma_image_list:
     input_fits_file = []
     has_print_header = False
     has_print_lines = 0
-    output_data_table = 'statistics/output_sim_data_table_%s.txt'%(alma_image_name)
+    output_data_table = 'statistics_PyBDSM/output_sim_data_table_%s.txt'%(alma_image_name)
     ofs = open(output_data_table, 'w')
     with open(recovered_list_of_catalog) as fp:
         input_list_files = fp.readlines()
@@ -238,17 +257,15 @@ for alma_image_name in alma_image_list:
             #if has_print_lines > 100:
             #    break
         
-        # 
-        # 
-        # Till now, we have got the sim_data_file, which contains a list of input and output fluxes.
-        # 
-        # 
-        ofs.close()
-        # 
-        # Read the sim_data_file, classify 'Matched.Good', 'Matched.Spurious', 'NonMatched.Spurious', and 'NonMatched.Missed'. 
-        # 
-        #sim_io_data = asciitable.read(output_data_table)
-        #sim_io_data
+    # 
+    # 
+    # Till now, we have got the sim_data_file, which contains a list of input and output fluxes.
+    # 
+    # 
+    ofs.close()
+    os.system('date +"%Y-%m-%d %H:%M:%S %Z" > %s'%('statistics_PyBDSM/done_output_sim_data_table_%s'%(alma_image_name)))
+
+
 
 
 
