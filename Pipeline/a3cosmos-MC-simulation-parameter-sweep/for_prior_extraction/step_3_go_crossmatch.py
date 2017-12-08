@@ -95,7 +95,7 @@ for alma_image_name in alma_image_list:
             # 
             # read simulated parameter file
             if not os.path.isfile(sim_param_file):
-                continue #<DEBUG>#
+                #continue #<DEBUG>#
                 print('Error! The simulation parameter file "%s" was not found!'%(sim_param_file))
                 sys.exit()
             idl('restore, "%s", verbose = false'%(sim_param_file))
