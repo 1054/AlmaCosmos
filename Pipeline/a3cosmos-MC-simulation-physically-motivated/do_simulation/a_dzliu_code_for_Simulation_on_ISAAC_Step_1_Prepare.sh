@@ -53,6 +53,7 @@ fi
 # prepare config files
 # 
 pwd > "Input_Work_Dir.txt"
+echo ${BASH_SOURCE[0]}
 dirname ${BASH_SOURCE[0]}
 dirname $(dirname ${BASH_SOURCE[0]})
 dirname $(dirname $(dirname ${BASH_SOURCE[0]}))
