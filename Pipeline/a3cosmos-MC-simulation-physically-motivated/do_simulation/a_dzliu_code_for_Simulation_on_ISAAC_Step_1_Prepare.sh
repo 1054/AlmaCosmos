@@ -55,7 +55,7 @@ fi
 # prepare config files
 # 
 pwd > "Input_Work_Dir.txt"
-echo "cd $Script_Dir; pwd" > "Input_Script_Dir.txt"
+bash -c "cd $Script_Dir; pwd" > "Input_Script_Dir.txt"
 echo "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
 
 Data_Version="v20170604"
