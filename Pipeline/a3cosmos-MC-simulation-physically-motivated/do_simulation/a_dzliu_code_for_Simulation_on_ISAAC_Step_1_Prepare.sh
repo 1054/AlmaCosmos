@@ -13,25 +13,27 @@
 # 
 echo "Hostname: "$(/bin/hostname)
 echo "PWD: "$(/bin/pwd)
+Script_Path="${BASH_SOURCE[0]}"
+Script_Dir=$(dirname $(dirname $(dirname $(dirname $Script_Path))))
 
 
 
 # 
 # check host and other dependencies
 # 
-if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
-    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found! Please completely clone \"https://github.com/1054/AlmaCosmos.git\"!"
+if [[ ! -f "$Script_Dir/Softwares/SETUP.bash" ]]; then
+    echo "Error! \"$Script_Dir/Softwares/SETUP.bash\" was not found! Please completely clone \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 fi
 
-if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash" ]]; then
-    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash\" was not found! Please completely clone \"https://github.com/1054/AlmaCosmos.git\"!"
+if [[ ! -f "$Script_Dir/Pipeline/SETUP.bash" ]]; then
+    echo "Error! \"$Script_Dir/Pipeline/SETUP.bash\" was not found! Please completely clone \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 fi
 
-source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
+source "$Script_Dir/Softwares/SETUP.bash"
 
-source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash"
+source "$Script_Dir/Pipeline/SETUP.bash"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
     module load anaconda
@@ -53,12 +55,7 @@ fi
 # prepare config files
 # 
 pwd > "Input_Work_Dir.txt"
-echo ${BASH_SOURCE[0]}
-dirname ${BASH_SOURCE[0]}
-dirname $(dirname ${BASH_SOURCE[0]})
-dirname $(dirname $(dirname ${BASH_SOURCE[0]}))
-dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))
-echo "cd $(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))); pwd" > "Input_Script_Dir.txt"
+echo "cd $Script_Dir; pwd" > "Input_Script_Dir.txt"
 echo "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
 
 Data_Version="v20170604"
