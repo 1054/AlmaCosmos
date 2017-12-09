@@ -1,0 +1,30 @@
+********************************************************************************
+Processing "Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim.fits" and output to "Output_pybdsm_fitting_2/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|----] 0/5[0m[46G[1G[0mFitting islands with Gaussians .......... : [=====] 5/5[0m[51G
+--> Wrote FITS file 'Output_pybdsm_fitting_2/image_sim/pybdsm_cat0.fits'
+--> Wrote ds9 region file 'Output_pybdsm_fitting_2/image_sim/pybdsm_cat0.ds9.reg'
+--> Wrote FITS file 'Output_pybdsm_fitting_2/image_sim/pybdsm_cat.fits'
+--> Wrote ds9 region file 'Output_pybdsm_fitting_2/image_sim/pybdsm_cat.ds9.reg'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_gaus_resid.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_rms.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_mean.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_gaus_model.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_island_mask.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_ch0.fits'
+
+
+********************************************************************************
+Processing "Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim.fits" and output to "Output_pybdsm_fitting_2/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|----] 0/5[0m[46G[1G[0mFitting islands with Gaussians .......... : [=====] 5/5[0m[51G
+--> Wrote FITS file 'Output_pybdsm_fitting_2/image_sim/pybdsm_cat0.fits'
+--> Wrote ds9 region file 'Output_pybdsm_fitting_2/image_sim/pybdsm_cat0.ds9.reg'
+--> Wrote FITS file 'Output_pybdsm_fitting_2/image_sim/pybdsm_cat.fits'
+--> Wrote ds9 region file 'Output_pybdsm_fitting_2/image_sim/pybdsm_cat.ds9.reg'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_gaus_resid.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_rms.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_mean.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_gaus_model.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_island_mask.fits'
+--> Wrote file 'Output_pybdsm_fitting_2/image_sim/pybdsm_img_ch0.fits'
+
+

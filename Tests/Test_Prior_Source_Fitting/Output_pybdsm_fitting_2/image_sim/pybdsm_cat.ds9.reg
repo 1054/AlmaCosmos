@@ -1,0 +1,9 @@
+# Region file format: DS9 version 4.0
+global color=green font="helvetica 10 normal" select=1 highlite=1 edit=1 move=1 delete=1 include=1 fixed=0 source
+fk5
+ellipse(150.080839657,2.46831607535,1.0",1.0",207.773185008) # text={Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim_i0_s0}
+ellipse(150.080532578,2.47159783105,1.0",1.0",205.364343713) # text={Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim_i1_s1}
+ellipse(150.08048371,2.47151595368,1.0",1.0",214.478501334) # text={Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim_i1_s2}
+ellipse(150.078102195,2.46927213896,1.0",1.0",197.35901126) # text={Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim_i2_s3}
+ellipse(150.07820262,2.47200688457,1.0",1.0",148.2189995) # text={Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim_i3_s4}
+ellipse(150.077207493,2.4723584482,1.0",1.0",171.335961032) # text={Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim_i4_s5}

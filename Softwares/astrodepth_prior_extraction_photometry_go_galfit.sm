@@ -288,13 +288,16 @@ calc_Condon1997_errors 02
             set Condon_A = source_peak[Condon_i]
             set Condon_rho = calc_Condon1997_rho(1.5,1.5) # Condon1997 Eq(41)
             set source_peak_err[Condon_i] = Condon_A * sqrt(2.0) / Condon_rho # Condon1997 Eq(21)
-            set source_major_err[Condon_i] = convol_maj[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21)
-            set source_minor_err[Condon_i] = convol_min[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21)
+            set source_major_err[Condon_i] = maj[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21)
+            set source_minor_err[Condon_i] = min[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(0.5,2.5) # Condon1997 Eq(21)
             set source_total_err_item_1 = (source_peak_err[Condon_i]/source_peak[Condon_i])**2
-            set source_total_err_item_2 = (Condon_h_area/Condon_s_area)*((source_major_err[Condon_i]/convol_maj[Condon_i])**2)
-            set source_total_err_item_3 = (Condon_h_area/Condon_s_area)*((source_minor_err[Condon_i]/convol_min[Condon_i])**2)
+            set source_total_err_item_2 = (Condon_h_area/Condon_s_area)*((source_major_err[Condon_i]/maj[Condon_i])**2)
+            set source_total_err_item_3 = (Condon_h_area/Condon_s_area)*((source_minor_err[Condon_i]/min[Condon_i])**2)
             set source_total_err[Condon_i] = f[Condon_i] * sqrt( source_total_err_item_1 + source_total_err_item_2 + source_total_err_item_3 ) # Condon1997 Eq(42)
             set source_gaussian_snr[Condon_i] = Condon_rho
+            #set Condon_peak_err = source_peak_err[Condon_i]/source_peak[Condon_i]
+            #set Condon_total_err = source_total_err[Condon_i]/f[Condon_i]
+            #print {Condon_total_err Condon_peak_err Condon_A Condon_h_area Condon_s_area source_total_err_item_1 source_total_err_item_2 source_total_err_item_3}
         }
     }
 
@@ -753,6 +756,10 @@ print_result 02
         # 
         # read cat_index and cat_id (str)
         data $1.cat_index.txt read {cat_index 1.f cat_id 2.s}
+        # 
+        # read pb_corr from fit_$1.result.pbc.txt, which is produced by go_galfit
+        data $1.pbcorr.txt read {pb_corr 2.f}
+        # 
         # 
         set x = ResultPosX
         set y = ResultPosY

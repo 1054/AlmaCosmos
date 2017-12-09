@@ -1,0 +1,45 @@
+
+========================================================================
+Sat 09-12-2017 03:03:04:: USERINFO: --> Opened 'Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim.fits'
+Sat 09-12-2017 03:03:04:: INFO    : Original data shape of Input_alma_images_2/Simulated/2012.1.00978.S_SB4_GB1_MB1_GISMO-AK03_sci.spw0_1_2_3/w_889.341_z_3.000_lgMstar_11.50_SB/image_sim.fits: (1, 1, 512, 512)
+Sat 09-12-2017 03:03:04:: INFO    : Final data shape (npol, nchan, x, y): (1, 1, 512, 512)
+Sat 09-12-2017 03:03:04:: USERINFO: Image size .............................. : (512, 512) pixels
+Sat 09-12-2017 03:03:04:: USERINFO: Number of channels ...................... : 1
+Sat 09-12-2017 03:03:04:: USERINFO: Number of Stokes parameters ............. : 1
+Sat 09-12-2017 03:03:04:: USERINFO: Beam shape (major, minor, pos angle) .... : (1.04930e-04, 9.04470e-05, -73.9) degrees
+Sat 09-12-2017 03:03:04:: INFO    : Equinox not found in image header. Assuming J2000.
+Sat 09-12-2017 03:03:04:: USERINFO: Frequency of image ...................... : 337095.106 MHz
+Sat 09-12-2017 03:03:04:: USERINFO: Number of blank pixels .................. : 94819 (36.2%)
+Sat 09-12-2017 03:03:04:: INFO    : Raw mean (Stokes I) =  0.0062 mJy and raw rms =  0.1711 mJy 
+Sat 09-12-2017 03:03:04:: INFO    : sigma clipped mean (Stokes I) =  -0.0007 mJy and  sigma clipped rms =  0.0407 mJy 
+Sat 09-12-2017 03:03:04:: USERINFO: Flux from sum of (non-blank) pixels ..... : 0.023 Jy
+Sat 09-12-2017 03:03:04:: INFO    : Estimated bmpersrc_th =  379.92
+Sat 09-12-2017 03:03:04:: INFO    : Parameter confused is False
+Sat 09-12-2017 03:03:04:: USERINFO: --> Calculating background rms and mean images
+Sat 09-12-2017 03:03:04:: INFO    : Estimated size of brightest source (pixels) = 6
+Sat 09-12-2017 03:03:04:: INFO    : Maximum extent of largest 10-sigma island using clipped rms (pixels) = 20
+Sat 09-12-2017 03:03:04:: USERINFO: Derived rms_box (box size, step size) ... : (101, 34) pixels
+Sat 09-12-2017 03:03:04:: INFO    : Background rms and mean images computed
+Sat 09-12-2017 03:03:04:: USERINFO: --> Variation in rms image not significant
+Sat 09-12-2017 03:03:04:: USERINFO: --> Using constant background rms
+Sat 09-12-2017 03:03:04:: USERINFO: --> Using constant background mean
+Sat 09-12-2017 03:03:04:: USERINFO: Value of background rms ................. : 0.00004 Jy/beam
+Sat 09-12-2017 03:03:04:: USERINFO: Value of background mean ................ : 0.0 Jy/beam
+Sat 09-12-2017 03:03:04:: USERINFO: --> Expected 5-sigma-clipped false detection rate < fdr_ratio
+Sat 09-12-2017 03:03:04:: USERINFO: --> Using sigma-clipping ('hard') thresholding
+Sat 09-12-2017 03:03:04:: USERINFO: Minimum number of pixels per island ..... : 14
+Sat 09-12-2017 03:03:04:: USERINFO: Number of islands found ................. : 5
+Sat 09-12-2017 03:03:04:: USERINFO: Total number of Gaussians fit to image .. : 6
+Sat 09-12-2017 03:03:04:: USERINFO: Total flux density in model ............. : 0.024 Jy
+Sat 09-12-2017 03:03:04:: USERINFO: --> Grouping Gaussians into sources
+Sat 09-12-2017 03:03:04:: USERINFO: Number of sources formed from Gaussians   : 6
+Sat 09-12-2017 03:03:05:: INFO    : Calculating residual image after subtracting reconstructed gaussians
+Sat 09-12-2017 03:03:05:: INFO    : Statistics of the Gaussian residual image:
+                                            mean: -1.180e-07 (Jy/beam)
+                                        std. dev: 4.036e-05 (Jy/beam)
+                                            skew: 0.030
+                                        kurtosis: 0.022
+Sat 09-12-2017 03:03:05:: INFO    : Writing Output_pybdsm_fitting_2/image_sim/pybdsm_cat0.fits
+Sat 09-12-2017 03:03:05:: INFO    : Writing Output_pybdsm_fitting_2/image_sim/pybdsm_cat0.ds9.reg
+Sat 09-12-2017 03:03:05:: INFO    : Writing Output_pybdsm_fitting_2/image_sim/pybdsm_cat.fits
+Sat 09-12-2017 03:03:05:: INFO    : Writing Output_pybdsm_fitting_2/image_sim/pybdsm_cat.ds9.reg

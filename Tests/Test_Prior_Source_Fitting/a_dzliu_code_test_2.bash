@@ -39,6 +39,9 @@ prior_cat="Input_alma_images_2/Simulated/$image_name/w_889.341_z_3.000_lgMstar_1
     -out "Output_prior_fitting_2"
 
 
+../../Softwares/AlmaCosmos_Photometry_Blind_Extraction_PyBDSM_mod.py \
+    "Input_alma_images_2/Simulated/$image_name/w_889.341_z_3.000_lgMstar_11.50_SB/$image_sci" \
+    -out "Output_pybdsm_fitting_2"
 
 
 
