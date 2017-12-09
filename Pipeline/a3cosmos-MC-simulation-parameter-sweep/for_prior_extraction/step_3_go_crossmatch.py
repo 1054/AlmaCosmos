@@ -70,8 +70,8 @@ for alma_image_name in alma_image_list:
         print('# %s'%(alma_image_name))
     
     # DEBUG
-    if alma_image_name != '2015.1.01495.S_SB1_GB1_MB1_COSMOS-16199':
-        continue
+    # if alma_image_name != '2015.1.01495.S_SB1_GB1_MB1_COSMOS-16199':
+    #     continue
     
     # Get simulated list
     simulated_list = []
