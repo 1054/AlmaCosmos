@@ -53,25 +53,32 @@ fi
 # prepare config files
 # 
 pwd > "Input_Work_Dir.txt"
+dirname ${BASH_SOURCE[0]}
+dirname $(dirname ${BASH_SOURCE[0]})
+dirname $(dirname $(dirname ${BASH_SOURCE[0]}))
+dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))
 echo "cd $(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))); pwd" > "Input_Script_Dir.txt"
 echo "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
+
+Data_Version="v20170604"
+echo "$Data_Version" > "Input_Data_Version.txt"
 
 
 
 # 
 # download alma project list
 # 
-almacosmos_gdownload.py "list_project_rms_for_v20170604.sort_V.image_file.txt"
+almacosmos_gdownload.py "list_project_rms_for_$Data_Version.sort_V.image_file.txt"
 
-cat "list_project_rms_for_v20170604.sort_V.image_file.txt" | grep -v '^#' | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 8 | grep -v '^2011.0.00064.S' > "list_projects.txt"
+cat "list_project_rms_for_$Data_Version.sort_V.image_file.txt" | grep -v '^#' | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 8 | grep -v '^2011.0.00064.S' > "list_projects.txt"
 
 if [[ ! -f "list_projects.txt" ]]; then
-    echo "Error! Failed to get \"list_project_rms_for_v20170604.sort_V.image_file.txt\" from Google Drive and create \"list_projects.txt\"!"
+    echo "Error! Failed to get \"list_project_rms_for_$Data_Version.sort_V.image_file.txt\" from Google Drive and create \"list_projects.txt\"!"
     exit 1
 fi
 
 echo "Prepared \"$(pwd)/list_projects.txt\"!"
-echo "Prepared \"$(pwd)/Input_*_Dir.txt\"!"
+echo "Prepared \"$(pwd)/Input_*.txt\"!"
 
 
 
