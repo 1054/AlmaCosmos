@@ -12,8 +12,8 @@
 # 
 
 # 
-# to run this script in Slurm job array mode
-# sbatch --array=1-1%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh
+# to run this script
+# cd $Work_Dir
 # 
 echo "Hostname: "$(/bin/hostname)
 echo "PWD: "$(/bin/pwd)
@@ -25,7 +25,7 @@ echo "SLURM_ARRAY_JOB_ID: "$SLURM_ARRAY_JOB_ID
 echo "SLURMTMPDIR: "$SLURMTMPDIR
 echo "SLURM_SUBMIT_DIR: "$SLURM_SUBMIT_DIR
 
-Work_Dir="$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2"
+# Work_Dir="$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2"
 
 
 
@@ -37,10 +37,10 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
-if [[ ! -d "$Work_Dir" ]]; then
-    echo "mkdir -p $Work_Dir"
-    mkdir -p "$Work_Dir"
-fi
+# if [[ ! -d "$Work_Dir" ]]; then
+#     echo "mkdir -p $Work_Dir"
+#     mkdir -p "$Work_Dir"
+# fi
 
 if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
     echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found!"
@@ -49,7 +49,7 @@ fi
 
 source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
 
-cd "$Work_Dir"
+# cd "$Work_Dir"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
     module load anaconda
@@ -68,6 +68,15 @@ fi
 
 
 # 
+# prepare config files
+# 
+pwd > "Input_Work_Dir.txt"
+echo "cd $(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))); pwd" > "Input_Script_Dir.txt"
+echo "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
+
+
+
+# 
 # download alma project list
 # 
 almacosmos_gdownload.py "list_project_rms_for_v20170604.sort_V.image_file.txt"
@@ -80,6 +89,7 @@ if [[ ! -f "list_projects.txt" ]]; then
 fi
 
 echo "Prepared \"$(pwd)/list_projects.txt\"!"
+echo "Prepared \"$(pwd)/*.sh\"!"
 
 
 

@@ -12,7 +12,7 @@
 # 
 
 echo "Hostname: "$(/bin/hostname)
-echo "PWD: "$(/bin/pwd -P)
+echo "PWD: "$(/bin/pwd)
 echo "SLURM_JOBID: "$SLURM_JOBID
 echo "SLURM_JOB_NODELIST: "$SLURM_JOB_NODELIST
 echo "SLURM_NNODES: "$SLURM_NNODES
@@ -20,6 +20,8 @@ echo "SLURM_ARRAY_TASK_ID: "$SLURM_ARRAY_TASK_ID
 echo "SLURM_ARRAY_JOB_ID: "$SLURM_ARRAY_JOB_ID
 echo "SLURMTMPDIR: "$SLURMTMPDIR
 echo "SLURM_SUBMIT_DIR: "$SLURM_SUBMIT_DIR
+
+Work_Dir="$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2"
 
 
 
@@ -29,8 +31,8 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
-if [[ ! -d "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong" ]]; then
-    echo "Error! \"$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong\" was not found! Please create that directory then run this code again!"
+if [[ ! -d "$Work_Dir" ]]; then
+    echo "Error! \"$Work_Dir\" was not found! Please create that directory then run this code again!"
     exit 1
 fi
 
@@ -48,7 +50,7 @@ source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/
 
 source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash"
 
-cd "$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong"
+cd "$Work_Dir"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
     module load anaconda
@@ -65,7 +67,12 @@ if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
 fi
 
 if [[ ! -f "list_projects.txt" ]]; then
-    echo "Error! \"list_projects.txt\" was not found under current directory!"
+    echo "Error! \"list_projects.txt\" was not found under current directory! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh\" first!"
+    exit 1
+fi
+
+if [[ ! -d "Input_images" ]]; then
+    echo "Error! Input_images was not found! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh\" first!"
     exit 1
 fi
 
@@ -94,11 +101,6 @@ fi
 
 
 #echo "FitsNames = ${FitsNames[@]}"
-
-if [[ ! -d "Input_images" ]]; then
-    echo "Error! Input_images was not found! Please run \"a_dzliu_code_for_ISAAC_go_Simulate.sh\" first!"
-    exit 1
-fi
 
 for (( i=0; i<${#FitsNames[@]}; i++ )); do
     

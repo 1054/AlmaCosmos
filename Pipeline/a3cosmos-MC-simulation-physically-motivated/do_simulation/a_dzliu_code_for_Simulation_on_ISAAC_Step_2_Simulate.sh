@@ -15,7 +15,8 @@
 
 # 
 # to run this script in Slurm job array mode
-# sbatch --array=1-1%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh
+# sbatch --array=1-1%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh test
+# sbatch --array=4-4%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh
 # 
 echo "Hostname: "$(/bin/hostname)
 echo "PWD: "$(/bin/pwd)
@@ -27,9 +28,6 @@ echo "SLURM_ARRAY_JOB_ID: "$SLURM_ARRAY_JOB_ID
 echo "SLURMTMPDIR: "$SLURMTMPDIR
 echo "SLURM_SUBMIT_DIR: "$SLURM_SUBMIT_DIR
 
-Work_Dir="$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2"
-Input_Galaxy_Modelling_Dir="$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS"
-
 
 
 # 
@@ -40,29 +38,40 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
-if [[ ! -d "$Input_Galaxy_Modelling_Dir" ]]; then
-    echo "Error! \"$Input_Galaxy_Modelling_Dir\" was not found! Please ask liudz1054@gmail.com to copy that directory then run this code again!"
+if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/list_projects.txt" ]] || \
+    [[ ! -f "$(dirname ${BASH_SOURCE[0]})/Input_Work_Dir.txt" ]] || \
+    [[ ! -f "$(dirname ${BASH_SOURCE[0]})/Input_Script_Dir.txt" ]] || \
+    [[ ! -f "$(dirname ${BASH_SOURCE[0]})/Input_Galaxy_Modeling_Dir.txt" ]]; then
+    echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh\" first!"
     exit 1
 fi
+
+Work_Dir=$(cat "$(dirname ${BASH_SOURCE[0]})/Input_Work_Dir.txt")
+
+Script_Dir=$(cat "$(dirname ${BASH_SOURCE[0]})/Input_Script_Dir.txt")
+
+Input_Galaxy_Modeling_Dir=$(cat "$(dirname ${BASH_SOURCE[0]})/Input_Galaxy_Modeling_Dir.txt")
 
 if [[ ! -d "$Work_Dir" ]]; then
     echo "Error! \"$Work_Dir\" was not found! Please create that directory then run this code again!"
     exit 1
 fi
 
-if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
-    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found!"
+if [[ ! -d "$Script_Dir" ]]; then
+    echo "Error! \"$Script_Dir\" was not found! Please create that directory then run this code again!"
     exit 1
 fi
 
-if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash" ]]; then
-    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash\" was not found!"
+if [[ ! -d "$Input_Galaxy_Modeling_Dir" ]]; then
+    echo "Error! \"$Input_Galaxy_Modeling_Dir\" was not found! Please ask liudz1054@gmail.com to copy that directory then run this code again!"
     exit 1
 fi
 
-source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
+source "$Script_Dir/Softwares/SETUP.bash"
 
-source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash"
+source "$Script_Dir/Pipeline/SETUP.bash"
+
+pwd
 
 cd "$Work_Dir"
 
@@ -78,11 +87,6 @@ fi
 if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then 
     echo "Error! Supermongo does not contain necessary macros! Please contact liudz1054@gmail.com!"
     exit
-fi
-
-if [[ ! -f "list_projects.txt" ]]; then
-    echo "Error! \"list_projects.txt\" was not found under current directory!"
-    exit 1
 fi
 
 
@@ -206,7 +210,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                             -sci "Input_images/$FitsName.cont.I.image.fits" \
                             -psf "Input_images/$FitsName.cont.I.clean-beam.fits" \
                             -res "Input_images/$FitsName.cont.I.residual.fits" \
-                            -gal "$Input_Galaxy_Modelling_Dir" \
+                            -gal "$Input_Galaxy_Modeling_Dir" \
                             -w "$i_w" -z "${i_z}" -lgMstar "${i_lgMstar}" -Type-SED "${i_Type_SED}" \
                             -out "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}"
                         

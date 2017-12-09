@@ -9,8 +9,17 @@
 
 
 
-rsync -avz -r --stats --progress -e "ssh -A -t gate.rzg.mpg.de ssh" --include '*' \
-        "isaac1.bc.rzg.mpg.de:/u/$USER/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS/" \
-        "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS/"
+# rsync -avz -r --stats --progress -e "ssh -A -t gate.rzg.mpg.de ssh" --include '*' \
+#         "isaac1.bc.rzg.mpg.de:/$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS/" \
+#         "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS/"
+
+
+
+mkdir -p "$HOME/Work/AlmaCosmos/Simulations/Physical_MC_sim/20171105/Simulated"
+
+rsync -avz -r --stats --progress -e "ssh -A -t gate.rzg.mpg.de ssh" \
+        --include '**/*' \
+        "isaac1.bc.rzg.mpg.de:/u/$USER/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2/Simulated/" \
+        "$HOME/Work/AlmaCosmos/Simulations/Physical_MC_sim/20171105/Simulated"
 
 
