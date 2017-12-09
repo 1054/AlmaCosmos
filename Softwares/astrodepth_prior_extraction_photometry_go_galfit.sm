@@ -602,17 +602,17 @@ exec_galfit 01
         # 
         # check previous files
         if(is_file("fit_"$1".failed")) {
-            !rm "fit_"$1".failed"
+            !mv "fit_"$1".failed" "fit_"$1".failed.backup"
         }
         if(is_file("fit_"$1".log")) {
-            !rm "fit_"$1".log"
+            !mv "fit_"$1".log" "fit_"$1".log.backup"
         }
         # 
         # exec galfit
-        if(is_file("fit_with_galfit255")) {
+        if(is_file("fit_"$1"_with_galfit255") || is_file("fit_with_galfit255")) {
             !galfit255 fit_$1.input > fit_$1.out 2>&1
         } else {
-            if(is_file("fit_with_galfit30")) {
+            if(is_file("fit_"$1"_with_galfit30") || is_file("fit_with_galfit30")) {
                 !galfit30 fit_$1.input > fit_$1.out 2>&1
             } else {
                 !galfit fit_$1.input > fit_$1.out 2>&1
@@ -623,25 +623,26 @@ exec_galfit 01
         if(is_file(fit.log)) {
             !mv fit.log "fit_"$1".log"
         } else {
-            !date "+%Y-%m-%d %H:%M:%S %Z" > "fit_"$1".failed"
+            !date +\\"%Y-%m-%d %H:%M:%S %Z\\" > "fit_"$1".failed"
             !echo "Failed to fit with galfit! fit.log was not found!" >> "fit_"$1".failed"
             return
         }
         # 
         # check if fit.log contains nan or not
-        !cat "fit_"$1".log" | grep -q -r "\\\bnan\\\b"
+        #<BUGGY><20171209># !cat "fit_"$1".log" | grep -q -r "\\\bnan\\\b"
+        !grep -q -r "\\\bnan\\\b" "fit_"$1".log"
         if($exit_status==0) {
             # found nan!
             # re-do galfit
-            if(!is_file("fit_with_galfit30") && !is_file("fit_with_galfit255")) {
-                !touch "fit_with_galfit30"
+            if(!is_file("fit_"$1"_with_galfit30") && !is_file("fit_with_galfit30") && !is_file("fit_"$1"_with_galfit255") && !is_file("fit_with_galfit255")) {
+                !touch "fit_"$1"_with_galfit30"
                 exec_galfit $1
             } else {
-                if(!is_file("fit_with_galfit255")) {
-                    !touch "fit_with_galfit255"
+                if(!is_file("fit_"$1"_with_galfit255") && !is_file("fit_with_galfit255")) {
+                    !touch "fit_"$1"_with_galfit255"
                     exec_galfit $1
                 } else {
-                    !date "+%Y-%m-%d %H:%M:%S %Z" > "fit_"$1".failed"
+                    !date +\\"%Y-%m-%d %H:%M:%S %Z\\" > "fit_"$1".failed"
                     !echo "Failed to fit with galfit! fit.log contains nan!" >> "fit_"$1".failed"
                 }
             }
