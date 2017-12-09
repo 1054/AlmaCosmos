@@ -7,6 +7,12 @@
 #SBATCH --output=log_Step_3_TASK_ID_%a_JOB_ID_%A.out
 
 # 
+# This script will run galfit on 
+# the simulated images in "Simulated/"
+# and output "Recovered/"
+# 
+
+# 
 # to run this script in Slurm job array mode
 # sbatch --array=1-120%5 -N1 ~/Cloud/Github/Crab.Toolkit.CAAP/batch/a_dzliu_code_for_ISAAC_Simulation_Step_3_Recover.sh
 # 
@@ -31,24 +37,40 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
+if [[ ! -f "$SLURM_SUBMIT_DIR/list_projects.txt" ]] || \
+    [[ ! -f "$SLURM_SUBMIT_DIR/Input_Work_Dir.txt" ]] || \
+    [[ ! -f "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt" ]] || \
+    [[ ! -f "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt" ]]; then
+    echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh\" first!"
+    exit 1
+fi
+
+Work_Dir=$SLURM_SUBMIT_DIR
+
+Script_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt")
+
+#Input_Galaxy_Modeling_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt")
+
 if [[ ! -d "$Work_Dir" ]]; then
     echo "Error! \"$Work_Dir\" was not found! Please create that directory then run this code again!"
     exit 1
 fi
 
-if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
-    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found!"
+if [[ ! -d "$Script_Dir" ]]; then
+    echo "Error! \"$Script_Dir\" was not found! Please create that directory then run this code again!"
     exit 1
 fi
 
-if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash" ]]; then
-    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash\" was not found!"
-    exit 1
-fi
+#if [[ ! -d "$Input_Galaxy_Modeling_Dir" ]]; then
+#    echo "Error! \"$Input_Galaxy_Modeling_Dir\" was not found! Please ask liudz1054@gmail.com to copy that directory then run this code again!"
+#    exit 1
+#fi
 
-source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
+source "$Script_Dir/Softwares/SETUP.bash"
 
-source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash"
+source "$Script_Dir/Pipeline/SETUP.bash"
+
+pwd
 
 cd "$Work_Dir"
 

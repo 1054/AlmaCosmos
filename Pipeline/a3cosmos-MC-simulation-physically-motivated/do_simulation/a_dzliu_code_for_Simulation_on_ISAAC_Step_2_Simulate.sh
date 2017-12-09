@@ -38,19 +38,19 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
-if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/list_projects.txt" ]] || \
-    [[ ! -f "$(dirname ${BASH_SOURCE[0]})/Input_Work_Dir.txt" ]] || \
-    [[ ! -f "$(dirname ${BASH_SOURCE[0]})/Input_Script_Dir.txt" ]] || \
-    [[ ! -f "$(dirname ${BASH_SOURCE[0]})/Input_Galaxy_Modeling_Dir.txt" ]]; then
+if [[ ! -f "$SLURM_SUBMIT_DIR/list_projects.txt" ]] || \
+    [[ ! -f "$SLURM_SUBMIT_DIR/Input_Work_Dir.txt" ]] || \
+    [[ ! -f "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt" ]] || \
+    [[ ! -f "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt" ]]; then
     echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh\" first!"
     exit 1
 fi
 
-Work_Dir=$(cat "$(dirname ${BASH_SOURCE[0]})/Input_Work_Dir.txt")
+Work_Dir=$SLURM_SUBMIT_DIR
 
-Script_Dir=$(cat "$(dirname ${BASH_SOURCE[0]})/Input_Script_Dir.txt")
+Script_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt")
 
-Input_Galaxy_Modeling_Dir=$(cat "$(dirname ${BASH_SOURCE[0]})/Input_Galaxy_Modeling_Dir.txt")
+Input_Galaxy_Modeling_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt")
 
 if [[ ! -d "$Work_Dir" ]]; then
     echo "Error! \"$Work_Dir\" was not found! Please create that directory then run this code again!"

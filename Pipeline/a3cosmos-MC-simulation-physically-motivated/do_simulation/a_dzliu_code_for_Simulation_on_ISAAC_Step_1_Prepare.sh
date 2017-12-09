@@ -1,10 +1,5 @@
 #!/bin/bash
-#SBATCH --mail-user=dzliu@mpia-hd.mpg.de
-#SBATCH --mail-type=FAIL # Mail events (NONE, BEGIN, END, FAIL, ALL)
-#SBATCH --time=24:00:00
-#SBATCH --mem=4000
-#SBATCH --cpus-per-task=1
-#SBATCH --output=log_Step_1_TASK_ID_%a_JOB_ID_%A.out
+# 
 
 # 
 # This script will download list_of_project.txt
@@ -13,43 +8,30 @@
 
 # 
 # to run this script
-# cd $Work_Dir
+# cd your working directory
+# then run this script in terminal
 # 
 echo "Hostname: "$(/bin/hostname)
 echo "PWD: "$(/bin/pwd)
-echo "SLURM_JOBID: "$SLURM_JOBID
-echo "SLURM_JOB_NODELIST: "$SLURM_JOB_NODELIST
-echo "SLURM_NNODES: "$SLURM_NNODES
-echo "SLURM_ARRAY_TASK_ID: "$SLURM_ARRAY_TASK_ID
-echo "SLURM_ARRAY_JOB_ID: "$SLURM_ARRAY_JOB_ID
-echo "SLURMTMPDIR: "$SLURMTMPDIR
-echo "SLURM_SUBMIT_DIR: "$SLURM_SUBMIT_DIR
-
-# Work_Dir="$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2"
 
 
 
 # 
 # check host and other dependencies
 # 
-if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
-    echo "This code can only be ran on ISAAC machine!"
+if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
+    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found! Please completely clone \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 fi
 
-# if [[ ! -d "$Work_Dir" ]]; then
-#     echo "mkdir -p $Work_Dir"
-#     mkdir -p "$Work_Dir"
-# fi
-
-if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash" ]]; then
-    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash\" was not found!"
+if [[ ! -f "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash" ]]; then
+    echo "Error! \"$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash\" was not found! Please completely clone \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 fi
 
 source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/SETUP.bash"
 
-# cd "$Work_Dir"
+source "$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Pipeline/SETUP.bash"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
     module load anaconda
@@ -89,7 +71,7 @@ if [[ ! -f "list_projects.txt" ]]; then
 fi
 
 echo "Prepared \"$(pwd)/list_projects.txt\"!"
-echo "Prepared \"$(pwd)/*.sh\"!"
+echo "Prepared \"$(pwd)/Input_*_Dir.txt\"!"
 
 
 
