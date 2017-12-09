@@ -290,11 +290,11 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                     fi
                 done
             done
-            
-            #wait
-            
         done
     done
+    
+    # wait
+    wait
     
     # cd back
     cd "../../"
