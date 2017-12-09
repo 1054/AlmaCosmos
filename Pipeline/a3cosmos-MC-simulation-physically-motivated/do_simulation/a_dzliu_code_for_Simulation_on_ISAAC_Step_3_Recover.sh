@@ -27,8 +27,6 @@ echo "SLURM_ARRAY_JOB_ID: "$SLURM_ARRAY_JOB_ID
 echo "SLURMTMPDIR: "$SLURMTMPDIR
 echo "SLURM_SUBMIT_DIR: "$SLURM_SUBMIT_DIR
 
-Work_Dir="$HOME/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2"
-
 
 
 # check host and other dependencies
@@ -40,6 +38,7 @@ fi
 if [[ ! -f "$SLURM_SUBMIT_DIR/list_projects.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Work_Dir.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt" ]] || \
+    [[ ! -f "$SLURM_SUBMIT_DIR/Input_Data_Version.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt" ]]; then
     echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh\" first!"
     exit 1
@@ -48,6 +47,8 @@ fi
 Work_Dir=$SLURM_SUBMIT_DIR
 
 Script_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt")
+
+#Data_Version=$(cat "$SLURM_SUBMIT_DIR/Input_Data_Version.txt")
 
 #Input_Galaxy_Modeling_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt")
 
@@ -103,11 +104,11 @@ fi
 # 
 # prepare physical parameter grid
 # 
-#Input_Galaxy_Modelling_Dir="$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS"
 Input_z=("1.000" "2.000" "3.000" "4.000" "5.000" "6.000")
 Input_lgMstar=("09.00" "09.50" "10.00" "10.50" "11.00" "11.50" "12.00")
 Input_Type_SED=("MS" "SB")
 IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
+
 if [[ " $@ " == *" test "* ]]; then
 Input_z=("5.000")
 Input_lgMstar=("11.00")
@@ -116,9 +117,6 @@ FitsNames=( \
     "2015.1.00379.S_SB1_GB1_MB1_VUDS5170072382_sci.spw0_1_2_3" \
 )
 fi
-
-
-
 
 
 
@@ -133,6 +131,12 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         if [[ $SLURM_ARRAY_TASK_ID -ne $((i+1)) ]]; then
             continue
         fi
+    fi
+    
+    # check previous output
+    if [[ -f "Recovered/$FitsName/done" ]]; then
+        echo "Found \"Recovered/$FitsName/done\"! Skip and continue!"
+        continue
     fi
     
     # check non-COSMOS fields
@@ -292,8 +296,15 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         done
     done
     
+    # cd back
     cd "../../"
+    
+    # Done
+    date +"%Y-%m-%d %H:%M:%S %Z" > "Simulated/$FitsName/done"
+    
+    #<TODO><DBEUG># 
     #break
+    
 done
 
 
