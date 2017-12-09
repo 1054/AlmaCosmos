@@ -41,6 +41,7 @@ fi
 if [[ ! -f "$SLURM_SUBMIT_DIR/list_projects.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Work_Dir.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt" ]] || \
+    [[ ! -f "$SLURM_SUBMIT_DIR/Input_Data_Version.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt" ]]; then
     echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh\" first!"
     exit 1
@@ -49,6 +50,8 @@ fi
 Work_Dir=$SLURM_SUBMIT_DIR
 
 Script_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt")
+
+Data_Version=$(cat "$SLURM_SUBMIT_DIR/Input_Data_Version.txt")
 
 Input_Galaxy_Modeling_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt")
 
@@ -156,9 +159,9 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     # check input image
     for file_to_download in \
         "Photometry/ALMA_full_archive/Blind_Extraction_by_Benjamin/20170930/Output_Residual_Images/$FitsName.cont.I.residual.fits" \
-        "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/v20170604/fits_cont_I_image/$FitsName.cont.I.image.fits" \
-        "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/v20170604/fits_cont_I_image_pixel_histograms/$FitsName.cont.I.image.fits.pixel.statistics.txt" \
-        "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/v20170604/fits_cont_I_clean-beam/$FitsName.cont.I.clean-beam.fits"
+        "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/$Data_Version/fits_cont_I_image/$FitsName.cont.I.image.fits" \
+        "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/$Data_Version/fits_cont_I_image_pixel_histograms/$FitsName.cont.I.image.fits.pixel.statistics.txt" \
+        "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/$Data_Version/fits_cont_I_clean-beam/$FitsName.cont.I.clean-beam.fits"
         do
         if [[ ! -f "Input_images/$(basename $file_to_download)" ]]; then
             cd "Input_images/"
