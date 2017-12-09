@@ -22,7 +22,7 @@ fi
 # Check software dependancies
 # 
 if [[ -f $(dirname "${BASH_SOURCE[0]}")"/../Softwares/SETUP.bash" ]]; then
-    ALMACOSMOS_SETUP_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}")"/../Softwares/"; pwd -P)"/SETUP.bash"
+    ALMACOSMOS_SETUP_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}")"/../Softwares/"; pwd)"/SETUP.bash"
     source "$ALMACOSMOS_SETUP_SCRIPT"
 else
     echo "Error! \"$(dirname "${BASH_SOURCE[0]}")"/../Softwares/SETUP.bash"\" was not found! Please clone the entire package from \"https://github.com/1054/AlmaCosmos\" then re-run this pipeline!"
@@ -800,17 +800,9 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
     SourceName=$(basename "$SciImage" | sed -e 's%\.fits%%g')   #<TODO># file name
     # 
     # cd OutputDir
-    if [[ $(uname) == "Darwin" ]]; then
-        CurrentDir=$(pwd)
-    else
-        CurrentDir=$(pwd -P)
-    fi
+    CurrentDir=$(pwd)
     cd "$OutputDir/"
-    if [[ $(uname) == "Darwin" ]]; then
-        OutputDir_fullpath=$(pwd)
-    else
-        OutputDir_fullpath=$(pwd -P)
-    fi
+      OutputDir_fullpath=$(pwd)
     # 
     # print
     echo ""

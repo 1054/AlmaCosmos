@@ -26,6 +26,8 @@ wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/sumpix  -O sumpix
 
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/galfit -O galfit
+wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/galfit30 -O galfit30
+wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/galfit255 -O galfit255
 
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/lumdist                   -O lumdist
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/CrabFitsHeader            -O CrabFitsHeader
