@@ -614,7 +614,7 @@ if [[ ! -f "$OutputDir/List_of_Input_Sci_Images.txt" || ! -f "$OutputDir/List_of
             SciImage_cut_rect=$(echo "$SciImage_fullpath" | sed -e "s/\.fits$/.cut.rect.txt/g")
             RmsImage_cut_rect=$(echo "$RmsImage_fullpath" | sed -e "s/\.fits$/.cut.rect.txt/g")
             PbaImage_cut_rect=$(echo "$PbaImage_fullpath" | sed -e "s/\.fits$/.cut.rect.txt/g")
-            if [[ ! -f "$SciImage_cut_rect" ]]; then
+            if [[ ! -f "$SciImage_cut_rect" ]] || [[ ! -f "$RmsImage_cut_rect" ]] || [[ ! -f "$PbaImage_cut_rect" ]]; then
                 CutNumbX=$(awk "BEGIN {print int(($SciNAXIS1)/$CutSizeS/2.0)*2+1}") # ~3
                 CutNumbY=$(awk "BEGIN {print int(($SciNAXIS2)/$CutSizeS/2.0)*2+1}") # ~3
                 CutSizeX=$(awk "BEGIN {print int(($SciNAXIS1)/$CutNumbX)}") # ~301
