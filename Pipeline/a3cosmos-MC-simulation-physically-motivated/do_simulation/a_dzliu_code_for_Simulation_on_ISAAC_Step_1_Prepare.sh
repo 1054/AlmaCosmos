@@ -68,7 +68,7 @@ echo "$Data_Version" > "Input_Data_Version.txt"
 # 
 almacosmos_gdownload.py "list_project_rms_for_$Data_Version.sort_V.image_file.txt"
 
-cat "list_project_rms_for_$Data_Version.sort_V.image_file.txt" | grep -v '^#' | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 8 | grep -v '^2011.0.00064.S' > "list_projects.txt"
+cat "list_project_rms_for_$Data_Version.sort_V.image_file.txt" | grep -v '^#' | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 8 | sed -e 's/.cont.I.image.fits$//g' | grep -v '^2011.0.00064.S' > "list_projects.txt"
 
 if [[ ! -f "list_projects.txt" ]]; then
     echo "Error! Failed to get \"list_project_rms_for_$Data_Version.sort_V.image_file.txt\" from Google Drive and create \"list_projects.txt\"!"
