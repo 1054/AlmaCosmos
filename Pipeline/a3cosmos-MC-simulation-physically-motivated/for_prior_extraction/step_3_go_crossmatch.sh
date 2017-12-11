@@ -53,16 +53,20 @@ topcat -stilts tmatchn \
                 join2=always \
                 matcher="exact+exact+exact" \
                 multimode=group \
-                ocmd="addcol Maj_in \"Maj\"" \
-                ocmd="addcol Min_in \"Min\"" \
-                ocmd="addcol Maj_out \"Maj_fit\"" \
-                ocmd="addcol Min_out \"Min_fit\"" \
+                ocmd="addcol S_in -after id \"flux\"" \
+                ocmd="addcol S_out -after S_in \"f_total_fit\"" \
+                ocmd="addcol e_S_out -after S_out \"f_total_fit/snr_total_fit\"" \
+                ocmd="addcol S_peak -after e_S_out \"fpeak_fit\"" \
+                ocmd="addcol S_res -after S_peak \"fres_fit\"" \
+                ocmd="addcol noise -after S_res \"rms_fit\"" \
+                ocmd="addcol Maj_in -after noise \"Maj\"" \
+                ocmd="addcol Min_in -after Maj_in \"Min\"" \
+                ocmd="addcol Maj_out -after Min_in \"Maj_fit\"" \
+                ocmd="addcol Min_out -after Maj_out \"Min_fit\"" \
+                ocmd="addcol Maj_beam -after Min_out \"(beam_maj)\"" \
+                ocmd="addcol Min_beam -after Maj_beam \"(beam_min)\"" \
                 ocmd="delcols \"Maj Min\"" \
-                ocmd="addcol S_in \"flux\"" \
-                ocmd="addcol S_out \"f_total_fit\"" \
-                ocmd="addcol e_S_out \"f_total_fit/snr_total_fit\"" \
-                ocmd="addcol S_peak \"fpeak_fit\"" \
-                ocmd="addcol noise \"rms_fit\"" \
+                ocmd="addcol pb_corr -after Min_beam \"pb_corr_fit\"" \
                 ocmd="addcol fit_alma_image_STR \"sim_alma_image_STR_fit\"" \
                 ocmd="addcol fit_repetition_STR \"sim_repetition_STR_fit\"" \
                 ocmd="addcol sim_alma_image_STR \"sim_data_dir_STR\"" \
@@ -74,7 +78,7 @@ topcat -stilts tmatchn \
                 ocmd="addcol flag_size_lower_boundary \"(flag_size_lower_boundary_fit)\"" \
                 ocmd="addcol flag_size_upper_boundary \"(flag_size_upper_boundary_fit)\"" \
                 ocmd="addcol flag_size_initial_guess \"(flag_size_initial_guess_fit)\"" \
-                ocmd="keepcols \"id S_in S_out e_S_out noise Maj_in Maj_out Min_in Min_out beam_maj beam_min fit_alma_image_STR fit_repetition_STR sim_alma_image_STR sim_repetition_STR flag_matched flag_nonmatched_missed flag_nonmatched_spurious flag_null flag_size_lower_boundary flag_size_upper_boundary flag_size_initial_guess z lgMstar lgSFR Type_SED\"" \
+                ocmd="keepcols \"id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam pb_corr z lgMstar lgSFR Type_SED fit_alma_image_STR fit_repetition_STR sim_alma_image_STR sim_repetition_STR flag_matched flag_nonmatched_missed flag_nonmatched_spurious flag_null flag_size_lower_boundary flag_size_upper_boundary flag_size_initial_guess\"" \
                 ofmt=fits \
                 out="$output_dir/datatable_CrossMatched_all_entries.fits" \
                 &>  "$output_dir/datatable_CrossMatched_all_entries.stilts.log"
@@ -86,7 +90,7 @@ echo "Output to \"$output_dir/datatable_CrossMatched_all_entries.fits\"!"
 
 topcat -stilts tpipe \
                 in="$output_dir/datatable_CrossMatched_all_entries.fits" \
-                cmd="select \"(flag_matched && beam_maj>=0.1)\"" \
+                cmd="select \"(flag_matched && Maj_beam>=0.1)\"" \
                 out="$output_dir/datatable_CrossMatched_only_matches.fits" \
                 &>  "$output_dir/datatable_CrossMatched_only_matches.stilts.log"
 echo "Output to \"$output_dir/datatable_CrossMatched_only_matches.fits\"!"

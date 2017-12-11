@@ -177,6 +177,19 @@ cp "$InputDir/astrodepth_prior_extraction_photometry/astrodepth_catalog_0_ra_dec
 
 
 # 
+# count lines
+# 
+echo "Counting lines: "
+for OutputItem in "${List_of_Files[@]}"; do
+    if [[ -f "Read_Results_all_final_${OutputItem}" ]]; then
+        CountedLines=$(cat "Read_Results_all_final_${OutputItem}" | wc -l)
+        echo "Read_Results_all_final_${OutputItem} \t \t $CountedLines"
+    fi
+done
+
+
+
+# 
 # Print final message
 # 
 echo "************"

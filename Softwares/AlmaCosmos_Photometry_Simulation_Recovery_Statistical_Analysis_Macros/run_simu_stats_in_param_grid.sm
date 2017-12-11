@@ -1,0 +1,411 @@
+usage
+    echo "macro read run_simu_stats_in_param_grid.sm run_simu_stats_in_param_grid"
+
+user_define_param_grid
+    # please define params here
+    #user_define_param_grid_using_galfit_flux_error
+    user_define_param_grid_no_galfit_error
+
+user_define_param_grid_using_galfit_flux_error
+    # please define params here
+    set npar = 2
+    set par1 = e_S_out/noise
+    set par1_str = 'log e_{S_{out}}/\\sigma_{rms noise}'
+    set par1_grid = {0 0.1 1 2 3 5 10 100}
+    set par2 = Maj_out
+    set par2_str = 'FWHM_{source}'
+    set par2_grid = <0 0.1 0.5 $(0.5+0.1) 1.0 2.0 3.0 4.0 5.0 100>
+    define outdir sim_diagram_output_using_galfit_flux_error
+
+user_define_param_grid_no_galfit_error
+    # please define params here
+    set npar = 2
+    set par1 = S_peak/noise
+    set par1_str = 'S_{peak}/\\sigma_{rms noise}'
+    set par1_grid = {1.5 2.0 2.5 3.0 3.5 4.0 5.0 7.0 10. 20. 50. 100}
+    set par2 = Maj_out
+    set par2_str = 'FWHM_{source}/FWHM_{beam}'
+    set par2_grid = {0.00 0.50 1.00 1.50 2.00 2.50 3.00 3.50 5.00}
+    define outdir sim_diagram_output_no_galfit_flux_error
+
+user_define_data_file
+    # please define params here
+    define inputdata "simu_data_input.txt"
+
+read_data_file
+    # 
+    # User input data file
+    user_define_data_file
+    # 
+    # Read data file
+    load rfile.sm
+    data $inputdata
+    read {id 1 S_in 2 S_out 3 e_S_out 4 S_peak 5 S_res 6 noise 7 Maj_in 8 Min_in 9 Maj_out 10 Min_out 11 Maj_beam 12 Min_beam 13}
+    # 
+    # check variables 
+    define check_columns 1
+    foreach var {id Maj_in Min_in S_in S_out e_S_out S_peak S_res noise Maj_out Min_out Maj_beam Min_beam} {
+        if(!is_vector($var)) {
+            define check_columns 0
+            print 'Data column \"$var\" was not found in the input file!\n' {}
+        }
+    }
+    if($check_columns==0) {return}
+    # 
+    # filter bad sources which have zero S_peak (at the edge of the image)
+    set filter = (e_S_out>=0)
+    foreach var {id Maj_in Min_in S_in S_out e_S_out S_peak S_res noise Maj_out Min_out Maj_beam Min_beam} {
+        set $var = $var if(filter)
+    }
+    # 
+    # print how many sources under analysis
+    echo ""
+    echo "Analyzing "$(dimen(S_in))" sources"
+    echo ""
+    # 
+    # compute median rms noise
+    stats_med noise noise_median noise_kurt
+    echo "noise_median = "$noise_median
+    echo ""
+    # 
+    # set S_diff and rel_S_diff
+    set S_diff = (S_in - S_out)
+    set rel_S_diff = (S_in - S_out)/S_in
+
+
+
+run_simu_stats_in_param_grid
+    # 
+    # Aim:
+    #       This program aims at analyzing galaxies' Monte Carlo simulation
+    #       and derive correction recipes for fluxes and errors. 
+    #       Here we do not use galfit flux errors because their histogram
+    #       of ((S_in-S_out)/error_S_out) are far from Gaussian. 
+    #       So we should derive flux errors purely based on statistics without prior. 
+    # 
+    # Usage:
+    #       echo "macro read run_simu_stats_in_param_grid.sm run_simu_stats_in_param_grid simu_data_input.txt" | sm
+    # 
+    #if(!$?1) {
+    #    print 'Usage: \n' {} 
+    #    print '       macro read run_simu_stats_in_param_grid.sm\n' {}
+    #    print '       run_simu_stats_in_param_grid simu_data_input.txt\n' {}
+    #    return
+    #}
+    # 
+    # read data file
+    read_data_file
+    # 
+    # define parameters
+    user_define_param_grid
+    # 
+    # define output dir
+    if(!$?outdir) {
+        define outdir "sim_diagram_output"
+    }
+    # 
+    # mkdir
+    !mkdir $outdir 2>/dev/null
+    # 
+    # 
+    # 
+    # store uncorr0
+    set S_out_uncorr0 = S_out
+    set e_S_out_uncorr0 = e_S_out
+    # 
+    # define param grid statistical measurements
+    compute_statistics_in_param_grid_cells
+
+
+
+compute_statistics_in_param_grid_cells
+    # 
+    # Here we determine the grid cells for each param data array
+    # 
+    if(!is_vector(npar)) {
+        print 'Error! npar was not set!\n' {}
+        return
+    }
+    declare cell_id 0.d
+    declare cell_median 0.f # (S_in - S_out) median
+    declare cell_scatter 0.f # (S_in - S_out) scatter
+    declare cell_rel_median 0.f # (S_in - S_out)/S_in median
+    declare cell_rel_scatter 0.f # (S_in - S_out)/S_in scatter
+    declare cell_rel_scatter_L68 0.f # (S_in - S_out)/S_in scatter
+    declare cell_rel_scatter_H68 0.f # (S_in - S_out)/S_in scatter
+    declare cell_e_S_out_median 0.f # (e_S_out) median
+    do i = 1, npar {
+        declare cell_par$i""_median 0.f
+        #declare cell_par$i""_mean 0.f
+    }
+    set cell_minimum_data_points = 10 #<TODO># limit number of data points in each cell
+    set cell_total_number = 1
+    # 
+    # set bin by which parameters
+    do i = 1, npar {
+        # check par$i
+        if(!is_vector(par$i)) {
+            print 'Error! par$i was not set!\n' {}
+            return
+        }
+        # get param min max
+        vecminmax par$i tmin tmax
+        # get param grid
+        if(!is_vector(par$i""_grid)) {
+            set par$i""_grid = $tmin,$tmax,$(($tmax-$tmin)/6) # if user has not supplied with a grid, assign a grid of 6 cells per param. 
+        }
+        # get param str
+        if(!is_vector(par$i""_str)) {
+            set par$i""_str = 'par$i' # if user has not supplied with a grid, assign a grid of 6 cells per param. 
+        }
+        # print 
+        print 'Bin by param $i: $(par$i""_str), min max: $tmin $tmax' {}
+        if($tmin>=$tmax) {
+            print '\n' {}
+            print 'Error! Could not determine valid min and max for param $i: $(par$i""_str)! Maybe this param contains no valid value?!\n' {}
+            exit
+        } else {
+            print ', param grid:' {}
+            do k = 0, dimen(par$i""_grid)-1 {
+                print ' $(par$i""_grid[$k])' {}
+            }
+        }
+        print ' (N=$(dimen(par$i""_grid)-1))\n' {}
+        set cell_total_number = cell_total_number * $(dimen(par$i""_grid)-1) # note that -1 is because edge list has one more element than cell list. 
+    }
+    print 'Total grid cells: $(cell_total_number)' {}
+    print '\n' {}
+    # 
+    # print separator
+    print '\n--------------------------------------------------------------------------------\n\n' {}
+    # 
+    # loop each grid cell to compute cell_median, cell_rel_median, etc.
+    define icell 1
+    do i = 1, npar {
+        define i$i 1 # here i$i starts from 1 because our looping array is bin_edges, which has one more element than the bin number. 
+    }
+    while { $icell <= cell_total_number } {
+        # 
+        # current cell
+        set icell_str = sprintf('%4d',$icell)
+        print 'Current cell $(icell_str):' {}
+        do i = 1, npar {
+            print '\tpars$i ($(par$i""_grid[$i$i-1])-$(par$i""_grid[$i$i]))' {}
+        }
+        # 
+        # select data points in each bin
+        set bin_selection = S_in*0+1
+        do i = 1, npar {
+            # select data points in each bin by excluding lower and upper ranges
+            set bin_selection = ( par$i < $(par$i""_grid[$i$i-1]) ) ? 0 : bin_selection
+            set bin_selection = ( par$i >= $(par$i""_grid[$i$i]) ) ? 0 : bin_selection
+            # consider the last one element
+            if($i$i==dimen(par$i""_grid)-1) {
+                set bin_selection = ( par$i == $(par$i""_grid[$i$i]) ) ? 1 : bin_selection
+            }
+        }
+        print ', $(sum(bin_selection)) dp' {}
+        # 
+        # check data points, must have at least some number of data points to compute the statistics
+        if(sum(bin_selection)>=cell_minimum_data_points) {
+            # 
+            # get data arrays in each grid cell bin
+            foreach var {S_in S_out e_S_out} {set bin_$var = $var if(bin_selection)}
+            do i = 1, npar {set bin_par$i = par$i if(bin_selection)}
+            set bin_rel_S_diff = (bin_S_in-bin_S_out)/bin_S_in
+            set bin_S_diff = (bin_S_in-bin_S_out)
+            # 
+            # store param median in each bin
+            do i = 1, npar {
+                calc_mean_median bin_par$i
+                set cell_par$i""_median = cell_par$i""_median concat calc_bin_median
+            }
+            # 
+            # store (S_in-S_out) median -- absolute fbias
+            calc_mean_median bin_S_diff
+            set cell_median = cell_median concat calc_bin_median
+            set cell_scatter = cell_scatter concat calc_bin_sigma
+            # 
+            # store (S_in-S_out)/S_in median -- relative fbias
+            calc_mean_median bin_rel_S_diff 10.0
+            set cell_rel_median = cell_rel_median concat calc_bin_median
+            # 
+            # store (S_in-S_out)/S_in scatter -- relative scatter
+            calc_asymmetric_scatters bin_rel_S_diff 10.0
+            set cell_rel_scatter_L68 = cell_rel_scatter_L68 concat asym_bin_scatter_L68
+            set cell_rel_scatter_H68 = cell_rel_scatter_H68 concat asym_bin_scatter_H68
+            set asym_bin_scatter = $asym_bin_array_sigma
+            set cell_rel_scatter = cell_rel_scatter concat asym_bin_scatter
+            # 
+            # store (S_in-S_out)/S_in scatter -- mean galfit flux error
+            calc_mean_median bin_e_S_out 10.0
+            set cell_e_S_out_median = cell_e_S_out_median concat calc_bin_median
+            # 
+            # store cell_id
+            set cell_id = cell_id concat ($icell)
+            # 
+            # write cell data
+            print $outdir"/datatable_S_diff_cell_id_"$icell".txt" {bin_rel_S_diff bin_par1 bin_par2}
+        }
+        # 
+        print '\n' {}
+        # 
+        # next cell
+        define icell $($icell+1)
+        if($icell <= cell_total_number) {
+            define i 1
+            define i$i $($i$i+1)
+            do i = 1, npar {
+                if($i$i > (dimen(par$i""_grid)-1)) {
+                    #<NOTE># here $i$i > dim is because we use $i$i, which starts from 1, for the bin edge array, which has one more element than the bin array. 
+                    define i$i $($i$i-(dimen(par$i""_grid)-1))
+                    if($i < npar) {
+                        #<NOTE># $i and i$i starts from 1
+                        define i$($i+1) $($i$($i+1)+1)
+                    }
+                }
+            }
+        }
+    }
+    # 
+    # write 
+    load wfile.sm
+    set wfile_vectors = {cell_id cell_median cell_scatter cell_rel_median cell_rel_scatter cell_rel_scatter_L68 cell_rel_scatter_H68 cell_e_S_out_median}
+    do i = 1, npar { set wfile_vectors = wfile_vectors concat <cell_par$i""_median> }
+    wfile $outdir"/datatable_correction.txt"
+    # 
+    # write 
+    #set S_diff = S_in - S_out
+    #set rel_S_diff = (S_in - S_out)/S_in
+    #set wfile_vectors = {id S_diff rel_S_diff}
+    #do i = 1, npar { set wfile_vectors = wfile_vectors concat <par$i> }
+    #wfile $outdir"/datatable_S_diff_versus_params.txt"
+
+
+
+
+
+
+
+
+
+
+
+
+
+calc_mean_median 02
+    # $1 is data array
+    # $2 is sigma clip
+    # output:
+    #           calc_bin_mean
+    #           calc_bin_median
+    #           calc_bin_sigma
+    if($?1) {
+        set calc_bin_array = $1
+        stats calc_bin_array calc_bin_array_mean calc_bin_array_sigma calc_bin_array_kurt
+        stats_med calc_bin_array calc_bin_array_median calc_bin_array_siqr
+        # 
+        # apply sigma clip according to $2
+        if($?2) {
+            set calc_bin_array_clipped = calc_bin_array if(abs(calc_bin_array-$calc_bin_array_mean)<=float($2)*$calc_bin_array_sigma)
+            stats calc_bin_array_clipped calc_bin_array_mean calc_bin_array_sigma calc_bin_array_kurt
+            stats_med calc_bin_array_clipped calc_bin_array_median calc_bin_array_siqr
+        }
+        set calc_bin_mean = $calc_bin_array_mean
+        set calc_bin_median = $calc_bin_array_median
+        set calc_bin_sigma = $calc_bin_array_sigma
+    }
+
+
+
+
+
+calc_asymmetric_scatters 02
+    # $1 is data array
+    # $2 is sigma clip
+    # output: 
+    #           asym_bin_scatter_L68
+    #           asym_bin_scatter_H68
+    if($?1) {
+        set asym_bin_array = $1
+        stats asym_bin_array asym_bin_array_mean asym_bin_array_sigma asym_bin_array_kurtosis
+        #stats_med asym_bin_array asym_bin_array_median asym_bin_array_siqr
+        # 
+        # apply sigma clip according to $2
+        if($?2) {
+            set asym_bin_array_clipped = asym_bin_array if(abs(asym_bin_array-$asym_bin_array_mean)<=float($2)*$asym_bin_array_sigma)
+            stats asym_bin_array_clipped asym_bin_array_mean asym_bin_array_sigma asym_bin_array_kurtosis
+        }
+        # 
+        # apply mean bias
+        set asym_bin_array = asym_bin_array - $asym_bin_array_mean
+        vecminmax asym_bin_array asym_bin_array_min asym_bin_array_max
+        stats asym_bin_array asym_bin_array_mean asym_bin_array_sigma asym_bin_array_kurtosis
+        #stats_med asym_bin_array asym_bin_array_median asym_bin_array_siqr
+        # 
+        # sort asym_bin_array
+        sort {asym_bin_array}
+        # 
+        # compute assymetic sigma
+        if($asym_bin_array_min < $asym_bin_array_max) {
+            set asym_bin_k = 0.0
+            set asym_bin_scatter_H68 = 0.0
+            set asym_bin_array_scan_leg = abs($asym_bin_array_sigma)/50.0 # determine scan leg
+            if(asym_bin_array_scan_leg > abs($asym_bin_array_max)/50.0) {
+                set asym_bin_array_scan_leg = abs($asym_bin_array_max)/50.0
+            }
+            while { asym_bin_k<=$asym_bin_array_max } {
+                #set asym_bin_scatter_H68 = asym_bin_k
+                if(sum(asym_bin_array>=0 && asym_bin_array<asym_bin_k) > sum(asym_bin_array>=0)*0.682689492137086) {
+                    set asym_bin_scatter_H68 = asym_bin_k
+                    break
+                }
+                set asym_bin_k = asym_bin_k + asym_bin_array_scan_leg
+                #<DEBUG># echo Counting 0 to $(asym_bin_k), number $(sum(asym_bin_array>=0 && asym_bin_array<asym_bin_k)), expecting $(sum(asym_bin_array>=0)*0.682689492137086)
+            }
+            # check
+            if(asym_bin_scatter_H68==0) {
+                print '\nError! Failed to compute asym_bin_scatter_H68 ' {}
+                print 'by counting $(sum(asym_bin_array>=0)*0.682689492137086) sources ' {}
+                print 'with step $(asym_bin_array_scan_leg) from 0 to $asym_bin_array_max!\n' {}
+                print {asym_bin_array}
+            }
+            # 
+            set asym_bin_k = 0.0
+            set asym_bin_scatter_L68 = 0.0
+            set asym_bin_array_scan_leg = abs($asym_bin_array_sigma)/50.0 # determine scan leg
+            if(asym_bin_array_scan_leg > abs($asym_bin_array_min)/50.0) {
+                set asym_bin_array_scan_leg = abs($asym_bin_array_min)/50.0
+            }
+            while { asym_bin_k>=$asym_bin_array_min } {
+                #set asym_bin_scatter_L68 = abs(asym_bin_k)
+                if(sum(asym_bin_array<=0 && asym_bin_array>asym_bin_k) > sum(asym_bin_array<=0)*0.682689492137086) {
+                    set asym_bin_scatter_L68 = abs(asym_bin_k)
+                    break
+                }
+                set asym_bin_k = asym_bin_k - asym_bin_array_scan_leg
+                #<DEBUG># echo Counting $(asym_bin_k) to 0, number $(sum(asym_bin_array<=0 && asym_bin_array>asym_bin_k)), expecting $(sum(asym_bin_array<=0)*0.682689492137086)
+            }
+            # check
+            if(asym_bin_scatter_L68==0) {
+                print '\nError! Failed to compute asym_bin_scatter_L68 ' {}
+                print 'by counting $(sum(asym_bin_array<=0)*0.682689492137086) sources ' {}
+                print 'with step $(asym_bin_array_scan_leg) from $asym_bin_array_min to 0!\n' {}
+                print {asym_bin_array}
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
