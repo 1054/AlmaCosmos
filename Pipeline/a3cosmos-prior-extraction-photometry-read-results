@@ -93,21 +93,21 @@ List_of_Files=(\
 "getpix_on_negative_image.txt" \
 "getpix_on_negative_image.result" \
 "fit_2.result.all.txt"
-"fit_2.source_area.txt"
-"fit_2.source_peak.txt"
-"fit_2.source_err.txt"
+"fit_2.result.source_area.txt"
+"fit_2.result.source_peak.txt"
+"fit_2.result.source_err.txt"
 "fit_3.result.all.txt"
-"fit_3.source_area.txt"
-"fit_3.source_peak.txt"
-"fit_3.source_err.txt"
+"fit_3.result.source_area.txt"
+"fit_3.result.source_peak.txt"
+"fit_3.result.source_err.txt"
 "fit_n2.result.all.txt"
-"fit_n2.source_area.txt"
-"fit_n2.source_peak.txt"
-"fit_n2.source_err.txt"
+"fit_n2.result.source_area.txt"
+"fit_n2.result.source_peak.txt"
+"fit_n2.result.source_err.txt"
 "fit_n3.result.all.txt"
-"fit_n3.source_area.txt"
-"fit_n3.source_peak.txt"
-"fit_n3.source_err.txt"
+"fit_n3.result.source_area.txt"
+"fit_n3.result.source_peak.txt"
+"fit_n3.result.source_err.txt"
 )
 #"final.result" \
 #"final_on_negative_image.result" \
@@ -151,12 +151,13 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
     
     for OutputItem in "${List_of_Files[@]}"; do
         if [[ -f "${OutputItem}" ]]; then
-            if [[ ! -f "$CurrentDir/Read_Results_all_final_detections.txt" ]]; then
-                head -n 1 "${OutputItem}" | $xargs_command -d '\n' -I % echo "%    image_file" \
-                > "$CurrentDir/Read_Results_all_final_${OutputItem}"
+            if [[ ! -f "$CurrentDir/Read_Results_all_final_${OutputItem}" ]]; then
+                head -n 1 "${OutputItem}" | $xargs_command -d '\n' -I % echo "%    image_file" > "$CurrentDir/Read_Results_all_final_${OutputItem}"
             fi
-            cat "${OutputItem}" | tail -n +3 | $xargs_command -d '\n' -I % echo "%    $SourceName" \
-            >> "$CurrentDir/Read_Results_all_final_${OutputItem}"
+            cat "${OutputItem}" | tail -n +3 | $xargs_command -d '\n' -I % echo "%    $SourceName" >> "$CurrentDir/Read_Results_all_final_${OutputItem}"
+        else
+            echo "Error! \"$(pwd)/${OutputItem}\" was not found!"
+            exit 1
         fi
     done
     
