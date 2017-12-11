@@ -156,8 +156,10 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
             fi
             cat "${OutputItem}" | tail -n +3 | $xargs_command -d '\n' -I % echo "%    $SourceName" >> "$CurrentDir/Read_Results_all_final_${OutputItem}"
         else
-            echo "Error! \"$(pwd)/${OutputItem}\" was not found!"
-            exit 1
+            echo "********************************************************"
+            echo "Warning! \"$(pwd)/${OutputItem}\" was not found!"
+            echo "********************************************************"
+            echo "Warning! \"$(pwd)/${OutputItem}\" was not found!" >> "WARNING.TXT"
         fi
     done
     
