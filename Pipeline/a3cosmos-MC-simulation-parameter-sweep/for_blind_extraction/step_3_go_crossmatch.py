@@ -198,8 +198,6 @@ for alma_image_name in alma_image_list:
                 # spurious
                 if len(rec_index) > 1:
                     spurious_index = range(len(rec_xydis))
-                    print(spurious_index)
-                    print(rec_index)
                     spurious_index.remove(rec_index[0])
                 # 
                 # close
@@ -245,7 +243,7 @@ for alma_image_name in alma_image_list:
                     rec_Min = rec_Min[rec_index[0]]
                     rec_PA = rec_PA[rec_index[0]]
                     rec_S_Code = rec_S_Code[rec_index[0]]
-                    spurious_index.remove(rec_index[0])
+                    #spurious_index.remove(rec_index[0])
                 #break
             # 
             # print header
