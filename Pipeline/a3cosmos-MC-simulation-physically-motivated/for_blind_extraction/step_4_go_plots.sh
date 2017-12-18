@@ -33,8 +33,10 @@ if [[ ! -d "$output_dir" ]]; then
 fi
 
 
+
 # 
 # plot flux-flux comparison, with data points colored by cat_2 SNR ftotal
+# 
 margin=(100 70 100 20) # left, bottom, right, top
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
@@ -51,13 +53,10 @@ topcat -stilts plot2plane \
                 leglabel_1="flux comparison" \
                 in_1="$crossmatched_cat" \
                 icmd_1="select \"(flag_matched)\"" \
-                icmd_1="addcol Xf -after \"flux\" \"(flux)\"" \
-                icmd_1="addcol f -after \"Total_flux_fit\" \"(Total_flux_fit*1e3)\"" \
-                icmd_1="addcol df -after \"f\" \"(E_Total_flux_fit*1e3)\"" \
-                icmd_1="sort \"(f/df)\"" \
-                x_1="Xf" \
-                y_1="f" \
-                aux="(f/df)" \
+                icmd_1="sort \"(S_out/e_S_out)\"" \
+                x_1="S_in" \
+                y_1="S_out" \
+                aux="(S_out/e_S_out)" \
                 shading_1=aux \
                 size_1=2 \
                 \
@@ -73,98 +72,13 @@ topcat -stilts plot2plane \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
-                out="$output_dir/Plot_ftotal_scatter.pdf"
+                out="$output_dir/Plot_S_in_vs_S_out.pdf"
 
-
-
-
-
-
-
-
-
-
-# 
-# compute S/N_peak of all detections
-if [[ ! -f "$output_dir/datatable_AllDetections.SNR_peak.txt" ]] || [[ $do_overwrite -eq 1 ]]; then
-topcat -stilts tpipe \
-                in="$crossmatched_cat" \
-                ifmt=fits \
-                cmd="select \"(flag_matched || flag_nonmatched_spurious)\"" \
-                cmd="addcol SNR_peak \"(Peak_flux_fit/Isl_rms_fit)\"" \
-                cmd="keepcols \"SNR_peak\"" \
-                ofmt=ascii \
-                out="$output_dir/datatable_AllDetections.SNR_peak.txt"
-fi
-
-# 
-# get the SNR_peak of the detected sources that do not have simulated source counterpart -- spurious (no counterpart)
-if [[ ! -f "$output_dir/datatable_AllDetections.SNR_peak.txt" ]] || [[ $do_overwrite -eq 1 ]]; then
-topcat -stilts tpipe \
-                in="$crossmatched_cat" \
-                ifmt=fits \
-                cmd="select \"(flag_nonmatched_spurious)\"" \
-                cmd="addcol SNR_peak \"(Peak_flux_fit/Isl_rms_fit)\"" \
-                cmd="keepcols \"SNR_peak\"" \
-                ofmt=ascii \
-                out="$output_dir/datatable_NotSimulated.spurious.SNR_peak.txt"
-fi
-
-# 
-# get the SNR_peak of the detected sources that do have simulated source counterpart (but could be both good or flux-boosted)
-if [[ ! -f "$output_dir/datatable_Matched.SNR_peak.txt" ]] || [[ $do_overwrite -eq 1 ]]; then
-topcat -stilts tpipe \
-                in="$crossmatched_cat" \
-                ifmt=fits \
-                cmd="select \"(flag_matched)\"" \
-                cmd="addcol SNR_peak \"(Peak_flux_fit/Isl_rms_fit)\"" \
-                cmd="keepcols \"SNR_peak\"" \
-                ofmt=ascii \
-                out="$output_dir/datatable_Matched.SNR_peak.txt"
-fi
-
-# 
-# get the SNR_peak of the detected sources that do have simulated source counterpart and have good flux measurements
-if [[ ! -f "$output_dir/datatable_Matched.good.SNR_peak.txt" ]] || [[ $do_overwrite -eq 1 ]]; then
-topcat -stilts tpipe \
-                in="$crossmatched_cat" \
-                ifmt=fits \
-                cmd="select \"(flag_matched)\"" \
-                cmd="addcol Xf -after flux \"(flux)\"" \
-                cmd="addcol f -after Total_flux_fit \"(Total_flux_fit*1e3)\"" \
-                cmd="select \"(fpeak>=3.0*rms && abs(Xf-f)<0.3*Xf && abs(Xf-f)<0.3*f)\"" \
-                cmd="addcol SNR_peak \"(Peak_flux_fit/Isl_rms_fit)\"" \
-                cmd="keepcols \"SNR_peak\"" \
-                ofmt=ascii \
-                out="$output_dir/datatable_Matched.good.SNR_peak.txt"
-fi
-
-# 
-# get the SNR_peak of the detected sources that do have simulated source counterpart but do not have good flux measurements -- spurious (flux boosted)
-if [[ ! -f "$output_dir/datatable_Matched.spurious.SNR_peak.txt" ]] || [[ $do_overwrite -eq 1 ]]; then
-topcat -stilts tpipe \
-                in="$crossmatched_cat" \
-                ifmt=fits \
-                cmd="select \"(flag_matched)\"" \
-                cmd="addcol Xf -after flux \"(flux)\"" \
-                cmd="addcol f -after Total_flux_fit \"(Total_flux_fit*1e3)\"" \
-                cmd="select \"!(fpeak>=3.0*rms && abs(Xf-f)<0.3*Xf && abs(Xf-f)<0.3*f)\"" \
-                cmd="addcol SNR_peak \"(Peak_flux_fit/Isl_rms_fit)\"" \
-                cmd="keepcols \"SNR_peak\"" \
-                ofmt=ascii \
-                out="$output_dir/datatable_Matched.spurious.SNR_peak.txt"
-fi
-
-# 
-# get the SNR_peak of all spurious sources, including non-detected sources and detected sources which have wrong boosted fluxes
-if [[ ! -f "$output_dir/datatable_AllSpurious.SNR_peak.txt" ]] || [[ $do_overwrite -eq 1 ]]; then
-    cat "$output_dir/datatable_NotSimulated.spurious.SNR_peak.txt" > "$output_dir/datatable_AllSpurious.SNR_peak.txt"
-    cat "$output_dir/datatable_Matched.spurious.SNR_peak.txt" | grep -v '^#' >> "$output_dir/datatable_AllSpurious.SNR_peak.txt"
-fi
 
 
 # 
 # plot histograms
+# 
 margin=(80 50 20 20) # left, bottom, right, top
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
@@ -181,43 +95,47 @@ topcat -stilts plot2plane \
                 color1="cccccc" \
                 transparency1=0 \
                 binsize1="+1.10" \
-                in1="$output_dir/datatable_AllDetections.SNR_peak.txt" \
-                ifmt1=ascii \
+                in1="$crossmatched_cat" \
+                ifmt1=fits \
+                icmd1="select \"(flag_matched || flag_nonmatched_spurious)\"" \
                 leglabel1='all \ detections' \
-                x1="SNR_peak" \
+                x1="S_peak/noise" \
                 \
                 layer2=histogram \
                 thick2=1 \
                 barform2=semi_filled \
-                color2=blue \
+                color2=orange \
                 transparency2=0 \
                 binsize2="+1.10" \
-                in2="$output_dir/datatable_Matched.good.SNR_peak.txt" \
-                ifmt2=ascii \
-                leglabel2='detected \ and \ flux \ accuracy \ < 30\%' \
-                x2="SNR_peak" \
+                in2="$crossmatched_cat" \
+                ifmt2=fits \
+                icmd2="select \"(flag_matched)\"" \
+                leglabel2='detected \ and \ matched' \
+                x2="S_peak/noise" \
                 \
                 layer3=histogram \
                 thick3=1 \
                 barform3=semi_filled \
-                color3=red \
+                color3=blue \
                 transparency3=0 \
                 binsize3="+1.10" \
-                in3="$output_dir/datatable_AllSpurious.SNR_peak.txt" \
-                ifmt3=ascii \
-                leglabel3='spurious: flux \ boosted + no \ counterpart' \
-                x3="SNR_peak" \
+                in3="$crossmatched_cat" \
+                ifmt3=fits \
+                icmd3="select \"(flag_matched && ( abs(S_in-S_out)<(0.3*S_in) && abs(S_in-S_out)<(0.3*S_out) && S_peak>3.0*noise ))\"" \
+                leglabel3='detected \ and \ flux \ accuracy \ < 30\%' \
+                x3="S_peak/noise" \
                 \
                 layer4=histogram \
                 thick4=1 \
                 barform4=semi_filled \
-                color4=yellow \
+                color4=magenta \
                 transparency4=0 \
                 binsize4="+1.10" \
-                in4="$output_dir/datatable_NotSimulated.spurious.SNR_peak.txt" \
-                ifmt4=ascii \
+                in4="$crossmatched_cat" \
+                ifmt4=fits \
+                icmd4="select \"(flag_nonmatched_spurious)\"" \
                 leglabel4='spurious: no \ counterpart' \
-                x4="SNR_peak" \
+                x4="S_peak/noise" \
                 \
                 legpos=0.08,0.94 \
                 seq='1,2,3,4' \
@@ -228,43 +146,12 @@ topcat -stilts plot2plane \
                 out="$output_dir/Plot_SNR_histogram_for_spurious_fraction.pdf"
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
-                # omode=swing
 
-
-
-
-
-
-
-
-
-
-
-
-# 
-# simulated sources that are not blindly extracted
-if [[ ! -f "$output_dir/datatable_NotRecovered.missed.SNR_peak.txt" ]] || [[ $do_overwrite -eq 1 ]]; then
-topcat -stilts tpipe \
-                in="$crossmatched_cat" \
-                ifmt=fits \
-                cmd="select \"(flag_nonmatched_missed)\"" \
-                cmd="addcol SNR_peak \"fpeak/rms\"" \
-                cmd="keepcols \"SNR_peak\"" \
-                ofmt=ascii \
-                out="$output_dir/datatable_NotRecovered.missed.SNR_peak.txt"
-                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
-fi
-
-# 
-# get the SNR_peak of all simulated sources, including non-detected but simulated sources and all detected sources which have cross-matched to a simulated source. 
-if [[ ! -f "$output_dir/datatable_AllSimulated.SNR_peak.txt" ]] || [[ $do_overwrite -eq 1 ]]; then
-    cat "$output_dir/datatable_NotRecovered.missed.SNR_peak.txt" > "$output_dir/datatable_AllSimulated.SNR_peak.txt"
-    cat "$output_dir/datatable_Matched.SNR_peak.txt" | grep -v '^#' >> "$output_dir/datatable_AllSimulated.SNR_peak.txt"
-fi
 
 
 # 
 # plot histograms
+# 
 margin=(80 50 20 20) # left, bottom, right, top
 binsize="+1.20" # "+1.10"
 topcat -stilts plot2plane \
@@ -282,32 +169,35 @@ topcat -stilts plot2plane \
                 color1="cccccc" \
                 transparency1=0 \
                 binsize1="$binsize" \
-                in1="$output_dir/datatable_AllSimulated.SNR_peak.txt" \
-                ifmt1=ascii \
+                in1="$crossmatched_cat" \
+                ifmt1=fits \
+                icmd1="select \"(flag_nonmatched_missed || flag_matched)\"" \
                 leglabel1='all \ simulated' \
-                x1="SNR_peak" \
-                \
-                layer3=histogram \
-                thick3=1 \
-                barform3=semi_filled \
-                color3=orange \
-                transparency3=0 \
-                binsize3="$binsize" \
-                in3="$output_dir/datatable_NotRecovered.missed.SNR_peak.txt" \
-                ifmt3=ascii \
-                leglabel3='simulated \ but \ not \ recovered' \
-                x3="SNR_peak" \
+                x1="(S_in/((Maj_in*Min_in)/(Maj_beam*Min_beam)))/noise" \
                 \
                 layer2=histogram \
                 thick2=1 \
                 barform2=semi_filled \
-                color2=green \
-                transparency2=0.3 \
+                color2=orange \
+                transparency2=0 \
                 binsize2="$binsize" \
-                in2="$output_dir/datatable_Matched.SNR_peak.txt" \
-                ifmt2=ascii \
-                leglabel2='simulated \ and \ recovered' \
-                x2="SNR_peak" \
+                in2="$crossmatched_cat" \
+                ifmt2=fits \
+                icmd2="select \"(flag_nonmatched_missed)\"" \
+                leglabel2='simulated \ but \ not \ recovered' \
+                x2="(S_in/((Maj_in*Min_in)/(Maj_beam*Min_beam)))/noise" \
+                \
+                layer3=histogram \
+                thick3=1 \
+                barform3=semi_filled \
+                color3=green \
+                transparency3=0.3 \
+                binsize3="$binsize" \
+                in3="$crossmatched_cat" \
+                ifmt3=fits \
+                icmd3="select \"(flag_matched)\"" \
+                leglabel3='simulated \ and \ recovered' \
+                x3="(S_in/((Maj_in*Min_in)/(Maj_beam*Min_beam)))/noise" \
                 \
                 layer4=histogram \
                 thick4=1 \
@@ -315,13 +205,14 @@ topcat -stilts plot2plane \
                 color4=blue \
                 transparency4=0.4 \
                 binsize4="$binsize" \
-                in4="$output_dir/datatable_Matched.good.SNR_peak.txt" \
-                ifmt4=ascii \
+                in4="$crossmatched_cat" \
+                ifmt4=fits \
+                icmd4="select \"(flag_matched && ( abs(S_in-S_out)<(0.3*S_in) && abs(S_in-S_out)<(0.3*S_out) && S_peak>3.0*noise ))\"" \
                 leglabel4='simulated \ and \ recovered \ and \ flux \ accuracy < 30\%' \
-                x4="SNR_peak" \
+                x4="(S_in/((Maj_in*Min_in)/(Maj_beam*Min_beam)))/noise" \
                 \
                 legpos=0.08,0.94 \
-                seq='1,3,2,4' \
+                seq='1,2,3,4' \
                 fontsize=16 \
                 texttype=latex \
                 aspect=1.0 \
@@ -329,12 +220,10 @@ topcat -stilts plot2plane \
                 out="$output_dir/Plot_SNR_histogram_for_completeness.pdf"
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
-                # omode=swing
 
 
 
-
-open 'Plot_SNR_histogram_for_spurious_fraction.pdf' 'Plot_SNR_histogram_for_completeness.pdf'
+#open 'Plot_SNR_histogram_for_spurious_fraction.pdf' 'Plot_SNR_histogram_for_completeness.pdf'
 
 
 

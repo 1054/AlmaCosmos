@@ -91,7 +91,10 @@ wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master
 
 mkdir lib_python_dzliu
 mkdir lib_python_dzliu/crabtable
-wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/lib_python_dzliu/crabtable/CrabTable.py   -O lib_python_dzliu/crabtable/CrabTable.py
+wget -q https://raw.githubusercontent.com/1054/Crab.Toolkit.michi2/master/lib/python/crabtable/CrabTable.py   -O lib_python_dzliu/crabtable/CrabTable.py
+
+mkdir lib_python_dzliu/crabplot
+wget -q https://raw.githubusercontent.com/1054/Crab.Toolkit.michi2/master/lib/python/crabplot/CrabPlot.py   -O lib_python_dzliu/crabplot/CrabPlot.py
 
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/read_alma_fits_image_beam_area  -O read_alma_fits_image_beam_area
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/read_galfit_output_fits_result  -O read_galfit_output_fits_result

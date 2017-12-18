@@ -1,9 +1,9 @@
-plot_simu_stats_in_param_grid
+plot_simu_stats
     # 
-    #  echo "macro read plot_simu_stats_in_param_grid.sm plot_simu_stats_in_param_grid" | sm
+    #  echo "macro read plot_simu_stats.sm plot_simu_stats" | sm
     # 
     # setup
-    macro read run_simu_stats_in_param_grid.sm
+    macro read almacosmos_calc_simu_stats.sm
     read_data_file
     user_define_param_grid
     # 
@@ -22,24 +22,25 @@ plot_simu_stats_in_param_grid
     if($check_ok==0) {return}
     # 
     # plot ND
-    plot_simu_stats_2D_fbias
-    !open $outdir"/Plot_fbias.pdf"
-    plot_simu_stats_2D_fbias_S_diff
-    #!open $outdir"/Plot_fbias_S_diff.pdf"
-    plot_simu_stats_2D_fbias_S_diff_e_S_out
-    #!open $outdir"/Plot_fbias_S_diff_e_S_out.pdf"
-    plot_simu_stats_2D_fbias_vs_maj
-    !open $outdir"/Plot_fbias_vs_maj.pdf"
+    plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
+    !open $outdir"/Plot_rel_S_diff_vs_peak_SNR.pdf"
+    
+    plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
+    !open $outdir"/Plot_rel_S_diff_vs_FWHM_maj.pdf"
+    
+    #plot_simu_stats_2D_abs_S_diff_vs_peak_SNR
+    
+    #plot_simu_stats_2D_nom_S_diff_vs_peak_SNR
 
 
 
-plot_simu_stats_2D_fbias
+plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
     # 
     # make plots
     # 
     load crabPlot.sm
     load crabPlotColorbar.sm
-    crabPlotOpenPS $outdir"/Plot_fbias.eps"
+    crabPlotOpenPS $outdir"/Plot_rel_S_diff_vs_peak_SNR.eps"
     crabPlotDefaultPenForBox
     location 7000 30500 16000 30500
     limits $(lg(3)) 2 -2 2
@@ -96,18 +97,36 @@ plot_simu_stats_2D_fbias
         }
     }
     # 
-    # # plot minimum chi2 fit
+    # plot minimum chi2 fitted fbias
     if(is_file($outdir"/best_fit_function_fbias.sm")) {
         !cat $outdir"/best_fit_function_fbias.sm"
         crabPlotDefaultPenForConnect
         foreach par2_val {0.25 0.75 1.25 1.75 2.25 2.75 3.25 3.75} {
             ctype $(plotColorBar_value2color($par2_val))
             set x1 = $fx1,$fx2,0.05
-            set x1 = 10**x1
+            set x1 = 10**x1 # we plot x1 in log, but calculates with x1 in linear
             set x2 = $par2_val
             input $outdir"/best_fit_function_fbias.sm"
-            set x1 = lg(x1)
+            set x1 = lg(x1) # we plot x1 in log, but calculates with x1 in linear
             connect x1 y_fit
+        }
+    }
+    # 
+    # plot minimum chi2 fitted ecorr
+    if(is_file($outdir"/best_fit_function_ecorr.sm")) {
+        !cat $outdir"/best_fit_function_ecorr.sm"
+        crabPlotDefaultPenForConnect
+        foreach par2_val {0.25 0.75 1.25 1.75 2.25 2.75 3.25 3.75} {
+            ctype $(plotColorBar_value2color($par2_val))
+            set x1 = $fx1,$fx2,0.05
+            set x1 = 10**x1 # we plot x1 in log, but calculates with x1 in linear
+            set x2 = $par2_val
+            input $outdir"/best_fit_function_ecorr.sm"
+            print {x1 y_fit}
+            set x1 = lg(x1) # we plot x1 in log, but calculates with x1 in linear
+            ltype 2
+            connect x1 y_fit
+            connect x1 (-y_fit)
         }
     }
     # 
@@ -121,13 +140,13 @@ plot_simu_stats_2D_fbias
 
 
 
-plot_simu_stats_2D_fbias_vs_maj
+plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
     # 
     # make plots
     # 
     load crabPlot.sm
     load crabPlotColorbar.sm
-    crabPlotOpenPS $outdir"/Plot_fbias_vs_maj.eps"
+    crabPlotOpenPS $outdir"/Plot_rel_S_diff_vs_FWHM_maj.eps"
     crabPlotDefaultPenForBox
     location 7000 30500 16000 30500
     limits $(lg(0.1)) $(lg(10.0)) -2 2
@@ -185,7 +204,7 @@ plot_simu_stats_2D_fbias_vs_maj
         }
     }
     # 
-    # # plot minimum chi2 fit
+    # plot minimum chi2 fitted fbias
     if(is_file($outdir"/best_fit_function_fbias.sm")) {
         !cat $outdir"/best_fit_function_fbias.sm"
         crabPlotDefaultPenForConnect
@@ -195,6 +214,21 @@ plot_simu_stats_2D_fbias_vs_maj
             set x1 = $par1_val
             input $outdir"/best_fit_function_fbias.sm"
             connect x2 y_fit
+        }
+    }
+    # 
+    # plot minimum chi2 fitted ecorr
+    if(is_file($outdir"/best_fit_function_ecorr.sm")) {
+        !cat $outdir"/best_fit_function_ecorr.sm"
+        crabPlotDefaultPenForConnect
+        foreach par1_val {3.0 5.0 10.0 50.0} {
+            ctype $(plotColorBar_value2color(lg($par1_val)))
+            set x2 = $fx1,$fx2,0.05
+            set x1 = $par1_val
+            input $outdir"/best_fit_function_ecorr.sm"
+            ltype 2
+            connect x2 y_fit
+            connect x2 (-y_fit)
         }
     }
     # 
@@ -208,13 +242,13 @@ plot_simu_stats_2D_fbias_vs_maj
 
 
 
-plot_simu_stats_2D_fbias_S_diff
+plot_simu_stats_2D_abs_S_diff_vs_peak_SNR
     # 
     # make plots
     # 
     load crabPlot.sm
     load crabPlotColorbar.sm
-    crabPlotOpenPS $outdir"/Plot_fbias_S_diff.eps"
+    crabPlotOpenPS $outdir"/Plot_abs_S_diff_vs_peak_SNR.eps"
     crabPlotDefaultPenForBox
     location 7000 30500 16000 30500
     limits 0 3 -4 4
@@ -269,13 +303,13 @@ plot_simu_stats_2D_fbias_S_diff
 
 
 
-plot_simu_stats_2D_fbias_S_diff_e_S_out
+plot_simu_stats_2D_nom_S_diff_vs_peak_SNR
     # 
     # make plots
     # 
     load crabPlot.sm
     load crabPlotColorbar.sm
-    crabPlotOpenPS $outdir"/Plot_fbias_S_diff_e_S_out.eps"
+    crabPlotOpenPS $outdir"/Plot_nom_S_diff_vs_peak_SNR.eps"
     crabPlotDefaultPenForBox
     location 7000 30500 16000 30500
     limits 0 3 -4 4
@@ -339,98 +373,6 @@ plot_simu_stats_2D_fbias_S_diff_e_S_out
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-plot_simu_stats_2D_ferr
-    # 
-    # make plots
-    # 
-    load crabPlot.sm
-    load crabPlotColorbar.sm
-    crabPlotOpenPS "Plot_ferr.eps"
-    crabPlotDefaultPenForBox
-    location 7000 30500 16000 30500
-    limits 0 3 -1 1
-    ticksize -1 10 0 0
-    box
-    crabPlotDefaultPenForTitle
-    xlabel $(par1_str)
-    ylabel "(S_{in}-S_{out})/S_{in}"
-    # 
-    plotColorBar 0.6 0.85 0 0 par2 0 0 $(par2_str)
-    # 
-    crabPlotDefaultPenForPoints
-    ptype 4 1
-    lweight 0.5
-    expand 0.5
-    do i=0,dimen(rel_S_diff)-1 {
-        ctype $(par2_Colors[$i])
-        set plot_x = lg(par1[$i])
-        set plot_y = rel_S_diff[$i]
-        points plot_x plot_y
-    }
-    # 
-    # plot bin cell median and sigma (error bar)
-    crabPlotDefaultPenForPoints
-    expand 1.5
-    do i=0,dimen(cell_id)-1 {
-        if((cell_par2_median[$i]>0.0 && cell_par2_median[$i]<=1.5) || \
-            (cell_par2_median[$i]>3.0 && cell_par2_median[$i]<=4.0)) {
-        set plot_x = lg(cell_par1_median[$i])
-        set plot_y = cell_rel_median[$i]
-        set plot_err_H68 = cell_rel_scatter_H68[$i]
-        set plot_err_L68 = cell_rel_scatter_L68[$i]
-        ctype white lweight 6.5
-        points plot_x plot_y
-        errorbar plot_x plot_y plot_err_H68 2
-        errorbar plot_x plot_y plot_err_L68 4
-        ctype $(plotColorBar_value2color(cell_par2_median[$i])) lweight 3.5
-        points plot_x plot_y
-        errorbar plot_x plot_y plot_err_H68 2
-        errorbar plot_x plot_y plot_err_L68 4
-        }
-    }
-    # 
-    # # plot minimum chi2 fit
-    # set cell_par1_median_uniq = {0.25 0.75 1.25 1.75 2.25 2.75 3.25 3.75}# uniq(cell_par1_median)
-    # crabPlotDefaultPenForConnect
-    # foreach par2_val cell_par1_median_uniq {
-    #     ctype $(plotColorBar_value2color($par2_val))
-    #     set fit_x = $fx1,$fx2,0.05
-    #     set data_x2 = 10**fit_x
-    #     set data_x1 = $par2_val
-    #     input "datatable_cell_sigma_L68_function.txt"
-    #     #set fit_y = fit_a/((10**fit_x)**fit_b)/((10**plot_x2[0])**fit_c)
-    #     #print {plot_x plot_y fit_y}
-    #     connect fit_x (-fit_y)
-    # }
-    # foreach par2_val cell_par1_median_uniq {
-    #     ctype $(plotColorBar_value2color($par2_val))
-    #     set fit_x = $fx1,$fx2,0.05
-    #     set data_x2 = 10**fit_x
-    #     set data_x1 = $par2_val
-    #     input "datatable_cell_sigma_H68_function.txt"
-    #     #set fit_y = fit_a/((10**fit_x)**fit_b)/((10**plot_x2[0])**fit_c)
-    #     #print {plot_x plot_y fit_y}
-    #     connect fit_x fit_y
-    # }
-    # 
-    crabPlotDefaultPenForConnect
-    ctype default
-    ltype 1
-    rel $fx1 0 draw $fx2 0
-    # 
-    location 6500 31000 16500 31000
-    crabPlotClosePS
 
 
 

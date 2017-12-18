@@ -1,0 +1,182 @@
+check_completeness
+    # 
+    # Usage:
+    #   echo "macro read a_dzliu_code_step_8b_check_completeness.sm check_completeness" | sm
+    # 
+    
+    chdir "CrossMatched"
+    
+    load crabPlot.sm
+    load vecSNR.sm
+    load rfile.sm
+    
+    # 
+    data "datatable_AllDetections.SNR_peak.txt"
+    read {SNR_peak_all_detections 1.f} # all_detections = matched_good + matched_spurious + non_matched
+                                       # all_sources_for_analysis = all_detections + datatable_CrossMatched_Concatenated_missed.txt
+    
+    data "datatable_Matched.SNR_peak.txt"
+    read {SNR_peak_all_matched 1.f}
+    
+    data "datatable_Matched.good.SNR_peak.txt"
+    read {SNR_peak_matched_good 1.f}
+    
+    data "datatable_Matched.spurious.SNR_peak.txt"
+    read {SNR_peak_matched_spurious 1.f} # spurious (flux boosted)
+    
+    data "datatable_NotSimulated.spurious.SNR_peak.txt"
+    read {SNR_peak_non_matched 1.f} # spurious (no counterpart)
+    # 
+    data "datatable_AllSpurious.SNR_peak.txt"
+    read {SNR_peak_all_spurious 1.f} # all_spurious = spurious (no counterpart) + spurious (flux boosted)
+    
+    data "datatable_NotRecovered.missed.SNR_peak.txt"
+    read {SNR_peak_all_missed 1.f}
+    
+    #set snr_fit_2 = lg(SNR_peak_matched_good) # matched_good + matched_spurious + nomatch_spurious = all_detections
+    set snr_fit_2 = lg(SNR_peak_all_matched)
+    set snr_fit_n2 = lg(SNR_peak_all_missed) # all_missed == simulated but not recovered, sometimes because PyBDSM decompose one bright source into components, so their positions are shifted, and the cross-matching backs to wrong simulated sources. 
+    
+    #set snr_fit_2 = lg(SNR_peak_all_detections)
+    #set snr_fit_n2 = lg(SNR_peak_non_matched)
+    
+    # 
+    # Exclude problematic images and fitted results
+    # 
+    #set excl_fit_n2 = (pb_corr_n2>5)
+    #set excl_fit_2 = (pb_corr_2>5)
+    ## 
+    #foreach var {snr_fit_n2} {
+    #    set $var = $var if(!excl_fit_n2)
+    #}
+    #foreach var {snr_fit_2} {
+    #    set $var = $var if(!excl_fit_2)
+    #}
+    
+    # 
+    # Get histogram
+    # 
+    #get_hist snr_fit_2 snr_fit_2_value snr_fit_2_count 0.0 60.0 0.025
+    #get_hist snr_fit_n2 snr_fit_n2_value snr_fit_n2_count 0.0 60.0 0.025
+    
+    echo dimen(snr_fit_2) = $(dimen(snr_fit_2))
+    echo dimen(snr_fit_n2) = $(dimen(snr_fit_n2))
+    echo sum(snr_fit_2>5) = $(sum(snr_fit_2>lg(5)))
+    echo sum(snr_fit_n2>5) = $(sum(snr_fit_n2>lg(5)))
+    #set snr_fit_n2_count = snr_fit_n2_count / dimen(snr_fit_n2) * dimen(snr_fit_2)
+    #set snr_fit_n2_count = int(snr_fit_n2_count)
+    
+    #set snr_value = snr_fit_2_value
+    set snr_bins = {1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 20.0 30.0 40.0 50.0 100.0 500.0 1000.0}
+    set snr_bins = lg(snr_bins)
+    #set snr_bins = lg(1.0),lg(1000.0),0.3
+    
+    declare snr_bin_value 0.f
+    declare snr_fit_2_count 0.f
+    declare snr_fit_n2_count 0.f
+    
+    declare snr_value_differential 0.f
+    declare fake_rate_differential 0.f #  = snr_fit_n2_count * 0.0 + 100.0
+    
+    declare snr_value_cumulative 0.f
+    declare fake_rate_cumulative 0.f #  = snr_fit_n2_count * 0.0 
+    
+    do i=0,dimen(snr_bins)-2 {
+        # 
+        set snr_fit_2_is_in_the_bin = (snr_fit_2>=snr_bins[$i] && snr_fit_2<snr_bins[$i+1])
+        set snr_fit_n2_is_in_the_bin = (snr_fit_n2>=snr_bins[$i] && snr_fit_n2<snr_bins[$i+1])
+        if(sum(snr_fit_2_is_in_the_bin)>0) {
+            set snr_bin_mean = (snr_bins[$i]+snr_bins[$i+1])/2.0
+            # 
+            set snr_fit_2_count = snr_fit_2_count concat $(sum(snr_fit_2_is_in_the_bin))
+            set snr_fit_n2_count = snr_fit_n2_count concat $(sum(snr_fit_n2_is_in_the_bin))
+            # 
+            echo bin $i real $(sum(snr_fit_2_is_in_the_bin)) fake $(sum(snr_fit_n2_is_in_the_bin))
+            set snr_value_differential = snr_value_differential concat snr_bin_mean
+            set fake_rate_differential = fake_rate_differential concat $(sum(snr_fit_n2_is_in_the_bin) / (sum(snr_fit_2_is_in_the_bin) + sum(snr_fit_n2_is_in_the_bin)) )
+        }
+        # 
+        set snr_fit_2_is_in_the_bin = (snr_fit_2>=snr_bins[$i])
+        set snr_fit_n2_is_in_the_bin = (snr_fit_n2>=snr_bins[$i])
+        if(sum(snr_fit_2_is_in_the_bin)>0) {
+            set snr_bin_mean = (snr_bins[$i])
+            # 
+            set snr_fit_2_count = snr_fit_2_count concat $(sum(snr_fit_2_is_in_the_bin))
+            set snr_fit_n2_count = snr_fit_n2_count concat $(sum(snr_fit_n2_is_in_the_bin))
+            # 
+            set snr_value_cumulative = snr_value_cumulative concat snr_bin_mean
+            set fake_rate_cumulative = fake_rate_cumulative concat $(sum(snr_fit_n2_is_in_the_bin) / (sum(snr_fit_2_is_in_the_bin) + sum(snr_fit_n2_is_in_the_bin)) )
+        }
+    }
+    
+    crabPlotOpenPS "Plot_simulated_image_fitting_recovering_completeness_ylog.eps"
+    crabPlotDefaultPenForBox
+    location 6500 31000 14500 28000
+    limits $(lg(1)) $(lg(1000)) $(lg(0.6)) $(lg(1.1))
+    ticksize -1 10 -1 1
+    box
+    crabPlotDefaultPenForTitle
+    xlabel "S/N_{peak}"
+    ylabel "Fraction"
+    crabPlotDefaultPenForConnect
+    # 
+    # points
+    #ctype royalblue
+    #lweight 3.5 expand 1.9 ptype 15 3
+    #points snr_value_differential fake_rate_differential
+    #ctype royalblue
+    #lweight 3.5 expand 1.5 ptype 15 0
+    #points snr_value_cumulative fake_rate_cumulative
+    ctype red
+    lweight 3.5 expand 1.9 ptype 4 3
+    points snr_value_differential (lg(1.0-fake_rate_differential))
+    ctype red
+    lweight 3.5 expand 1.5 ptype 4 0
+    points snr_value_cumulative (lg(1.0-fake_rate_cumulative))
+    # 
+    # spline
+    set snr_spline = $fx1,$fx2,0.1
+    #spline snr_value_cumulative fake_rate_cumulative snr_spline spline_rate
+    #ctype royalblue ltype 1
+    #connect snr_spline spline_rate
+    # 
+    set real_rate_cumulative = lg(1.0-fake_rate_cumulative)
+    spline snr_value_cumulative real_rate_cumulative snr_spline spline_rate
+    ctype red ltype 1
+    connect snr_spline spline_rate
+    # 
+    vecminmax snr_value_differential snr_min snr_max
+    set snr_spline = $snr_min,$snr_max,0.01
+    #spline snr_value_differential fake_rate_differential snr_spline spline_rate
+    #ctype royalblue ltype 0
+    #connect snr_spline spline_rate
+    # 
+    set real_rate_differential = lg(1.0-fake_rate_differential)
+    spline snr_value_differential real_rate_differential snr_spline spline_rate
+    ctype red ltype 0
+    connect snr_spline spline_rate
+    
+    crabPlotDefaultPenForLegend
+    set _crabPlot_legend_px = 0.64
+    set _crabPlot_legend_py = 0.33
+    set _crabPlot_legend_pt = 3.5
+    set _crabPlot_legend_ps = 1.20
+    set _crabPlot_legend_dy = 0.09
+    ctype red       ptype 4 0  crabPlotLegendWithSymbol "Recovered (cum.)"
+    ctype red       ptype 4 3  crabPlotLegendWithSymbol "Recovered"
+    #ctype royalblue ptype 15 3 crabPlotLegendWithSymbol "Simulated"
+    #ctype royalblue ptype 15 0 crabPlotLegendWithSymbol "Simulated (cum.)"
+    
+    ctype default
+    ltype 2 lweight 3.0
+    rel $fx1 $(lg(1)) draw $fx2 $(lg(1))
+    
+    set snr_value_differential = 10**snr_value_differential
+    set snr_value_cumulative = 10**snr_value_cumulative
+    #print "Table_simulated_image_fitting_recovering_completeness.txt" '%25g %25g %25g %25g\n' {snr_value_differential fake_rate_differential snr_value_cumulative fake_rate_cumulative}
+    
+    crabPlotClosePS
+    !rm "Plot_simulated_image_fitting_recovering_completeness_ylog.{pdfmarks,pdfconverts,eps}"
+    !open "Plot_simulated_image_fitting_recovering_completeness_ylog.pdf"
+
+

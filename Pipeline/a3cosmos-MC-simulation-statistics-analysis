@@ -1,0 +1,446 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-statistics-analysis \"datatable_CrossMatched_all_entries.fits\""
+    echo "Input: "
+    echo "    \"A catalog which contains S_in, S_out, flag_matched, flag_nonmatched_missed\""
+    echo "Output: "
+    echo "    \"Output_MC_sim_statistics\""
+    echo ""
+    exit
+fi
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Supermongo was not installed!"
+    exit 1
+fi
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+    exit 1
+fi
+if [[ ! -d $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools ]]; then
+    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+fi
+
+
+# 
+# Read Input cat
+# 
+InputCat="$1"
+
+
+# 
+# Set Output dir
+# 
+if [[ $# -ge 2 ]]; then
+    OutputDir="$2"
+else
+    OutputDir="Output_MC_sim_statistics"
+fi
+
+
+# 
+# Check output dir
+# 
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir -p "$OutputDir"
+fi
+
+
+# 
+# Extract formatted data table
+# 
+if [[ ! -f "$OutputDir/simu_data_input_0.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt=fits \
+                cmd="replacecol pb_corr \"NULL_pb_corr ? 1e99 : pb_corr\"" \
+                cmd="keepcols \"id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam pb_corr sim_alma_image_STR sim_repetition_STR\"" \
+                ofmt=ascii \
+                out="$OutputDir/simu_data_input_0.txt"
+fi
+if [[ ! -f "$OutputDir/simu_data_input_0.txt" ]]; then
+    echo "Error! Failed to output \"$OutputDir/simu_data_input_0.txt\"!"
+    exit 1
+fi
+
+
+# 
+# Change dir to OutputDir
+# 
+cd "$OutputDir"
+
+
+
+# 
+# Copy analysis tools from 'a3cosmos-MC-simulation-statistics-analysis-tools'
+# 
+if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_calc_simu_stats.sm" ]]; then
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_calc_simu_stats.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+else
+    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_calc_simu_stats.sm" .
+fi
+if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_plot_simu_stats.sm" ]]; then
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_plot_simu_stats.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+else
+    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_plot_simu_stats.sm" .
+fi
+if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_apply_simu_corr.sm" ]]; then
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_apply_simu_corr.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+else
+    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_apply_simu_corr.sm" .
+fi
+
+
+
+# 
+# cd output_dir and run Supermongo simu. stat. analyzing macros
+# 
+rm -rf sim_diagram_output_no_galfit_flux_error/* 2>/dev/null
+
+cp "simu_data_input_0.txt" "simu_data_input.txt"
+
+# 
+echo "macro read almacosmos_calc_simu_stats.sm calc_simu_stats" | sm | tee "log_calc_simu_stats_1.log"
+echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_1.log"
+
+cd sim_diagram_output_no_galfit_flux_error
+$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_fbias.py "datatable_correction.txt" | tee "log_fit_simu_corr_fbias_1.log"
+cd ..
+if [[ ! -f "sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm" ]]; then
+    echo "Failed!"
+    exit 1
+fi
+
+echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_1.log"
+cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_peak_SNR.pdf Plot_rel_S_diff_vs_peak_SNR_1.pdf
+cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_FWHM_maj.pdf Plot_rel_S_diff_vs_FWHM_maj_1.pdf
+cp sim_diagram_output_no_galfit_flux_error/datatable_correction.txt datatable_correction_1.txt
+cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm best_fit_function_fbias_1.sm
+
+
+echo "macro read almacosmos_apply_simu_corr.sm apply_simulation_based_corrections simu_data_input.txt" | sm | tee "log_apply_simu_corr_1.log"
+cp sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt apply_simu_corr_fbias_1.txt
+
+
+# 
+cp "simu_data_input_corrected.txt" "simu_data_input_1.txt"
+cp "simu_data_input_corrected.txt" "simu_data_input.txt"
+
+# 
+echo "macro read almacosmos_calc_simu_stats.sm calc_simu_stats" | sm | tee "log_calc_simu_stats_2.log"
+echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_2.log"
+
+cd sim_diagram_output_no_galfit_flux_error
+$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_ecorr.py "datatable_correction.txt" | tee "log_fit_simu_corr_ecorr_1.log"
+$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_fbias.py "datatable_correction.txt" | tee "log_fit_simu_corr_fbias_1.log"
+cd ..
+
+echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_2.log"
+cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_peak_SNR.pdf Plot_rel_S_diff_vs_peak_SNR_2.pdf
+cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_FWHM_maj.pdf Plot_rel_S_diff_vs_FWHM_maj_2.pdf
+cp sim_diagram_output_no_galfit_flux_error/datatable_correction.txt datatable_correction_2.txt
+cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm best_fit_function_fbias_2.sm
+cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm best_fit_function_ecorr_2.sm
+
+
+echo "macro read almacosmos_apply_simu_corr.sm apply_simulation_based_corrections simu_data_input.txt" | sm | tee "log_apply_simu_corr_2.log"
+cp sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt apply_simu_corr_fbias_2.txt
+cp sim_diagram_output_no_galfit_flux_error/apply_simu_corr_ecorr.txt apply_simu_corr_ecorr_2.txt
+
+
+# 
+cp "simu_data_input_corrected.txt" "simu_data_input_2.txt"
+
+
+# 
+if [[ -f "simu_data_input_0.txt" ]] && [[ -f "simu_data_input_1.txt" ]] && [[ -f "simu_data_input_2.txt" ]] && \
+    [[ -f "sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt" ]] && \
+    [[ -f "sim_diagram_output_no_galfit_flux_error/apply_simu_corr_ecorr.txt" ]]; then
+    topcat -stilts tmatchn \
+               nin=3 \
+               in1='simu_data_input_0.txt' \
+               ifmt1=ascii \
+               values1="index" \
+               in2='sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt' \
+               icmd2="keepcols \"\$1 \$2 \$3\"" \
+               ifmt2=ascii \
+               values2="index" \
+               in3='sim_diagram_output_no_galfit_flux_error/apply_simu_corr_ecorr.txt' \
+               icmd3="keepcols \"\$1 \$2 \$3 \$4 \$5\"" \
+               ifmt3=ascii \
+               values3="index" \
+               matcher=exact \
+               ofmt=ascii \
+               out='simu_data_output_corrected.txt'
+               # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
+else
+    echo "Error! Failed!"
+    exit
+fi
+
+
+if [[ -f "simu_data_input_0.txt" ]] && [[ -f "simu_data_input_1.txt" ]] && [[ -f "simu_data_input_2.txt" ]] && \
+    [[ -f "sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt" ]] && \
+    [[ -f "sim_diagram_output_no_galfit_flux_error/apply_simu_corr_ecorr.txt" ]] && \
+    [[ -f "simu_data_output_corrected.txt" ]]; then
+    margin=(100 70 100 20) # left, bottom, right, top
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{out,\ total,\ uncorr.}" \
+                ylabel="\Large S_{out,\ total,\ corr.}" \
+                xlog=true \
+                ylog=true \
+                \
+                auxvisible=true auxlabel="SNR \ peak \ uncorr." \
+                auxfunc=log \
+                \
+                layer_1=Mark \
+                leglabel_1="flux bias correction" \
+                in_1="simu_data_output_corrected.txt" \
+                ifmt_1="ascii" \
+                icmd_1="sort \"(S_peak/noise)\"" \
+                x_1="S_out" \
+                y_1="S_out_corr" \
+                aux="(S_peak/noise)" \
+                shading_1=aux \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(x)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='1:1' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="Plot_S_out_uncorr_vs_corr.pdf"
+    # 
+    margin=(100 70 100 20) # left, bottom, right, top
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{out,\ peak,\ uncorr.}" \
+                ylabel="\Large (S_{in,\ total} - S_{out,\ total})" \
+                xlog=true \
+                ylog=false \
+                \
+                layer_1=Mark \
+                leglabel_1="uncorrected" \
+                in_1="simu_data_output_corrected.txt" \
+                ifmt_1="ascii" \
+                x_1="S_peak/noise" \
+                y_1="(S_in-S_out)" \
+                color_1="blue" \
+                size_1=1 \
+                \
+                layer_2=Mark \
+                leglabel_2="corrected" \
+                in_2="simu_data_output_corrected.txt" \
+                ifmt_2="ascii" \
+                x_2="S_peak/noise" \
+                y_2="(S_in-S_out_corr)" \
+                color_2="red" \
+                size_2=1 \
+                \
+                layer_3=function \
+                fexpr_3='0' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_1,_2,_3' \
+                legend=true \
+                legpos="0.85,0.96" \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="Plot_S_diff_uncorr_vs_corr.pdf"
+    # 
+    margin=(100 70 100 20) # left, bottom, right, top
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{out,\ peak,\ uncorr.}" \
+                ylabel="\Large (S_{in,\ total} - S_{out,\ total}) / \sigma_{S_{out,\ total}}" \
+                xlog=true \
+                ylog=false \
+                \
+                layer_1=Mark \
+                leglabel_1="uncorrected" \
+                in_1="simu_data_output_corrected.txt" \
+                ifmt_1="ascii" \
+                x_1="S_peak/noise" \
+                y_1="(S_in-S_out)/e_S_out" \
+                color_1="blue" \
+                size_1=1 \
+                \
+                layer_2=Mark \
+                leglabel_2="corrected" \
+                in_2="simu_data_output_corrected.txt" \
+                ifmt_2="ascii" \
+                x_2="S_peak/noise" \
+                y_2="(S_in-S_out_corr)/e_S_out_corr" \
+                color_2="red" \
+                size_2=1 \
+                \
+                layer_3=function \
+                fexpr_3='0' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_1,_2,_3' \
+                legend=true \
+                legpos="0.85,0.96" \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="Plot_S_norm_uncorr_vs_corr.pdf"
+    # 
+    margin=(80 70 20 20) # left, bottom, right, top
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large (S_{total,\,sim.}-S_{total,\,rec.}^{corr.})/\sigma_{S_{total,\,rec.}^{corr.}}" \
+                ylabel="\Large N" \
+                xlog=false xmin=-8 xmax=8 \
+                ylog=true ymin=0.6 ymax=5e4 \
+                \
+                layer1=histogram \
+                thick1=1 \
+                barform1=semi_filled \
+                color1=blue \
+                transparency1=0 \
+                binsize1="0.1" \
+                in1="simu_data_output_corrected.txt" \
+                ifmt1=ascii \
+                leglabel1='uncorrected' \
+                x1="(S_in-S_out)/e_S_out" \
+                \
+                layer2=histogram \
+                thick2=1 \
+                barform2=semi_filled \
+                color2=red \
+                transparency2=0 \
+                binsize2="0.1" \
+                in2="simu_data_output_corrected.txt" \
+                ifmt2=ascii \
+                leglabel2='bias \ and \ error \ corrected' \
+                x2="(S_in-S_out_corr)/(e_S_out_corr)" \
+                \
+                layer22=histogram \
+                thick22=1 \
+                barform22=semi_filled \
+                color22=orange \
+                transparency22=0 \
+                binsize22="0.1" \
+                in22="simu_data_output_corrected.txt" \
+                ifmt22=ascii \
+                leglabel22='only \ bias \ corrected' \
+                x22="(S_in-S_out_corr)/(e_S_out)" \
+                \
+                layer3=function \
+                fexpr3='250*exp(-x*x/2)' \
+                color3=black \
+                antialias3=true \
+                thick3=2 \
+                leglabel3='Gaussian \ (\sigma=1)' \
+                \
+                legpos=0.05,0.96 \
+                seq='1,2,22,3' \
+                fontsize=15 \
+                texttype=latex \
+                omode=out \
+                out='Plot_S_norm_histogram.pdf'
+    # 
+    margin=(80 70 20 20) # left, bottom, right, top
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S/N_{total}" \
+                ylabel="\Large N" \
+                xlog=true \
+                ylog=true \
+                ymin=0.6 ymax=5e4 \
+                \
+                layer1=histogram \
+                thick1=1 \
+                barform1=semi_filled \
+                color1=blue \
+                transparency1=0 \
+                binsize1="+1.15" \
+                in1="simu_data_output_corrected.txt" \
+                ifmt1=ascii \
+                leglabel1='uncorrected' \
+                x1="S_out/e_S_out" \
+                \
+                layer2=histogram \
+                thick2=1 \
+                barform2=semi_filled \
+                color2=red \
+                transparency2=0 \
+                binsize2="+1.15" \
+                in2="simu_data_output_corrected.txt" \
+                ifmt2=ascii \
+                leglabel2='bias \ and \ error \ corrected' \
+                x2="S_out_corr/e_S_out_corr" \
+                \
+                layer22=histogram \
+                thick22=1 \
+                barform22=semi_filled \
+                color22=orange \
+                transparency22=0 \
+                binsize22="+1.15" \
+                in22="simu_data_output_corrected.txt" \
+                ifmt22=ascii \
+                leglabel22='only \ bias \ corrected' \
+                x22="S_out_corr/e_S_out" \
+                \
+                legpos=0.05,0.96 \
+                seq='1,2,22' \
+                fontsize=15 \
+                texttype=latex \
+                omode=out \
+                out='Plot_SNR_total_histogram.pdf'
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+else
+    echo "Error! Failed!"
+    exit
+fi
+
+
+
+
+
+# 
+# Print final message
+# 
+echo "************"
+echo "Output to \"$OutputDir\"!"
+#echo "Please then run \"macro read caap_prior_extraction_photometry_read_results.sm read_results\" in Supermongo!"
+#echo "Great! Finally! All done!"
+
+

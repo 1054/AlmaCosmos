@@ -183,7 +183,7 @@ echo "Counting lines: "
 for OutputItem in "${List_of_Files[@]}"; do
     if [[ -f "Read_Results_all_final_${OutputItem}" ]]; then
         CountedLines=$(cat "Read_Results_all_final_${OutputItem}" | wc -l)
-        echo "Read_Results_all_final_${OutputItem} \t \t $CountedLines"
+        printf "%-120s $CountedLines" "Read_Results_all_final_${OutputItem}"
     fi
 done
 

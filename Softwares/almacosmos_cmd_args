@@ -1,0 +1,95 @@
+#!/bin/bash
+# 
+# Aim:
+#      source this code in bash with arguments, you will get variables. see example. 
+# 
+# Usage:
+#        source $(which almacosmos_cmd_args) "$@"
+# 
+# Example:
+#          In a bash script, we write: 
+#          source $(which almacosmos_cmd_args) -sim aaa.fits -rec bbb.fits
+#          Then after this, we can use varibales ${arg_sim} ${arg_rec}
+# 
+
+
+# 
+# Check Mac System
+# 
+xargs_command="xargs"
+if [[ $(uname) == "Darwin" ]]; then
+    if [[ $(type gxargs 2>/dev/null | wc -l) -eq 1 ]]; then
+        xargs_command="gxargs"
+    else
+        echo "Error! Please install GNU findutils under Mac system! (e.g., sudo port install findutils)"
+        exit 1
+    fi
+fi
+
+
+# 
+# Setup functions for checking input dirs/files
+# 
+function check_input_dir() {
+    local i=1
+    for (( i=1; i<=$#; i++ )); do
+        if [[ ! -d "${!i}" ]] && [[ ! -L "${!i}" ]]; then
+            echo "Error! \"${!i}\" was not found!"
+            exit 1
+        fi
+    done
+}
+function check_input_file() {
+    local i=1
+    for (( i=1; i<=$#; i++ )); do
+        if [[ ! -f "${!i}" ]] && [[ ! -L "${!i}" ]]; then
+            echo "Error! \"${!i}\" was not found!"
+            exit 1
+        fi
+    done
+}
+function backup_output_dir() {
+    local i=1
+    for (( i=1; i<=$#; i++ )); do
+        if [[ -d "${!i}" ]]; then
+            mv "${!i}" "${!i}.backup."$(date +"%Y%m%d.%Hh%Mm%Ss.%Z")
+        fi
+    done
+}
+function create_output_dir() {
+    local i=1
+    for (( i=1; i<=$#; i++ )); do
+        if [[ ! -d "${!i}" ]]; then
+            mkdir -p "${!i}"
+        fi
+    done
+}
+
+
+# 
+# Read input args
+# 
+iarg_iarg=1
+iarg_name=()
+iarg_numb=0
+while [[ iarg_iarg -le $# ]]; do
+    #echo "${!iarg_iarg}"
+    # 
+    if echo "${!iarg_iarg}" | grep -q "^[-][a-z]"; then
+        iarg_name=$(echo "${!iarg_iarg}" | sed -e 's/^-/arg_/g' | sed -e 's/[^a-zA-Z_0-9]/_/g')
+        declare -a $iarg_name
+    elif [[ ! -z "$iarg_name" ]]; then
+        eval "$iarg_name+=(\"${!iarg_iarg}\")"
+        #iarg_temp="$iarg_name[@]"
+        #echo $iarg_name=${!iarg_temp}
+        iarg_numb=$(eval "echo \${#$iarg_name[@]}")
+        eval "echo $iarg_name[$((iarg_numb-1))]=\${$iarg_name[$((iarg_numb-1))]}"
+    fi
+    # 
+    iarg_iarg=$((iarg_iarg+1))
+done
+
+
+
+
+

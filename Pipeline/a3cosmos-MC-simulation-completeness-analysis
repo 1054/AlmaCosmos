@@ -1,0 +1,222 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-completeness-analysis \"datatable_CrossMatched_all_entries.fits\""
+    echo "Input: "
+    echo "    A catalog which contains S_in, S_out, Maj_in, Min_in, Maj_beam, Min_beam, noise, flag_matched, flag_nonmatched_missed"
+    echo "Output: "
+    echo "    A directory which contains output figures, the default name of which is \"Output_MC_sim_completeness\""
+    echo ""
+    exit
+fi
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Supermongo was not installed!"
+    exit 1
+fi
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+    exit 1
+fi
+if [[ ! -f $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-completeness-analysis-tools/analyze_completeness_curve.sm ]]; then
+    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-completeness-analysis-tools/analyze_completeness_curve.sm"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+fi
+
+
+# 
+# Read Input cat
+# 
+InputCat="$1"
+
+
+# 
+# Set Output dir
+# 
+if [[ $# -ge 2 ]]; then
+    OutputDir="$2"
+else
+    OutputDir="Output_MC_sim_completeness"
+fi
+
+
+# 
+# Check output dir
+# 
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir -p "$OutputDir"
+fi
+
+
+# 
+# Extract formatted data table
+# 
+if [[ ! -f "$OutputDir/datatable_Matched.SNR_peak.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt=fits \
+                cmd="select \"(flag_matched)\"" \
+                cmd="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                cmd="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                cmd="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
+                cmd="addcol SNR_peak_out \"S_peak/noise\"" \
+                cmd="keepcols \"SNR_peak SNR_peak_out\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_Matched.SNR_peak.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_Matched.SNR_peak.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_Matched.SNR_peak.txt\"!"
+    exit
+fi
+if [[ ! -f "$OutputDir/datatable_NotRecovered.missed.SNR_peak.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt=fits \
+                cmd="select \"(flag_nonmatched_missed)\"" \
+                cmd="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                cmd="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                cmd="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
+                cmd="keepcols \"SNR_peak\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_NotRecovered.missed.SNR_peak.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_NotRecovered.missed.SNR_peak.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_NotRecovered.missed.SNR_peak.txt\"!"
+    exit
+fi
+if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_completeness.pdf" ]]; then
+    margin=(80 50 20 20) # left, bottom, right, top
+    binsize="+1.20" # "+1.10"
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak,\,sim.}/{rms\,noise}" \
+                ylabel="\Large N" \
+                xlog=true \
+                ylog=true \
+                ymin=0.6 ymax=2e6 \
+                \
+                layer1=histogram \
+                thick1=1 \
+                barform1=semi_filled \
+                color1="cccccc" \
+                transparency1=0 \
+                binsize1="$binsize" \
+                in1="$InputCat" \
+                ifmt1=fits \
+                leglabel1='all \ simulated' \
+                icmd1="select \"(flag_nonmatched_missed || flag_matched)\"" \
+                icmd1="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                icmd1="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd1="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
+                x1="SNR_peak" \
+                \
+                layer2=histogram \
+                thick2=1 \
+                barform2=semi_filled \
+                color2=orange \
+                transparency2=0 \
+                binsize2="$binsize" \
+                in2="$InputCat" \
+                ifmt2=fits \
+                leglabel2='simulated \ but \ not \ recovered' \
+                icmd2="select \"(flag_nonmatched_missed)\"" \
+                icmd2="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                icmd2="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd2="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
+                x2="SNR_peak" \
+                \
+                layer3=histogram \
+                thick3=1 \
+                barform3=semi_filled \
+                color3=green \
+                transparency3=0.3 \
+                binsize3="$binsize" \
+                in3="$InputCat" \
+                ifmt3=fits \
+                leglabel3='simulated \ and \ recovered' \
+                icmd3="select \"(flag_matched)\"" \
+                icmd3="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                icmd3="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd3="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
+                x3="SNR_peak" \
+                \
+                layer4=histogram \
+                thick4=1 \
+                barform4=semi_filled \
+                color4=blue \
+                transparency4=0.4 \
+                binsize4="$binsize" \
+                in4="$InputCat" \
+                ifmt4=fits \
+                leglabel4='simulated \ and \ recovered \ and \ flux \ accuracy < 30\%' \
+                icmd4="select \"(flag_matched && ( abs(S_in-S_out)<(0.3*S_in) && abs(S_in-S_out)<(0.3*S_out) && S_peak>3.0*noise ))\"" \
+                icmd4="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                icmd4="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd4="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
+                x4="SNR_peak" \
+                \
+                legpos=0.08,0.94 \
+                seq='1,2,3,4' \
+                fontsize=16 \
+                texttype=latex \
+                aspect=1.0 \
+                omode=out \
+                out="$OutputDir/Plot_SNR_histogram_for_completeness.pdf"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+fi
+if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_completeness.pdf" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/Plot_SNR_histogram_for_completeness.pdf\"!"
+    exit
+fi
+
+# 
+# Copy supermongo macro
+# 
+cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-completeness-analysis-tools/analyze_completeness_curve.sm "$OutputDir/"
+cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-completeness-analysis-tools/fit_completeness_curve.py "$OutputDir/"
+
+
+# 
+# Change dir to OutputDir
+# 
+cd "$OutputDir"
+
+
+# 
+# Run the code
+# 
+echo "macro read analyze_completeness_curve.sm analyze_completeness_curve" | sm | tee log_analyze_completeness_curve.txt
+# In which, the python code "fit_completeness_curve.py" will be called. 
+
+if [[ ! -f "datatable_MC_sim_completeness_cumulative.txt" ]] || \
+    [[ ! -f "function_MC_sim_completeness_cumulative.txt" ]] || \
+    [[ ! -f "function_MC_sim_completeness_cumulative.xyfit.txt" ]]; then
+    echo "Error! Failed to run \"analyze_completeness_curve.sm\"! Sorry!"
+    exit 1
+fi
+
+echo "************"
+echo "macro read analyze_completeness_curve.sm calc_completeness" | sm | tee log_calc_completeness.txt
+
+
+# 
+# Print final message
+# 
+echo "************"
+echo "Output to \"$OutputDir\"!"
+#echo "Please then run \"macro read caap_prior_extraction_photometry_read_results.sm read_results\" in Supermongo!"
+#echo "Great! Finally! All done!"
+
+
