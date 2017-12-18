@@ -198,8 +198,11 @@ for alma_image_name in alma_image_list:
                 # spurious
                 if len(rec_index) > 1:
                     spurious_index = range(len(rec_xydis))
+                    print(spurious_index)
+                    print(rec_index)
                     spurious_index.remove(rec_index[0])
-                #
+                # 
+                # close
                 recovered_catalog_fits.close()
                 #print(sim_pixsc)
                 #print(rec_index)
