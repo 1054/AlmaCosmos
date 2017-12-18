@@ -186,10 +186,18 @@ for alma_image_name in alma_image_list:
                 #<DEBUG># for iii in range(len(lim_xydis)):
                 #<DEBUG>#     print('rec_xy = %g %g, sim_x = %g %g'%(rec_x[iii], rec_y[iii], sim_x, sim_y))
                 #<DEBUG>#     print('rec_xydis = %g, lim_xydis = %g'%(rec_xydis[iii], lim_xydis[iii]))
-                rec_index = numpy.argwhere(rec_xydis<lim_xydis) # select the brightest recovered source that are within 2.0 arcsec radius of the simulated source as the right counterparat!
-                # 20171206 TODO: choose the cloest one
-                spurious_index = range(rec_xydis)
-                if len(rec_index) > 0:
+                # 
+                # choose the brightest one within lim_xydis
+                #rec_index = numpy.argwhere(rec_xydis<lim_xydis) # select the brightest recovered source that are within 2.0 arcsec radius of the simulated source as the right counterparat!
+                # 
+                # choose the cloest one (20171206: as Philipp suggested)
+                rec_index = [numpy.argmin(rec_xydis)]
+                if rec_xydis[rec_index[0]] > lim_xydis:
+                    rec_index = []
+                # 
+                # spurious
+                if len(rec_index) > 1:
+                    spurious_index = range(len(rec_xydis))
                     spurious_index.remove(rec_index[0])
                 #
                 recovered_catalog_fits.close()
