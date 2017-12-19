@@ -55,10 +55,10 @@ print(alma_image_list)
 #sys.exit()
 
 
-# 
-# Define an output queue for parallal
-# 
-output = multiprocessing.Queue()
+# # 
+# # Define an output queue for parallal
+# # 
+# output = multiprocessing.Queue()
 
 
 # 
@@ -74,21 +74,24 @@ def read_MC_sim_recovery(alma_image_name, output):
     recovered_dir = 'output_PyBDSM' + os.sep + alma_image_name
     if os.path.isfile('statistics_PyBDSM/done_output_sim_data_table_%s'%(alma_image_name)):
         print('# %s (already done, skip!)'%(alma_image_name))
-        output.put('# %s (already done, skip!)'%(alma_image_name))
+        #output.put('# %s (already done, skip!)'%(alma_image_name))
         return
     else:
         print('# %s'%(alma_image_name))
-        output.put('# %s'%(alma_image_name))
+        #output.put('# %s'%(alma_image_name))
     
     recovered_list_of_catalog = recovered_dir + os.sep + 'output_list_of_catalog.txt'
     if not os.path.isdir(simulated_dir):
-        output.put('Error! The simulated directory "%s" was not found!'%(simulated_dir))
+        print('Error! The simulated directory "%s" was not found!'%(simulated_dir))
+        #output.put('Error! The simulated directory "%s" was not found!'%(simulated_dir))
         return
     if not os.path.isdir(recovered_dir):
-        output.put('Error! The recovered directory "%s" was not found!'%(recovered_dir))
+        print('Error! The recovered directory "%s" was not found!'%(recovered_dir))
+        #output.put('Error! The recovered directory "%s" was not found!'%(recovered_dir))
         return
     if not os.path.isfile(recovered_list_of_catalog):
-        output.put('Error! The recovered list of catalog "%s" was not found!'%(recovered_list_of_catalog))
+        print('Error! The recovered list of catalog "%s" was not found!'%(recovered_list_of_catalog))
+        #output.put('Error! The recovered list of catalog "%s" was not found!'%(recovered_list_of_catalog))
         return
     
     # Prepare output data table
@@ -112,7 +115,8 @@ def read_MC_sim_recovery(alma_image_name, output):
             # 
             # read simulated parameter file
             if not os.path.isfile(sim_param_file):
-                output.put('Error! The simulation parameter file "%s" was not found!'%(sim_param_file))
+                print('Error! The simulation parameter file "%s" was not found!'%(sim_param_file))
+                #output.put('Error! The simulation parameter file "%s" was not found!'%(sim_param_file))
                 return
             idl('restore, "%s", verbose = false'%(sim_param_file))
             sim_x = idl.CENX
@@ -136,10 +140,12 @@ def read_MC_sim_recovery(alma_image_name, output):
                     sim_id = long(sim_str_split[0][2])
                     sim_rms = sim_fpeak / sim_SNR_peak
                 else:
-                    output.put('Error! Failed to run \"re.findall(\'Size([0-9.]+)_SN([0-9.]+)_number([0-9]+)_.*\', input_fits_base)\"!')
+                    print('Error! Failed to run \"re.findall(\'Size([0-9.]+)_SN([0-9.]+)_number([0-9]+)_.*\', input_fits_base)\"!')
+                    #output.put('Error! Failed to run \"re.findall(\'Size([0-9.]+)_SN([0-9.]+)_number([0-9]+)_.*\', input_fits_base)\"!')
                     return
             else:
-                output.put('Error! Failed to run \"re.findall(\'Size([0-9.]+)_SN([0-9.]+)_number([0-9]+)_.*\', input_fits_base)\"!')
+                print('Error! Failed to run \"re.findall(\'Size([0-9.]+)_SN([0-9.]+)_number([0-9]+)_.*\', input_fits_base)\"!')
+                #output.put('Error! Failed to run \"re.findall(\'Size([0-9.]+)_SN([0-9.]+)_number([0-9]+)_.*\', input_fits_base)\"!')
                 return
             # 
             # prepare recovered variables
@@ -259,19 +265,19 @@ def read_MC_sim_recovery(alma_image_name, output):
             # 
             # print header
             if not has_print_header:
-                output.put('# %10s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s'%('sim_id', 'sim_Size', 'sim_SNR_peak', 'sim_rms', 'sim_pixsc', 'sim_f', 'sim_fpeak', 'sim_Maj', 'sim_Min', 'rec_f', 'rec_df', 'rec_fpeak', 'rec_dfpeak'))
+                print('# %10s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s'%('sim_id', 'sim_Size', 'sim_SNR_peak', 'sim_rms', 'sim_pixsc', 'sim_f', 'sim_fpeak', 'sim_Maj', 'sim_Min', 'rec_f', 'rec_df', 'rec_fpeak', 'rec_dfpeak'))
                 ofs.write('# %10s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %33s %50s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s\n'%('sim_id', 'sim_Size', 'sim_SNR_peak', 'sim_rms', 'sim_pixsc', 'sim_beam_maj', 'sim_beam_min', 'sim_beam_pa', 'sim_x', 'sim_y', 'sim_f', 'sim_fpeak', 'sim_Maj', 'sim_Min', 'sim_PA', 'sim_image_name', 'sim_image_dir', 'rec_x', 'rec_y', 'rec_f', 'rec_df', 'rec_fpeak', 'rec_dfpeak', 'rec_Maj', 'rec_Min', 'rec_PA', 'rec_S_Code'))
                 has_print_header = True
             # 
             # print matched source
-            output.put('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g'%(sim_id, sim_Size, sim_SNR_peak, sim_rms, sim_pixsc, sim_f, sim_fpeak, sim_Maj, sim_Min, rec_f, rec_df, rec_fpeak, rec_dfpeak))
+            print('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g'%(sim_id, sim_Size, sim_SNR_peak, sim_rms, sim_pixsc, sim_f, sim_fpeak, sim_Maj, sim_Min, rec_f, rec_df, rec_fpeak, rec_dfpeak))
             ofs.write('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %33s %50s %13g %13g %13g %13g %13g %13g %13g %13g %13g %13s\n'%(sim_id, sim_Size, sim_SNR_peak, sim_rms, sim_pixsc, sim_beam_maj, sim_beam_min, sim_beam_pa, sim_x, sim_y, sim_f, sim_fpeak, sim_Maj, sim_Min, sim_PA, sim_image_name, sim_image_dir, rec_x, rec_y, rec_f, rec_df, rec_fpeak, rec_dfpeak, rec_Maj, rec_Min, rec_PA, rec_S_Code))
             has_print_lines = has_print_lines + 1
             # 
             # print spurious sources
             if len(spurious_index) > 0:
                 for spurious_i in range(spurious_index):
-                    output.put('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g'%(-99, -99, -99, sim_rms, sim_pixsc, -99, -99, -99, -99, spurious_f[spurious_i], spurious_df[spurious_i], spurious_fpeak[spurious_i], spurious_dfpeak[spurious_i]))
+                    print('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g'%(-99, -99, -99, sim_rms, sim_pixsc, -99, -99, -99, -99, spurious_f[spurious_i], spurious_df[spurious_i], spurious_fpeak[spurious_i], spurious_dfpeak[spurious_i]))
                     ofs.write('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %33s %50s %13g %13g %13g %13g %13g %13g %13g %13g %13g %13s\n'%(-99, -99, -99, sim_rms, sim_pixsc, sim_beam_maj, sim_beam_min, sim_beam_pa, -99, -99, -99, -99, -99, -99, -99, sim_image_name, sim_image_dir, spurious_x[spurious_i], spurious_y[spurious_i], spurious_f[spurious_i], spurious_df[spurious_i], spurious_fpeak[spurious_i], spurious_dfpeak[spurious_i], spurious_Maj[spurious_i], spurious_Min[spurious_i], spurious_PA[spurious_i], spurious_S_Code[spurious_i]))
                     has_print_lines = has_print_lines + 1  
             # 
@@ -289,48 +295,68 @@ def read_MC_sim_recovery(alma_image_name, output):
 
 
 
+# 
+# Parallize Python not working because of the calling of IDL
+# 
+# 
+# # 
+# # Parallize
+# # 
+# processes = []
+# for i in range(len(alma_image_list)):
+#     processes.append( \
+#         multiprocessing.Process(target=read_MC_sim_recovery, args=(alma_image_list[i], output))
+#     )
+# 
+# 
+# # 
+# # Run processes
+# # 
+# lim_processes = 2
+# for p in processes:
+#     p.start()
+#     print(p)
+#     time.sleep(3.0)
+#     print(len(multiprocessing.active_children()))
+#     while len(multiprocessing.active_children())>lim_processes:
+#         time.sleep(30.0)
+# 
+# 
+# # 
+# # Exit the completed processes
+# # 
+# for p in processes:
+#     p.join()
+# 
+# 
+# # 
+# # Get process results from the output queue
+# # 
+# results = [output.get() for p in processes]
+# 
+# #print(results)
+# print('All done!')
+
+
+
+
 
 # 
-# Parallize
+# Run the function
 # 
-processes = []
-for i in range(len(alma_image_list)):
-    processes.append( \
-        multiprocessing.Process(target=read_MC_sim_recovery, args=(alma_image_list[i], output))
-    )
+processes = [] # 'processes' contains the number of alma image, e.g., 1, 2, 3, ..., len(alma_image_list). 
+if len(sys.argv)>1:
+    i=1
+    while i<len(sys.argv):
+        processes.append(int(sys.argv[i]))
+        i=i+1
+else:
+    processes = range(len(alma_image_list)) + 1
+    print('Running processes %d to %d'%(1,max(processes)))
 
-
-# 
-# Run processes
-# 
-lim_processes = 2
-for p in processes:
-    p.start()
-    print(p)
-    time.sleep(3.0)
-    print(len(multiprocessing.active_children()))
-    while len(multiprocessing.active_children())>lim_processes:
-        time.sleep(30.0)
-
-
-# 
-# Exit the completed processes
-# 
-for p in processes:
-    p.join()
-
-
-# 
-# Get process results from the output queue
-# 
-results = [output.get() for p in processes]
-
-#print(results)
-print('All done!')
-
-
-
-
+if len(processes) > 0:
+    for i in range(len(processes)):
+        read_MC_sim_recovery(alma_image_list[processes[i]-1])
 
 
 
