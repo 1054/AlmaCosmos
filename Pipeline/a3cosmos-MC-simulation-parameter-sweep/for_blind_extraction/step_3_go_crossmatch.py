@@ -192,7 +192,7 @@ for alma_image_name in alma_image_list:
                 # 
                 # choose the cloest one (20171206: as Philipp suggested)
                 rec_index = [numpy.argmin(rec_xydis)]
-                if rec_xydis[rec_index[0]] > lim_xydis:
+                if rec_xydis[rec_index[0]] > lim_xydis[rec_index[0]]:
                     rec_index = []
                 # 
                 # spurious

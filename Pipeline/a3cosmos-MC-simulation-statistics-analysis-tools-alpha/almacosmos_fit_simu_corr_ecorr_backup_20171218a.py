@@ -128,8 +128,7 @@ def my_func((x1,x2), a0, a1, k1, n1, a2, k2, n2):
     #return a0 * pow(a1*(x1+k1),n1) * numpy.exp(-x1) * pow(a2*(x2+k2),n2) * numpy.exp(-a2*(x2+k2)) # Schechter function
     #return a0 * pow(a1*(x1+k1),n1) * pow(a2*(x2+k2),n2)
     #return (a0 + a1 * pow((x1+k1),-1) + n1 * pow((x1+k1),-2)) * numpy.exp(pow(a2*(x2+k2),n2))
-    #return 1 / ( a0 * numpy.power(a1*(x1+k1),n1) * numpy.exp(numpy.power(a2*(x2+k2),n2)) )
-    return 1 / ( a0 * numpy.exp(a1*pow(((x1+k1)),n1)) * numpy.exp(a2*pow(((x2+k2)),n2)) )
+    return 1 / ( a0 * numpy.power(a1*(x1+k1),n1) * numpy.exp(numpy.power(a2*(x2+k2),n2)) )
 
 # 
 #                    a0    a1   k1   n1    a2    k2   n2
@@ -137,20 +136,13 @@ def my_func((x1,x2), a0, a1, k1, n1, a2, k2, n2):
 #initial_guess = (+200.0, +0.1, 0.0, -7.25, -1.0, -10.0, -1.25) # Schechter function
 #initial_guess = (+10.0, 30.0, 0.0, -1.0, 0.5, 0.0, 1.0)
 #initial_guess = (1.0, 1.0, 0.0, 5.0, 0.5, 0.0, 1.0)
-#initial_guess = (1.0, 1.0, 0.0, -1.0, 0.5, 0.0, 1.0)
-initial_guess = (+2.00, -1.00, -3.00, +0.25, -1.00, +0.05, +0.25)
-initial_guess = (1.80441696, -1.07124017, -3.8211,  0.28313724, -1.11215365, 0.08864436,  0.11852545)
+initial_guess = (1.0, 1.0, 0.0, -1.0, 0.5, 0.0, 1.0)
 #bound_range = []
 #bound_range = (-numpy.inf,[numpy.inf,numpy.inf,numpy.inf,numpy.inf,numpy.inf,numpy.inf,0])
 bound_range = ([-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf],\
                [+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf])
 
-try:
-    popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess)
-except Exception,e:
-    print str(e)
-    popt = initial_guess
-    pcov = []
+popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess)
 pprint(popt)
 pprint(pcov)
 #try:
@@ -163,39 +155,15 @@ pprint(pcov)
 
 # extract and plot results
 y_fit = my_func((x1,x2), *popt)
-
-#fig = pyplot.figure()
-#ax = pyplot.gca()
-fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True, figsize=(8,3.5))
-
-ax1.plot(x1, y_obs, color='r', marker='.', ls='None', label='Observed')
-ax1.errorbar(x1, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
-ax1.plot(x1, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
-ax1.plot(x1, x1, 'k', marker='None', ls=':', ms=0, mew=0, lw=0.5, label='1:1')
-ax1.legend()
-ax1.set_xlabel('S_peak / rms noise')
-ax1.set_ylabel('1 / sigma((S_in-S_out)/S_in)')
-ax1.set_xscale('log')
-ax1.set_yscale('log')
-
-ax2.plot(x2, y_obs, color='r', marker='.', ls='None', label='Observed')
-ax2.errorbar(x2, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
-ax2.plot(x2, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
-ax2.plot(x2, x2, 'k', marker='None', ls=':', ms=0, mew=0, lw=0.5, label='1:1')
-ax2.legend()
-ax2.set_xlabel('FWHM_source / FWHM_beam')
-ax2.set_xscale('log')
-ax2.set_yscale('log')
-
-fig.tight_layout()
-
-#pyplot.show(block=True)
-pyplot.savefig('best_fit_function_ecorr.pdf')
-
-if pcov == []:
-    if os.path.isfile('best_fit_function_ecorr.sm'):
-        os.system('rm best_fit_function_ecorr.sm')
-    sys.exit()
+fig = pyplot.figure()
+ax = pyplot.gca()
+ax.plot(x1, y_obs, color='r', marker='.', ls='None', label='Observed')
+ax.errorbar(x1, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
+ax.plot(x1, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
+ax.plot(x1, x1, 'k', marker='None', ls=':', ms=0, mew=0, lw=0.5, label='1:1')
+ax.set_xlabel('Peak S/N')
+ax.set_ylabel('1 / sigma((S_in-S_out)/S_in)')
+ax.legend()
 
 os.system('echo "set a0 = %0.20e" > best_fit_function_ecorr.sm'%(popt[0]))
 os.system('echo "set a1 = %0.20e" >> best_fit_function_ecorr.sm'%(popt[1]))
@@ -208,10 +176,12 @@ os.system('echo "set n2 = %0.20e" >> best_fit_function_ecorr.sm'%(popt[6]))
 #os.system('echo "set y_fit = a0 * (a1*(x1/k1))**n1 * exp(-a1*(x1/k1)) * (a2*(x2+k2))**n2 * exp(-a2*(x2+k2))" >> best_fit_function_ecorr.sm') # Schechter function
 #os.system('echo "set y_fit = a0 * (-a1*(x1+k1)**n1) * (-a2*(x2+k2)**n2)" >> best_fit_function_ecorr.sm')
 #os.system('echo "set y_fit = a0 * (-a1*(x1+k1)**n1) * exp(a2*(x2+k2)**n2)" >> best_fit_function_ecorr.sm')
-#os.system('echo "set y_fit = ( a0 * (a1*(x1+k1))**n1 * exp(a2*(x2+k2)**n2) )" >> best_fit_function_ecorr.sm')
-os.system('echo "set xk1 = (n1<1 && (x1+k1)<0) ? 0.0 : (x1+k1)" >> best_fit_function_ecorr.sm')
-os.system('echo "set xk2 = (n2<1 && (x2+k2)<0) ? 0.0 : (x2+k2)" >> best_fit_function_ecorr.sm')
-os.system('echo "set y_fit = ( a0 * exp(a1*(xk1)**n1) * exp(a2*(xk2)**n2) )" >> best_fit_function_ecorr.sm')
+os.system('echo "set y_fit = ( a0 * (a1*(x1+k1))**n1 * exp(a2*(x2+k2)**n2) )" >> best_fit_function_ecorr.sm')
+
+#ax.set_yscale('log')
+
+#pyplot.show(block=True)
+pyplot.savefig('best_fit_function_ecorr.pdf')
 
 
 

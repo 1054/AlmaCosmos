@@ -1,11 +1,11 @@
 #!/bin/bash
 # 
 
-#cd ~/Work/AlmaCosmos/Photometry/ALMA_full_archive/Prior_Fitting_by_Daizhong/20170730_on_Phys_MC_Simulated_Images/
+#cd ~/Work/AlmaCosmos/Photometry/ALMA_full_archive/Blind_Extraction_by_Benjamin/20171114_on_Phys_MC_Simulated_Images/
 
 
 crossmatched_cat="Statistics/datatable_CrossMatched_only_matches.fits" # the output of step_3_*.sh
-output_dir="Statistics"
+output_dir="Statistics_alpha"
 
 if [[ ! -f "$crossmatched_cat" ]]; then
     echo "Error! \"$crossmatched_cat\" was not found! Please run step_3 first!"
@@ -29,6 +29,6 @@ source "$source_script"
 # 
 # run simu. stat. analyzing code
 # 
-a3cosmos-MC-simulation-statistics-analysis "$crossmatched_cat" "$output_dir"
+a3cosmos-MC-simulation-statistics-analysis-alpha "$crossmatched_cat" "$output_dir"
 
 

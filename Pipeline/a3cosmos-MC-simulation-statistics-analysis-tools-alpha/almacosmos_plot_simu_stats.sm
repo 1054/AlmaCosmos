@@ -50,13 +50,21 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
     xlabel $(par1_str)
     ylabel "(S_{in}-S_{out})/S_{in}"
     # 
-    if(is_vector(par2_max)) {
-        # we can set par2_max to refine the color bar
-        plotColorBar 0.6 0.85 0 0 par2 0 $(par2_max) $(par2_str)
+    # make colorbar
+    if(is_vector(par2_min)) {
+        set cbar_min = par2_min
     } else {
-        plotColorBar 0.6 0.85 0 0 par2 0 0 $(par2_str)
+        vecminmax par2 cbar_min cbar_max
+        set cbar_min = $cbar_min
     }
-    
+    if(is_vector(par2_max)) {
+        set cbar_max = par2_max
+    } else {
+        vecminmax par2 cbar_max cbar_max
+        set cbar_max = $cbar_max
+    }
+    plotColorBar 0.6 0.85 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
+    # 
     # 
     crabPlotDefaultPenForPoints
     ptype 4 1
@@ -140,7 +148,7 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
 
 
 
-plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
+plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj 02
     # 
     # make plots
     # 
@@ -156,38 +164,60 @@ plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
     xlabel $(par2_str)
     ylabel "(S_{in}-S_{out})/S_{in}"
     # 
+    # make par1 log
     set par1_log = lg(par1)
-    if(is_vector(par1_max)) {
-        # we can set par1_max to refine the color bar
-        plotColorBar 0.6 0.85 0 0 par1_log 0 $(lg(par1_max)) $(sprintf('\"log %s\"',par1_str))
-    } else {
-        plotColorBar 0.6 0.85 0 0 par1_log 0 0 $(sprintf('\"log %s\"',par1_str))
-    }
-    
     # 
-    crabPlotDefaultPenForPoints
-    ptype 4 1
-    lweight 0.8
-    expand 0.5
+    # make colorbar
+    if(is_vector(par1_min)) {
+        set cbar_min = lg(par1_min)
+    } else {
+        vecminmax par1_log cbar_min cbar_max
+        set cbar_min = $cbar_min
+    }
+    if(is_vector(par1_max)) {
+        set cbar_max = lg(par1_max)
+    } else {
+        vecminmax par1_log cbar_max cbar_max
+        set cbar_max = $cbar_max
+    }
+    plotColorBar 0.6 0.85 0 0 par1_log $(cbar_min) $(cbar_max) $(sprintf('\"log %s\"',par1_str))
+    # 
+    # sort by lg(par2)
     set sort_xx = lg(par2)
     set sort_yy = rel_S_diff
     set sort_cc = par1_log_Colors
     sort {sort_cc sort_xx sort_yy}
     foreach var {sort_cc sort_xx sort_yy} {set $var = reverse($var)}
+    # 
+    # plot all data points
+    crabPlotDefaultPenForPoints
+    ptype 4 1 lweight 0.8 expand 0.5
     do i=0,dimen(sort_cc)-1 {
-        ctype $(sort_cc[$i])
-        set plot_x = sort_xx[$i]
-        set plot_y = sort_yy[$i]
-        points plot_x plot_y
+        set data_do_plot = 1
+        if($?2) {
+            # if input $1 and $2 then show only $1 <= $par <= $2
+            if((10**(sort_xx[$i]))<($1) || (10**(sort_xx[$i]))>($2)) {
+                set data_do_plot = 0
+            }
+        }
+        if(data_do_plot) {
+            ctype $(sort_cc[$i])
+            set plot_x = sort_xx[$i]
+            set plot_y = sort_yy[$i]
+            points plot_x plot_y
+        }
     }
     # 
     # plot bin cell median and sigma (error bar)
     crabPlotDefaultPenForPoints
     do i=0,dimen(cell_id)-1 {
         set cell_do_plot = 1
-        #if(cell_par1_median[$i]>0.5 && cell_par1_median[$i]<2.0) {
-        #    set cell_do_plot = 0
-        #}
+        if($?2) {
+            # if input $1 and $2 then show only $1 <= $par <= $2
+            if((10**(sort_xx[$i]))<($1) || (10**(sort_xx[$i]))>($2)) {
+                set cell_do_plot = 0
+            }
+        }
         if(cell_do_plot) {
             set plot_x = lg(cell_par2_median[$i])
             set plot_y = cell_rel_median[$i]
@@ -208,7 +238,14 @@ plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
     if(is_file($outdir"/best_fit_function_fbias.sm")) {
         !cat $outdir"/best_fit_function_fbias.sm"
         crabPlotDefaultPenForConnect
-        foreach par1_val {4.0 5.0 10.0 50.0} {
+        set par1_do_plot = {4.0 5.0 10.0 50.0}
+        if($?2) {
+            # if input $1 and $2 then show only $1 <= $par <= $2
+            if((10**(sort_xx[$i]))<($1) || (10**(sort_xx[$i]))>($2)) {
+                set par1_do_plot = (($1)+($2))/2.0
+            }
+        }
+        foreach par1_val par1_do_plot {
             ctype $(plotColorBar_value2color(lg($par1_val)))
             set x2 = $fx1,$fx2,0.05
             set x1 = $par1_val
@@ -223,7 +260,14 @@ plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
     if(is_file($outdir"/best_fit_function_ecorr.sm")) {
         !cat $outdir"/best_fit_function_ecorr.sm"
         crabPlotDefaultPenForConnect
-        foreach par1_val {4.0 5.0 10.0 50.0} {
+        set par1_do_plot = {4.0 5.0 10.0 50.0}
+        if($?2) {
+            # if input $1 and $2 then show only $1 <= $par <= $2
+            if((10**(sort_xx[$i]))<($1) || (10**(sort_xx[$i]))>($2)) {
+                set par1_do_plot = (($1)+($2))/2.0
+            }
+        }
+        foreach par1_val par1_do_plot {
             ctype $(plotColorBar_value2color(lg($par1_val)))
             set x2 = $fx1,$fx2,0.05
             set x1 = $par1_val
@@ -262,7 +306,20 @@ plot_simu_stats_2D_abs_S_diff_vs_peak_SNR
     xlabel $(par1_str)
     ylabel "(S_{in}-S_{out})"
     # 
-    plotColorBar 0.6 0.85 0 0 par2 0 0 $(par2_str)
+    # make colorbar
+    if(is_vector(par2_min)) {
+        set cbar_min = par2_min
+    } else {
+        vecminmax par2 cbar_min cbar_max
+        set cbar_min = $cbar_min
+    }
+    if(is_vector(par2_max)) {
+        set cbar_max = par2_max
+    } else {
+        vecminmax par2 cbar_max cbar_max
+        set cbar_max = $cbar_max
+    }
+    plotColorBar 0.6 0.85 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
     # 
     crabPlotDefaultPenForPoints
     ptype 4 1
@@ -323,7 +380,21 @@ plot_simu_stats_2D_nom_S_diff_vs_peak_SNR
     xlabel $(par1_str)
     ylabel "(S_{in}-S_{out})/e_{S_{out}}"
     # 
-    plotColorBar 0.6 0.85 0 0 par2 0 0 $(par2_str)
+    # 
+    # make colorbar
+    if(is_vector(par2_min)) {
+        set cbar_min = par2_min
+    } else {
+        vecminmax par2 cbar_min cbar_max
+        set cbar_min = $cbar_min
+    }
+    if(is_vector(par2_max)) {
+        set cbar_max = par2_max
+    } else {
+        vecminmax par2 cbar_max cbar_max
+        set cbar_max = $cbar_max
+    }
+    plotColorBar 0.6 0.85 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
     # 
     crabPlotDefaultPenForPoints
     ptype 4 1

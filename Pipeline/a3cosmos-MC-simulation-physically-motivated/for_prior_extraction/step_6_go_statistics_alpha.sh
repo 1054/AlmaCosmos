@@ -5,7 +5,7 @@
 
 
 crossmatched_cat="Statistics/datatable_CrossMatched_only_matches.fits" # the output of step_3_*.sh
-output_dir="Statistics"
+output_dir="Statistics_alpha"
 
 if [[ ! -f "$crossmatched_cat" ]]; then
     echo "Error! \"$crossmatched_cat\" was not found! Please run step_3 first!"
@@ -29,6 +29,6 @@ source "$source_script"
 # 
 # run simu. stat. analyzing code
 # 
-a3cosmos-MC-simulation-statistics-analysis "$crossmatched_cat" "$output_dir"
+a3cosmos-MC-simulation-statistics-analysis-alpha "$crossmatched_cat" "$output_dir"
 
 

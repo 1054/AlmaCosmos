@@ -18,10 +18,10 @@ topcat -stilts tpipe \
                 cmd="addcol S_peak \"sim_fpeak*1e3\"" \
                 cmd="addcol S_res \"sim_fpeak*1e3*0.0\"" \
                 cmd="addcol noise \"sim_rms*1e3\"" \
-                cmd="addcol Maj_in \"sim_Maj\"" \
-                cmd="addcol Min_in \"sim_Min\"" \
-                cmd="addcol Maj_out \"rec_Maj\"" \
-                cmd="addcol Min_out \"rec_Min\"" \
+                cmd="addcol Maj_in \"sqrt((sim_Maj*sim_Maj)/(sim_beam_maj*sim_beam_min))\"" \
+                cmd="addcol Min_in \"sqrt((sim_Min*sim_Min)/(sim_beam_maj*sim_beam_min))\"" \
+                cmd="addcol Maj_out \"sqrt((rec_Maj*rec_Maj)/(sim_beam_maj*sim_beam_min))\"" \
+                cmd="addcol Min_out \"sqrt((rec_Min*rec_Min)/(sim_beam_maj*sim_beam_min))\"" \
                 cmd="addcol Maj_beam \"sim_beam_maj\"" \
                 cmd="addcol Min_beam \"sim_beam_min\"" \
                 cmd="addcol pb_corr \"rec_f*1e3*0.0+1.0\"" \
@@ -48,7 +48,7 @@ echo "Output to \"statistics_GALFIT/concat_sim_data_table_only_matches.fits\"!"
 
 
 crossmatched_cat="statistics_GALFIT/concat_sim_data_table_only_matches.fits"
-do_overwrite=1
+output_dir="statistics_GALFIT_analysis"
 
 if [[ ! -f "$crossmatched_cat" ]]; then
     echo "Error! \"$crossmatched_cat\" was not found!"
@@ -69,7 +69,7 @@ source "$source_script"
 # 
 # run simu. stat. analyzing code
 # 
-a3cosmos-MC-simulation-statistics-analysis "$crossmatched_cat"
+a3cosmos-MC-simulation-statistics-analysis "$crossmatched_cat" "$output_dir"
 
 
 

@@ -7,7 +7,7 @@
 # 
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
-    echo "    a3cosmos-MC-simulation-statistics-analysis \"datatable_CrossMatched_all_entries.fits\""
+    echo "    a3cosmos-MC-simulation-statistics-analysis-alpha \"datatable_CrossMatched_all_entries.fits\""
     echo "Input: "
     echo "    \"A catalog which contains S_in, S_out, flag_matched, flag_nonmatched_missed\""
     echo "Output: "
@@ -28,8 +28,8 @@ if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
     echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
     exit 1
 fi
-if [[ ! -d $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools ]]; then
-    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+if [[ ! -d $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools-alpha ]]; then
+    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools-alpha"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 fi
 
@@ -84,25 +84,25 @@ cd "$OutputDir"
 
 
 # 
-# Copy analysis tools from 'a3cosmos-MC-simulation-statistics-analysis-tools'
+# Copy analysis tools from 'a3cosmos-MC-simulation-statistics-analysis-tools-alpha'
 # 
-if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_calc_simu_stats.sm" ]]; then
-    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_calc_simu_stats.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
+if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_calc_simu_stats.sm" ]]; then
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_calc_simu_stats.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 else
-    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_calc_simu_stats.sm" .
+    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_calc_simu_stats.sm" .
 fi
-if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_plot_simu_stats.sm" ]]; then
-    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_plot_simu_stats.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
+if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_plot_simu_stats.sm" ]]; then
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_plot_simu_stats.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 else
-    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_plot_simu_stats.sm" .
+    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_plot_simu_stats.sm" .
 fi
-if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_apply_simu_corr.sm" ]]; then
-    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_apply_simu_corr.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
+if [[ ! -f "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_apply_simu_corr.sm" ]]; then
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_apply_simu_corr.sm\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 else
-    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_apply_simu_corr.sm" .
+    cp "$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_apply_simu_corr.sm" .
 fi
 
 
@@ -119,7 +119,7 @@ echo "macro read almacosmos_calc_simu_stats.sm calc_simu_stats" | sm | tee "log_
 echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_1.log"
 
 cd sim_diagram_output_no_galfit_flux_error
-$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_fbias.py "datatable_correction.txt" | tee "log_fit_simu_corr_fbias_1.log"
+$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_fit_simu_corr_fbias.py "datatable_correction.txt" | tee "log_fit_simu_corr_fbias_1.log"
 cd ..
 if [[ ! -f "sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm" ]]; then
     echo "Failed!"
@@ -131,6 +131,7 @@ cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_peak_SNR.pdf Plot_
 cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_FWHM_maj.pdf Plot_rel_S_diff_vs_FWHM_maj_1.pdf
 cp sim_diagram_output_no_galfit_flux_error/datatable_correction.txt datatable_correction_1.txt
 cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm best_fit_function_fbias_1.sm
+cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.pdf best_fit_function_fbias_1.pdf
 
 
 echo "macro read almacosmos_apply_simu_corr.sm apply_simulation_based_corrections simu_data_input.txt" | sm | tee "log_apply_simu_corr_1.log"
@@ -146,8 +147,8 @@ echo "macro read almacosmos_calc_simu_stats.sm calc_simu_stats" | sm | tee "log_
 echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_2.log"
 
 cd sim_diagram_output_no_galfit_flux_error
-$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_ecorr.py "datatable_correction.txt" | tee "log_fit_simu_corr_ecorr_1.log"
-$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_fbias.py "datatable_correction.txt" | tee "log_fit_simu_corr_fbias_1.log"
+$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_fit_simu_corr_ecorr.py "datatable_correction.txt" | tee "log_fit_simu_corr_ecorr_1.log"
+$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools-alpha/almacosmos_fit_simu_corr_fbias.py "datatable_correction.txt" | tee "log_fit_simu_corr_fbias_1.log"
 cd ..
 
 echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_2.log"
@@ -156,6 +157,8 @@ cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_FWHM_maj.pdf Plot_
 cp sim_diagram_output_no_galfit_flux_error/datatable_correction.txt datatable_correction_2.txt
 cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm best_fit_function_fbias_2.sm
 cp sim_diagram_output_no_galfit_flux_error/best_fit_function_ecorr.sm best_fit_function_ecorr_2.sm
+cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.pdf best_fit_function_fbias_2.pdf
+cp sim_diagram_output_no_galfit_flux_error/best_fit_function_ecorr.pdf best_fit_function_ecorr_2.pdf
 
 
 echo "macro read almacosmos_apply_simu_corr.sm apply_simulation_based_corrections simu_data_input.txt" | sm | tee "log_apply_simu_corr_2.log"

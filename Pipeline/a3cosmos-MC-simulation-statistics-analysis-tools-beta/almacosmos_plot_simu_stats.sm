@@ -13,7 +13,7 @@ plot_simu_stats
     # 
     # check variables 
     define check_ok 1
-    foreach var {id rel_S_diff par1 par2} {
+    foreach var {id S_diff par1 par2} {
         if(!is_vector($var)) {
             define check_ok 0
             print 'Column $var was not found in the input file!\n' {}
@@ -22,11 +22,11 @@ plot_simu_stats
     if($check_ok==0) {return}
     # 
     # plot ND
-    plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
-    !open $outdir"/Plot_rel_S_diff_vs_peak_SNR.pdf"
+    plot_simu_stats_2D_S_diff_vs_peak_SNR
+    !open $outdir"/Plot_S_diff_vs_peak_SNR.pdf"
     
-    plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
-    !open $outdir"/Plot_rel_S_diff_vs_FWHM_maj.pdf"
+    plot_simu_stats_2D_S_diff_vs_FWHM_maj
+    !open $outdir"/Plot_S_diff_vs_FWHM_maj.pdf"
     
     #plot_simu_stats_2D_abs_S_diff_vs_peak_SNR
     
@@ -34,21 +34,21 @@ plot_simu_stats
 
 
 
-plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
+plot_simu_stats_2D_S_diff_vs_peak_SNR
     # 
     # make plots
     # 
     load crabPlot.sm
     load crabPlotColorbar.sm
-    crabPlotOpenPS $outdir"/Plot_rel_S_diff_vs_peak_SNR.eps"
+    crabPlotOpenPS $outdir"/Plot_S_diff_vs_peak_SNR.eps"
     crabPlotDefaultPenForBox
     location 7000 30500 16000 30500
-    limits $(lg(3)) 2 -2 2
+    limits $(lg(3)) 2 -6 6
     ticksize -1 10 0 0
     box
     crabPlotDefaultPenForTitle
     xlabel $(par1_str)
-    ylabel "(S_{in}-S_{out})/S_{in}"
+    ylabel "(S_{in}-S_{out})"
     # 
     if(is_vector(par2_max)) {
         # we can set par2_max to refine the color bar
@@ -63,7 +63,7 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
     lweight 0.8
     expand 0.5
     set sort_xx = lg(par1)
-    set sort_yy = rel_S_diff
+    set sort_yy = S_diff
     set sort_cc = par2_Colors
     sort {sort_cc sort_xx sort_yy}
     foreach var {sort_cc sort_xx sort_yy} {set $var = reverse($var)}
@@ -83,9 +83,9 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
         #}
         if(cell_do_plot) {
             set plot_x = lg(cell_par1_median[$i])
-            set plot_y = cell_rel_median[$i]
-            set plot_err_H68 = cell_rel_scatter_H68[$i]
-            set plot_err_L68 = cell_rel_scatter_L68[$i]
+            set plot_y = cell_median[$i]
+            set plot_err_H68 = cell_scatter_H68[$i]
+            set plot_err_L68 = cell_scatter_L68[$i]
             ctype white lweight 6.5
             points plot_x plot_y
             errorbar plot_x plot_y plot_err_H68 2
@@ -101,7 +101,7 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
     if(is_file($outdir"/best_fit_function_fbias.sm")) {
         !cat $outdir"/best_fit_function_fbias.sm"
         crabPlotDefaultPenForConnect
-        foreach par2_val {1.00 1.25 1.75 2.25 2.75 3.25 3.75} {
+        foreach par2_val {0.25 0.75 1.25 1.75 2.25 2.75 3.25 3.75} {
             ctype $(plotColorBar_value2color($par2_val))
             set x1 = $fx1,$fx2,0.05
             set x1 = 10**x1 # we plot x1 in log, but calculates with x1 in linear
@@ -116,7 +116,7 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
     if(is_file($outdir"/best_fit_function_ecorr.sm")) {
         !cat $outdir"/best_fit_function_ecorr.sm"
         crabPlotDefaultPenForConnect
-        foreach par2_val {1.00 1.25 1.75 2.25 2.75 3.25 3.75} {
+        foreach par2_val {0.25 0.75 1.25 1.75 2.25 2.75 3.25 3.75} {
             ctype $(plotColorBar_value2color($par2_val))
             set x1 = $fx1,$fx2,0.05
             set x1 = 10**x1 # we plot x1 in log, but calculates with x1 in linear
@@ -140,21 +140,21 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
 
 
 
-plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
+plot_simu_stats_2D_S_diff_vs_FWHM_maj
     # 
     # make plots
     # 
     load crabPlot.sm
     load crabPlotColorbar.sm
-    crabPlotOpenPS $outdir"/Plot_rel_S_diff_vs_FWHM_maj.eps"
+    crabPlotOpenPS $outdir"/Plot_S_diff_vs_FWHM_maj.eps"
     crabPlotDefaultPenForBox
     location 7000 30500 16000 30500
-    limits $(lg(0.5)) $(lg(10.0)) -2 2
+    limits $(lg(0.1)) $(lg(10.0)) -6 6
     ticksize -1 10 0 0
     box
     crabPlotDefaultPenForTitle
     xlabel $(par2_str)
-    ylabel "(S_{in}-S_{out})/S_{in}"
+    ylabel "(S_{in}-S_{out})"
     # 
     set par1_log = lg(par1)
     if(is_vector(par1_max)) {
@@ -170,7 +170,7 @@ plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
     lweight 0.8
     expand 0.5
     set sort_xx = lg(par2)
-    set sort_yy = rel_S_diff
+    set sort_yy = S_diff
     set sort_cc = par1_log_Colors
     sort {sort_cc sort_xx sort_yy}
     foreach var {sort_cc sort_xx sort_yy} {set $var = reverse($var)}
@@ -190,9 +190,9 @@ plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
         #}
         if(cell_do_plot) {
             set plot_x = lg(cell_par2_median[$i])
-            set plot_y = cell_rel_median[$i]
-            set plot_err_H68 = cell_rel_scatter_H68[$i]
-            set plot_err_L68 = cell_rel_scatter_L68[$i]
+            set plot_y = cell_median[$i]
+            set plot_err_H68 = cell_scatter_H68[$i]
+            set plot_err_L68 = cell_scatter_L68[$i]
             ctype white lweight 6.5
             points plot_x plot_y
             errorbar plot_x plot_y plot_err_H68 2
@@ -212,9 +212,7 @@ plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
             ctype $(plotColorBar_value2color(lg($par1_val)))
             set x2 = $fx1,$fx2,0.05
             set x1 = $par1_val
-            set x2 = 10**x2
             input $outdir"/best_fit_function_fbias.sm"
-            set x2 = lg(x2) # we plot x2 in log, but calculates with x1 in linear
             connect x2 y_fit
         }
     }
@@ -227,9 +225,7 @@ plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj
             ctype $(plotColorBar_value2color(lg($par1_val)))
             set x2 = $fx1,$fx2,0.05
             set x1 = $par1_val
-            set x2 = 10**x2
             input $outdir"/best_fit_function_ecorr.sm"
-            set x2 = lg(x2) # we plot x2 in log, but calculates with x1 in linear
             ltype 2
             connect x2 y_fit
             connect x2 (-y_fit)

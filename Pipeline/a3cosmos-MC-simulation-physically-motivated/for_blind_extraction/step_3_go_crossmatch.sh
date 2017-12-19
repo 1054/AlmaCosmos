@@ -16,7 +16,7 @@ if [[ ! -z "$arg_sim" ]]; then
 elif [[ ! -z "$arg_sim_cat" ]]; then
     input_sim_cat="$arg_sim_cat"
 else
-    input_sim_cat="../../../../../Simulations/Physical_MC_sim/20171009/Simulated_Joined/datatable_Simulated_Concatenated_with_more_columns.fits"
+    input_sim_cat="../../../../Simulations/Physical_MC_sim/20171009/Simulated_Joined/datatable_Simulated_Concatenated_with_more_columns.fits"
 fi
 
 if [[ ! -z "$arg_rec" ]]; then
@@ -24,13 +24,13 @@ if [[ ! -z "$arg_rec" ]]; then
 elif [[ ! -z "$arg_rec_cat" ]]; then
     input_rec_cat="$arg_rec_cat"
 else
-    input_rec_cat="../cat_pybdsm_concatenated_simulated.fits"
+    input_rec_cat="./cat_pybdsm_concatenated_simulated.fits"
 fi
 
 if [[ ! -z "$arg_out" ]]; then
     output_dir="$arg_out"
 else
-    output_dir="CrossMatched"
+    output_dir="Statistics"
 fi
 
 check_input_file "$input_sim_cat"
@@ -121,10 +121,10 @@ topcat -stilts tmatchn \
                 ocmd="addcol S_peak -after e_S_out \"Peak_flux_fit*1e3\"" \
                 ocmd="addcol S_res -after S_peak \"S_peak*0.0\"" \
                 ocmd="addcol noise -after S_res \"(!NULL_rms ? rms : noise_from_sim_cat_fit)\"" \
-                ocmd="addcol Maj_in -after noise \"Maj\"" \
-                ocmd="addcol Min_in -after Maj_in \"Min\"" \
-                ocmd="addcol Maj_out -after Min_in \"Maj_deconv_fit*3600.0\"" \
-                ocmd="addcol Min_out -after Maj_out \"Min_deconv_fit*3600.0\"" \
+                ocmd="addcol Maj_in -after noise \"sqrt(Maj*Maj/(beam_maj*beam_min))\"" \
+                ocmd="addcol Min_in -after Maj_in \"sqrt(Min*Min/(beam_maj*beam_min))\"" \
+                ocmd="addcol Maj_out -after Min_in \"sqrt((Maj_deconv_fit*3600.0*Maj_deconv_fit*3600.0)+(beam_maj*beam_min))\"" \
+                ocmd="addcol Min_out -after Maj_out \"sqrt((Min_deconv_fit*3600.0*Min_deconv_fit*3600.0)+(beam_maj*beam_min))\"" \
                 ocmd="addcol Maj_beam -after Min_out \"beam_maj\"" \
                 ocmd="addcol Min_beam -after Maj_beam \"beam_min\"" \
                 ocmd="delcols \"Maj Min\"" \
@@ -155,30 +155,6 @@ fi
 # so we need to cross-match 'fit_alma_image_STR fit_repetition_STR' to 'sim_alma_image_STR sim_repetition_STR'
 # and get 'noise' from there. 
 # 
-#topcat -stilts tmatchn \
-#                nin=2 \
-#                in1="$output_dir/datatable_CrossMatched_all_entries.fits" \
-#                ifmt1=fits \
-#                values1="fit_alma_image_STR fit_repetition_STR" \
-#                suffix1="" \
-#                in2="$output_dir/datatable_CrossMatched_sim_noise.fits" \
-#                ifmt2=fits \
-#                values2="sim_alma_image_STR sim_repetition_STR" \
-#                suffix2="_2" \
-#                fixcols=all \
-#                join1=always \
-#                matcher="exact+exact" \
-#                params=1.0 \
-#                multimode=pairs \
-#                iref=1 \
-#                ocmd="replacecol noise \"(noise>0 ? noise : noise_2)\"" \
-#                ofmt=fits \
-#                out="$output_dir/datatable_CrossMatched_all_entries_2.fits" \
-#                &>  "$output_dir/datatable_CrossMatched_all_entries_2.stilts.log"
-#                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn.html
-#                # multimode=pairs
-#                # 
-#echo "Output to \"$output_dir/datatable_CrossMatched_all_entries.fits\"!"
 
 
 

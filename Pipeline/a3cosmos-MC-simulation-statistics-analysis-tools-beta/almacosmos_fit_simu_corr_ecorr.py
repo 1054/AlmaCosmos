@@ -24,7 +24,7 @@ input_data_table_file = ''
 input_equation_string = ''
 column_x1 = 'cell_par1_median' # column number starts from 1.
 column_x2 = 'cell_par2_median' # column number starts from 1.
-column_y = 'cell_rel_scatter_68' # column number starts from 1.
+column_y = 'cell_scatter_68' # column number starts from 1.
 column_yerr = 'cell_size' # column number starts from 1.
 column_xerr = '' # column number starts from 1.
 
@@ -163,32 +163,17 @@ pprint(pcov)
 
 # extract and plot results
 y_fit = my_func((x1,x2), *popt)
-
-#fig = pyplot.figure()
-#ax = pyplot.gca()
-fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True, figsize=(8,3.5))
-
-ax1.plot(x1, y_obs, color='r', marker='.', ls='None', label='Observed')
-ax1.errorbar(x1, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
-ax1.plot(x1, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
-ax1.plot(x1, x1, 'k', marker='None', ls=':', ms=0, mew=0, lw=0.5, label='1:1')
-ax1.legend()
-ax1.set_xlabel('S_peak / rms noise')
-ax1.set_ylabel('1 / sigma((S_in-S_out)/S_in)')
-ax1.set_xscale('log')
-ax1.set_yscale('log')
-
-ax2.plot(x2, y_obs, color='r', marker='.', ls='None', label='Observed')
-ax2.errorbar(x2, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
-ax2.plot(x2, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
-ax2.plot(x2, x2, 'k', marker='None', ls=':', ms=0, mew=0, lw=0.5, label='1:1')
-ax2.legend()
-ax2.set_xlabel('FWHM_source / FWHM_beam')
-ax2.set_xscale('log')
-ax2.set_yscale('log')
-
-fig.tight_layout()
-
+fig = pyplot.figure()
+ax = pyplot.gca()
+ax.plot(x1, y_obs, color='r', marker='.', ls='None', label='Observed')
+ax.errorbar(x1, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
+ax.plot(x1, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
+ax.plot(x1, x1, 'k', marker='None', ls=':', ms=0, mew=0, lw=0.5, label='1:1')
+ax.set_xlabel('Peak S/N')
+ax.set_ylabel('1 / sigma((S_in-S_out)/S_in)')
+ax.legend()
+ax.set_xscale('log')
+ax.set_yscale('log')
 #pyplot.show(block=True)
 pyplot.savefig('best_fit_function_ecorr.pdf')
 

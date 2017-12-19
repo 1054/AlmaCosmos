@@ -138,12 +138,12 @@ compute_statistics_in_param_grid_cells
     declare cell_mean 0.f # (S_in - S_out) mean
     declare cell_median 0.f # (S_in - S_out) median
     declare cell_scatter 0.f # (S_in - S_out) scatter
+    declare cell_scatter_L68 0.f # (S_in - S_out) scatter
+    declare cell_scatter_H68 0.f # (S_in - S_out) scatter
+    declare cell_scatter_68 0.f # (S_in - S_out) scatter
     declare cell_rel_mean 0.f # (S_in - S_out)/S_in mean
     declare cell_rel_median 0.f # (S_in - S_out)/S_in median
     declare cell_rel_scatter 0.f # (S_in - S_out)/S_in scatter
-    declare cell_rel_scatter_L68 0.f # (S_in - S_out)/S_in scatter
-    declare cell_rel_scatter_H68 0.f # (S_in - S_out)/S_in scatter
-    declare cell_rel_scatter_68 0.f # (S_in - S_out)/S_in scatter
     declare cell_e_S_out_median 0.f # (e_S_out) median
     do i = 1, npar {
         declare cell_par$i""_median 0.f
@@ -245,36 +245,37 @@ compute_statistics_in_param_grid_cells
             set cell_median = cell_median concat calc_bin_median
             set cell_scatter = cell_scatter concat calc_bin_sigma
             # 
+            # store (S_in-S_out) scatter -- absolute scatter
+            set bin_S_diff_unbias = bin_S_diff - calc_bin_median
+            calc_asymmetric_scatters bin_S_diff_unbias 10.0
+            set cell_scatter_L68 = cell_scatter_L68 concat asym_bin_scatter_L68
+            set cell_scatter_H68 = cell_scatter_H68 concat asym_bin_scatter_H68
+            set asym_bin_scatter = $asym_bin_array_sigma
+            set cell_scatter = cell_scatter concat asym_bin_scatter
+            if(asym_bin_scatter_L68>0 && asym_bin_scatter_H68>0) {
+                if(asym_bin_scatter_L68<asym_bin_scatter_H68) {
+                    set cell_scatter_68 = cell_scatter_68 concat asym_bin_scatter_L68
+                } else {
+                    set cell_scatter_68 = cell_scatter_68 concat asym_bin_scatter_H68
+                }
+                #set cell_scatter_68 = cell_scatter_68 concat $((asym_bin_scatter_L68+asym_bin_scatter_H68)/2.0)
+            } else {
+                if(asym_bin_scatter_L68>0) {
+                    set cell_scatter_68 = cell_scatter_68 concat $(asym_bin_scatter_L68)
+                } else {
+                    if(asym_bin_scatter_H68>0) {
+                        set cell_scatter_68 = cell_scatter_68 concat $(asym_bin_scatter_H68)
+                    } else {
+                        set cell_scatter_68 = cell_scatter_68 concat -99
+                    }
+                }
+            }
+            # 
             # store (S_in-S_out)/S_in median -- relative fbias
             calc_mean_median bin_rel_S_diff 10.0
             set cell_rel_mean = cell_rel_mean concat calc_bin_mean
             set cell_rel_median = cell_rel_median concat calc_bin_median
-            # 
-            # store (S_in-S_out)/S_in scatter -- relative scatter
-            set bin_rel_S_diff_unbias = bin_rel_S_diff - calc_bin_median
-            calc_asymmetric_scatters bin_rel_S_diff_unbias 10.0
-            set cell_rel_scatter_L68 = cell_rel_scatter_L68 concat asym_bin_scatter_L68
-            set cell_rel_scatter_H68 = cell_rel_scatter_H68 concat asym_bin_scatter_H68
-            set asym_bin_scatter = $asym_bin_array_sigma
-            set cell_rel_scatter = cell_rel_scatter concat asym_bin_scatter
-            if(asym_bin_scatter_L68>0 && asym_bin_scatter_H68>0) {
-                if(asym_bin_scatter_L68<asym_bin_scatter_H68) {
-                    set cell_rel_scatter_68 = cell_rel_scatter_68 concat asym_bin_scatter_L68
-                } else {
-                    set cell_rel_scatter_68 = cell_rel_scatter_68 concat asym_bin_scatter_H68
-                }
-                #set cell_rel_scatter_68 = cell_rel_scatter_68 concat $((asym_bin_scatter_L68+asym_bin_scatter_H68)/2.0)
-            } else {
-                if(asym_bin_scatter_L68>0) {
-                    set cell_rel_scatter_68 = cell_rel_scatter_68 concat $(asym_bin_scatter_L68)
-                } else {
-                    if(asym_bin_scatter_H68>0) {
-                        set cell_rel_scatter_68 = cell_rel_scatter_68 concat $(asym_bin_scatter_H68)
-                    } else {
-                        set cell_rel_scatter_68 = cell_rel_scatter_68 concat -99
-                    }
-                }
-            }
+            set cell_rel_scatter = cell_rel_scatter concat calc_bin_sigma
             # 
             # store (S_in-S_out)/S_in scatter -- mean galfit flux error
             calc_mean_median bin_e_S_out 10.0
@@ -309,7 +310,7 @@ compute_statistics_in_param_grid_cells
     # 
     # write 
     load wfile.sm
-    set wfile_vectors = {cell_id cell_size cell_mean cell_median cell_scatter cell_rel_mean cell_rel_median cell_rel_scatter cell_rel_scatter_L68 cell_rel_scatter_H68 cell_rel_scatter_68 cell_e_S_out_median}
+    set wfile_vectors = {cell_id cell_size cell_mean cell_median cell_rel_scatter cell_rel_mean cell_rel_median cell_scatter cell_scatter_L68 cell_scatter_H68 cell_scatter_68 cell_e_S_out_median}
     do i = 1, npar { set wfile_vectors = wfile_vectors concat <cell_par$i""_median> }
     wfile $outdir"/datatable_correction.txt"
     # 

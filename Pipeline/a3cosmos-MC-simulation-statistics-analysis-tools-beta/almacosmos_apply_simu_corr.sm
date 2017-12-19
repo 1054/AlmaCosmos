@@ -21,16 +21,8 @@ apply_simulation_based_corrections 01
         input $outdir"/best_fit_function_fbias.sm"
         set fbias = y_fit
         set S_out_uncorr = S_out
-        set S_out = S_out / (1 - fbias)
+        set S_out = S_out + fbias
         set S_out_corr = S_out
-        # -- dzliu notes --
-        # (S_in - S_out_corr) / S_in = (S_in - S_out_uncorr) / S_in - fbias
-        # assuming S_in = S_out_corr, we have
-        # 0 = (S_out_corr - S_out_uncorr) / S_out_corr - fbias
-        # 0 = (1 - S_out_uncorr/S_out_corr) - fbias
-        # (S_out_uncorr/S_out_corr) = 1 - fbias
-        # so
-        # S_out_corr = S_out_uncorr / (1 - fbias)
         print $outdir"/apply_simu_corr_fbias.txt" '%16g %16g %16g %16g %16g\n' {S_out_uncorr S_out_corr fbias par1 par2}
     }
     # 
@@ -40,7 +32,7 @@ apply_simulation_based_corrections 01
         input $outdir"/best_fit_function_ecorr.sm"
         set ecorr = y_fit
         set e_S_out_uncorr = e_S_out
-        set e_S_out = S_out * ecorr
+        set e_S_out = ecorr
         set e_S_out_corr = e_S_out
         # -- dzliu notes --
         # (S_in - S_out) / S_in =scatter= ecorr
