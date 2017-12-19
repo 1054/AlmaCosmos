@@ -68,7 +68,7 @@ print(alma_image_list)
 # And the recovered_dir should contain those recovered files with PyBDSM
 # 
 #for alma_image_name in alma_image_list:
-def read_MC_sim_recovery(alma_image_name, output):
+def read_MC_sim_recovery(alma_image_name, output=None):
     #simulated_dir = 'input_fits_files/2015.1.01495.S_SB1_GB1_MB1_COSMOS-16199'
     #recovered_dir = 'caap_blind_extraction_photometry_pybdsf'
     simulated_dir = 'models' + os.sep + alma_image_name
