@@ -296,7 +296,7 @@ def read_MC_sim_recovery(alma_image_name, output):
 processes = []
 for i in range(len(alma_image_list)):
     processes.append( \
-        multiprocessing.Process(target=read_MC_sim_recovery, args=(alma_image_list[i]))
+        multiprocessing.Process(target=read_MC_sim_recovery, args=(alma_image_list[i], output))
     )
 
 
