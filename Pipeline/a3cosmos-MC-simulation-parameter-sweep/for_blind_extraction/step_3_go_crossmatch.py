@@ -75,7 +75,7 @@ def read_MC_sim_recovery(alma_image_name, output):
     if os.path.isfile('statistics_PyBDSM/done_output_sim_data_table_%s'%(alma_image_name)):
         print('# %s (already done, skip!)'%(alma_image_name))
         output.put('# %s (already done, skip!)'%(alma_image_name))
-        continue
+        return
     else:
         print('# %s'%(alma_image_name))
         output.put('# %s'%(alma_image_name))
