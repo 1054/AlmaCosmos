@@ -51,6 +51,7 @@ with open('output_PyBDSM/list_for_pyBDSM.txt','r') as fp:
                input_one_item!='2011.0.00064.S_SB1_GB1_MB1_AzTEC-3' :
                 alma_image_list.append(input_one_item)
 
+print('Listing %d ALMA images'%(len(alma_image_list)))
 print(alma_image_list)
 #sys.exit()
 
@@ -344,19 +345,20 @@ def read_MC_sim_recovery(alma_image_name, output):
 # 
 # Run the function
 # 
-processes = [] # 'processes' contains the number of alma image, e.g., 1, 2, 3, ..., len(alma_image_list). 
+processes = [] # 'processes' contains the number of alma image, e.g., 0, 1, 2, 3, ..., len(alma_image_list)-1. Can read from input, but input number starts from 1 to len(alma_image_list). 
 if len(sys.argv)>1:
     i=1
     while i<len(sys.argv):
-        processes.append(int(sys.argv[i]))
+        if(int(sys.argv[i])<=len(alma_image_list)):
+            processes.append(int(sys.argv[i])-1)
         i=i+1
 else:
-    processes = range(len(alma_image_list)) + 1
+    processes = range(len(alma_image_list))
     print('Running processes %d to %d'%(1,max(processes)))
 
 if len(processes) > 0:
     for i in range(len(processes)):
-        read_MC_sim_recovery(alma_image_list[processes[i]-1])
+        read_MC_sim_recovery(alma_image_list[processes[i]])
 
 
 
