@@ -1,0 +1,85 @@
+#!/bin/bash
+# 
+
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    ./almacosmos_cmd_run_in_parallel \"my_program_list.txt\" 15"
+    echo "    # The first input is a text file containing the list of commands you would like to run"
+    echo "    # The second input is the number of simultaneous processes. Default is 10."
+    echo "    # The third input is the sleep time per loop. Default is 30 seconds."
+    echo ""
+    echo "Example: "
+    echo "    If we have a script \"test_program.sh\", and we want to run it multiple times with different inputs, "
+    echo "    then we write down each command into a text file \"test_list_of_commands.txt\" with contents like: "
+    echo "      \"test_program.sh aaa\""
+    echo "      \"test_program.sh bbb\""
+    echo "      \"test_program.sh ccc\""
+    echo "    Then we run: "
+    echo "      almacosmos_cmd_run_in_parallel \"test_list_of_commands.txt\" 3 0.5"
+    echo "    Then the 3 commands will be executed almost simultaneously, with a delay of 0.5 seconds per command."
+    echo "    These commands will be executed at the same directory as the \"my_program_list.txt\" file."
+    echo ""
+    exit
+fi
+
+# read in my_program_list
+my_program_dir=$(bash -c "cd $(dirname $1); pwd")
+IFS=$'\n' read -d '' -r -a my_program_list < "$1"
+
+# read in number of simultaneous processes
+limit_simultaneous_processes=10
+if [[ $# -ge 2 ]]; then
+    limit_simultaneous_processes=$2
+fi
+
+# read in sleep time per loop
+sleep_time_per_loop=30
+if [[ $# -ge 3 ]]; then
+    sleep_time_per_loop=$3
+fi
+
+# loop each line of my_program_list
+for (( i=0; i<${#my_program_list[@]}; i++ )); do
+    # 
+    # get my_program_name
+    my_program_name=$(echo "${my_program_list[i]}" | perl -p -e 's/\s*([^\s]+)\s+(.*)/\1/g')
+    #echo "my_program_args=("$(echo "${my_program_list[i]}" | perl -p -e 's/\s*([^\s]+)\s+(.*)/\2/g' | perl -p -e 's/\"/\\\"/g' | perl -p -e "s/\'/\\\'/g")")"
+    #eval "my_program_args=("$(echo "${my_program_list[i]}" | perl -p -e 's/\s*([^\s]+)\s+(.*)/\2/g' | perl -p -e 's/\"/\\\"/g' | perl -p -e "s/\'/\\\'/g")")"
+    #echo "my_program_args=("$(echo "${my_program_list[i]}" | perl -p -e 's/\s*([^\s]+)\s+(.*)/\2/g')")"
+    eval "my_program_args=("$(echo "${my_program_list[i]}" | perl -p -e 's/\s*([^\s]+)\s+(.*)/\2/g')")"
+    #echo ${#my_program_args[@]}
+    #echo ${my_program_args[@]}
+    if [[ x"$my_program_name" != x ]]; then
+        
+        if [[ "$my_program_name" != "/"* ]]; then
+            my_program_name="$my_program_dir/$my_program_name"
+        fi
+        
+        # print the command line
+        echo -n "$my_program_name"
+        for (( j=0; j<${#my_program_args[@]}; j++ )); do
+            if [[ "${my_program_args[j]}" == *" "* ]]; then
+                echo -n " \"${my_program_args[j]}\""
+            else
+                echo -n " ${my_program_args[j]}"
+            fi
+        done
+        echo " > \"log_of_parallel_process_$(($i+1)).txt\" 2>&1"
+        
+        $my_program_name "${my_program_args[@]}" > "log_of_parallel_process_$(($i+1)).txt" 2>&1 &
+        
+        #ps aux | grep "$my_program_name" | grep -v "grep"
+        check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_name" | wc -l | sed -e 's/^ *//g')
+        echo "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)"
+        while [[ $check_simultaneous_processes -ge $limit_simultaneous_processes ]]; do
+            sleep $sleep_time_per_loop
+            check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_name" | wc -l | sed -e 's/^ *//g')
+            echo "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)"
+        done
+        
+        sleep 0.5
+    fi
+done
+
+

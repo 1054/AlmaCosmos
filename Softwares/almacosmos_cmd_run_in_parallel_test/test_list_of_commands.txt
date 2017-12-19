@@ -1,0 +1,14 @@
+./test_program.sh aaa "alpha go"
+./test_program.sh bbb 'alpha go 2'
+./test_program.sh ccc "'alpha go 3'"
+test_program.sh ddd
+test_program.sh eee
+test_program.sh fff
+test_program.sh ggg
+test_program.sh hhh
+test_program.sh iii
+test_program.sh jjj
+test_program.sh kkk
+test_program.sh lll
+test_program.sh mmm
+test_program.sh nnn

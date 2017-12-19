@@ -1,0 +1,39 @@
+#!/bin/bash
+# 
+
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    ./a_dzliu_code_kill_parallel_processes.sh my_program_list"
+    echo "    # The first input is a text file containing the list of commands you would like to run"
+    echo ""
+    exit
+fi
+
+# read in my_program_list
+IFS=$'\n' read -d '' -r -a my_program_list < "$1"
+
+# loop each line of my_program_list
+for (( i=0; i<${#my_program_list[@]}; i++ )); do
+    # 
+    # get my_program_name
+    my_program_name=$(echo "${my_program_list[i]}" | perl -p -e 's/\s*([^\s]+)\s+.*/\1/g')
+    list_pid=($(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_name" | tr -s ' ' | cut -d ' ' -f 2))
+    if [[ ${#list_pid[@]} -gt 0 ]]; then
+        for (( j=0; j<${#list_pid[@]}; j++ )); do
+            process_name=($(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_name" | grep " ${list_pid[j]} " | tr -s ' ' | cut -d ' ' -f 12))
+            user_confirm="y"
+            echo ""
+            echo -n "kill -9 ${list_pid[j]} ${process_name} ? [$user_confirm] "
+            read -n 1 user_confirm
+            if [[ x"$user_confirm" == x""* ]] || [[ x"$user_confirm" == x"y"* ]] || [[ x"$user_confirm" == x"Y"* ]]; then
+                echo " Killed!"
+                kill -9 ${list_pid[j]}
+            else
+                echo " User abort!"
+            fi
+        done
+    fi
+done
+
+
