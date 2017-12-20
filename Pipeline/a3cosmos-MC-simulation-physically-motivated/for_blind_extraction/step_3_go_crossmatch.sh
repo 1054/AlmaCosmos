@@ -3,6 +3,16 @@
 
 #cd ~/Work/AlmaCosmos/Photometry/ALMA_full_archive/Blind_Extraction_by_Benjamin/20171114_on_Phys_MC_Simulated_Images/check_simulated_image_fitting_statistics/
 
+usage() {
+    echo "Usage: "
+    echo "  ./step_3_go_crossmatch.sh -sim sim_catalog.fits -rec pybdsm_catalog.fits -out DataTables"
+}
+
+if [[ $# -eq 0 ]]; then
+    usage
+    exit
+fi
+
 almacosmos_cmd_args_script=$(dirname $(dirname $(dirname $(dirname ${BASH_SOURCE[0]}))))/Softwares/almacosmos_cmd_args
 if [[ ! -f "$almacosmos_cmd_args_script" ]]; then
     echo "Error! \"$almacosmos_cmd_args_script\" was not found! Please make sure you have completely downloaded the codes from \"https://github.com/1054/AlmaCosmos.git\"!"
@@ -16,7 +26,8 @@ if [[ ! -z "$arg_sim" ]]; then
 elif [[ ! -z "$arg_sim_cat" ]]; then
     input_sim_cat="$arg_sim_cat"
 else
-    input_sim_cat="../../../../Simulations/Physical_MC_sim/20171009/Simulated_Joined/datatable_Simulated_Concatenated_with_more_columns.fits"
+    #input_sim_cat="../../../../Simulations/Physical_MC_sim/20171009/Simulated_Joined/datatable_Simulated_Concatenated_with_more_columns.fits"
+    input_sim_cat="datatable_Simulated_Concatenated_with_more_columns.fits" # default value
 fi
 
 if [[ ! -z "$arg_rec" ]]; then
@@ -24,13 +35,13 @@ if [[ ! -z "$arg_rec" ]]; then
 elif [[ ! -z "$arg_rec_cat" ]]; then
     input_rec_cat="$arg_rec_cat"
 else
-    input_rec_cat="./cat_pybdsm_concatenated_simulated.fits"
+    input_rec_cat="cat_pybdsm_concatenated_simulated.fits" # default value
 fi
 
 if [[ ! -z "$arg_out" ]]; then
     output_dir="$arg_out"
 else
-    output_dir="Statistics"
+    output_dir="DataTables" # default value
 fi
 
 check_input_file "$input_sim_cat"

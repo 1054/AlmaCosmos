@@ -16,7 +16,7 @@ mkdir statistics_PyBDSM
 
 if [[ -f "statistics_PyBDSM/list_of_commands.txt" ]]; then rm "statistics_PyBDSM/list_of_commands.txt"; fi
 
-for (( i=1; i<10; i++ )); do
+for (( i=1; i<=101; i++ )); do
     
     echo $(dirname "${BASH_SOURCE[0]}")/step_3_go_crossmatch.py "$i" >> "statistics_PyBDSM/list_of_commands.txt"
     

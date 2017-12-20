@@ -1,0 +1,118 @@
+#!/bin/bash
+# 
+
+
+# 
+# Usage
+# 
+usage() {
+    echo ""
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-catalog-cross-match \\"
+    echo "        -simulation-catalog \"sim_cat.fits\" \\"
+    echo "        -recovery-catalog \"rec_cat.fits\" \\"
+    echo "        -output-directory \"output_dir\""
+    echo "Input: "
+    echo "    Two catalogs, the first one is the simulation source catalog, and the second one is the source recovery catalog. "
+    echo "    This code will try to recognize columns therein and output a cross-matched catalog. "
+    echo ""
+    echo "Output: "
+    echo "    A cross-matched catalog with columns: id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam"
+    echo ""
+}
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Supermongo was not installed!"
+    exit 1
+fi
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+    exit 1
+fi
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not installed!"
+    exit 1
+fi
+if [[ $(type almacosmos_cmd_args 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    else
+        echo "Error! The download of this code from \"https://github.com/1054/AlmaCosmos.git\" in incomplete!"
+        exit 1
+    fi
+fi
+if [[ $(type almacosmos_recognize_fits_table_column_names.py 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! almacosmos_recognize_fits_table_column_names.py was not installed!"
+    exit 1
+fi
+
+
+# 
+# Read user input
+# 
+source almacosmos_cmd_args "$@"
+if [[ ! -z "$almacosmos_cmd_sim" ]]; then
+    InputCat1="$almacosmos_cmd_sim"
+elif [[ ! -z "$almacosmos_cmd_sim_cat" ]]; then
+    InputCat1="$almacosmos_cmd_sim_cat"
+elif [[ ! -z "$almacosmos_cmd_simulation_catalog" ]]; then
+    InputCat1="$almacosmos_cmd_simulation_catalog"
+else
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 2 ]]; then
+        InputCat1="${almacosmos_cmd_misc_args[0]}"
+    else
+        usage
+        exit
+    fi
+fi
+if [[ ! -z "$almacosmos_cmd_rec" ]]; then
+    InputCat2="$almacosmos_cmd_rec"
+elif [[ ! -z "$almacosmos_cmd_rec_cat" ]]; then
+    InputCat2="$almacosmos_cmd_rec_cat"
+elif [[ ! -z "$almacosmos_cmd_recovery_catalog" ]]; then
+    InputCat2="$almacosmos_cmd_recovery_catalog"
+else
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 2 ]]; then
+        InputCat2="${almacosmos_cmd_misc_args[1]}"
+    else
+        usage
+        exit
+    fi
+fi
+if [[ ! -z "$almacosmos_cmd_output_directory" ]]; then
+    OutputDir="$almacosmos_cmd_output_directory"
+else
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 3 ]]; then
+        OutputDir="${almacosmos_cmd_misc_args[2]}"
+    else
+        OutputDir="datatable_CrossMatched" # default value
+    fi
+fi
+
+echo "InputCat1 = $InputCat1"
+echo "InputCat2 = $InputCat2"
+echo "OutputDir = $OutputDir"
+check_input_file "$InputCat1"
+check_input_file "$InputCat2"
+create_output_dir "$OutputDir"
+
+
+# 
+# Extract meta
+# 
+echo almacosmos_recognize_fits_table_column_names.py "$InputCat1" "flux" "${almacosmos_cmd_misc_opts[@]}"
+almacosmos_recognize_fits_table_column_names.py "$InputCat1" "flux" "${almacosmos_cmd_misc_opts[@]}"
+
+
+
+
+
+
+
+
+
+

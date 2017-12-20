@@ -3,18 +3,22 @@
 
 
 # 
-# Check input argument
+# Usage
 # 
-if [[ $# -lt 2 ]]; then
+usage() {
+    echo ""
     echo "Usage: "
-    echo "    a3cosmos-MC-simulation-spurious-analysis \"catalog_original_image_fitting.fits\" \"catalog_inverted_image_fitting.fits\""
+    echo "    a3cosmos-MC-simulation-spurious-analysis \\"
+    echo "        -original-fitting \"catalog_original_image_fitting.fits\" \\"
+    echo "        -inverted-fitting \"catalog_inverted_image_fitting.fits\" \\"
+    echo "        -output-directory \"output_spurious_analysis\""
     echo "Input: "
     echo "    Two catalogs, the first one is the original image fitting, the second one is the inverted image fitting. Both should contain Peak_flux and E_Peak_flux."
-    echo "Output: "
-    echo "    A directory which contains output figures, the default name of which is \"Output_MC_sim_spurious\""
     echo ""
-    exit
-fi
+    echo "Output: "
+    echo "    We will output figures to the output directory, which is \"output_spurious_analysis\" in default."
+    echo ""
+}
 
 
 # 
@@ -28,35 +32,64 @@ if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
     echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
     exit 1
 fi
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not installed!"
+    exit 1
+fi
 if [[ ! -f $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools/analyze_spurious_curve.sm ]]; then
     echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools/analyze_spurious_curve.sm"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 fi
+if [[ $(type almacosmos_cmd_args 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    else
+        echo "Error! The download of this code from \"https://github.com/1054/AlmaCosmos.git\" in incomplete!"
+        exit 1
+    fi
+fi
 
 
 # 
-# Read Input cat
+# Read user input
 # 
-InputCat1="$1"
-InputCat2="$2"
-
-
-# 
-# Set Output dir
-# 
-if [[ $# -ge 3 ]]; then
-    OutputDir="$3"
+source almacosmos_cmd_args "$@"
+if [[ ! -z "$almacosmos_cmd_original_fitting" ]]; then
+    InputCat1="$almacosmos_cmd_original_fitting"
 else
-    OutputDir="Output_MC_sim_spurious"
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 2 ]]; then
+        InputCat1="${almacosmos_cmd_misc_args[0]}"
+    else
+        usage
+        exit
+    fi
+fi
+if [[ ! -z "$almacosmos_cmd_inverted_fitting" ]]; then
+    InputCat2="$almacosmos_cmd_inverted_fitting"
+else
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 2 ]]; then
+        InputCat2="${almacosmos_cmd_misc_args[1]}"
+    else
+        usage
+        exit
+    fi
+fi
+if [[ ! -z "$almacosmos_cmd_output_directory" ]]; then
+    OutputDir="$almacosmos_cmd_output_directory"
+else
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 3 ]]; then
+        OutputDir="${almacosmos_cmd_misc_args[2]}"
+    else
+        OutputDir="output_spurious_analysis" # default
+    fi
 fi
 
-
-# 
-# Check output dir
-# 
-if [[ ! -d "$OutputDir" ]]; then
-    mkdir -p "$OutputDir"
-fi
+echo "InputCat1 = $InputCat1"
+echo "InputCat2 = $InputCat2"
+echo "OutputDir = $OutputDir"
+check_input_file "$InputCat1"
+check_input_file "$InputCat2"
+create_output_dir "$OutputDir"
 
 
 # 

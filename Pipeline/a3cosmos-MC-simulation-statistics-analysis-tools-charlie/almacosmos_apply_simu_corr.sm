@@ -1,0 +1,69 @@
+apply_simulation_based_corrections 01
+    # 
+    #  Usage: echo "macro read almacosmos_apply_simu_corr.sm apply_simulation_based_corrections" | sm
+    # 
+    if(!$?1) {
+        print 'Usage: apply_simulation_based_corrections input_catalog.txt'
+        return
+    }
+    # 
+    define outdir sim_diagram_output_no_galfit_flux_error
+    # 
+    load rfile.sm
+    rfile $1
+    # 
+    macro read almacosmos_calc_simu_stats.sm
+    user_define_param_grid
+    # 
+    if(is_file($outdir"/best_fit_function_fbias.sm")) {
+        set x1 = par1
+        set x2 = par2
+        input $outdir"/best_fit_function_fbias.sm"
+        set fbias = y_fit
+        set S_out_uncorr = S_out
+        set S_out = S_out / (1 - fbias)
+        set S_out_corr = S_out
+        # -- dzliu notes --
+        # (S_in - S_out_corr) / S_in = (S_in - S_out_uncorr) / S_in - fbias
+        # assuming S_in = S_out_corr, we have
+        # 0 = (S_out_corr - S_out_uncorr) / S_out_corr - fbias
+        # 0 = (1 - S_out_uncorr/S_out_corr) - fbias
+        # (S_out_uncorr/S_out_corr) = 1 - fbias
+        # so
+        # S_out_corr = S_out_uncorr / (1 - fbias)
+        print $outdir"/apply_simu_corr_fbias.txt" '%16g %16g %16g %16g %16g\n' {S_out_uncorr S_out_corr fbias par1 par2}
+    }
+    # 
+    if(is_file($outdir"/best_fit_function_ecorr.sm")) {
+        set x1 = par1
+        set x2 = par2
+        input $outdir"/best_fit_function_ecorr.sm"
+        set ecorr = y_fit
+        set e_S_out_uncorr = e_S_out
+        set e_S_out = S_out * ecorr
+        set e_S_out_corr = e_S_out
+        # -- dzliu notes --
+        # (S_in - S_out) / S_in =scatter= ecorr
+        # (S_in - S_out) / e_S_out =scatter= 1.0
+        # e_S_out / S_in = ecorr
+        # assuming S_out = S_in
+        # so e_S_out_corr = S_out * ecorr
+        print $outdir"/apply_simu_corr_ecorr.txt" '%16g %16g %16g %16g %16g\n' {e_S_out_uncorr e_S_out_corr ecorr par1 par2}
+    }
+    # 
+    # output
+    load wfile.sm
+    set wfile_vectors = rfile_vectors
+    !echo $1 | sed -e 's/.txt//g' > outfile.txt
+    data outfile.txt read outfile 1.s
+    !rm outfile.txt
+    wfile $(outfile)"_corrected.txt"
+
+
+
+
+
+
+
+
+

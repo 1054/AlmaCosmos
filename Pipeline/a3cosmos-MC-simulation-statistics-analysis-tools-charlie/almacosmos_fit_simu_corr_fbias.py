@@ -139,34 +139,25 @@ def my_func((x1,x2), a0, a1, k1, n1, a2, k2, n2):
     #return a0 * pow(x1, a1) * numpy.exp(-x1) * pow(x2, a2) * numpy.exp(-x2)
     #return a0 * pow(x1, a1) * numpy.exp(-x1) * numpy.exp(a2 * x2)
     #return a0 * numpy.exp(a1 * x1) * pow(x1, n1) * numpy.exp(a2 * x2) * pow(x2, n2)
-    return a0 * (numpy.exp(a1*numpy.log10((x1/k1)**n1))) * (numpy.exp(a2*((x2/k2)**n2)))
-    #return a0 * (numpy.exp(a1*pow(numpy.log10(x1/k1),n1))) * (numpy.exp(a2*pow((x2/k2),n2)))
+    #return a0 * pow(a1*(x1/k1),n1) * numpy.exp(-a1*(x1/k1)) * pow(a2*(x2+k2),n2) * numpy.exp(-a2*(x2+k2))
+    return a0 * numpy.exp(a1*pow(((x1+k1)),n1)) * numpy.exp(a2*pow(((x2+k2)),n2))
 
 # 
-#                    a0     a1     k1     n1     a2     k2     n2
-initial_guess = (-0.250, -1.00, +1.00, +1.00, -1.00, +1.00, +1.00)
-#initial_guess = (-0.06010105,   0.13198369, -14.45676735,  -0.33198832, 0.85017692,  -0.39402407,  -0.6517596)
+#                     a0     a1      k1     n1     a2     k2     n2
+initial_guess = (-200.00, -1.00, +15.00, +1.25, -1.00, +0.05, +0.25)
+initial_guess = (-1.35039886, -1.27921513, -2.82108879,  1.51937891, -1.67335399, 0.28218211, -0.08353849)
+initial_guess = (-2.26752763, -0.78549545, -3.82109989,  0.49729783, -1.08327422, 0.18819091, -0.49485985)
 bound_range = ([-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf],
                 [+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf])
 
 try:
-    popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess, maxfev=10000)
+    popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess)
 except Exception,e:
     print str(e)
     popt = initial_guess
     pcov = []
-    try:
-        #                    a0     a1     k1     n1     a2     k2     n2
-        initial_guess = (+0.250, -1.00, +1.00, +0.50, -1.00, +1.00, +0.00)
-        popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess, maxfev=10000)
-    except Exception,e:
-        print str(e)
-        popt = initial_guess
-        pcov = []
-
 pprint(popt)
 pprint(pcov)
-
 
 # extract and plot results
 y_fit = my_func((x1,x2), *popt)
@@ -212,7 +203,10 @@ os.system('echo "set n1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[3]))
 os.system('echo "set a2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[4]))
 os.system('echo "set k2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[5]))
 os.system('echo "set n2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[6]))
-os.system('echo "set y_fit = a0 * (exp(a1*lg((x1/k1)**n1))) * (exp(a2*((x2/k2)**n2)))" >> best_fit_function_fbias.sm')
+os.system('echo "set xk1 = (n1<1 && (x1+k1)<0) ? 0.0 : (x1+k1)" >> best_fit_function_fbias.sm')
+os.system('echo "set xk2 = (n2<1 && (x2+k2)<0) ? 0.0 : (x2+k2)" >> best_fit_function_fbias.sm')
+#os.system('echo "set y_fit = a0 * (a1*(x1/k1))**n1 * exp(-a1*(x1/k1)) * (a2*(x2+k2))**n2 * exp(-a2*(x2+k2))" >> best_fit_function_fbias.sm')
+os.system('echo "set y_fit = a0 * exp(a1*(xk1)**n1) * exp(a2*(xk2)**n2)" >> best_fit_function_fbias.sm')
 
 
 

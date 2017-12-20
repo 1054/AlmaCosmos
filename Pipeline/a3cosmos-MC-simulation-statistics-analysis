@@ -46,7 +46,7 @@ InputCat="$1"
 if [[ $# -ge 2 ]]; then
     OutputDir="$2"
 else
-    OutputDir="Output_MC_sim_statistics"
+    OutputDir="output_statistics"
 fi
 
 

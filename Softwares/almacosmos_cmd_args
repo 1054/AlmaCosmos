@@ -9,7 +9,7 @@
 # Example:
 #          In a bash script, we write: 
 #          source $(which almacosmos_cmd_args) -sim aaa.fits -rec bbb.fits
-#          Then after this, we can use varibales ${arg_sim} ${arg_rec}
+#          Then after this, we can use varibales ${almacosmos_cmd_sim} ${almacosmos_cmd_rec}
 # 
 
 
@@ -70,25 +70,50 @@ function create_output_dir() {
 # Read input args
 # 
 iarg_iarg=1
-iarg_name=()
+iarg_name=""
+iarg_text=""
 iarg_numb=0
+almacosmos_cmd_main_args=()
+almacosmos_cmd_main_opts=()
+almacosmos_cmd_misc_args=() # misc arguments without option name, e.g., -aaa bbb, "-aaa" is the option, "bbb" is the argument. 
+almacosmos_cmd_misc_opts=() # misc options without argument value, e.g., -aaa bbb, "-aaa" is the option, "bbb" is the argument. 
 while [[ iarg_iarg -le $# ]]; do
-    #echo "${!iarg_iarg}"
+    #echo "$iarg_iarg ${!iarg_iarg}"
     # 
-    if echo "${!iarg_iarg}" | grep -q "^[-][a-z]"; then
-        iarg_name=$(echo "${!iarg_iarg}" | sed -e 's/^-/arg_/g' | sed -e 's/[^a-zA-Z_0-9]/_/g')
-        declare -a $iarg_name
+    if echo "${!iarg_iarg}" | grep -q -e "^-[a-zA-Z]" -e "^--[a-zA-Z]"; then
+        if [[ iarg_iarg -eq $# ]]; then
+            almacosmos_cmd_misc_opts+=("${!iarg_iarg}") # record misc opts without arg value, if this is the last input. 
+        else
+            if [[ ! -z "$iarg_name" ]]; then
+                iarg_numb=$(eval "echo \${#$iarg_name[@]}")
+                if [[ $iarg_numb -eq 0 ]]; then
+                    almacosmos_cmd_misc_opts+=("$iarg_text") # record misc opts without arg value, if its next input is also an option.
+                fi
+            fi
+            iarg_name=$(echo "${!iarg_iarg}" | sed -e 's/^--/^-/g' | sed -e 's/^-/almacosmos_cmd_/g' | sed -e 's/[^a-zA-Z_0-9]/_/g')
+            iarg_text="${!iarg_iarg}"
+            #echo "declare -a $iarg_name"
+            declare -a $iarg_name
+            #echo "almacosmos_cmd_main_opts+=(\"$iarg_text\")"
+            almacosmos_cmd_main_opts+=("$iarg_text")
+        fi
     elif [[ ! -z "$iarg_name" ]]; then
         eval "$iarg_name+=(\"${!iarg_iarg}\")"
-        #iarg_temp="$iarg_name[@]"
-        #echo $iarg_name=${!iarg_temp}
+        eval "almacosmos_cmd_main_args+=(\"${!iarg_iarg}\")"
         iarg_numb=$(eval "echo \${#$iarg_name[@]}")
-        eval "echo $iarg_name[$((iarg_numb-1))]=\${$iarg_name[$((iarg_numb-1))]}"
+        #eval "echo $iarg_name[$((iarg_numb-1))]=\${$iarg_name[$((iarg_numb-1))]}"
+    else
+        almacosmos_cmd_misc_args+=("${!iarg_iarg}")
+        #echo "almacosmos_cmd_misc_args[$((${#almacosmos_cmd_misc_args[@]}-1))]=${!iarg_iarg}"
     fi
     # 
     iarg_iarg=$((iarg_iarg+1))
 done
 
+unset iarg_iarg
+unset iarg_name
+unset iarg_text
+unset iarg_numb
 
 
 

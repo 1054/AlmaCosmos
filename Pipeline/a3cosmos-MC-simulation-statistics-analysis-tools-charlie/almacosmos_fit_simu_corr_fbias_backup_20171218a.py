@@ -71,7 +71,6 @@ import numpy
 import astropy
 import astropy.io.ascii as asciitable
 import scipy.optimize
-import matplotlib
 from matplotlib import pyplot
 from pprint import pprint
 
@@ -139,67 +138,22 @@ def my_func((x1,x2), a0, a1, k1, n1, a2, k2, n2):
     #return a0 * pow(x1, a1) * numpy.exp(-x1) * pow(x2, a2) * numpy.exp(-x2)
     #return a0 * pow(x1, a1) * numpy.exp(-x1) * numpy.exp(a2 * x2)
     #return a0 * numpy.exp(a1 * x1) * pow(x1, n1) * numpy.exp(a2 * x2) * pow(x2, n2)
-    return a0 * (numpy.exp(a1*numpy.log10((x1/k1)**n1))) * (numpy.exp(a2*((x2/k2)**n2)))
-    #return a0 * (numpy.exp(a1*pow(numpy.log10(x1/k1),n1))) * (numpy.exp(a2*pow((x2/k2),n2)))
+    return a0 * pow(a1*(x1/k1),n1) * numpy.exp(-a1*(x1/k1)) * pow(a2*(x2+k2),n2) * numpy.exp(-a2*(x2+k2))
 
 # 
-#                    a0     a1     k1     n1     a2     k2     n2
-initial_guess = (-0.250, -1.00, +1.00, +1.00, -1.00, +1.00, +1.00)
-#initial_guess = (-0.06010105,   0.13198369, -14.45676735,  -0.33198832, 0.85017692,  -0.39402407,  -0.6517596)
-bound_range = ([-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf],
-                [+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf])
+#                    a0    a1   k1     n1    a2     k2     n2
+initial_guess = (-200.0, +1.0, 1.0, -1.25, -1.0, -10.0, -1.25)
+bound_range = (-numpy.inf,[numpy.inf,numpy.inf,numpy.inf,numpy.inf,numpy.inf,numpy.inf,0])
 
-try:
-    popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess, maxfev=10000)
-except Exception,e:
-    print str(e)
-    popt = initial_guess
-    pcov = []
-    try:
-        #                    a0     a1     k1     n1     a2     k2     n2
-        initial_guess = (+0.250, -1.00, +1.00, +0.50, -1.00, +1.00, +0.00)
-        popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess, maxfev=10000)
-    except Exception,e:
-        print str(e)
-        popt = initial_guess
-        pcov = []
-
+popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess)
 pprint(popt)
 pprint(pcov)
 
-
 # extract and plot results
 y_fit = my_func((x1,x2), *popt)
-
-#fig = pyplot.figure()
-#ax = pyplot.gca()
-fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True, figsize=(8,3.5))
-
-ax1.plot(x1, y_obs, color='r', marker='.', ls='None', label='Observed')
-ax1.errorbar(x1, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
-ax1.plot(x1, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
-ax1.legend()
-ax1.set_xlabel('S_peak / rms noise')
-ax1.set_ylabel('(S_in - S_out) / S_in')
-ax1.set_xscale('log')
-
-ax2.plot(x2, y_obs, color='r', marker='.', ls='None', label='Observed')
-ax2.errorbar(x2, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
-ax2.plot(x2, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
-ax2.legend()
-ax2.set_xlabel('FWHM_source / FWHM_beam')
-
-fig.tight_layout()
-
-#pyplot.show(block=True)
-pyplot.savefig('best_fit_function_fbias.pdf')
-
-if pcov == []:
-    if os.path.isfile('best_fit_function_fbias.sm'):
-        os.system('rm best_fit_function_fbias.sm')
-    print('***********')
-    print('rm best_fit_function_fbias.sm')
-    sys.exit()
+pyplot.plot(x1, y_obs, color='r', marker='.', ls='None', label='Observed')
+pyplot.plot(x1, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
+pyplot.legend()
 
 os.system('echo "set a0 = %0.20e" > best_fit_function_fbias.sm'%(popt[0]))
 #os.system('echo "set a1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[1]))
@@ -212,8 +166,10 @@ os.system('echo "set n1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[3]))
 os.system('echo "set a2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[4]))
 os.system('echo "set k2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[5]))
 os.system('echo "set n2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[6]))
-os.system('echo "set y_fit = a0 * (exp(a1*lg((x1/k1)**n1))) * (exp(a2*((x2/k2)**n2)))" >> best_fit_function_fbias.sm')
+os.system('echo "set y_fit = a0 * (a1*(x1/k1))**n1 * exp(-a1*(x1/k1)) * (a2*(x2+k2))**n2 * exp(-a2*(x2+k2))" >> best_fit_function_fbias.sm')
 
+#pyplot.show(block=True)
+pyplot.savefig('best_fit_function_fbias.pdf')
 
 
 
