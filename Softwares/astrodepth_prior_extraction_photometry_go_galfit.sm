@@ -404,6 +404,7 @@ mask_prior_sources 01
             declare pb_corr 0.f
             declare pb_corr_from_pb_image 0.f
             print $output_file 'No catalog source with enough getpix SNR.\n' {}
+            echo "Warning! No catalog source with enough getpix SNR."
             return # exit
         }
     } else {
@@ -769,7 +770,8 @@ print_result 02
         data $1.cat_index.txt read {cat_index 1.f cat_id 2.s}
         # 
         # read pb_corr from fit_$1.result.pbc.txt, which is produced by go_galfit
-        data $1.pbcorr.txt read {pb_corr 2.f}
+        #data $1.pbcorr.txt read {pb_corr 2.f} -- <20171221><BUG><FIXED> Buggy!!! It was actually read from $1.pbcorr.txt!!! Should read from $1.result.pbc.txt!!!
+        data $1.result.pbc.txt read {pb_corr 2.f}
         # 
         # 
         set x = ResultPosX
