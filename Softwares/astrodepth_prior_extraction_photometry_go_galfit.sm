@@ -467,7 +467,13 @@ go_galfit 01
     read_pixscale
     read_pixnoise
     calc_fluxconv
-    mask_prior_sources
+    # 
+    # mask prior sources (20171221: fixed bug: mask_prior_sources_on_negative_image)
+    if(index('$1','n')==0) {
+        mask_prior_sources_on_negative_image
+    } else {
+        mask_prior_sources
+    }
     # --> px, py, id, cat_index, cat_id, pb_corr, pb_corr_from_pb_image
     # 
     print fit_$1.cat_index.txt '%15.0f %20s\n' {cat_index cat_id}
@@ -1055,6 +1061,48 @@ print_result_final 01
 
 print_result_final_on_negative_image 00
     print_result_final _on_negative_image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+go_fix_bug_20171221
+    # bug: "mask_prior_sources_on_negative_image"
+    #      The negative image fitting used original "getpix.mask"! It should used "getpix_on_negative_image.mask"!
+    # fix: first re-run "mask_prior_sources"
+    #      then re-run "print_result_final"
+    #      then re-run negative image fitting
+    read_data
+    read_pixscale
+    read_pixnoise
+    calc_fluxconv
+    mask_prior_sources
+    print_result_final
+    #--> this will rewrite "$input_file.mask"
+    # 
+    mask_prior_sources_on_negative_image
+    go_galfit_n0
+    go_galfit_n1
+    go_galfit_n2
+    go_galfit_n3
+    print_result_final_on_negative_image
+    #--> this will rewrite "getpix_on_negative_image.mask"
+
+
+
+
+
+
 
 
 

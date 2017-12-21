@@ -804,18 +804,18 @@ for (( j=0; j<${#AstroDepth_INP_IMAGE_SCI[@]}; j++ )); do
                 if [[ ! -f "final.result" ]] || [[ " ${AstroDepth_INP_OVERWRITE[@]} " =~ " final " ]]; then
                     # 
                     # <20170822> allow to overwrite "fit_3.result" in the "final" step.
-                    if [[ " ${AstroDepth_INP_OVERWRITE[@]} " =~ " fit_3.result " ]]; then
-                        if [[ -f "fit_3.result" ]]; then 
-                            echo "mv fit_3.result fit_3.result.backup"
-                            mv "fit_3.result" "fit_3.result.backup"
-                        fi
-                    fi
-                    if [[ " ${AstroDepth_INP_OVERWRITE[@]} " =~ " fit_2.result " ]]; then
-                        if [[ -f "fit_2.result" ]]; then 
-                            echo "mv fit_2.result fit_2.result.backup"
-                            mv "fit_2.result" "fit_2.result.backup"
-                        fi
-                    fi
+                    #if [[ " ${AstroDepth_INP_OVERWRITE[@]} " =~ " fit_3.result " ]]; then
+                    #    if [[ -f "fit_3.result" ]]; then 
+                    #        echo "mv fit_3.result fit_3.result.backup"
+                    #        mv "fit_3.result" "fit_3.result.backup"
+                    #    fi
+                    #fi
+                    #if [[ " ${AstroDepth_INP_OVERWRITE[@]} " =~ " fit_2.result " ]]; then
+                    #    if [[ -f "fit_2.result" ]]; then 
+                    #        echo "mv fit_2.result fit_2.result.backup"
+                    #        mv "fit_2.result" "fit_2.result.backup"
+                    #    fi
+                    #fi
                     # 
                     # 
                     echo "Running Supermongo script \"astrodepth_go_galfit.sm\" subroutine \"print_result_final\""
