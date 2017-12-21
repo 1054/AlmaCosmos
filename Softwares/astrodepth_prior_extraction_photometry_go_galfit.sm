@@ -487,6 +487,7 @@ go_galfit 01
     #<20171221># echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pbcorr.from.pb.image.txt
     #<20171221># echo "Writing "$(dimen(cat_id))" lines to "fit_$1.result.pbc.txt
     #<20171221># -- we can not name it "fit_$1.result.pbc.txt" otherwise it will get deleted at the begining of "print_result" by the code "!rm $1.result*"!!!
+    !rm fit_$1.pbcorr* 2>/dev/null
     print fit_$1.cat_index.txt              '%15.0f %20s\n'             {cat_index cat_id}
     print fit_$1.pb_corr_from_calc.txt      '%15g %15.0f %20s\n'        {pb_corr cat_index cat_id}
     print fit_$1.pb_corr_from_pb_image.txt  '%22g %15.0f %20s\n'        {pb_corr_from_pb_image cat_index cat_id}
