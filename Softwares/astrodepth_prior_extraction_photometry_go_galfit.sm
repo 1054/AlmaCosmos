@@ -373,6 +373,7 @@ mask_prior_sources 01
         set mask = int(mask)
         set id = float(id)
         print $input_file.mask '%15d %15.0f %15.0f %20s\n' {mask id cat_index cat_id} # TODO Check: id == cat_index = cat_id-1
+        echo "Writing to "$input_file.mask
         # 
         if(sum(mask)>0) {
             set px = px if(mask)
