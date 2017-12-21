@@ -185,6 +185,7 @@ for OutputItem in "${List_of_Files[@]}"; do
         CountedLines=$(cat "Read_Results_all_final_${OutputItem}" | wc -l)
         printf "%-120s $CountedLines" "Read_Results_all_final_${OutputItem}"
     fi
+    echo ""
 done
 
 
