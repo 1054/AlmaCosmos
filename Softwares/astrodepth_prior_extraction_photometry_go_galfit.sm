@@ -373,7 +373,7 @@ mask_prior_sources 01
         set mask = int(mask)
         set id = float(id)
         print $input_file.mask '%15d %15.0f %15.0f %20s\n' {mask id cat_index cat_id} # TODO Check: id == cat_index = cat_id-1
-        echo "Writing to "$input_file.mask
+        echo "Writing "$(dimen(cat_id))" lines to "$input_file.mask
         # 
         if(sum(mask)>0) {
             set px = px if(mask)
@@ -481,6 +481,10 @@ go_galfit 01
     print fit_$1.pbcorr.txt '%15g %15.0f %20s\n' {pb_corr cat_index cat_id}
     print fit_$1.pbcorr.from.pb.image.txt '%22g %15.0f %20s\n' {pb_corr_from_pb_image cat_index cat_id}
     print fit_$1.result.pbc.txt '%25g %15g %15.0f %20s\n' {pb_corr_from_pb_image pb_corr cat_index cat_id}
+    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.cat_index.txt
+    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pbcorr.txt
+    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pbcorr.from.pb.image.txt
+    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.result.pbc.txt
     # 
     if(dimen(px)>0 && dimen(py)==dimen(px)) {
         if('$1'=='0' || '$1'=='n0') {
@@ -892,11 +896,11 @@ print_result_final 01
     if(!$?1) {
         set final_basename = 'final'
         set getpix_basename = 'getpix'
-        set galfit_basenames = { fit_0 fit_1 fit_2 fit_3 fit_4}
+        set galfit_basenames = { fit_0 fit_1 fit_2 fit_3}
     } else { 
         set final_basename = 'final_on_negative_image'
         set getpix_basename = 'getpix_on_negative_image'
-        set galfit_basenames = { fit_n0 fit_n1 fit_n2 fit_n3 fit_n4}
+        set galfit_basenames = { fit_n0 fit_n1 fit_n2 fit_n3}
     }
     if(!is_file("No_catalog_source_within_image")) {
         if(is_file($(final_basename).result)) { !mv $(final_basename).result $(final_basename).result.backup }
@@ -1091,6 +1095,10 @@ go_fix_bug_20171221
     print_result_final
     #--> this will rewrite "$input_file.mask"
     # 
+    read_data
+    read_pixscale
+    read_pixnoise
+    calc_fluxconv
     mask_prior_sources_on_negative_image
     go_galfit_n0
     go_galfit_n1
