@@ -1099,6 +1099,20 @@ go_fix_bug_20171221
     # fix: first re-run "mask_prior_sources"
     #      then re-run "print_result_final"
     #      then re-run negative image fitting
+    !cp fit_0.pbcorr.txt                fit_0.pb_corr_from_calc.txt
+    !cp fit_0.pbcorr.from.pb.image.txt  fit_0.pb_corr_from_pb_image.txt
+    !cp fit_0.result.pbc.txt            fit_0.pb_corr.txt
+    !cp fit_1.pbcorr.txt                fit_1.pb_corr_from_calc.txt
+    !cp fit_1.pbcorr.from.pb.image.txt  fit_1.pb_corr_from_pb_image.txt
+    !cp fit_1.result.pbc.txt            fit_1.pb_corr.txt
+    !cp fit_2.pbcorr.txt                fit_2.pb_corr_from_calc.txt
+    !cp fit_2.pbcorr.from.pb.image.txt  fit_2.pb_corr_from_pb_image.txt
+    !cp fit_2.result.pbc.txt            fit_2.pb_corr.txt
+    !cp fit_3.pbcorr.txt                fit_3.pb_corr_from_calc.txt
+    !cp fit_3.pbcorr.from.pb.image.txt  fit_3.pb_corr_from_pb_image.txt
+    !cp fit_3.result.pbc.txt            fit_3.pb_corr.txt
+    #--> now renamed pb_corr files
+    # 
     read_data
     read_pixscale
     read_pixnoise
