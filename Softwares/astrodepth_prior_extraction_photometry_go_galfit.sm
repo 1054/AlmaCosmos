@@ -478,14 +478,23 @@ go_galfit 01
     }
     # --> px, py, id, cat_index, cat_id, pb_corr, pb_corr_from_pb_image
     # 
-    print fit_$1.cat_index.txt '%15.0f %20s\n' {cat_index cat_id}
-    print fit_$1.pbcorr.txt '%15g %15.0f %20s\n' {pb_corr cat_index cat_id}
-    print fit_$1.pbcorr.from.pb.image.txt '%22g %15.0f %20s\n' {pb_corr_from_pb_image cat_index cat_id}
-    print fit_$1.result.pbc.txt '%25g %15g %15.0f %20s\n' {pb_corr_from_pb_image pb_corr cat_index cat_id}
+    #<20171221># print fit_$1.cat_index.txt '%15.0f %20s\n' {cat_index cat_id}
+    #<20171221># print fit_$1.pbcorr.txt '%15g %15.0f %20s\n' {pb_corr cat_index cat_id}
+    #<20171221># print fit_$1.pbcorr.from.pb.image.txt '%22g %15.0f %20s\n' {pb_corr_from_pb_image cat_index cat_id}
+    #<20171221># print fit_$1.result.pbc.txt '%25g %15g %15.0f %20s\n' {pb_corr_from_pb_image pb_corr cat_index cat_id}
+    #<20171221># echo "Writing "$(dimen(cat_id))" lines to "fit_$1.cat_index.txt
+    #<20171221># echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pbcorr.txt
+    #<20171221># echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pbcorr.from.pb.image.txt
+    #<20171221># echo "Writing "$(dimen(cat_id))" lines to "fit_$1.result.pbc.txt
+    #<20171221># -- we can not name it "fit_$1.result.pbc.txt" otherwise it will get deleted at the begining of "print_result" by the code "!rm $1.result*"!!!
+    print fit_$1.cat_index.txt              '%15.0f %20s\n'             {cat_index cat_id}
+    print fit_$1.pb_corr_from_calc.txt      '%15g %15.0f %20s\n'        {pb_corr cat_index cat_id}
+    print fit_$1.pb_corr_from_pb_image.txt  '%22g %15.0f %20s\n'        {pb_corr_from_pb_image cat_index cat_id}
+    print fit_$1.pb_corr.txt                '%25g %15g %15.0f %20s\n'   {pb_corr_from_pb_image pb_corr cat_index cat_id}
     echo "Writing "$(dimen(cat_id))" lines to "fit_$1.cat_index.txt
-    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pbcorr.txt
-    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pbcorr.from.pb.image.txt
-    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.result.pbc.txt
+    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pb_corr_from_calc.txt
+    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pb_corr_from_pb_image.txt
+    echo "Writing "$(dimen(cat_id))" lines to "fit_$1.pb_corr.txt
     # 
     if(dimen(px)>0 && dimen(py)==dimen(px)) {
         if('$1'=='0' || '$1'=='n0') {
@@ -771,7 +780,7 @@ print_result 02
         # 
         # read pb_corr from fit_$1.result.pbc.txt, which is produced by go_galfit
         #data $1.pbcorr.txt read {pb_corr 2.f} -- <20171221><BUG><FIXED> Buggy!!! It was actually read from $1.pbcorr.txt!!! Should read from $1.result.pbc.txt!!!
-        data $1.result.pbc.txt read {pb_corr 2.f}
+        data $1.pb_corr.txt read {pb_corr 2.f}
         # 
         # 
         set x = ResultPosX
@@ -970,15 +979,15 @@ print_result_final 01
                 }
                 # read $var.result and other data, print into big datatables
                 define has_$var 1
+                if(!is_file($var.pb_corr.txt))            { print 'Error! Could not find \"$var.pb_corr.txt\"\n' {}             define has_$var 0 }
                 if(!is_file($var.result))                 { print 'Error! Could not find \"$var.result\"\n' {}                  define has_$var 0 }
                 if(!is_file($var.result.sersic_n.txt))    { print 'Error! Could not find \"$var.result.sersic_n.txt\"\n' {}     define has_$var 0 }
-                if(!is_file($var.result.pbc.txt))         { print 'Error! Could not find \"$var.result.pbc.txt\"\n' {}          define has_$var 0 }
                 if(!is_file($var.result.chisq.txt))       { print 'Error! Could not find \"$var.result.chisq.txt\"\n' {}        define has_$var 0 }
                 if(!is_file($var.result.source_area.txt)) { print 'Error! Could not find \"$var.result.source_area.txt\"\n' {}  define has_$var 0 }
                 if(!is_file($var.result.mask_buffer.txt)) { print 'Error! Could not find \"$var.result.mask_buffer.txt\"\n' {}  define has_$var 0 }
                 if($has_$var) {
+                    data $var.pb_corr.txt             read {pbcorr 1.f pb_corr 2.f} # pbcorr is from pb image, pb_corr is from mathematics
                     data $var.result.sersic_n.txt     read {sersic_n 1.f sersic_n_err 2.f}
-                    data $var.result.pbc.txt          read {pbcorr 1.f pb_corr 2.f} # pbcorr is from pb image, pb_corr is from mathematics
                     data $var.result.chisq.txt        read {chisq 1.f rchisq 2.f n_aperpix 3.f n_freepar 4.f}
                     data $var.result.source_area.txt  read {convol_area_in_pix 4.f convol_area_in_arcsec 5.f convol_area_in_beam 6.f}
                     data $var.result.mask_buffer.txt  read {flag_buffer 1.f}
