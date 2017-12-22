@@ -15,18 +15,18 @@
 
 
 
-mkdir -p "$HOME/Work/AlmaCosmos/Simulations/Physical_MC_sim/20171105/Simulated"
+mkdir -p "$HOME/Works/AlmaCosmos/Simulations/20171105/Simulated"
 
 rsync -avz -r --stats --progress -e "ssh -A -t gate.rzg.mpg.de ssh" \
         --include '**/*' \
         "isaac1.bc.rzg.mpg.de:/u/$USER/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2/Simulated/" \
-        "$HOME/Work/AlmaCosmos/Simulations/Physical_MC_sim/20171105/Simulated"
+        "$HOME/Works/AlmaCosmos/Simulations/20171105/Simulated"
 
-mkdir -p "$HOME/Work/AlmaCosmos/Simulations/Physical_MC_sim/20171105/Recovered"
+mkdir -p "$HOME/Works/AlmaCosmos/Simulations/20171105/Recovered"
 
 rsync -avz -r --stats --progress -e "ssh -A -t gate.rzg.mpg.de ssh" \
         --include '**/*' \
         "isaac1.bc.rzg.mpg.de:/u/$USER/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong_2/Recovered/" \
-        "$HOME/Work/AlmaCosmos/Simulations/Physical_MC_sim/20171105/Recovered"
+        "$HOME/Work/AlmaCosmos/Simulations/20171105/Recovered"
 
 
