@@ -225,8 +225,8 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                                     do_Photometry=1
                         else
                             IFS=$'\n' read -d '' -r -a List_images < "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/List_of_Input_Sci_Images.txt"
-                            for (( i=0; i<${#List_images[@]}; i++ )); do
-                                Image_name=$(basename "${List_images[i]}" | sed -e 's/.fits$//g')
+                            for (( i3=0; i3<${#List_images[@]}; i3++ )); do
+                                Image_name=$(basename "${List_images[i3]}" | sed -e 's/.fits$//g')
                                 if [[ ! -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}" ]]; then
                                     # if a sub sim image dir does not exist, then do it. 
                                     do_Photometry=1
@@ -287,6 +287,8 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                             check_simultaneous_processes=$(ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l)
                             echo "Checking current simultaneous processes of a3cosmos-prior-extraction-photometry $FitsName ($check_simultaneous_processes)"
                         done
+                    else
+                        echo "Seems no need to re-run the photometry for \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\"."
                     fi
                 done
             done
@@ -300,7 +302,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     cd "../../"
     
     # Done
-    date +"%Y-%m-%d %H:%M:%S %Z" > "Simulated/$FitsName/done"
+    date +"%Y-%m-%d %H:%M:%S %Z" > "Recovered/$FitsName/done"
     
     #<TODO><DBEUG># 
     #break
