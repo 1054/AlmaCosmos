@@ -61,10 +61,26 @@ tail -n 30 Recovered/2011.0.00097.S_SB1_GB1_MB10_COSMOS6_field2_sci.spw0_1_2_3/w
 sbatch --array=2-24%4 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_3_Recover.sh # Submitted batch job 44664
 
 sbatch --array=25-89%4 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_3_Recover.sh # Submitted batch job 44720, 2017-12-13, 02h03m, 
+
+sbatch --array=1-89%4 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_3_Recover_with_8GB_memory.sh # Submitted batch job 45165, 2017-12-22, 13h24m, 
 ```
 
 ### check slurm system status
 ```
 squeue
-sacct -j 44720 --format=state,elapsed,nnodes,ncpus,nodelist,ReqMem,MaxVMSize,AveVMSize,AveCPU,AveCPUFreq,AllocCPUS,job
+sacct -j 45165 --format=state,elapsed,nnodes,ncpus,nodelist,ReqMem,MaxVMSize,AveVMSize,AveCPU,AveCPUFreq,AllocCPUS,job
 ```
+
+### check logs
+```
+ls -v
+ls -alt | head -n 10
+tail -n 30 log_Step_3_TASK_ID_13_JOB_ID_45165.out
+```
+
+### cancel slurm task
+```
+scancel 45165
+```
+
+

@@ -127,7 +127,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     FitsName="${FitsNames[i]}"
     
     # check parallel
-    if [[ ! -z $SLURM_ARRAY_TASK_ID ]]; then
+    if [[ x"$SLURM_ARRAY_TASK_ID" != x"" ]]; then
         if [[ $SLURM_ARRAY_TASK_ID -ne $((i+1)) ]]; then
             continue
         fi
