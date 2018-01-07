@@ -127,9 +127,9 @@ for (( j=0; j<${#DataDir[@]}; j++ )); do
             echo "Error! Could not find \"${Image_input[i]}.pixel.statistics.txt\"!"
             exit 1
         fi
-        break
+        #break
     done
-    break
+    #break
 done
 
 echo ""
