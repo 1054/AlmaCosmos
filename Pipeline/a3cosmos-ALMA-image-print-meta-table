@@ -55,10 +55,13 @@ DataDir=("$1")
 
 
 # 
-# Set Output dir
+# Set Output file
 # 
 if [[ $# -ge 2 ]]; then
     OutputName="$2"
+    if [[ -f "$OutputName" ]]; then
+        mv "$OutputName" "$OutputName.backup"
+    fi
 fi
 
 
