@@ -11,7 +11,7 @@ if [[ $# -eq 0 ]]; then
     echo "Input: "
     echo "    A directory containing the A3COSMOS fits images."
     echo "    For example, a \"fits/\" directory which contains:"
-    echo "    \"*_SB*_GB*_MB*.spw.*.image.fits\""
+    echo "    \"*_SB*_GB*_MB*.spw*.cont.I.image.fits\""
     echo "Output: "
     echo "    If the second argument is given, then an ASCII table named \"output_file_name\" will be written."
     echo ""
@@ -96,7 +96,7 @@ Has_print_head=0
 for (( j=0; j<${#DataDir[@]}; j++ )); do
 
     #Image_input=($(ls -1 "${DataDir[j]}"/*.dirty-image.fits))
-    Image_input=($(ls -1 "${DataDir[j]}"/*_SB*_GB*_MB*.spw.*.image.fits))
+    Image_input=($(ls -1 "${DataDir[j]}"/*_SB*_GB*_MB*.spw*.cont.I.image.fits))
     
     for (( i=0; i<${#Image_input[@]}; i++ )); do
         #echo "${Image_input[i]}"
