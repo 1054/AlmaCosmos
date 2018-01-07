@@ -11,6 +11,7 @@
 # 
 #   Last-update: 
 #                2017-12-05
+#                2018-01-02 plot_line, plot_text
 # 
 ################################
 
@@ -123,8 +124,9 @@ class CrabPlot(object):
         # plot image
         if image_data:
             self.plot_image(position = position, image_data = image_data, image_wcs = image_wcs)
-        elif len(x)>0 and len(y)==len(x):
-            self.plot_xy(position = position, x = x, y = y, xerr = xerr, yerr = yerr, xlog = xlog, ylog = ylog, xtitle = xtitle, ytitle = ytitle, xrange = xrange, yrange = yrange)
+        elif x is not None and y is not None:
+            if len(x)>0 and len(y)==len(x):
+                self.plot_xy(position = position, x = x, y = y, xerr = xerr, yerr = yerr, xlog = xlog, ylog = ylog, xtitle = xtitle, ytitle = ytitle, xrange = xrange, yrange = yrange)
         # 
         # world
         self.World = {}
@@ -135,8 +137,6 @@ class CrabPlot(object):
         self.World['My Name'] = ""
         self.World['My Names'] = []
         tmp_frame = inspect.currentframe().f_back
-        print(tmp_frame.f_globals.items())
-        print(tmp_frame.f_locals.items())
         tmp_variables = tmp_frame.f_globals.copy()
         tmp_variables.update(tmp_frame.f_locals)
         #tmp_variables = dict(tmp_frame.f_globals.items() + tmp_frame.f_locals.items())
@@ -153,6 +153,16 @@ class CrabPlot(object):
             arr = [arr]
         if type(arr) is list:
             arr = numpy.array(arr)
+        return arr
+    # 
+    def check_scalar(self, arr):
+        # check scalar
+        if type(arr) is list or type(arr) is numpy.ndarray:
+            if len(arr) > 0:
+                arr = arr[0]
+        if type(arr) is list or type(arr) is numpy.ndarray:
+            if len(arr) > 0:
+                arr = arr[0]
         return arr
     # 
     def check_label(self, label):
@@ -300,14 +310,35 @@ class CrabPlot(object):
                                    'x': None, 'y': None, 'xerr': None, 'yerr': None, 'xlog': False, 'ylog': False, 'xrange': [], 'yrange': [], 
                                    'image_data': None, 'image_wcs': None } )
         return self.Plot_panels[-1]
+    # def totuple
+    def convert_array_to_tuple(self,a):
+        try:
+            return tuple(self.convert_array_to_tuple(i) for i in a)
+        except TypeError:
+            return a
+    # 
+    def get_color_by_value(self, data_array, min_value = None, max_value = None, log = False, cmap = matplotlib.cm.cool):
+        # add color bar by data_array
+        data_arr = numpy.array(data_array)
+        if min_value is None:
+            min_value = numpy.min(data_arr)
+        if max_value is None:
+            max_value = numpy.max(data_arr)
+        if log is True:
+            data_norm = matplotlib.colors.LogNorm(vmin=min_value, vmax=max_value, clip=True)
+        else:
+            data_norm = matplotlib.colors.Normalize(vmin=min_value, vmax=max_value, clip=True)
+        color_mapper = matplotlib.cm.ScalarMappable(norm=data_norm, cmap=cmap)
+        color_by_data_array = self.convert_array_to_tuple(color_mapper.to_rgba(data_arr))
+        return color_by_data_array
     # 
     def plot_xy(self, x, y, xerr = None, yerr = None, xlog = False, ylog = False, xrange = [], yrange = [], 
                 xtitle = None, ytitle = None, 
                 fmt = None, 
-                symbol = 'o', size = 1.0, color = 'blue', fillstyle = None, 
-                linestyle = None, linewidth = None, drawstyle = None, 
+                symbol = 'o', size = 3, color = 'blue', fillstyle = None, 
+                linestyle = 'None', linewidth = None, drawstyle = None, 
                 facecolor = None, edgecolor = None, edgewidth = None, alpha = 1.0, 
-                position = None, label = None, current = False):
+                position = None, label = None, current = False, overplot = False):
         # check x y type
         x = self.check_array(x)
         y = self.check_array(y)
@@ -318,7 +349,8 @@ class CrabPlot(object):
         # get current panel or add new panel
         if len(self.Plot_panels) == 0:
             current = False
-        if current:
+            overplot = False
+        if current or overplot:
             # get current panel
             plot_panel_xy = self.Plot_panels[-1]
         else:
@@ -343,6 +375,7 @@ class CrabPlot(object):
             plot_panel_xy['panel'].semilogy(x, y, marker=symbol, markersize=size, color=color, markerfacecolor=facecolor, markeredgecolor=edgecolor, markeredgewidth=edgewidth, fillstyle=fillstyle, linestyle=linestyle, linewidth=linewidth, drawstyle=drawstyle, alpha=alpha)
         else:
             plot_panel_xy['panel'].plot(x, y, marker=symbol, markersize=size, color=color, markerfacecolor=facecolor, markeredgecolor=edgecolor, markeredgewidth=edgewidth, fillstyle=fillstyle, linestyle=linestyle, linewidth=linewidth, drawstyle=drawstyle, alpha=alpha)
+            #plot_panel_xy['panel'].scatter(x, y, marker=symbol, s=size**2, c=color, edgecolors=edgecolor, linewidths=linewidth, alpha=alpha)
             if xerr or yerr:
                 plot_panel_xy['panel'].errorbar(x, y, xerr = xerr, yerr = yerr, marker=symbol, markersize=size, color=color, markerfacecolor=facecolor, markeredgecolor=edgecolor, markeredgewidth=edgewidth, fillstyle=fillstyle, linestyle=linestyle, drawstyle=drawstyle, linewidth=linewidth, alpha=alpha)
         # axis ticks format
@@ -377,6 +410,91 @@ class CrabPlot(object):
         if len(yrange) >= 2:
             plot_panel_xy['yrange'] = yrange
     # 
+    def plot_line(self, x0, y0, x1 = None, y1 = None, ax = None, NormalizedCoordinate = False, overplot = True, **kwargs):
+        # check x1 y1
+        # we can input either (x0,y0), or (x0,y0,x1,y1).
+        if x1 is not None and y1 is not None:
+            # check x y type must be scalar in this case
+            x0 = self.check_scalar(x0)
+            y0 = self.check_scalar(y0)
+            x1 = self.check_scalar(x1)
+            y1 = self.check_scalar(y1)
+            # get plot panel 'ax' variable
+            if ax is not None:
+                plot_panel_ax = ax
+            else:
+                if overplot: 
+                    plot_panel_xy = self.Plot_panels[-1]
+                else:
+                    plot_panel_xy = self.add_panel(position = position, label = label)
+                plot_panel_ax = plot_panel_xy['panel']
+            # plot line
+            if plot_panel_ax:
+                if NormalizedCoordinate is True:
+                    #xrange_for_plot = plot_panel_ax.get_xlim()
+                    #yrange_for_plot = plot_panel_ax.get_ylim()
+                    #x0_for_plot = x0 * (xrange_for_plot[1]-xrange_for_plot[0]) + xrange_for_plot[0]
+                    #y0_for_plot = y0 * (yrange_for_plot[1]-yrange_for_plot[0]) + yrange_for_plot[0]
+                    plot_one_line = matplotlib.lines.Line2D([x0,x1], [y0,y1], transform=plot_panel_ax.transAxes, **kwargs)
+                else:
+                    plot_one_line = matplotlib.lines.Line2D([x0,x1], [y0,y1], **kwargs)
+                # 
+                plot_panel_ax.add_line(plot_one_line)
+        else:
+            # when x1 and y1 are None, then we assume x0 and y0 are arrays
+            if x0 is not list and x0 is not numpy.array and x0 is not numpy.ndarray:
+                x0 = numpy.array(x0)
+            if y0 is not list and y0 is not numpy.array and y0 is not numpy.ndarray:
+                y0 = numpy.array(y0)
+            if x0.shape != y0.shape:
+                print('Error! plot_line x0 y0 do not have the same dimension!')
+                return
+            # sort
+            x_sorted_index = x0.argsort()
+            x0 = x0[x_sorted_index]
+            y0 = y0[x_sorted_index]
+            # get plot panel 'ax' variable
+            if ax is not None:
+                plot_panel_ax = ax
+            else:
+                if overplot: 
+                    plot_panel_xy = self.Plot_panels[-1]
+                else:
+                    plot_panel_xy = self.add_panel(position = position, label = label)
+                plot_panel_ax = plot_panel_xy['panel']
+            # plot line
+            if plot_panel_ax:
+                if NormalizedCoordinate is True:
+                    #xrange_for_plot = plot_panel_ax.get_xlim()
+                    #yrange_for_plot = plot_panel_ax.get_ylim()
+                    #x0_for_plot = x0 * (xrange_for_plot[1]-xrange_for_plot[0]) + xrange_for_plot[0]
+                    #y0_for_plot = y0 * (yrange_for_plot[1]-yrange_for_plot[0]) + yrange_for_plot[0]
+                    plot_one_line = matplotlib.lines.Line2D(x0, y0, transform=plot_panel_ax.transAxes, **kwargs)
+                else:
+                    plot_one_line = matplotlib.lines.Line2D(x0, y0, **kwargs)
+                # 
+                plot_panel_ax.add_line(plot_one_line)
+    # 
+    def plot_text(self, x0, y0, text_input, ax = None, NormalizedCoordinate = False, **kwargs):
+        # check x y type
+        x0 = self.check_scalar(x0)
+        y0 = self.check_scalar(y0)
+        # get plot panel 'ax' variable
+        if ax is not None:
+            plot_panel_ax = ax
+        else:
+            plot_panel_xy = self.Plot_panels[-1]
+            plot_panel_ax = plot_panel_xy['panel']
+        # plot line
+        if plot_panel_ax:
+            if NormalizedCoordinate is True:
+                plot_panel_ax.text(x0, y0, text_input, transform=plot_panel_ax.transAxes, **kwargs) # verticalalignment='center', horizontalalignment='left'
+            else:
+                plot_panel_ax.text(x0, y0, text_input, **kwargs) # verticalalignment='center', horizontalalignment='left'
+    # 
+    def xyouts(self, x0, y0, text_input, ax = None, NormalizedCoordinate = False, **kwargs):
+        self.plot_text(x0, y0, text_input, ax = ax, NormalizedCoordinate = NormalizedCoordinate, **kwargs)
+    # 
     def plot_image(self, image_data, image_wcs = None, position = None, label = None):
         # check image_data type
         image_data = self.check_array(image_data)
@@ -399,13 +517,59 @@ class CrabPlot(object):
         plot_panel_im['xlog'] = xlog
         plot_panel_im['ylog'] = ylog
     # 
-    def show(self):
+    def show(self, block=True):
         self.Plot_device.canvas.draw()
         self.Plot_device.show()
+        pyplot.show(block=block)
         #self.Plot_device.waitforbuttonpress()
     # 
 
 
+
+
+
+
+
+
+
+
+# 
+def plot_line(ax, x0, y0, x1 = None, y1 = None, NormalizedCoordinate = False, **kwargs):
+    if x1 is not None and y1 is not None:
+        if NormalizedCoordinate is True:
+            plot_one_line = matplotlib.lines.Line2D([x0,x1], [y0,y1], transform=ax.transAxes, **kwargs)
+        else:
+            plot_one_line = matplotlib.lines.Line2D([x0,x1], [y0,y1], **kwargs)
+        # 
+        ax.add_line(plot_one_line)
+    else:
+        # when x1 and y1 are None, then we assume x0 and y0 are arrays
+        if x0 is not list and x0 is not numpy.array and x0 is not numpy.ndarray:
+            x0 = numpy.array(x0)
+        if y0 is not list and y0 is not numpy.array and y0 is not numpy.ndarray:
+            y0 = numpy.array(y0)
+        if x0.shape != y0.shape:
+            print('Error! plot_line x0 y0 do not have the same dimension!')
+            return
+        # sort
+        x_sorted_index = x0.argsort()
+        x0 = x0[x_sorted_index]
+        y0 = y0[x_sorted_index]
+        # 
+        if NormalizedCoordinate is True:
+            plot_one_line = matplotlib.lines.Line2D(x0, y0, transform=ax.transAxes, **kwargs)
+        else:
+            plot_one_line = matplotlib.lines.Line2D(x0, y0, **kwargs)
+        # 
+        ax.add_line(plot_one_line)
+
+
+# 
+def plot_text(ax, x0, y0, text_input, NormalizedCoordinate = False, **kwargs):
+    if NormalizedCoordinate is True:
+        ax.text(x0, y0, text_input, transform=ax.transAxes, **kwargs) # verticalalignment='center', horizontalalignment='left'
+    else:
+        ax.text(x0, y0, text_input, **kwargs) # verticalalignment='center', horizontalalignment='left'
 
 
 

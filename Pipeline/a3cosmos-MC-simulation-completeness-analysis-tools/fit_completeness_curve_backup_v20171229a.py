@@ -28,7 +28,7 @@ from pprint import pprint
 datatable = asciitable.read('datatable_MC_sim_completeness_cumulative.txt')
 x_in = (datatable['snr_value_cumulative']) # TODO: note that x is in log(S/N), while y is in linear
 y_in = (1.0-datatable['fake_rate_cumulative']) # TODO: y is 1-fake_rate_cumulative
-y_err = y_in*0.05 # y_in*0.0+0.05 #+ 0.1 # 1.0/(datatable['recovered_count']+datatable['missed_count'])
+y_err = y_in*0.1 #+ 0.1 # 1.0/(datatable['recovered_count']+datatable['missed_count'])
 asciitable.write({'x_in': x_in, 'y_in': y_in}, sys.stdout, Writer=asciitable.FixedWidthTwoLine)
 
 
@@ -44,7 +44,7 @@ def my_model(x, y, y_err):
     # model
     @pymc.deterministic(plot=False)
     def my_func(x=x, a=a, b=b, c=c):
-        return 1 / (1 + numpy.exp(-numpy.power(b*numpy.log10(x)+c,a)))
+        return 1 / (1 + a*numpy.exp(-(b*x+c)))
     # likelihood
     y = pymc.Normal("y", mu=my_func, tau=1.0/y_err**2, value=y, observed=True)
     #print(locals())
@@ -64,13 +64,10 @@ pprint(MDL.stats())
 y_min = MDL.stats()['my_func']['quantiles'][2.5]
 y_max = MDL.stats()['my_func']['quantiles'][97.5]
 y_fit = MDL.stats()['my_func']['mean']
-fig, ax = pyplot.subplots()
-ax.plot(x_in, y_in, color='r', marker='.', ls='None', label='Observed')
-ax.plot(x_in, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
-ax.fill_between(x_in, y_min, y_max, color='0.5', alpha=0.5)
-ax.set_xscale('log')
-ax.legend()
-fig.tight_layout()
+pyplot.plot(x_in, y_in, color='r', marker='.', ls='None', label='Observed')
+pyplot.plot(x_in, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
+pyplot.fill_between(x_in, y_min, y_max, color='0.5', alpha=0.5)
+pyplot.legend()
 pyplot.savefig('plot_pymc_1.pdf')
 
 pymc.Matplot.plot(MDL)
@@ -90,7 +87,7 @@ os.system('echo "# $(date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\")" > %s'%('function_MC
 os.system('echo "set a = %0.20e" >> %s'%(a, 'function_MC_sim_completeness_cumulative.txt'))
 os.system('echo "set b = %0.20e" >> %s'%(b, 'function_MC_sim_completeness_cumulative.txt'))
 os.system('echo "set c = %0.20e" >> %s'%(c, 'function_MC_sim_completeness_cumulative.txt'))
-os.system('echo "set y_fit = 1 / (1 + exp(-(b*lg(x)+c)**a))" >> %s'%('function_MC_sim_completeness_cumulative.txt'))
+os.system('echo "set y_fit = 1 / (1 + a*exp(-(b*x+c)))" >> %s'%('function_MC_sim_completeness_cumulative.txt'))
 
 x_fit = numpy.linspace(numpy.min(x_in), numpy.max(x_in), 1000)
 y_fit = 1 / (1 + a*numpy.exp(-(b*x_fit+c)))

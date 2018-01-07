@@ -8,6 +8,7 @@
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
     echo "    a3cosmos-MC-simulation-completeness-analysis \"datatable_CrossMatched_all_entries.fits\""
+    echo "    a3cosmos-MC-simulation-completeness-analysis \"datatable_CrossMatched_all_entries.fits\" \"OutputDir\""
     echo "Input: "
     echo "    A catalog which contains S_in, S_out, Maj_in, Min_in, Maj_beam, Min_beam, noise, flag_matched, flag_nonmatched_missed"
     echo "Output: "
@@ -46,7 +47,7 @@ InputCat="$1"
 if [[ $# -ge 2 ]]; then
     OutputDir="$2"
 else
-    OutputDir="Output_MC_sim_completeness"
+    OutputDir="Completeness"
 fi
 
 
@@ -200,12 +201,12 @@ cd "$OutputDir"
 echo "macro read analyze_completeness_curve.sm analyze_completeness_curve" | sm | tee log_analyze_completeness_curve.txt
 # In which, the python code "fit_completeness_curve.py" will be called. 
 
-if [[ ! -f "datatable_MC_sim_completeness_cumulative.txt" ]] || \
-    [[ ! -f "function_MC_sim_completeness_cumulative.txt" ]] || \
-    [[ ! -f "function_MC_sim_completeness_cumulative.xyfit.txt" ]]; then
-    echo "Error! Failed to run \"analyze_completeness_curve.sm\"! Sorry!"
-    exit 1
-fi
+#if [[ ! -f "datatable_MC_sim_completeness_cumulative.txt" ]] || \
+#    [[ ! -f "function_MC_sim_completeness_cumulative.txt" ]] || \
+#    [[ ! -f "function_MC_sim_completeness_cumulative.xyfit.txt" ]]; then
+#    echo "Error! Failed to run \"analyze_completeness_curve.sm\"! Sorry!"
+#    exit 1
+#fi
 
 echo "************"
 echo "macro read analyze_completeness_curve.sm calc_completeness" | sm | tee log_calc_completeness.txt

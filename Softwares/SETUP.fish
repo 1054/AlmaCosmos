@@ -14,7 +14,7 @@ if test -d "$HOME/Softwares/Supermongo"
     set -x PATH (string split ":" (bash -c "source $BIN_SETUP_SCRIPT -var PATH -prepend -path $HOME/Softwares/Supermongo -print" | tail -n 1))
 end
 
-if test -d "lib_python_dzliu/crabtable" ]]
+if test -d "lib_python_dzliu/crabtable"
     set -x PYTHONPATH (string split ":" (bash -c "source $BIN_SETUP_SCRIPT -var PYTHONPATH -path lib_python_dzliu/crabtable -print" | tail -n 1))
 end
 

@@ -143,7 +143,7 @@ compute_statistics_in_param_grid_cells
     declare cell_rel_scatter 0.f # (S_in - S_out)/S_in scatter
     declare cell_rel_scatter_L68 0.f # (S_in - S_out)/S_in scatter
     declare cell_rel_scatter_H68 0.f # (S_in - S_out)/S_in scatter
-    declare cell_rel_scatter_68 0.f # (S_in - S_out)/S_in scatter
+    declare cell_rel_scatter_68 0.f # (S_in - S_out)/S_in scatter, the smaller one of L68 and H68
     declare cell_e_S_out_median 0.f # (e_S_out) median
     do i = 1, npar {
         declare cell_par$i""_median 0.f

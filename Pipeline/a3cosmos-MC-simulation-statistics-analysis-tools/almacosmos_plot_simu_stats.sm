@@ -43,7 +43,7 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
     crabPlotOpenPS $outdir"/Plot_rel_S_diff_vs_peak_SNR.eps"
     crabPlotDefaultPenForBox
     location 7000 30500 16000 30500
-    limits $(lg(3)) 2 -2 2
+    limits $(lg(1)) 2 -2 2
     ticksize -1 10 0 0
     box
     crabPlotDefaultPenForTitle
@@ -63,7 +63,7 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
         vecminmax par2 cbar_max cbar_max
         set cbar_max = $cbar_max
     }
-    plotColorBar 0.6 0.85 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
+    plotColorBar 0.6 0.90 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
     # 
     # 
     crabPlotDefaultPenForPoints
@@ -109,7 +109,7 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
     if(is_file($outdir"/best_fit_function_fbias.sm")) {
         !cat $outdir"/best_fit_function_fbias.sm"
         crabPlotDefaultPenForConnect
-        foreach par2_val {1.00 1.25 1.75 2.25 2.75 3.25 3.75} {
+        foreach par2_val {1.00 1.5 2.0 2.5 3.0 3.5 4.0 4.5} {
             ctype $(plotColorBar_value2color($par2_val))
             set x1 = $fx1,$fx2,0.05
             set x1 = 10**x1 # we plot x1 in log, but calculates with x1 in linear
@@ -124,7 +124,7 @@ plot_simu_stats_2D_rel_S_diff_vs_peak_SNR
     if(is_file($outdir"/best_fit_function_ecorr.sm")) {
         !cat $outdir"/best_fit_function_ecorr.sm"
         crabPlotDefaultPenForConnect
-        foreach par2_val {1.00 1.25 1.75 2.25 2.75 3.25 3.75} {
+        foreach par2_val {1.00 1.5 2.0 2.5 3.0 3.5 4.0 4.5} {
             ctype $(plotColorBar_value2color($par2_val))
             set x1 = $fx1,$fx2,0.05
             set x1 = 10**x1 # we plot x1 in log, but calculates with x1 in linear
@@ -180,7 +180,7 @@ plot_simu_stats_2D_rel_S_diff_vs_FWHM_maj 02
         vecminmax par1_log cbar_max cbar_max
         set cbar_max = $cbar_max
     }
-    plotColorBar 0.6 0.85 0 0 par1_log $(cbar_min) $(cbar_max) $(sprintf('\"log %s\"',par1_str))
+    plotColorBar 0.6 0.90 0 0 par1_log $(cbar_min) $(cbar_max) $(sprintf('\"log %s\"',par1_str))
     # 
     # sort by lg(par2)
     set sort_xx = lg(par2)
@@ -319,7 +319,7 @@ plot_simu_stats_2D_abs_S_diff_vs_peak_SNR
         vecminmax par2 cbar_max cbar_max
         set cbar_max = $cbar_max
     }
-    plotColorBar 0.6 0.85 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
+    plotColorBar 0.6 0.90 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
     # 
     crabPlotDefaultPenForPoints
     ptype 4 1
@@ -394,7 +394,7 @@ plot_simu_stats_2D_nom_S_diff_vs_peak_SNR
         vecminmax par2 cbar_max cbar_max
         set cbar_max = $cbar_max
     }
-    plotColorBar 0.6 0.85 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
+    plotColorBar 0.6 0.90 0 0 par2 $(cbar_min) $(cbar_max) $(par2_str)
     # 
     crabPlotDefaultPenForPoints
     ptype 4 1

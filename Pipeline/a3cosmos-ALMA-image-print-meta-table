@@ -1,0 +1,206 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    a3cosmos-ALMA-image-print-meta-table input_fits_directory [output_file_name]"
+    echo "Input: "
+    echo "    A directory containing the A3COSMOS fits images."
+    echo "    For example, a \"fits/\" directory which contains:"
+    echo "    \"*_SB*_GB*_MB*.spw.*.image.fits\""
+    echo "Output: "
+    echo "    If the second argument is given, then an ASCII table named \"output_file_name\" will be written."
+    echo ""
+    exit
+fi
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type sky2xy 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! wcstools was not installed!"
+    exit 1
+fi
+if [[ $(type xy2sky 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! wcstools was not installed!"
+    exit 1
+fi
+if [[ $(type gethead 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! wcstools was not installed!"
+    exit 1
+fi
+#if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+#    echo "Error! Supermongo was not installed!"
+#    exit 1
+#fi
+#if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+#    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+#    exit 1
+#fi
+#if [[ ! -d $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools ]]; then
+#    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+#    exit 1
+#fi
+
+
+# 
+# Read Input cat
+# 
+DataDir=("$1")
+
+
+# 
+# Set Output dir
+# 
+if [[ $# -ge 2 ]]; then
+    OutputName="$2"
+fi
+
+
+# 
+# Set locale for fixing python localename problem
+# 
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+
+# 
+# Software dependency
+# 
+if [[ $(type almacosmos_get_fits_image_pixel_histogram.py 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash" ]]; then
+        source "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash"
+    else
+        echo "Error! \"almacosmos_get_fits_image_pixel_histogram.py\" was not found in \$PATH!"
+        exit
+    fi
+fi
+
+
+# 
+# Prepare output array
+# 
+Source_names=()
+Image_rms=()
+
+
+# 
+# Loop 
+# 
+Has_print_head=0
+for (( j=0; j<${#DataDir[@]}; j++ )); do
+
+    #Image_input=($(ls -1 "${DataDir[j]}"/*.dirty-image.fits))
+    Image_input=($(ls -1 "${DataDir[j]}"/*_SB*_GB*_MB*.spw.*.image.fits))
+    
+    for (( i=0; i<${#Image_input[@]}; i++ )); do
+        #echo "${Image_input[i]}"
+        #CrabPhotImageStatistics "${Image_input[i]}"
+        # 
+        #<DEBUG># if [[ "${Image_input[i]}" == *"/2011."* || "${Image_input[i]}" == *"/2012."*  ]]; then continue; fi
+        # 
+        if [[ ! -f "${Image_input[i]}.pixel.statistics.txt" ]]; then
+            almacosmos_get_fits_image_pixel_histogram.py "${Image_input[i]}"
+        fi
+        # 
+        if [[ -f "${Image_input[i]}.pixel.statistics.txt" ]]; then
+            #echo ""
+            Image_name=$(basename "${Image_input[i]}")
+            Temp_data=($(basename "${Image_input[i]}" | perl -p -e 's/(.{14})_SB([0-9]*)_GB([0-9]*)_MB([0-9]*)_(.*)\.spw.*/\1 \2 \3 \4 \5/g'))
+            Temp_proj="${Temp_data[0]}" # $(basename ${Image_input[i]} | perl -p -e 's/(.{14})_SB([0-9]*)_GB([0-9]*)_MB([0-9]*)_([^\.]*)\.spw.*/\1/g')
+            Temp_idSB="${Temp_data[1]}" # $(basename ${Image_input[i]} | perl -p -e 's/(.{14})_SB([0-9]*)_GB([0-9]*)_MB([0-9]*)_([^\.]*)\.spw.*/\2/g')
+            Temp_idGB="${Temp_data[2]}" # $(basename ${Image_input[i]} | perl -p -e 's/(.{14})_SB([0-9]*)_GB([0-9]*)_MB([0-9]*)_([^\.]*)\.spw.*/\3/g')
+            Temp_idMB="${Temp_data[3]}" # $(basename ${Image_input[i]} | perl -p -e 's/(.{14})_SB([0-9]*)_GB([0-9]*)_MB([0-9]*)_([^\.]*)\.spw.*/\4/g')
+            Temp_name="${Temp_data[4]}" # $(basename ${Image_input[i]} | perl -p -e 's/(.{14})_SB([0-9]*)_GB([0-9]*)_MB([0-9]*)_([^\.]*)\.spw.*/\5/g')
+            Temp_name=($(echo "$Temp_name" | perl -p -e 's/_sci$//g'))
+            Temp_rms=$(cat "${Image_input[i]}.pixel.statistics.txt" | grep "Gaussian_sigma *=" | perl -p -e 's/Gaussian_sigma *= *([0-9.+-eE]*)/\1/g') # Jy/beam
+            if [[ x"$Temp_rms" == x ]]; then echo ""; echo "Failed to read Gaussian_sigma from \"${Image_input[i]}.pixel.statistics.txt\""; exit 1; fi
+            Temp_rms=$(awk "BEGIN {print ($Temp_rms)*1e3}") # mJy/beam
+            Temp_beam_major=$(gethead "${Image_input[i]}" BMAJ); Temp_beam_major=$(awk "BEGIN {print ($Temp_beam_major)*3600.0}") # arsec
+            Temp_beam_minor=$(gethead "${Image_input[i]}" BMIN); Temp_beam_minor=$(awk "BEGIN {print ($Temp_beam_minor)*3600.0}") # arsec
+            Temp_beam_angle=$(gethead "${Image_input[i]}" BPA) # degree
+            Temp_freq=$(gethead "${Image_input[i]}" CRVAL3); Temp_freq=$(awk "BEGIN {print ($Temp_freq)/1e9}") # GHz
+            Temp_wave=$(awk "BEGIN {print (2.99792458e5)/($Temp_freq)}") # um
+            Temp_OBSRA=$(gethead "${Image_input[i]}" OBSRA)
+            Temp_OBSDEC=$(gethead "${Image_input[i]}" OBSDEC)
+            Temp_NAXIS1=$(gethead "${Image_input[i]}" NAXIS1)
+            Temp_NAXIS2=$(gethead "${Image_input[i]}" NAXIS2)
+            Temp_X=$(awk "BEGIN {print ($Temp_NAXIS1+1)/2.0}")
+            Temp_Y=$(awk "BEGIN {print ($Temp_NAXIS2+1)/2.0}")
+            Temp_data=($(xy2sky -d -n 10 ${Image_input[i]} $Temp_X $Temp_Y | sed -e 's/^ *//g' | tr -s ' '))
+            Temp_PIXRA="${Temp_data[0]}"
+            Temp_PIXDEC="${Temp_data[1]}"
+            Temp_data=($(xy2sky -d -n 10 ${Image_input[i]} 1 1 | sed -e 's/^ *//g' | tr -s ' '))
+            Temp_FoVRA=$(awk "BEGIN {print ((${Temp_data[0]})-($Temp_PIXRA))*3600.0*cos( ((${Temp_data[1]})+($Temp_PIXDEC))/2.0/180.0*3.1415926 )}")
+            Temp_FoVDEC=$(awk "BEGIN {print ((${Temp_data[1]})-($Temp_PIXDEC))*3600.0}")
+            #echo Temp_FoVRA=$Temp_FoVRA
+            #echo Temp_FoVDEC=$Temp_FoVDEC
+            Temp_FoVRA=$(awk "BEGIN {if(($Temp_FoVRA)>0) print 2.0*($Temp_FoVRA); else print -2.0*($Temp_FoVRA);}")
+            Temp_FoVDEC=$(awk "BEGIN {if(($Temp_FoVDEC)>0) print 2.0*($Temp_FoVDEC); else print -2.0*($Temp_FoVDEC);}")
+            # 
+            Temp_PIXSC1=$(awk "BEGIN {print ($Temp_FoVRA/$Temp_NAXIS1);}")
+            Temp_PIXSC2=$(awk "BEGIN {print ($Temp_FoVDEC/$Temp_NAXIS2);}")
+            # 
+            Temp_OBSDATE=$(gethead "${Image_input[i]}" "DATE-OBS")
+            # 
+            if [[ $Has_print_head -eq 0 ]]; then 
+                Has_print_head=1
+                printf "# %16s %4s %4s %4s %25s %13s %13s %13s %13s %13s %13s %13s %13s %13s %9s %9s %9s %9s %9s %9s %30s %3s %10s\n" \
+                        "project" "SB" "GB" "MB" "source" "rms" \
+                        "beam_maj" "beam_min" "beam_PA" "wavelength" \
+                        "obs_ra" "obs_dec" "cen_ra" "cen_dec" "FoV_ra" "FoV_dec" \
+                        "NAXIS1" "NAXIS2" "PIXSC1" "PIXSC2" "OBS_DATE" \
+                        " " "image_file"
+                printf "# %16s %4s %4s %4s %25s %13s %13s %13s %13s %13s %13s %13s %13s %13s %9s %9s %9s %9s %9s %9s %30s %3s %10s\n" \
+                        " " " " " " " " " " "mJy" \
+                        "arcsec" "arcsec" "degree" "um" \
+                        " " " " " " " " "arcsec" "arcsec" \
+                        " " " " " " " " " " \
+                        " " " "
+                if [[ ! -z "$OutputName" ]]; then
+                printf "# %16s %4s %4s %4s %25s %13s %13s %13s %13s %13s %13s %13s %13s %13s %9s %9s %9s %9s %9s %9s %30s %3s %10s\n" \
+                        "project" "SB" "GB" "MB" "source" "rms" \
+                        "beam_maj" "beam_min" "beam_PA" "wavelength" \
+                        "obs_ra" "obs_dec" "cen_ra" "cen_dec" "FoV_ra" "FoV_dec" \
+                        "NAXIS1" "NAXIS2" "PIXSC1" "PIXSC2" "OBS_DATE" \
+                        " " "image_file" >> "$OutputName"
+                printf "# %16s %4s %4s %4s %25s %13s %13s %13s %13s %13s %13s %13s %13s %13s %9s %9s %9s %9s %9s %9s %30s %3s %10s\n" \
+                        " " " " " " " " " " "mJy" \
+                        "arcsec" "arcsec" "degree" "um" \
+                        " " " " " " " " "arcsec" "arcsec" \
+                        " " " " " " " " " " \
+                        " " " " >> "$OutputName"
+                fi
+            fi
+            printf "%18s %4d %4d %4d %25s %13.6g %13.6g %13.6g %13.6g %13.6g %13.7f %13.7f %13.7f %13.7f %9.3f %9.3f %9d %9d %9.5f %9.5f %30s %3s %s\n" \
+                    "$Temp_proj" "$Temp_idSB" "$Temp_idGB" "$Temp_idMB" "$Temp_name" "$Temp_rms" \
+                    "$Temp_beam_major" "$Temp_beam_minor" "$Temp_beam_angle" "$Temp_wave" \
+                    "$Temp_OBSRA" "$Temp_OBSDEC" "$Temp_PIXRA" "$Temp_PIXDEC" "$Temp_FoVRA" "$Temp_FoVDEC" \
+                    "$Temp_NAXIS1" "$Temp_NAXIS2" "$Temp_PIXSC1" "$Temp_PIXSC2" "$Temp_OBSDATE" \
+                    " " "$Image_name"
+            if [[ ! -z "$OutputName" ]]; then
+            printf "%18s %4d %4d %4d %25s %13.6g %13.6g %13.6g %13.6g %13.6g %13.7f %13.7f %13.7f %13.7f %9.3f %9.3f %9d %9d %9.5f %9.5f %30s %3s %s\n" \
+                    "$Temp_proj" "$Temp_idSB" "$Temp_idGB" "$Temp_idMB" "$Temp_name" "$Temp_rms" \
+                    "$Temp_beam_major" "$Temp_beam_minor" "$Temp_beam_angle" "$Temp_wave" \
+                    "$Temp_OBSRA" "$Temp_OBSDEC" "$Temp_PIXRA" "$Temp_PIXDEC" "$Temp_FoVRA" "$Temp_FoVDEC" \
+                    "$Temp_NAXIS1" "$Temp_NAXIS2" "$Temp_PIXSC1" "$Temp_PIXSC2" "$Temp_OBSDATE" \
+                    " " "$Image_name" >> "$OutputName"
+            fi
+        else
+            echo ""
+            echo "Error! Could not find \"${Image_input[i]}.pixel.statistics.txt\"!"
+            exit 1
+        fi
+        #break
+    done
+    
+done
+
+echo ""
+#echo "Done!"
+

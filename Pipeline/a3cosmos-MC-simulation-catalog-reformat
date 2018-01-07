@@ -1,0 +1,178 @@
+#!/bin/bash
+# 
+
+
+# 
+# Usage
+# 
+usage() {
+    echo ""
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-catalog-reformat \\"
+    echo "        \"simu_data_table.txt\""
+    echo ""
+    echo "Input: "
+    echo "    One catalog, which contains sim_id, sim_f, rec_f, rec_fpeak, etc. "
+    echo ""
+    echo "Output: "
+    echo "    A FITS format catalog with columns: id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam"
+    echo "    This code will give warning if some columns are not recognized."
+    echo ""
+}
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not installed!"
+    exit 1
+fi
+if [[ $(type almacosmos_cmd_args 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    else
+        echo "Error! The download of this code from \"https://github.com/1054/AlmaCosmos.git\" in incomplete!"
+        exit 1
+    fi
+fi
+if [[ $(type almacosmos_recognize_fits_table_column_names.py 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! almacosmos_recognize_fits_table_column_names.py was not installed!"
+    exit 1
+fi
+
+
+# 
+# Read user input
+# 
+source almacosmos_cmd_args "$@"
+if [[ ${#almacosmos_cmd_misc_args[@]} -ge 1 ]]; then
+    InputCat="${almacosmos_cmd_misc_args[0]}"
+else
+    usage
+    exit
+fi
+InputName="${InputCat%.*}"
+InputSuffix="${InputCat##*.}"
+
+InputFormat="$InputSuffix"
+if [[ "$InputFormat" == "fits" ]] || [[ "$InputFormat" == "FITS" ]] || [[ "$InputFormat" == "fits.gz" ]] || [[ "$InputFormat" == "FITS.GZ" ]]; then
+    InputFormat="fits"
+else
+    InputFormat="ascii"
+fi
+
+OutputCat="$InputName.fits"
+if [[ ! -z "$almacosmos_cmd_out" ]]; then
+    if [[ ${#almacosmos_cmd_out[@]} -ge 1 ]]; then
+        OutputCat="${almacosmos_cmd_out[0]}"
+    fi
+fi
+OutputName="${OutputCat%.*}"
+OutputSuffix="${OutputCat##*.}"
+
+echo "InputCat = $InputCat"
+echo "InputName = $InputName"
+echo "InputSuffix = $InputSuffix"
+echo "OutputCat = $OutputCat"
+echo "OutputName = $OutputName"
+echo "OutputSuffix = $OutputSuffix"
+check_input_file "$InputCat"
+create_output_dir $(dirname "$OutputCat")
+
+
+# 
+# Extract meta
+# 
+if [[ ! -f "$OutputName.cols.txt" ]]; then
+echo almacosmos_recognize_fits_table_column_names.py "$InputCat" -print-all
+almacosmos_recognize_fits_table_column_names.py "$InputCat" -print-all > "$OutputName.cols.txt"
+fi
+
+for col_type in ID Flux Flux_error Peak_Flux Maj Min RMS_noise image_file simu_name beam_Maj beam_Min; do
+    cat_sim_col_name=$(cat "$OutputName.cols.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g' | cut -d ';' -f 1)
+    cat_rec_col_name=$(cat "$OutputName.cols.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g' | cut -d ';' -f 2)
+    eval "cat_sim_${col_type}=\"${cat_sim_col_name}\""
+    eval "cat_rec_${col_type}=\"${cat_rec_col_name}\""
+    eval "echo cat_sim_${col_type}=\"${cat_sim_col_name}\""
+    eval "echo cat_rec_${col_type}=\"${cat_rec_col_name}\""
+done
+
+# 
+# Check columns
+# The simulation catalog must contain these columns: ID RA Dec Flux Maj Min RMS_noise image_file simu_name (no Flux_error)
+# And the recovery catalog must contain: ID RA Dec Flux Flux_error Maj Min image_file simu_name (no RMS_noise)
+# 
+for col_type in ID Flux Maj Min RMS_noise image_file simu_name beam_Maj beam_Min; do
+    eval "cat_sim_col_name=\"\${cat_sim_$col_type}\""
+    if [[ "$cat_sim_col_name" == "__NULL__" ]]; then echo "Error! Failed to find $col_type column from the simulation catalog \"$InputCat1\"!"; exit; fi
+done
+for col_type in ID Flux Flux_error Peak_Flux Maj Min image_file simu_name; do
+    eval "cat_rec_col_name=\"\${cat_rec_$col_type}\""
+    if [[ "$cat_rec_col_name" == "__NULL__" ]]; then echo "Error! Failed to find $col_type column from the recovery catalog \"$InputCat2\"!"; exit; fi
+done
+
+
+# 
+# Then write all entries
+# 
+topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt="$InputFormat" \
+                cmd="addcol id \"${cat_sim_ID}\"" \
+                cmd="addcol S_in \"${cat_sim_Flux}\"" \
+                cmd="addcol S_out \"${cat_rec_Flux}\"" \
+                cmd="addcol e_S_out \"${cat_rec_Flux_error}\"" \
+                cmd="addcol S_peak \"${cat_rec_Peak_Flux}\"" \
+                cmd="addcol S_res \"${cat_rec_Peak_Flux}*0.0\"" \
+                cmd="addcol noise \"${cat_sim_RMS_noise}\"" \
+                cmd="addcol Maj_in \"sqrt(${cat_sim_Maj}*${cat_sim_Maj}/(${cat_sim_beam_Maj}*${cat_sim_beam_Min}))\"" \
+                cmd="addcol Min_in \"sqrt(${cat_sim_Min}*${cat_sim_Min}/(${cat_sim_beam_Maj}*${cat_sim_beam_Min}))\"" \
+                cmd="addcol Maj_out \"sqrt((${cat_rec_Maj}*${cat_rec_Maj})+(${cat_sim_beam_Maj}*${cat_sim_beam_Min}))\"" \
+                cmd="addcol Min_out \"sqrt((${cat_rec_Min}*${cat_rec_Min})+(${cat_sim_beam_Maj}*${cat_sim_beam_Min}))\"" \
+                cmd="addcol Maj_beam \"${cat_sim_beam_Maj}\"" \
+                cmd="addcol Min_beam \"${cat_sim_beam_Min}\"" \
+                cmd="addcol flag_matched             \"(${cat_sim_Flux}>0  && ${cat_rec_Flux}>0)\"" \
+                cmd="addcol flag_nonmatched_missed   \"(${cat_sim_Flux}>0  && ${cat_rec_Flux}<=0)\"" \
+                cmd="addcol flag_nonmatched_spurious \"(${cat_sim_Flux}<=0 && ${cat_rec_Flux}>0)\"" \
+                cmd="addcol flag_null                \"(${cat_sim_Flux}<=0 && ${cat_rec_Flux}<=0)\"" \
+                cmd="addcol image_file_STR           \"${cat_sim_image_file}\"" \
+                cmd="addcol simu_name_STR            \"${cat_sim_simu_name}\"" \
+                ofmt="fits" \
+                out="${OutputName}_all_entries.fits" \
+                | tee "${OutputName}_all_entries.stilts.log"
+
+echo "Output to \"${OutputName}_all_entries.fits\"!"
+
+
+
+#topcat -stilts tpipe \
+#                in="${OutputName}_all_entries.fits" \
+#                ofmt="ascii" \
+#                out="${OutputName}_all_entries.txt"
+
+
+
+# 
+# Then select only matches for statistics analysis
+# 
+topcat -stilts tpipe \
+                in="${OutputName}_all_entries.fits" \
+                cmd="select \"(flag_matched && S_peak>0 && e_S_out>0)\"" \
+                cmd="keepcols \"id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
+                ofmt="ascii" \
+                out="${OutputName}_only_matches.txt" \
+                | tee "${OutputName}_only_matches.stilts.log"
+
+echo "Output to \"${OutputName}_only_matches.txt\"!"
+
+
+# 
+# mkdir Statistics
+# 
+#mkdir Statistics
+#cp "$OutputDir/datatable_CrossMatched_only_matches.txt" Statistics/
+#echo "Output to \"Statistics/datatable_CrossMatched_only_matches.txt\"!"
+
+
+

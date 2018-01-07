@@ -1,0 +1,210 @@
+#!/bin/bash
+# 
+# 
+# This code runs topcat stilts cross-matching by sky
+# 
+# Usage: 
+#   source ~/Cloud/Github/AlmaCosmos/Softwares/SETUP.bash
+# 
+
+
+# 
+# Usage
+# 
+function Usage() {
+    echo "Usage: "
+    echo "    almacosmos_topcat_crossmatch_by_radec \\"
+    echo "                                          cat_1.fits \\"
+    echo "                                          cat_2.fits \\"
+    echo "                                          -out output.fits \\"
+    echo "                                          [-radec ra_column_in_cat_1 dec_column_in_cat_1 RA_column_in_cat_2 DEC_column_in_cat_2] \\"
+    echo "                                          [-exact additional_column_in_cat_1 additional_column_in_cat_2] \\"
+    echo "                                          [-radius 1.0] \\"
+    echo "                                          [-suffix \"_cat_1\" \"_cat_2\"] \\"
+    echo "                                          [-only-matches]"
+    echo ""
+}
+
+if [[ $# -eq 0 ]]; then
+    Usage; exit
+fi
+
+
+# 
+# Source necessary software dependency
+# 
+if [[ -f "$(dirname ${BASH_SOURCE[0]})/SETUP.bash" ]]; then
+    source "$(dirname ${BASH_SOURCE[0]})/SETUP.bash"
+else
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/SETUP.bash\" was not found!"
+    exit 1
+fi
+
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! \"topcat\" was not found!"
+    exit 1
+fi
+
+
+# 
+# Read input arguments
+# 
+#source $(which almacosmos_cmd_args) "$@"
+source almacosmos_cmd_args "$@"
+
+if [[ "${#almacosmos_cmd_misc_args[@]}" -ge 1 ]]; then
+    InputCat1="${almacosmos_cmd_misc_args[0]}"
+else
+    Usage; exit
+fi
+
+if [[ "${#almacosmos_cmd_misc_args[@]}" -ge 2 ]]; then
+    InputCat2="${almacosmos_cmd_misc_args[1]}"
+else
+    Usage; exit
+fi
+
+# The output catalog name
+if [[ ! -z "$almacosmos_cmd_out" ]]; then
+    OutputCat="$almacosmos_cmd_out"
+elif [[ ! -z "$almacosmos_cmd_output" ]]; then
+    OutputCat="$almacosmos_cmd_output"
+else
+    OutputCat="datatable_CrossMatched.fits"
+    echo "The default output file name is: $OutputCat"
+fi
+
+# the RA Dec columns in the two input catalogs
+cat_1_radec=("RA" "Dec")
+cat_2_radec=("RA" "Dec")
+if [[ ! -z "$almacosmos_cmd_radec" ]]; then
+    if [[ "${#almacosmos_cmd_radec[@]}" -ge 2 ]]; then
+        cat_1_radec=("${almacosmos_cmd_radec[0]}" "${almacosmos_cmd_radec[1]}")
+    elif [[ "${#almacosmos_cmd_radec[@]}" -ge 4 ]]; then
+        cat_1_radec=("${almacosmos_cmd_radec[0]}" "${almacosmos_cmd_radec[1]}")
+        cat_2_radec=("${almacosmos_cmd_radec[2]}" "${almacosmos_cmd_radec[3]}")
+    fi
+fi
+echo cat_1_radec="\"${cat_1_radec[@]}\""
+echo cat_2_radec="\"${cat_2_radec[@]}\""
+
+# additional exact-matching columns in the two input catalogs
+cat_1_exact=()
+cat_2_exact=()
+matcher="sky"
+if [[ ! -z "$almacosmos_cmd_exact" ]]; then
+    if [[ "${#almacosmos_cmd_exact[@]}" -ge 2 ]]; then
+        for (( i=0; i<${#almacosmos_cmd_exact[@]}; i+=2 )); do
+            cat_1_exact+=("${almacosmos_cmd_exact[i]}")
+            cat_2_exact+=("${almacosmos_cmd_exact[i+1]}")
+            matcher="${matcher}+exact"
+        done
+    fi
+fi
+echo cat_1_exact="\"${cat_1_exact[@]}\""
+echo cat_2_exact="\"${cat_2_exact[@]}\""
+echo matcher="$matcher"
+
+# output column suffix
+cat_1_suffix="_cat_1"
+cat_2_suffix="_cat_2"
+if [[ ! -z "$almacosmos_cmd_suffix" ]]; then
+    if [[ "${#almacosmos_cmd_suffix[@]}" -ge 2 ]]; then
+        cat_1_suffix=$(echo "${almacosmos_cmd_suffix[i]}" | sed -e 's/^ *//g' | sed -e 's/ *$//g')
+        cat_2_suffix=$(echo "${almacosmos_cmd_suffix[i+1]}" | sed -e 's/^ *//g' | sed -e 's/ *$//g')
+    fi
+fi
+echo cat_1_suffix="\"$cat_1_suffix\""
+echo cat_2_suffix="\"$cat_2_suffix\""
+
+# cross-match sky radius
+radius="1.0"
+if [[ ! -z "$almacosmos_cmd_radius" ]]; then
+    radius=$(echo "$almacosmos_cmd_radius" | sed -e 's/^ *//g' | sed -e 's/ *$//g')
+fi
+echo radius="\"$radius\""
+
+# output all entries or only matches
+do_all_entries=1
+if [[ ! -z "$almacosmos_cmd_misc_opts" ]]; then
+    if [[ "${almacosmos_cmd_misc_opts[*]}" == *"-only-match"* ]]; then
+        do_all_entries=0
+    fi
+fi
+
+#exit
+
+
+# 
+# Check input catalog format
+# 
+if [[ "$InputCat1" == *".fits" ]] || [[ "$InputCat1" == *".FITS" ]] || [[ "$InputCat1" == *".fits.gz" ]] || [[ "$InputCat1" == *".FITS.gz" ]] || [[ "$InputCat1" == *".FITS.GZ" ]]; then
+    cat_1_fmt="fits"
+else
+    cat_1_fmt="ascii"
+fi
+if [[ "$InputCat2" == *".fits" ]] || [[ "$InputCat2" == *".FITS" ]] || [[ "$InputCat2" == *".fits.gz" ]] || [[ "$InputCat2" == *".FITS.gz" ]] || [[ "$InputCat2" == *".FITS.GZ" ]]; then
+    cat_2_fmt="fits"
+else
+    cat_2_fmt="ascii"
+fi
+if [[ "$OutputCat" == *".fits" ]] || [[ "$OutputCat" == *".FITS" ]] || [[ "$OutputCat" == *".fits.gz" ]] || [[ "$OutputCat" == *".FITS.gz" ]] || [[ "$OutputCat" == *".FITS.GZ" ]]; then
+    cat_out_fmt="fits"
+else
+    cat_out_fmt="ascii"
+fi
+
+
+
+# 
+# Run topcat stilts
+# 
+if [[ $do_all_entries == 0 ]]; then
+    cat_out_name="${OutputCat%.*}_all_entries.$cat_out_fmt"
+else
+    cat_out_name="${OutputCat}"
+fi
+# cross-match all entries
+echo "cross-matching all entries"
+topcat -stilts tmatchn \
+                nin=2 \
+                in1="$InputCat1" \
+                ifmt1="$cat_1_fmt" \
+                values1="${cat_1_radec[0]} ${cat_1_radec[1]} ${cat_1_exact[*]}" \
+                suffix1="$cat_1_suffix" \
+                in2="$InputCat2" \
+                ifmt2="$cat_2_fmt" \
+                values2="${cat_2_radec[0]} ${cat_2_radec[1]} ${cat_2_exact[*]}" \
+                suffix2="$cat_2_suffix" \
+                fixcols=all \
+                join1=always \
+                join2=always \
+                matcher="$matcher" \
+                params="$radius" \
+                multimode=group \
+                ofmt="$cat_out_fmt" \
+                out="$cat_out_name" \
+                | tee  "$cat_out_name.stilts.log"
+
+echo ""
+
+# cross-match only matches
+if [[ $do_all_entries == 0 ]]; then
+echo "cross-matching only matches"
+cat_in_name="$cat_out_name"
+topcat -stilts tpipe \
+                in="$cat_in_name" \
+                ifmt="$cat_out_fmt" \
+                cmd="select \"(!NULL_${cat_1_radec[0]}${cat_1_suffix} && !NULL_${cat_2_radec[0]}${cat_2_suffix})\"" \
+                ofmt="$cat_out_fmt" \
+                out="$OutputCat" \
+                | tee  "$OutputCat.stilts.log"
+fi
+
+echo ""
+echo "Done!"
+
+
+
+
+

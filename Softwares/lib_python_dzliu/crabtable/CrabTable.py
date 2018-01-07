@@ -173,13 +173,21 @@ class CrabTable(object):
     def getColumn(self, ColNameOrNumb):
         if type(ColNameOrNumb) is str or type(ColNameOrNumb) is numpy.string_:
             if ColNameOrNumb in self.TableHeaders:
-                return self.TableData.field(ColNameOrNumb)
+                GotDataColumn = self.TableData.field(ColNameOrNumb)
+                if type(GotDataColumn) is astropy.table.Column:
+                    return GotDataColumn.data
+                else:
+                    return GotDataColumn
             else:
                 print("Error! Column name \"%s\" was not found in the data table!"%(ColNameOrNumb))
                 return []
         else:
             if ColNameOrNumb >= 1 and ColNameOrNumb <= len(self.TableHeaders):
-                return self.TableData.field(self.TableHeaders[int(ColNameOrNumb)-1])
+                GotDataColumn = self.TableData.field(self.TableHeaders[int(ColNameOrNumb)-1])
+                if type(GotDataColumn) is astropy.table.Column:
+                    return GotDataColumn.data
+                else:
+                    return GotDataColumn
             else:
                 print("Error! Column number %d is out of allowed range (1 - %d)!"%(int(ColNameOrNumb),len(self.TableHeaders)))
                 return []

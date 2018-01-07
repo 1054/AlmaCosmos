@@ -137,33 +137,26 @@ y_err = numpy.append(y_err,0.01)
 # 
 # Fit function -- a0 * exp(a1 * x1) * exp(a2 * x2)
 #              -- a0=-2000, a1=-1, a2=0
-def my_func((x1,x2), a0, a1, k1, n1, a2, k2, n2): 
-    #return a0 * numpy.exp(a1 * x1) * numpy.exp(a2 * x2)
-    #return a0 * pow(x1, a1) * pow(x2, a2)
-    #return a0 * pow(x1, a1) * numpy.exp(-x1) * pow(x2, a2) * numpy.exp(-x2)
-    #return a0 * pow(x1, a1) * numpy.exp(-x1) * numpy.exp(a2 * x2)
-    #return a0 * numpy.exp(a1 * x1) * pow(x1, n1) * numpy.exp(a2 * x2) * pow(x2, n2)
-    return a0 * (numpy.exp(a1*numpy.log10((x1/k1)**n1))) * (numpy.exp(a2*((x2/k2)**n2)))
-    #return a0 * (numpy.exp(a1*pow(numpy.log10(x1/k1),n1))) * (numpy.exp(a2*pow((x2/k2),n2)))
+def my_func((x1,x2), a0, a1, b1, c1, d1, e1, f1, a2, b2, c2, d2): 
+    return a0 * (a1 + b1*numpy.log10(x1) + c1*numpy.log10(x1)**2 + d1*numpy.log10(x1)**3 + e1*numpy.log10(x1)**4 + f1*numpy.log10(x1)**5) * (a2 + b2*x2 + c2*x2**2 + d2*x2**3)
 
 # 
-#                    a0     a1     k1     n1     a2     k2     n2
-initial_guess = (-0.250, -1.00, +1.00, +1.00, -1.00, +1.00, +1.00)
-#initial_guess = (-0.06010105,   0.13198369, -14.45676735,  -0.33198832, 0.85017692,  -0.39402407,  -0.6517596)
-bound_range = ([-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf],
-                [+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf])
+#                    a0     a1     b1     c1     d1     e1     f1     a2     b2     c2     d2
+initial_guess = (-0.250, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00)
+#bound_range = ([-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf,-numpy.inf],
+#                [+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf,+numpy.inf])
 
 try:
-    popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess, maxfev=10000)
+    popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, p0=initial_guess, maxfev=10000)
 except Exception,e:
     print str(e)
     popt = initial_guess
     pcov = []
     try:
         print('Retry fitting')
-        #                    a0     a1     k1     n1     a2     k2     n2
-        initial_guess = (+0.250, -1.00, +1.00, +0.50, -1.00, +1.00, +0.00)
-        popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, bounds=bound_range, p0=initial_guess, maxfev=10000)
+        #                    a0     a1     b1     c1     d1     e1     f1     a2     b2     c2     d2
+        initial_guess = (-0.250, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00, +1.00)
+        popt, pcov = scipy.optimize.curve_fit(my_func, (x1,x2), y_obs, sigma=y_err, p0=initial_guess, maxfev=10000)
     except Exception,e:
         print str(e)
         popt = initial_guess
@@ -180,19 +173,43 @@ y_fit = my_func((x1,x2), *popt)
 #ax = pyplot.gca()
 fig, (ax1, ax2) = pyplot.subplots(1, 2, sharey=True, figsize=(8,3.5))
 
-ax1.plot(x1, y_obs, color='r', marker='.', ls='None', label='Observed')
-ax1.errorbar(x1, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
-ax1.plot(x1, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
+def totuple(a):
+    try:
+        return tuple(totuple(i) for i in a)
+    except TypeError:
+        return a
+
+# add color bar by x2
+norm2 = matplotlib.colors.Normalize(vmin=0.0, vmax=5.0, clip=True)
+mapper2 = matplotlib.cm.ScalarMappable(norm=norm2, cmap=matplotlib.cm.plasma)
+color_by_x2 = totuple(mapper2.to_rgba(x2))
+#print(color_by_x2)
+
+plot1 = ax1.scatter(x1, y_obs, color=color_by_x2, marker='.', label='Observed')
+for i in range(len(x1)):
+    ax1.errorbar(x1[i], y_obs[i], yerr=y_err[i], color=color_by_x2[i], ls='None', lw=1.0, capthick=1.5, capsize=2.5)
+ax1.plot(x1, y_fit, 'k', color='black', marker='+', ls='None', ms=5, mew=2, label='Fit')
 ax1.legend()
 ax1.set_xlabel('S_peak / rms noise')
 ax1.set_ylabel('(S_in - S_out) / S_in')
 ax1.set_xscale('log')
+ax1.set_xlim([1,200])
 
-ax2.plot(x2, y_obs, color='r', marker='.', ls='None', label='Observed')
-ax2.errorbar(x2, y_obs, yerr=y_err, color='r', ls='None', lw=1.5, capthick=1.5, capsize=2.5, label='Observed Err')
-ax2.plot(x2, y_fit, 'k', marker='+', ls='None', ms=5, mew=2, label='Fit')
+# add color bar by log x1
+norm1 = matplotlib.colors.LogNorm(vmin=3.0, vmax=30.0, clip=True)
+mapper1 = matplotlib.cm.ScalarMappable(norm=norm1, cmap=matplotlib.cm.cool)
+color_by_x1 = totuple(mapper1.to_rgba(x1))
+#print(color_by_x2)
+
+plot2 = ax2.scatter(x2, y_obs, color=color_by_x1, marker='.', label='Observed')
+for i in range(len(x2)):
+    ax2.errorbar(x2[i], y_obs[i], yerr=y_err[i], color=color_by_x1[i], ls='None', lw=1.0, capthick=1.5, capsize=2.5)
+ax2.plot(x2, y_fit, 'k', color='black', marker='+', ls='None', ms=5, mew=2, label='Fit')
 ax2.legend()
 ax2.set_xlabel('FWHM_source / FWHM_beam')
+ax2.set_xlim([0,7])
+
+#pyplot.colorbar(mapper2) # cmap=matplotlib.cm.jet,min=0.0,max=10.0
 
 fig.tight_layout()
 
@@ -207,17 +224,17 @@ if pcov == []:
     sys.exit()
 
 os.system('echo "set a0 = %0.20e" > best_fit_function_fbias.sm'%(popt[0]))
-#os.system('echo "set a1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[1]))
-#os.system('echo "set a2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[2]))
-#os.system('echo "set y_fit = a0 * exp(a1 * x1) * exp(a2 * x2)" >> best_fit_function_fbias.sm'%(popt[2]))
-#os.system('echo "set y_fit = a0 * x1**a1 * exp(-x1) * exp(a2 * x2)" >> best_fit_function_fbias.sm'%(popt[2]))
 os.system('echo "set a1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[1]))
-os.system('echo "set k1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[2]))
-os.system('echo "set n1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[3]))
-os.system('echo "set a2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[4]))
-os.system('echo "set k2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[5]))
-os.system('echo "set n2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[6]))
-os.system('echo "set y_fit = a0 * (exp(a1*lg((x1/k1)**n1))) * (exp(a2*((x2/k2)**n2)))" >> best_fit_function_fbias.sm')
+os.system('echo "set b1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[2]))
+os.system('echo "set c1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[3]))
+os.system('echo "set d1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[4]))
+os.system('echo "set e1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[5]))
+os.system('echo "set f1 = %0.20e" >> best_fit_function_fbias.sm'%(popt[6]))
+os.system('echo "set a2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[7]))
+os.system('echo "set b2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[8]))
+os.system('echo "set c2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[9]))
+os.system('echo "set d2 = %0.20e" >> best_fit_function_fbias.sm'%(popt[10]))
+os.system('echo "set y_fit = a0 * (a1 + b1*lg(x1) + c1*lg(x1)**2 + d1*lg(x1)**3 + e1*lg(x1)**4 + f1*lg(x1)**5) * (a2 + b2*(x2) + c2*(x2)**2 + d2*(x2)**3)" >> best_fit_function_fbias.sm')
 
 
 
