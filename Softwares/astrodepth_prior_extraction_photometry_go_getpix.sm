@@ -399,12 +399,13 @@ read_primary_beam_correction_from_pb_image 00
         !getpix -n 1 "%.15g" "image_pba.fits" @"image_pba_primary_beam_correction.getpix.input.txt" > "image_pba_primary_beam_correction.getpix.output.txt"
         if(is_vector(primary_beam_attenuation_str)) {unset primary_beam_attenuation_str}
         data "image_pba_primary_beam_correction.getpix.output.txt" read {primary_beam_attenuation_str 1.s}
-        if(is_vector(primary_beam_attenuation_str)) {
-            !rm "image_pba_primary_beam_correction.getpix.input.txt"
-            !rm "image_pba_primary_beam_correction.getpix.output.txt"
-        }
+        #<20180109>#if(is_vector(primary_beam_attenuation_str)) {
+        #<20180109>#    !rm "image_pba_primary_beam_correction.getpix.input.txt"
+        #<20180109>#    !rm "image_pba_primary_beam_correction.getpix.output.txt"
+        #<20180109>#}
         set primary_beam_attenuation_str2 = (primary_beam_attenuation_str=='nan') ? '-99' : primary_beam_attenuation_str
         set primary_beam_attenuation = float(primary_beam_attenuation_str2)
+        set primary_beam_attenuation = (primary_beam_attenuation==0) ? 1e-99 : primary_beam_attenuation #<20180109>#
         unset primary_beam_attenuation_str2
         set primary_beam_correction = (primary_beam_attenuation_str=='nan') ? -99 : 1.0 / primary_beam_attenuation
         print "image_pba_primary_beam_correction.txt" '%26g %26g\n' {primary_beam_correction primary_beam_attenuation}

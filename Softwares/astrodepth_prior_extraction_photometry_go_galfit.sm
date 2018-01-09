@@ -608,7 +608,12 @@ go_galfit 01
         if(is_file(fit.log)) {!rm fit.log}
         writeGalfitParam fit_$1.param
         writeGalfitLimit fit_$1.limit
-        writeGalfitInput fit_$1.input image_sci.fits fit_$1.fits image_rms.fits image_psf.fits fit_$1.limit
+        #<BUG><20180109><DZLIU># WRONGLY USED image_sci.fits IN NEGATIVE FITTING MODE
+        if(index('$1','n')==0) {
+            writeGalfitInput fit_$1.input image_negative.fits fit_$1.fits image_rms.fits image_psf.fits fit_$1.limit
+        } else {
+            writeGalfitInput fit_$1.input image_sci.fits fit_$1.fits image_rms.fits image_psf.fits fit_$1.limit
+        }
         exec_galfit $1
         if(is_file(fit_$1.fits)) {
             readGalfitResult fit_$1.fits
@@ -716,6 +721,7 @@ print_result 02
         set ResultFlux = ResultMags*0.0 + 1e-30
         set ResultFluxErr = ResultMags*0.0 + 1e+30
         set ResultFluxPeak = ResultMags*0.0 + 1e-30 # <20170613> getpix f_peak
+        set ResultFluxOrigin = ResultMags*0.0 + 1e-30 # <20170613> getpix f_origin, flux in the original image_sci_input.fits
         do i=0,dimen(ResultMags)-1 {
             if(ResultType[$i]=='psf') {
                 # In this case (10**(ResultMags/(-2.5))) equals the (pix_max / peak2total)
@@ -726,8 +732,11 @@ print_result 02
                 verbose 0 data aaa.getpix.tmp read {fluxpeak 1.f}
                 verbose 1 !rm aaa.getpix.tmp
                 set ResultFluxPeak[$i] = fluxpeak # Jy/beam <20170613>
-                ## Set peak flux
-                #set ResultFluxPeak[$i] = ResultFlux[$i]
+                # Get original image pixel value (prevent from at NaN pixel position)
+                !getpix '%15.10e' image_sci_input.fits $(ResultPosX[$i]) $(ResultPosY[$i]) > aaa.getpix.tmp
+                verbose 0 data aaa.getpix.tmp read {fluxorigin 1.f}
+                verbose 1 !rm aaa.getpix.tmp
+                set ResultFluxOrigin[$i] = fluxorigin # Jy/beam <20180109>
             }
             if(ResultType[$i]=='gaussian' || ResultType[$i]=='sersic') {
                 # In this case (10**(ResultMags/(-2.5))) equals the (pix_sum)
@@ -738,6 +747,11 @@ print_result 02
                 verbose 0 data aaa.getpix.tmp read {fluxpeak 1.f}
                 verbose 1 !rm aaa.getpix.tmp
                 set ResultFluxPeak[$i] = fluxpeak # Jy/beam <20170613>
+                # Get original image pixel value (prevent from at NaN pixel position)
+                !getpix '%15.10e' image_sci_input.fits $(ResultPosX[$i]) $(ResultPosY[$i]) > aaa.getpix.tmp
+                verbose 0 data aaa.getpix.tmp read {fluxorigin 1.f}
+                verbose 1 !rm aaa.getpix.tmp
+                set ResultFluxOrigin[$i] = fluxorigin # Jy/beam <20180109>
             }
             if(ResultMags[$i]>=30) {
                 set ResultFlux[$i] = 1e-30 #<20170303><dzliu># 
@@ -835,6 +849,7 @@ print_result 02
         set f_redchisq = ResultFluxRedChisq
         set n_aperpix = ResultFluxNumPixel
         set n_freepar = ResultNumbFreeParam
+        set f_origin = ResultFluxOrigin
         # 
         #<above><added><20170606><dzliu>#
         # 
@@ -865,6 +880,12 @@ print_result 02
         #<below><added><20170923><dzliu>#
         print $1.result.source_err.txt '%25g %25g %25g %25g %25g %25g %25g %25g %25g %15.0f %15s\n' \
             {f source_total_err source_peak source_peak_err maj source_major_err min source_minor_err source_gaussian_snr cat_index cat_id}
+        #<above><added><20170923><dzliu>#
+        # 
+        # 
+        #<below><added><20170923><dzliu>#
+        print $1.result.flux_origin.txt '%25g %15.0f %15s\n' \
+            {f_origin cat_index cat_id}
         #<above><added><20170923><dzliu>#
         # 
         # 

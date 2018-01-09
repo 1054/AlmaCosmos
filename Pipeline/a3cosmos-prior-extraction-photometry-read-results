@@ -159,6 +159,7 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
             echo "********************************************************"
             echo "Warning! \"$(pwd)/${OutputItem}\" was not found!"
             echo "********************************************************"
+            date +"%Y-%m-%d %H:%M:%S %Z"                            >> "WARNING.TXT"
             echo "Warning! \"$(pwd)/${OutputItem}\" was not found!" >> "WARNING.TXT"
         fi
     done
