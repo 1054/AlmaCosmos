@@ -34,7 +34,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     fi
     
     # check simulation directory and datatable
-    if [[ ! -d "Simulated/$FitsName/datatable_Simulated.txt" ]]; then
+    if [[ ! -f "Simulated/$FitsName/datatable_Simulated.txt" ]]; then
         echo "Error! \"Simulated/$FitsName/datatable_Simulated.txt\" was not found!"
         exit
     fi
