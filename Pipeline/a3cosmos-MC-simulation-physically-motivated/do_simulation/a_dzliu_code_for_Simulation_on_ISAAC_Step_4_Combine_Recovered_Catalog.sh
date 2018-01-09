@@ -61,7 +61,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
-        echo "$TempImage $TempSimu (main_result)"
+        #echo "$TempImage $TempSimu (main_result)"
         if [[ ! -f "../../Output_Prior_Galfit_Gaussian_main_result.txt" ]]; then
             head -n 1 "${ResultFiles[k]}" | sed -e "s/$/   Simu   Image/g" >> "../../Output_Prior_Galfit_Gaussian_main_result.txt"
         fi
@@ -75,7 +75,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
-        echo "$TempImage $TempSimu (Condon_errors)"
+        #echo "$TempImage $TempSimu (Condon_errors)"
         if [[ ! -f "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt" ]]; then
             head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Simu      Image/g" >> "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt"
         fi
