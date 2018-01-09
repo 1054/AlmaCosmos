@@ -24,7 +24,7 @@ IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
 for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
     FitsName="${FitsNames[i]}"
-    echo "${FitsNames[i]}"
+    echo "${FitsNames[i]} ($((i+1))/${#FitsNames[@]})"
     
     # check non-COSMOS fields
     if [[ "$FitsName" == *"2011.0.00539.S_SB1_GB1_MB1_ECDFS02_field3_sci.spw0_1_2_3"* ]] || \
