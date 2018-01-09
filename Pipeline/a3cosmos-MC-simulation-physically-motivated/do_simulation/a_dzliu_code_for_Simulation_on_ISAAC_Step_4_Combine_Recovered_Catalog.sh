@@ -55,10 +55,10 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     cd "Recovered/$FitsName/"
     
     # find
-    ResultFiles=($(find . -name "fit_2.result.all.txt"))
+    IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.all.txt"))
     
     # loop
-    for (( k==0; k<${#ResultFiles[@]}; k++ )); do
+    for (( k=0; k<${#ResultFiles[@]}; k++ )); do
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
         echo "$TempImage $TempSimu (main_result)"
@@ -69,10 +69,10 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     done
     
     # find
-    ResultFiles=($(find . -name "fit_2.result.source_err.txt"))
+    IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.source_err.txt"))
     
     # loop
-    for (( k==0; k<${#ResultFiles[@]}; k++ )); do
+    for (( k=0; k<${#ResultFiles[@]}; k++ )); do
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
         echo "$TempImage $TempSimu (Condon_errors)"
