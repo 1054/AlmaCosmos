@@ -56,6 +56,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
     # find
     IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.all.txt"))
+    echo "${#ResultFiles[@]}"
     
     # loop
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
@@ -70,6 +71,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
     # find
     IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.source_err.txt"))
+    echo "${#ResultFiles[@]}"
     
     # loop
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
