@@ -47,9 +47,9 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
     # combine datatable_Simulated.txt
     if [[ ! -f "Output_Prior_Simulation_Catalog.txt" ]]; then
-        head -n 1 "${ResultFiles[k]}" >> "Output_Prior_Simulation_Catalog.txt"
+        head -n 1 "Simulated/$FitsName/datatable_Simulated.txt" >> "Output_Prior_Simulation_Catalog.txt"
     fi
-    tail -n +2 "${ResultFiles[k]}" >> "Output_Prior_Simulation_Catalog.txt"
+    tail -n +2 "Simulated/$FitsName/datatable_Simulated.txt" >> "Output_Prior_Simulation_Catalog.txt"
     
     # cd recovered directory
     cd "Recovered/$FitsName/"
@@ -60,13 +60,14 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
     # loop
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
+        TempRect=$(echo $(basename $(dirname "${ResultFiles[k]}")))
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
         #echo "$TempImage $TempSimu (main_result)"
         if [[ ! -f "../../Output_Prior_Galfit_Gaussian_main_result.txt" ]]; then
-            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/   Simu   Image/g" >> "../../Output_Prior_Galfit_Gaussian_main_result.txt"
+            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "../../Output_Prior_Galfit_Gaussian_main_result.txt"
         fi
-        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/   $TempSimu   $TempImage/g" >> "../../Output_Prior_Galfit_Gaussian_main_result.txt"
+        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "../../Output_Prior_Galfit_Gaussian_main_result.txt"
     done
     
     # find
@@ -75,13 +76,14 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
     # loop
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
+        TempRect=$(echo $(basename $(dirname "${ResultFiles[k]}")))
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
         #echo "$TempImage $TempSimu (Condon_errors)"
         if [[ ! -f "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt" ]]; then
-            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Simu      Image/g" >> "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt"
+            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt"
         fi
-        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempSimu      $TempImage/g" >> "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt"
+        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt"
     done
     
     # cd back
