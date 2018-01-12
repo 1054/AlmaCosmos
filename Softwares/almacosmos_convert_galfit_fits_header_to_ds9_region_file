@@ -1,0 +1,181 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -lt 2 ]]; then
+    echo "Usage: "
+    echo "    almacosmos_convert_galfit_fits_header_to_ds9_region_file galfit_fits_image.fits output_ds9_region_file.ds9.reg"
+    echo "Input: "
+    echo "    A galfit fits image whose second extension contains a list of source parameters."
+    echo "Output: "
+    echo "    Output a ds9 region file constructed from the sources listed in the input galfit fits image header."
+    echo ""
+    exit
+fi
+
+
+# 
+# Check supermongo and necessary files
+# 
+check_Command_read_fits_header() {
+    Command_read_fits_header=""
+    if [[ -z $Command_read_fits_header ]] && [[ $(type CrabFitsHeader 2>/dev/null | wc -l) -ne 0 ]]; then
+        Command_read_fits_header=CrabFitsHeader
+    fi
+    if [[ -z $Command_read_fits_header ]] && [[ $(type fitsheader 2>/dev/null | wc -l) -ne 0 ]]; then
+        Command_read_fits_header=fitsheader
+    fi
+    if [[ -z $Command_read_fits_header ]]; then
+        echo "Error! CrabFitsHeader or fitsheader was not installed! You can consider downloading CrabFitsHeader from \"https://github.com/1054/AlmaCosmos.git\"!"
+        exit 1
+    fi
+}
+if [[ $(type pixscale 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! pixscale was not found! Please download it from \"https://github.com/1054/AlmaCosmos/Softwares\"! It also need wcstools!"
+    exit 1
+fi
+
+
+# 
+# Read Input cat
+# 
+Input_fits="$1"
+
+
+# 
+# Set Output file
+# 
+Output_reg="$2"
+
+
+# 
+# read fits image header
+if [[ ! -f "$Input_fits.header.txt" ]]; then
+    if [[ $(type CrabFitsHeader 2>/dev/null | wc -l) -ne 0 ]]; then
+        CrabFitsHeader "$Input_fits" -ext 2 > "$Input_fits.header.txt"
+    elif [[ $(type fitsheader 2>/dev/null | wc -l) -ne 0 ]]; then
+        fitsheader "$Input_fits" -ext 2 > "$Input_fits.header.txt"
+    else
+        echo "Error! CrabFitsHeader or fitsheader was not installed! You can consider downloading CrabFitsHeader from \"https://github.com/1054/AlmaCosmos.git\"!"
+        exit 1
+    fi
+fi
+if [[ ! -f "$Input_fits.header.txt" ]]; then
+    echo "Error! Failed to get \"$Input_fits.header.txt\"!"
+    exit
+fi
+
+
+# 
+# get pixscale
+if [[ ! -f "$Input_fits.pixscale.txt" ]]; then
+    if [[ ! -f "$Input_fits.frame.1.fits" ]]; then
+        CrabFitsImageArithmetic "$Input_fits" -ext 1 times 1.0 "$Input_fits.frame.1.fits" -copy-wcs
+    fi
+    if [[ ! -f "$Input_fits.frame.1.fits" ]]; then
+        echo "Error! Failed to get \"$Input_fits.frame.1.fits\"!"
+        exit
+    fi
+    Pixel_scale=$(pixscale "$Input_fits.frame.1.fits")
+    if [[ -z "$Pixel_scale" ]] || [[ "$Pixel_scale" == "0" ]]; then
+        echo "Error! Failed to run \"pixscale '$Input_fits.frame.1.fits'\"!"
+        exit
+    fi
+    echo "$Pixel_scale" > "$Input_fits.pixscale.txt"
+    rm "$Input_fits.frame.1.fits"
+else
+    Pixel_scale=$(cat "$Input_fits.pixscale.txt")
+fi
+echo "Pixel_scale = $Pixel_scale [arcsec/pixel]"
+
+
+# 
+# analyze sources in the fits header
+IObj=1
+while grep -q "^${IObj}_" "$Input_fits.header.txt"; do
+    seq -s "-" 80 | tr -d '[:digit:]'; echo ""
+    PX=($(grep "^${IObj}_XC"   "$Input_fits.header.txt" | perl -p -e "s%^${IObj}_XC *= *'\[?([0-9eE. /+-]*)\]?' */ *(.*)%\1%g"))
+    PY=($(grep "^${IObj}_YC"   "$Input_fits.header.txt" | perl -p -e "s%^${IObj}_YC *= *'\[?([0-9eE. /+-]*)\]?' */ *(.*)%\1%g"))
+    FW=($(grep "^${IObj}_FWHM" "$Input_fits.header.txt" | perl -p -e "s%^${IObj}_FWHM *= *'\[?([0-9eE. /+-]*)\]?' */ *(.*)%\1%g"))
+    AR=($(grep "^${IObj}_AR"   "$Input_fits.header.txt" | perl -p -e "s%^${IObj}_AR *= *'\[?([0-9eE. /+-]*)\]?' */ *(.*)%\1%g"))
+    PA=($(grep "^${IObj}_PA"   "$Input_fits.header.txt" | perl -p -e "s%^${IObj}_PA *= *'\[?([0-9eE. /+-]*)\]?' */ *(.*)%\1%g"))
+    OK=1
+    if [[ ${#PX[@]} -gt 0 ]]; then
+        echo "PX = ${PX[@]}"
+    else
+        OK=0
+    fi
+    if [[ ${#PY[@]} -gt 0 ]]; then
+        echo "PY = ${PY[@]}"
+    else
+        OK=0
+    fi
+    if [[ ${#FW[@]} -gt 0 ]]; then
+        echo "FW = ${FW[@]}"
+    fi
+    if [[ ${#AR[@]} -gt 0 ]]; then
+        echo "AR = ${AR[@]}"
+    fi
+    if [[ ${#PA[@]} -gt 0 ]]; then
+        echo "PA = ${PA[@]}"
+    fi
+    if [[ $OK -eq 0 ]]; then
+        echo "Error! Failed to get XY for Object $IObj!"
+        grep "^${IObj}_" "$Input_fits.header.txt"
+        exit
+    fi
+    
+    if [[ $IObj -eq 1 ]]; then
+        echo "# ds9 region file extracted from \"$Input_fits\"" > "$Output_reg"
+        echo "image" >> "$Output_reg"
+    fi
+    
+    if [[ ${#FW[@]} -eq 0 ]]; then
+        FW1=$(awk "BEGIN {print (0.35)/(${Pixel_scale});}") # for unresolved sources, we plot source size 0.35 arcsec
+        echo "circle(${PX[0]},${PY[0]},${FW1}) # width=1"
+        echo "circle(${PX[0]},${PY[0]},${FW1}) # width=1" >> "$Output_reg"
+    else
+        FW2=$(awk "BEGIN {print (${FW[0]})*(${AR[0]});}")
+        PA2=$(awk "BEGIN {print (${PA[0]})+90.0;}")
+        echo "ellipse(${PX[0]},${PY[0]},${FW[0]},${FW2},${PA2}) # width=2"
+        echo "ellipse(${PX[0]},${PY[0]},${FW[0]},${FW2},${PA2}) # width=2" >> "$Output_reg"
+    fi
+    
+    IObj=$((IObj+1))
+done
+
+
+seq -s "-" 80 | tr -d '[:digit:]'; echo ""
+echo "Output to \"$Output_reg\"!"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

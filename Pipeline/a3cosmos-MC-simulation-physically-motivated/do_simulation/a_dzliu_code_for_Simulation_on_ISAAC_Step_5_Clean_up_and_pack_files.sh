@@ -59,6 +59,10 @@ done
 
 
 
+# dzliu@isaac1:~/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/Recovered> du -hs 2011.0.00097.S_SB1_GB1_MB10_COSMOS6_field2_sci.spw0_1_2_3.tar.gz
+# 7.9G    2011.0.00097.S_SB1_GB1_MB10_COSMOS6_field2_sci.spw0_1_2_3.tar.gz
+# dzliu@isaac1:~/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/Recovered> du -hs 2011.0.00097.S_SB1_GB1_MB10_COSMOS6_field2_sci.spw0_1_2_3
+# 20G 2011.0.00097.S_SB1_GB1_MB10_COSMOS6_field2_sci.spw0_1_2_3
 
 
 

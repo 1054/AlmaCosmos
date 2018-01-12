@@ -1,0 +1,111 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -lt 2 ]]; then
+    echo "Usage: "
+    echo "    almacosmos_convert_eps_to_png_in_a_folder input_directory [output_directory]"
+    echo "Input: "
+    echo "    A directory containing the eps files."
+    echo "Output: "
+    echo "    Output png images to \"output_directory\"."
+    echo ""
+    exit
+fi
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type convert 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! convert command was not found! ImageMagick was not installed!"
+    exit 1
+fi
+#if [[ $(type xy2sky 2>/dev/null | wc -l) -eq 0 ]]; then
+#    echo "Error! wcstools was not installed!"
+#    exit 1
+#fi
+#if [[ $(type gethead 2>/dev/null | wc -l) -eq 0 ]]; then
+#    echo "Error! wcstools was not installed!"
+#    exit 1
+#fi
+#if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+#    echo "Error! Supermongo was not installed!"
+#    exit 1
+#fi
+#if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+#    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+#    exit 1
+#fi
+#if [[ ! -d $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools ]]; then
+#    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+#    exit 1
+#fi
+
+
+# 
+# Read Input cat
+# 
+DataDir=("$1")
+
+
+# 
+# Set Output dir
+# 
+OutputDir="$2"
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir -p "$OutputDir"
+fi
+
+
+# 
+# Set locale for fixing python localename problem
+# 
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+
+# 
+# Software dependency
+# 
+#if [[ $(type almacosmos_get_fits_image_pixel_histogram.py 2>/dev/null | wc -l) -eq 0 ]]; then
+#    if [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash" ]]; then
+#        source "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash"
+#    else
+#        echo "Error! \"almacosmos_get_fits_image_pixel_histogram.py\" was not found in \$PATH!"
+#        exit
+#    fi
+#fi
+
+
+# 
+# Prepare output array
+# 
+Source_names=()
+#Image_rms=()
+
+
+# 
+# Loop 
+# 
+Has_print_head=0
+for (( j=0; j<${#DataDir[@]}; j++ )); do
+
+    Image_input=($(ls -1 "${DataDir[j]}"/*.eps))
+    
+    for (( i=0; i<${#Image_input[@]}; i++ )); do
+        
+        Image_name=$(basename "${Image_input[i]}" | sed -e 's/.eps$//g')
+        convert -density 200 "${Image_input[i]}" "${OutputDir}/${Image_name}.png"
+        
+        #break
+    done
+    #break
+done
+
+echo ""
+#echo "Done!"
+
