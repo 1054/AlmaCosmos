@@ -33,8 +33,11 @@ fi
 # 
 # Read Input cat
 # 
+if [[ $(hostname) == "aida"* ]]; then
 InputDir_fits="/disk1/dzliu/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/v20180102/fits" # the place where we can find "${Image_name}.fits.pixel.statistics.txt"
+else
 InputDir_fits="fits" # the place where we can find "${Image_name}.pixel.statistics.txt"
+fi
 InputDir_fitted_fits="Prior_Extraction_with_Master_Catalog_v20180106_fit_2_fits" # the place where we can find "*.-.fit_2.fits"
 
 if [[ ! -d "$InputDir_fits" ]]; then
