@@ -1,0 +1,78 @@
+#!/bin/bash
+# 
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+use_Gaussian=1
+str_Date=$(date +"%Y-%m-%d") # "2017-12-10" # 
+
+if [[ $use_Gaussian -eq 1 ]]; then
+    topcat -stilts tmatchn \
+                nin=3 \
+                in1='Read_Results_all_final_fit_n2.result.all.txt' \
+                ifmt1=ascii \
+                values1="index" \
+                in2='Read_Results_all_final_fit_n2.result.source_err.txt' \
+                ifmt2=ascii \
+                values2="index" \
+                in3='Read_Results_all_final_fit_n2.result.source_area.txt' \
+                ifmt3=ascii \
+                values3="index" \
+                matcher=exact \
+                ofmt=fits \
+                ocmd="select \"(flag_buffer==0)\"" \
+                ocmd="addcol ID \"id_fit_n2_str\"" \
+                ocmd="addcol RA \"ra_fit_n2\"" \
+                ocmd="addcol Dec \"dec_fit_n2\"" \
+                ocmd="addcol Total_flux \"f\"" \
+                ocmd="addcol E_Total_flux \"source_total_err\"" \
+                ocmd="addcol Galfit_flux \"f_fit_n2/1e3\"" \
+                ocmd="addcol E_Galfit_flux \"df_fit_n2/1e3\"" \
+                ocmd="addcol Peak_flux \"source_peak\"" \
+                ocmd="addcol E_Peak_flux \"source_peak_err\"" \
+                ocmd="addcol Residual_flux \"fres_fit_n2/1e3\"" \
+                ocmd="addcol RMS \"rms_fit_n2/1e3\"" \
+                ocmd="addcol Maj_deconv \"maj_fit_n2/3600.0\"" \
+                ocmd="addcol E_Maj_deconv \"maj_err_fit_n2/3600.0\"" \
+                ocmd="addcol Min_deconv \"min_fit_n2/3600.0\"" \
+                ocmd="addcol E_Min_deconv \"min_err_fit_n2/3600.0\"" \
+                ocmd="addcol PA_deconv \"PA_fit_n2/3600.0\"" \
+                ocmd="addcol E_PA_deconv \"PA_err_fit_n2/3600.0\"" \
+                ocmd="addcol Pixel_noise \"pix_noise\"" \
+                ocmd="addcol Pixel_scale \"pix_scale\"" \
+                ocmd="addcol Beam_area \"beam_area\"" \
+                ocmd="addcol Obs_frequency \"obs_freq\"" \
+                ocmd="addcol Obs_wavelength \"obs_lambda\"" \
+                ocmd="addcol Pb_corr_pb_image \"pbcorr\"" \
+                ocmd="addcol Pb_corr_equation \"pb_corr\"" \
+                ocmd="addcol Galfit_chi_square \"chisq\"" \
+                ocmd="addcol Galfit_reduced_chi_square \"rchisq\"" \
+                ocmd="addcol Galfit_N_aperture_pixel \"n_aperpix\"" \
+                ocmd="addcol Galfit_N_free_parameter \"n_freepar\"" \
+                ocmd="addcol Flag_size_lower_boundary \"(abs(maj_fit_n2-1.0*pix_scale)<0.02)\"" \
+                ocmd="addcol Flag_size_upper_boundary \"(abs(maj_fit_n2-3.0)<0.02)\"" \
+                ocmd="addcol Flag_size_initial_guess \"(abs(maj_fit_n2-0.25)<0.02)\"" \
+                ocmd="addcol Flag_zero_galfit_flux_error \"(df_fit_n2==0)\"" \
+                ocmd="addcol Flag_zero_galfit_size_error \"(maj_fit_n2>0 && maj_err_fit_n2==0)\"" \
+                ocmd="addcol Image_file_name \"image_file_1\"" \
+                ocmd="addcol Image \"matches(image_file_1,\\\"(.*).cut_.*_.*_.*_.*\\\") ? matchGroup(image_file_1,\\\"(.*).cut_.*_.*_.*_.*\\\")+\\\".fits\\\" : image_file_1+\\\".fits\\\"\"" \
+                out="A-COSMOS_prior_${str_Date}_negative_Gaussian.fits"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
+                # 
+                # converts all units to Jy, Jy/beam.
+                # 
+                # note: rms = pixnoise * fluxconv
+                # 
+    # 
+    echo "Output to \"A-COSMOS_prior_${str_Date}_negative_Gaussian.fits\"!"
+    # 
+    topcat -stilts tpipe \
+                in="A-COSMOS_prior_${str_Date}_negative_Gaussian.fits" \
+                cmd="select (Total_flux/E_Total_flux>=3.0)" \
+                out="A-COSMOS_prior_${str_Date}_negative_Gaussian_SNR_GE_3.fits"
+    # 
+    echo "Output to \"A-COSMOS_prior_${str_Date}_negative_Gaussian_SNR_GE_3.fits\"!"
+fi
