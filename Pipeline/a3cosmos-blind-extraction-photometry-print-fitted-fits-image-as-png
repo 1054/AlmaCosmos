@@ -1,0 +1,179 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+usage() {
+    echo "Usage: "
+    echo "    a3cosmos-blind-extraction-photometry-print-fitted-fits-image-as-png"
+    echo "Input: "
+    echo "    This code needs three inputs: "
+    echo "    The first input is a directory containing original fits images."
+    echo "    The second input is a directory containing model fits images."
+    echo "    The third input is a directory containing residual fits images."
+    echo "Output: "
+    echo "    Output png images to \"Blind_Extraction_fitted_png\"."
+    echo ""
+    exit
+}
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type ds9 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! ds9 was not installed!"
+    exit 1
+fi
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! topcat was not installed!"
+    exit 1
+fi
+if [[ $(type almacosmos_convert_ascii_table_to_ds9_region_file 2>/dev/null | wc -l) -eq 0 ]]; then
+    AlmaCosmos_Setup_Script="$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash"
+    if [[ -f "$AlmaCosmos_Setup_Script" ]]; then
+        source "$AlmaCosmos_Setup_Script"
+    else
+        echo "Error! almacosmos_convert_ascii_table_to_ds9_region_file was not installed! Please download \"https://github.com/1054/AlmaCosmos.git\"!"
+        exit 1
+    fi
+fi
+
+
+# 
+# Read Input cat
+# 
+if [[ $(hostname) == "aida40110" ]]; then
+    InputDir_original="/disk1/dzliu/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/v20180102/fits"
+    InputDir_model="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/model_images_020118"
+    InputDir_residual="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/residual_images_020118"
+    InputCat_pybdsm="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/"
+else
+    if [[ $# -lt 3 ]]; then
+        usage
+        exit
+    fi
+    InputDir_original="$1"
+    InputDir_model="$2"
+    InputDir_residual="$3"
+    InputCat_pybdsm='/Users/dzliu/Work/AlmaCosmos/Photometry/ALMA_full_archive/Blind_Extraction_by_Benjamin/20180102/cat_pybdsm_concatenated_020118.fits'
+fi
+
+if [[ ! -d "$InputDir_original" ]]; then
+    echo "Error! \"$InputDir_original\" was not found!"; exit
+fi
+if [[ ! -d "$InputDir_model" ]]; then
+    echo "Error! \"$InputDir_model\" was not found!"; exit
+fi
+if [[ ! -d "$InputDir_residual" ]]; then
+    echo "Error! \"$InputDir_residual\" was not found!"; exit
+fi
+
+
+# 
+# Set Output dir
+# 
+OutputDir="Blind_Extraction_fitted_png"
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir -p "$OutputDir"
+fi
+
+
+# 
+# Set locale for fixing python localename problem
+# 
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+
+# 
+# Software dependency
+# 
+#if [[ $(type almacosmos_get_fits_image_pixel_histogram.py 2>/dev/null | wc -l) -eq 0 ]]; then
+#    if [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash" ]]; then
+#        source "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash"
+#    else
+#        echo "Error! \"almacosmos_get_fits_image_pixel_histogram.py\" was not found in \$PATH!"
+#        exit
+#    fi
+#fi
+
+
+# 
+# Prepare output array
+# 
+Source_names=()
+Image_rms=()
+
+
+# 
+# Loop 
+# 
+Has_print_head=0
+
+Image_input=($(ls -1 "${InputDir_original}"/*.cont.I.image.fits))
+
+for (( i=0; i<${#Image_input[@]}; i++ )); do
+    # 
+    #Image_dir=$(dirname "${Image_input[i]}")
+    Image_name=$(basename "${Image_input[i]}" | sed -e 's/\.cont.I.image.fits$//g')
+    echo "Image_name = $Image_name"
+    # 
+    if [[ -f "$OutputDir/$Image_name.cont.I.image.grey.png" ]] && [[ -f "$OutputDir/$Image_name.cont.I.image.aips0.png" ]]; then
+        continue
+    fi
+    # 
+    # check model image
+    if [[ ! -f "$InputDir_model/$Image_name.cont.I.model.fits" ]]; then
+        echo "Error! \"$InputDir_model/$Image_name.cont.I.model.fits\" was not found!"
+        exit
+    fi
+    # 
+    # check residual image
+    if [[ ! -f "$InputDir_residual/$Image_name.cont.I.residual.fits" ]]; then
+        echo "Error! \"$InputDir_residual/$Image_name.cont.I.residual.fits\" was not found!"
+        exit
+    fi
+    # 
+    # check fits image rms file (which should be already prepared)
+    Image_rms_file="${InputDir_original}/${Image_name}.cont.I.image.fits.pixel.statistics.txt"
+    if [[ ! -f "${Image_rms_file}" ]]; then
+        echo "Error! \"${Image_rms_file}\" was not found!"; exit
+    fi
+    # 
+    # read fits image rms
+    Temp_rms=$(cat "${Image_rms_file}" | grep "Gaussian_sigma *=" | perl -p -e 's/Gaussian_sigma *= *([0-9.+-eE]*)/\1/g') # Jy/beam
+    if [[ x"$Temp_rms" == x ]]; then echo ""; echo "Failed to read Gaussian_sigma from \"${Image_rms_file}\""; exit 1; fi
+    # 
+    scale_limits=($(awk "BEGIN {print (-2.0*($Temp_rms));}") $(awk "BEGIN {print (5.0*($Temp_rms));}"))
+    # 
+    # read pybdsm source catalog if provided
+    Cmd_load_regions=()
+    if [[ ! -f "${Image_input[i]}.ds9.reg" ]]; then
+        if [[ ! -z "$InputCat_pybdsm" ]]; then
+            if [[ -f "$InputCat_pybdsm" ]]; then
+                topcat -stilts tpipe in="$InputCat_pybdsm" cmd="select \"Image==\\\"$Image_name.cont.I.image.fits\\\"\"" cmd="keepcols \"Source_id_in_image RA Dec Maj_deconv Min_deconv PA Total_flux\"" \
+                        cmd="replacecol Maj_deconv \"Maj_deconv*3600.0\"" cmd="replacecol Min_deconv \"Min_deconv*3600.0\"" cmd="replacecol PA \"PA+90\"" \
+                        ofmt=ascii out="$InputDir_model/$Image_name.cont.I.model.fits.ascii.reg"
+                # 
+                almacosmos_convert_ascii_table_to_ds9_region_file "$InputDir_model/$Image_name.cont.I.model.fits.ascii.reg" "$InputDir_model/$Image_name.cont.I.model.fits.ds9.reg" \
+                        -id 1 -ra 2 -dec 3 -maj 4 -min 5 -pa 6
+                
+                Cmd_load_regions=("" -frame 2 -regions load "$InputDir_model/$Image_name.cont.I.model.fits.ds9.reg")
+            fi
+        fi
+    fi
+    # 
+    echo ds9 -title "ds_${i}" "${Image_input[i]}" "$InputDir_model/$Image_name.cont.I.model.fits" "$InputDir_residual/$Image_name.cont.I.residual.fits" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes ${Cmd_load_regions[@]} -zoom to fit -saveimage "$OutputDir/$Image_name.cont.I.image.grey.png" -quit
+         ds9 -title "ds_${i}" "${Image_input[i]}" "$InputDir_model/$Image_name.cont.I.model.fits" "$InputDir_residual/$Image_name.cont.I.residual.fits" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes ${Cmd_load_regions[@]} -zoom to fit -saveimage "$OutputDir/$Image_name.cont.I.image.grey.png" -quit
+    echo ds9 -title "ds_${i}" "${Image_input[i]}" "$InputDir_model/$Image_name.cont.I.model.fits" "$InputDir_residual/$Image_name.cont.I.residual.fits" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes ${Cmd_load_regions[@]} -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.cont.I.image.aips0.png" -quit
+         ds9 -title "ds_${i}" "${Image_input[i]}" "$InputDir_model/$Image_name.cont.I.model.fits" "$InputDir_residual/$Image_name.cont.I.residual.fits" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes ${Cmd_load_regions[@]} -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.cont.I.image.aips0.png" -quit
+    # 
+    #break
+done
+
+echo ""
+#echo "Done!"
+

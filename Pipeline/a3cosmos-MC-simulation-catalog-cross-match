@@ -21,6 +21,8 @@ usage() {
     echo "Input: "
     echo "    Two catalogs, the first one is the simulation source catalog, and the second one is the source recovery catalog. "
     echo "    This code will try to recognize columns therein and output a cross-matched catalog. "
+    echo "    The simulation source catalog should at least contain: ID RA Dec Flux Maj Min RMS_noise image_file simu_name beam_Maj beam_Min"
+    echo "    And the source recovery catalog should at least contain: ID RA Dec Flux Flux_error Peak_Flux Maj Min image_file simu_name"
     echo ""
     echo "Output: "
     echo "    A cross-matched catalog with columns: id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam"
