@@ -3,7 +3,7 @@
 #SBATCH --mail-type=FAIL # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --time=24:00:00
 #SBATCH --mem=4000
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=2
 #SBATCH --output=log_Step_2_TASK_ID_%a_JOB_ID_%A.out
 
 # 
@@ -16,8 +16,10 @@
 # 
 # to run this script in Slurm job array mode
 # sbatch --array=1-1%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh test
-# sbatch --array=4-4%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh
+# sbatch --array=1-1%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh
+# sbatch --array=1-136%1 -N1 ~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-physically-motivated/do_simulation/a_dzliu_code_for_Simulation_on_ISAAC_Step_2_Simulate.sh
 # 
+
 echo "Hostname: "$(/bin/hostname)
 echo "PWD: "$(/bin/pwd)
 echo "SLURM_JOBID: "$SLURM_JOBID
@@ -121,7 +123,13 @@ fi
 
 for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
-    FitsName="${FitsNames[i]}"
+    # check FitsName not empty
+    if [[ x"${FitsNames[i]}" == x"" ]]; then
+        continue
+    fi
+    
+    # get FitsName without path and suffix
+    FitsName=$(basename "${FitsNames[i]}" | sed -e 's/\.cont.I.image.fits//g')
     
     # check parallel
     if [[ ! -z $SLURM_ARRAY_TASK_ID ]]; then
@@ -137,8 +145,12 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     fi
     
     # check non-COSMOS fields
-    if [[ "$FitsName" == *"2011.0.00539.S_SB1_GB1_MB1_ECDFS02_field3_sci.spw0_1_2_3"* ]] || \
-        [[ "$FitsName" == *"2011.0.00539.S_SB1_GB1_MB2_ELS01_field2_sci.spw0_1_2_3"* ]] ; then
+    if [[ "$FitsName" == "2011.0.00539.S_"*"_ECDFS02_"* ]] || \
+        [[ "$FitsName" == "2011.0.00539.S_"*"_ELS01_"* ]] || \
+        [[ "$FitsName" == "2011.0.00539.S_"*"_ADFS01_"* ]] || \
+        [[ "$FitsName" == "2011.0.00539.S_"*"_XMM01_"* ]] || \
+        [[ "$FitsName" == "2011.0.00742.S_"*"__RX_J094144.51+385434.8__"* ]] || \
+        [[ "$FitsName" == "2012.1.00596.S_"*"_PKS0215+015_"* ]] ; then
         echo "Warning! \"$FitsName\" is a non-COSMOS field! Skip and continue!"
         continue
     fi
@@ -148,24 +160,28 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         [[ "$FitsName" == *"2015.1.00695.S_SB1_GB1_MB1_COSMOS_824759_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.00695.S_SB2_GB1_MB1_COSMOS_823380_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.00695.S_SB3_GB1_MB1_COSMOS_822872_sci.spw0_1_2_3"* ]] || \
+        [[ "$FitsName" == *"2015.1.00695.S_SB3_GB1_MB1_COSMOS_822965_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.00695.S_SB4_GB1_MB1_COSMOS_810344_sci.spw0_1_2_3"* ]] || \
+        [[ "$FitsName" == *"2015.1.00695.S_SB4_GB1_MB1_COSMOS_839268_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.00928.S_SB3_GB1_MB1_LBG-1_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.01345.S_SB1_GB1_MB1_AzTEC1_sci.spw0_1_2_3"* ]] || \
+        [[ "$FitsName" == *"2015.1.01345.S_SB1_GB1_MB1_AzTEC4_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.01345.S_SB2_GB1_MB1_AzTEC8_sci.spw0_1_2_3"* ]] ; then
         echo "Warning! \"$FitsName\" is a very high-res. image! Skip and continue!"
         continue
     fi
     
     # check input image
+    # -- previous: "Photometry/ALMA_full_archive/Blind_Extraction_by_Benjamin/20170930/Output_Residual_Images/$FitsName.cont.I.residual.fits"
     for file_to_download in \
-        "Photometry/ALMA_full_archive/Blind_Extraction_by_Benjamin/20170930/Output_Residual_Images/$FitsName.cont.I.residual.fits" \
+        "Photometry/ALMA_full_archive/Blind_Extraction_by_Benjamin/$Data_Version/Output_Residual_Images/$FitsName.cont.I.residual.fits" \
         "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/$Data_Version/fits_cont_I_image/$FitsName.cont.I.image.fits" \
         "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/$Data_Version/fits_cont_I_image_pixel_histograms/$FitsName.cont.I.image.fits.pixel.statistics.txt" \
         "Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/$Data_Version/fits_cont_I_clean-beam/$FitsName.cont.I.clean-beam.fits"
         do
         if [[ ! -f "Input_images/$(basename $file_to_download)" ]]; then
             cd "Input_images/"
-            almacosmos_gdownload.py "$file_to_download"
+            #almacosmos_gdownload.py "$file_to_download" #<TODO># now we do not download from Google, but directly rsync to there.
             cd "../"
         fi
         if [[ ! -f "Input_images/$(basename $file_to_download)" ]]; then

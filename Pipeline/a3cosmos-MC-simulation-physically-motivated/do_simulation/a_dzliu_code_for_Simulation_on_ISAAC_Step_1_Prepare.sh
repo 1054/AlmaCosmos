@@ -58,7 +58,8 @@ pwd > "Input_Work_Dir.txt"
 bash -c "cd $Script_Dir; pwd" > "Input_Script_Dir.txt"
 echo "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
 
-Data_Version="v20170604"
+#Data_Version="v20170604"
+Data_Version="v20180102"
 echo "$Data_Version" > "Input_Data_Version.txt"
 
 
@@ -66,14 +67,24 @@ echo "$Data_Version" > "Input_Data_Version.txt"
 # 
 # download alma project list
 # 
-almacosmos_gdownload.py "list_project_rms_for_$Data_Version.sort_V.image_file.txt"
+#almacosmos_gdownload.py "list_project_rms_for_$Data_Version.sort_V.image_file.txt"
+#
+#cat "list_project_rms_for_$Data_Version.sort_V.image_file.txt" | grep -v '^#' | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 8 | sed -e 's/.cont.I.image.fits$//g' | grep -v '^2011.0.00064.S' > "list_projects.txt"
+#
+#if [[ ! -f "list_projects.txt" ]]; then
+#    echo "Error! Failed to get \"list_project_rms_for_$Data_Version.sort_V.image_file.txt\" from Google Drive and create \"list_projects.txt\"!"
+#    exit 1
+#fi
 
-cat "list_project_rms_for_$Data_Version.sort_V.image_file.txt" | grep -v '^#' | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 8 | sed -e 's/.cont.I.image.fits$//g' | grep -v '^2011.0.00064.S' > "list_projects.txt"
-
-if [[ ! -f "list_projects.txt" ]]; then
-    echo "Error! Failed to get \"list_project_rms_for_$Data_Version.sort_V.image_file.txt\" from Google Drive and create \"list_projects.txt\"!"
-    exit 1
-fi
+# 20180117 
+# list_projects.txt copied from "fits_file_list_sorted_excluded_very_high-res_selected_unique_Mem_ous_id.txt", 
+# but excluded non-COSMOS images: 
+# 2011.0.00539.S_*_ECDFS02_*
+# 2011.0.00539.S_*_ELS01_*
+# 2011.0.00539.S_*_ADFS01_*
+# 2011.0.00539.S_*_XMM01_*
+# 2011.0.00742.S_*__RX_J094144.51+385434.8__*
+# 2012.1.00596.S_*_PKS0215+015_*
 
 echo "Prepared \"$(pwd)/list_projects.txt\"!"
 echo "Prepared \"$(pwd)/Input_*.txt\"!"
