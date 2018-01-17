@@ -89,7 +89,7 @@ echo almacosmos_recognize_fits_table_column_names.py "$InputCat" -print-all
 almacosmos_recognize_fits_table_column_names.py "$InputCat" -print-all > "$OutputName.cols.txt"
 fi
 
-for col_type in ID Flux Flux_error Peak_Flux Maj Min RMS_noise image_file simu_name beam_Maj beam_Min; do
+for col_type in ID Flux Flux_error Peak_Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min beam_PA; do
     cat_sim_col_name=$(cat "$OutputName.cols.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g' | cut -d ';' -f 1)
     cat_rec_col_name=$(cat "$OutputName.cols.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g' | cut -d ';' -f 2)
     eval "cat_sim_${col_type}=\"${cat_sim_col_name}\""
@@ -103,11 +103,11 @@ done
 # The simulation catalog must contain these columns: ID RA Dec Flux Maj Min RMS_noise image_file simu_name (no Flux_error)
 # And the recovery catalog must contain: ID RA Dec Flux Flux_error Maj Min image_file simu_name (no RMS_noise)
 # 
-for col_type in ID Flux Maj Min RMS_noise image_file simu_name beam_Maj beam_Min; do
+for col_type in ID Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min beam_PA; do
     eval "cat_sim_col_name=\"\${cat_sim_$col_type}\""
     if [[ "$cat_sim_col_name" == "__NULL__" ]]; then echo "Error! Failed to find $col_type column from the simulation catalog \"$InputCat1\"!"; exit; fi
 done
-for col_type in ID Flux Flux_error Peak_Flux Maj Min image_file simu_name; do
+for col_type in ID Flux Flux_error Peak_Flux Maj Min PA image_file simu_name; do
     eval "cat_rec_col_name=\"\${cat_rec_$col_type}\""
     if [[ "$cat_rec_col_name" == "__NULL__" ]]; then echo "Error! Failed to find $col_type column from the recovery catalog \"$InputCat2\"!"; exit; fi
 done
@@ -119,28 +119,34 @@ done
 topcat -stilts tpipe \
                 in="$InputCat" \
                 ifmt="$InputFormat" \
-                cmd="addcol id \"${cat_sim_ID}\"" \
+                cmd="addcol ID \"${cat_sim_ID}\"" \
                 cmd="addcol S_in \"${cat_sim_Flux}\"" \
                 cmd="addcol S_out \"${cat_rec_Flux}\"" \
                 cmd="addcol e_S_out \"${cat_rec_Flux_error}\"" \
                 cmd="addcol S_peak \"${cat_rec_Peak_Flux}\"" \
                 cmd="addcol S_res \"${cat_rec_Peak_Flux}*0.0\"" \
                 cmd="addcol noise \"${cat_sim_RMS_noise}\"" \
-                cmd="addcol Maj_in \"sqrt(${cat_sim_Maj}*${cat_sim_Maj}/(${cat_sim_beam_Maj}*${cat_sim_beam_Min}))\"" \
-                cmd="addcol Min_in \"sqrt(${cat_sim_Min}*${cat_sim_Min}/(${cat_sim_beam_Maj}*${cat_sim_beam_Min}))\"" \
-                cmd="addcol Maj_out \"sqrt((${cat_rec_Maj}*${cat_rec_Maj})+(${cat_sim_beam_Maj}*${cat_sim_beam_Min}))\"" \
-                cmd="addcol Min_out \"sqrt((${cat_rec_Min}*${cat_rec_Min})+(${cat_sim_beam_Maj}*${cat_sim_beam_Min}))\"" \
+                cmd="addcol Maj_in \"${cat_sim_Maj}\"" \
+                cmd="addcol Min_in \"${cat_sim_Min}\"" \
+                cmd="addcol PA_in \"${cat_sim_PA}\"" \
+                cmd="addcol Maj_out \"${cat_rec_Maj}\"" \
+                cmd="addcol Min_out \"${cat_rec_Min}\"" \
+                cmd="addcol PA_out \"${cat_rec_PA}\"" \
                 cmd="addcol Maj_beam \"${cat_sim_beam_Maj}\"" \
                 cmd="addcol Min_beam \"${cat_sim_beam_Min}\"" \
-                cmd="addcol flag_matched             \"(${cat_sim_Flux}>0  && ${cat_rec_Flux}>0)\"" \
-                cmd="addcol flag_nonmatched_missed   \"(${cat_sim_Flux}>0  && ${cat_rec_Flux}<=0)\"" \
+                cmd="addcol PA_beam \"${cat_sim_beam_PA}\"" \
+                cmd="addcol flag_matched \"(${cat_sim_Flux}>0 && ${cat_rec_Flux}>0)\"" \
+                cmd="addcol flag_nonmatched_missed \"(${cat_sim_Flux}>0 && ${cat_rec_Flux}<=0)\"" \
                 cmd="addcol flag_nonmatched_spurious \"(${cat_sim_Flux}<=0 && ${cat_rec_Flux}>0)\"" \
-                cmd="addcol flag_null                \"(${cat_sim_Flux}<=0 && ${cat_rec_Flux}<=0)\"" \
-                cmd="addcol image_file_STR           \"${cat_sim_image_file}\"" \
-                cmd="addcol simu_name_STR            \"${cat_sim_simu_name}\"" \
+                cmd="addcol flag_null \"(${cat_sim_Flux}<=0 && ${cat_rec_Flux}<=0)\"" \
+                cmd="addcol image_file_STR \"${cat_sim_image_file}\"" \
+                cmd="addcol simu_name_STR \"${cat_sim_simu_name}\"" \
                 ofmt="fits" \
                 out="${OutputName}_all_entries.fits" \
                 | tee "${OutputName}_all_entries.stilts.log"
+                # 
+                # note that we do the convolution to sizes
+                # 
 
 echo "Output to \"${OutputName}_all_entries.fits\"!"
 
@@ -159,7 +165,7 @@ echo "Output to \"${OutputName}_all_entries.fits\"!"
 topcat -stilts tpipe \
                 in="${OutputName}_all_entries.fits" \
                 cmd="select \"(flag_matched && S_peak>0 && e_S_out>0)\"" \
-                cmd="keepcols \"id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
+                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
                 ofmt="ascii" \
                 out="${OutputName}_only_matches.txt" \
                 | tee "${OutputName}_only_matches.stilts.log"

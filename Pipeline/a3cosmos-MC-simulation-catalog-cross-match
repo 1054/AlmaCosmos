@@ -184,6 +184,7 @@ if [[ "$cat_rec_RMS_noise" == "__NULL__" ]]; then
                 ofmt="fits" \
                 out="$OutputDir/cat_rec_with_sim_RMS_noise.fits" \
                 | tee "$OutputDir/cat_rec_with_sim_RMS_noise.stilts.log"
+    cat_rec_RMS_noise="${cat_sim_RMS_noise}_from_sim_image"
 else
     cp "$InputCat2" "$OutputDir/cat_rec_with_sim_RMS_noise.fits"
 fi
@@ -231,14 +232,15 @@ topcat -stilts tmatchn \
                 join2=always \
                 matcher="sky+exact+exact" \
                 params=1.0 \
-                multimode=group \
+                multimode=pairs \
+                iref=1 \
                 ocmd="addcol id \"${cat_sim_ID}_from_sim_cat\"" \
                 ocmd="addcol S_in \"${cat_sim_Flux}_from_sim_cat\"" \
                 ocmd="addcol S_out \"${cat_rec_Flux}_from_rec_cat\"" \
                 ocmd="addcol e_S_out \"${cat_rec_Flux_error}_from_rec_cat\"" \
                 ocmd="addcol S_peak \"${cat_rec_Peak_Flux}_from_rec_cat\"" \
                 ocmd="addcol S_res \"${cat_rec_Peak_Flux}_from_rec_cat*0.0\"" \
-                ocmd="addcol noise \"(!NULL_${cat_sim_RMS_noise}_from_sim_cat ? ${cat_sim_RMS_noise}_from_sim_cat : ${cat_sim_RMS_noise}_from_sim_image_from_rec_cat)\"" \
+                ocmd="addcol noise \"(!NULL_${cat_sim_RMS_noise}_from_sim_cat ? ${cat_sim_RMS_noise}_from_sim_cat : ${cat_rec_RMS_noise}_from_rec_cat)\"" \
                 ocmd="addcol Maj_in \"sqrt(${cat_sim_Maj}_from_sim_cat*${cat_sim_Maj}_from_sim_cat/(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
                 ocmd="addcol Min_in \"sqrt(${cat_sim_Min}_from_sim_cat*${cat_sim_Min}_from_sim_cat/(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
                 ocmd="addcol Maj_out \"sqrt((${cat_rec_Maj}_from_rec_cat*${cat_rec_Maj}_from_rec_cat)+(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \

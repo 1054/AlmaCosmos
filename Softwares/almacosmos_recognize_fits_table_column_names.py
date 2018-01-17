@@ -170,6 +170,14 @@ def recognize_Min(input_str_list):
                                          )
 
 
+def recognize_PA(input_str_list):
+    return match_str_list_to_pattern_list( input_str_list, 
+                                           [ '^(PA|pa)($|[^a-zA-Z]+.*$)', 
+                                             '^(sim|rec)_(PA|pa)$', 
+                                           ]
+                                         )
+
+
 def recognize_RMS_noise(input_str_list):
     return match_str_list_to_pattern_list( input_str_list, 
                                            [ '^(rms|noise|rms noise)($|[^a-zA-Z]+.*$)', 
@@ -187,7 +195,7 @@ def recognize_image_file(input_str_list):
 
 def recognize_simu_name(input_str_list):
     return match_str_list_to_pattern_list( input_str_list, 
-                                           [ '^(Simu|simu|Sim|sim|sim_image_name)$', 
+                                           [ '^(Simu|simu|Sim|sim|sim_image_name|sim_dir_str)$', 
                                            ]
                                          )
 
@@ -206,6 +214,15 @@ def recognize_beam_Min(input_str_list):
                                            [ '^(beam|Beam|BEAM)[_](min|Min|minor|Minor)', 
                                              '^(min|Min|minor|Minor)[_](beam|Beam|BEAM)$', 
                                              '^(sim|rec)_(beam|Beam|BEAM)_(Min|min)$', 
+                                           ]
+                                         )
+
+
+def recognize_beam_PA(input_str_list):
+    return match_str_list_to_pattern_list( input_str_list, 
+                                           [ '^(beam|Beam|BEAM)[_](PA|pa)', 
+                                             '^(PA|pa)[_](beam|Beam|BEAM)$', 
+                                             '^(sim|rec)_(beam|Beam|BEAM)_(PA|pa)$', 
                                            ]
                                          )
 
@@ -290,11 +307,13 @@ cols['Total_Flux'] = recognize_total_flux(col_names)
 cols['Total_Flux_error'] = recognize_total_flux_error(col_names)
 cols['Maj'] = recognize_Maj(col_names)
 cols['Min'] = recognize_Min(col_names)
+cols['PA'] = recognize_PA(col_names)
 cols['RMS_noise'] = recognize_RMS_noise(col_names)
 cols['image_file'] = recognize_image_file(col_names)
 cols['simu_name'] = recognize_simu_name(col_names)
 cols['beam_Maj'] = recognize_beam_Maj(col_names)
 cols['beam_Min'] = recognize_beam_Min(col_names)
+cols['beam_PA'] = recognize_beam_PA(col_names)
 #print(cols)
 
 
