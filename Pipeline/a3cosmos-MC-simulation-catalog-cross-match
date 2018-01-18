@@ -33,14 +33,14 @@ usage() {
 # 
 # Check supermongo and necessary files
 # 
-if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
-    echo "Error! Supermongo was not installed!"
-    exit 1
-fi
-if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
-    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
-    exit 1
-fi
+#if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+#    echo "Error! Supermongo was not installed!"
+#    exit 1
+#fi
+#if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+#    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+#    exit 1
+#fi
 if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
     echo "Error! Topcat was not installed!"
     exit 1
@@ -102,13 +102,12 @@ else
         OutputDir="datatable_CrossMatched" # default value
     fi
 fi
-
-echo "InputCat1 = $InputCat1" | tee "$OutputDir/cat_sim_input.txt"
-echo "InputCat2 = $InputCat2" | tee "$OutputDir/cat_rec_input.txt"
-echo "OutputDir = $OutputDir"
 check_input_file "$InputCat1"
 check_input_file "$InputCat2"
 create_output_dir "$OutputDir"
+echo "InputCat1 = $InputCat1" | tee "$OutputDir/cat_sim_input.txt"
+echo "InputCat2 = $InputCat2" | tee "$OutputDir/cat_rec_input.txt"
+echo "OutputDir = $OutputDir"
 
 
 # 
@@ -120,7 +119,7 @@ almacosmos_recognize_fits_table_column_names.py "$InputCat1" "${almacosmos_cmd_m
 echo almacosmos_recognize_fits_table_column_names.py "$InputCat2" "${almacosmos_cmd_misc_opts[@]}"
 almacosmos_recognize_fits_table_column_names.py "$InputCat2" "${almacosmos_cmd_misc_opts[@]}" > "$OutputDir/cat_rec_colums.txt"
 
-for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min RMS_noise image_file simu_name beam_Maj beam_Min; do
+for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min; do
     cat_sim_col_name=$(cat "$OutputDir/cat_sim_colums.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g')
     cat_rec_col_name=$(cat "$OutputDir/cat_rec_colums.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g')
     eval "cat_sim_${col_type}=\"${cat_sim_col_name}\""
@@ -152,11 +151,11 @@ done
 # The simulation catalog must contain these columns: ID RA Dec Flux Maj Min RMS_noise image_file simu_name (no Flux_error)
 # And the recovery catalog must contain: ID RA Dec Flux Flux_error Maj Min image_file simu_name (no RMS_noise)
 # 
-for col_type in ID RA Dec Flux Maj Min RMS_noise image_file simu_name beam_Maj beam_Min; do
+for col_type in ID RA Dec Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min; do
     eval "cat_sim_col_name=\"\${cat_sim_$col_type}\""
     if [[ "$cat_sim_col_name" == "__NULL__" ]]; then echo "Error! Failed to find $col_type column from the simulation catalog \"$InputCat1\"!"; exit; fi
 done
-for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min image_file simu_name; do
+for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min PA image_file simu_name; do
     eval "cat_rec_col_name=\"\${cat_rec_$col_type}\""
     if [[ "$cat_rec_col_name" == "__NULL__" ]]; then echo "Error! Failed to find $col_type column from the recovery catalog \"$InputCat2\"!"; exit; fi
 done
@@ -241,12 +240,15 @@ topcat -stilts tmatchn \
                 ocmd="addcol S_peak \"${cat_rec_Peak_Flux}_from_rec_cat\"" \
                 ocmd="addcol S_res \"${cat_rec_Peak_Flux}_from_rec_cat*0.0\"" \
                 ocmd="addcol noise \"(!NULL_${cat_sim_RMS_noise}_from_sim_cat ? ${cat_sim_RMS_noise}_from_sim_cat : ${cat_rec_RMS_noise}_from_rec_cat)\"" \
-                ocmd="addcol Maj_in \"sqrt(${cat_sim_Maj}_from_sim_cat*${cat_sim_Maj}_from_sim_cat/(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
-                ocmd="addcol Min_in \"sqrt(${cat_sim_Min}_from_sim_cat*${cat_sim_Min}_from_sim_cat/(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
-                ocmd="addcol Maj_out \"sqrt((${cat_rec_Maj}_from_rec_cat*${cat_rec_Maj}_from_rec_cat)+(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
-                ocmd="addcol Min_out \"sqrt((${cat_rec_Min}_from_rec_cat*${cat_rec_Min}_from_rec_cat)+(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
+                ocmd="addcol Maj_in \"${cat_sim_Maj}_from_sim_cat\"" \
+                ocmd="addcol Min_in \"${cat_sim_Min}_from_sim_cat\"" \
+                ocmd="addcol PA_in \"${cat_sim_PA}_from_sim_cat\"" \
+                ocmd="addcol Maj_out \"${cat_rec_Maj}_from_rec_cat\"" \
+                ocmd="addcol Min_out \"${cat_rec_Min}_from_rec_cat\"" \
+                ocmd="addcol PA_out \"${cat_rec_PA}_from_rec_cat\"" \
                 ocmd="addcol Maj_beam \"${cat_sim_beam_Maj}_from_sim_cat\"" \
                 ocmd="addcol Min_beam \"${cat_sim_beam_Min}_from_sim_cat\"" \
+                ocmd="addcol PA_beam \"${cat_sim_beam_PA}_from_sim_cat\"" \
                 ocmd="addcol flag_matched             \"(!NULL_${cat_sim_image_file}_from_sim_cat && !NULL_${cat_rec_image_file}_from_rec_cat)\"" \
                 ocmd="addcol flag_nonmatched_missed   \"(!NULL_${cat_sim_image_file}_from_sim_cat &&  NULL_${cat_rec_image_file}_from_rec_cat)\"" \
                 ocmd="addcol flag_nonmatched_spurious \"( NULL_${cat_sim_image_file}_from_sim_cat && !NULL_${cat_rec_image_file}_from_rec_cat)\"" \
@@ -256,6 +258,13 @@ topcat -stilts tmatchn \
                 ofmt="fits" \
                 out="$OutputDir/datatable_CrossMatched_all_entries.fits" \
                 | tee "$OutputDir/datatable_CrossMatched_all_entries.stilts.log"
+                # ocmd="addcol Maj_in \"sqrt(${cat_sim_Maj}_from_sim_cat*${cat_sim_Maj}_from_sim_cat/(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
+                # ocmd="addcol Min_in \"sqrt(${cat_sim_Min}_from_sim_cat*${cat_sim_Min}_from_sim_cat/(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
+                # ocmd="addcol Maj_out \"sqrt((${cat_rec_Maj}_from_rec_cat*${cat_rec_Maj}_from_rec_cat)+(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
+                # ocmd="addcol Min_out \"sqrt((${cat_rec_Min}_from_rec_cat*${cat_rec_Min}_from_rec_cat)+(${cat_sim_beam_Maj}_from_sim_cat*${cat_sim_beam_Min}_from_sim_cat))\"" \
+                # ocmd="addcol Maj_beam \"${cat_sim_beam_Maj}_from_sim_cat\"" \
+                # ocmd="addcol Min_beam \"${cat_sim_beam_Min}_from_sim_cat\"" \
+                
 
 echo "Output to \"$OutputDir/datatable_CrossMatched_all_entries.fits\"!"
 
@@ -275,19 +284,17 @@ topcat -stilts tpipe \
                 in="$OutputDir/datatable_CrossMatched_all_entries.fits" \
                 cmd="select \"(flag_matched)\"" \
                 cmd="keepcols \"id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
-                ofmt="ascii" \
-                out="$OutputDir/datatable_CrossMatched_only_matches.txt" \
+                ofmt="fits" \
+                out="$OutputDir/datatable_CrossMatched_only_matches.fits" \
                 | tee "$OutputDir/datatable_CrossMatched_only_matches.stilts.log"
 
-echo "Output to \"$OutputDir/datatable_CrossMatched_only_matches.txt\"!"
+echo "Output to \"$OutputDir/datatable_CrossMatched_only_matches.fits\"!"
+
+echo "Please also be careful about the unit of each column!!"
 
 
-# 
-# mkdir Statistics
-# 
-#mkdir Statistics
-#cp "$OutputDir/datatable_CrossMatched_only_matches.txt" Statistics/
-#echo "Output to \"Statistics/datatable_CrossMatched_only_matches.txt\"!"
+
+
 
 
 
