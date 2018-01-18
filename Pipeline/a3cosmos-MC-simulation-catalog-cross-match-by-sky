@@ -99,7 +99,7 @@ else
     if [[ ${#almacosmos_cmd_misc_args[@]} -ge 3 ]]; then
         OutputDir="${almacosmos_cmd_misc_args[2]}"
     else
-        OutputDir="datatable_CrossMatched" # default value
+        OutputDir="datatable_CrossMatched_by_Sky" # default value
     fi
 fi
 check_input_file "$InputCat1"
