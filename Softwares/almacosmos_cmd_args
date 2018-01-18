@@ -95,7 +95,7 @@ while [[ iarg_iarg -le $# ]]; do
             #echo "declare -a $iarg_name"
             declare -a $iarg_name
             #echo "almacosmos_cmd_main_opts+=(\"$iarg_text\")"
-            almacosmos_cmd_main_opts+=("$iarg_text")
+            almacosmos_cmd_main_opts+=("$iarg_text") # all the opts. An opt is an input string starting with "-" or "--". 
         fi
     elif [[ ! -z "$iarg_name" ]]; then
         eval "$iarg_name+=(\"${!iarg_iarg}\")"

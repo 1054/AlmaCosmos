@@ -17,12 +17,18 @@ usage() {
     echo "        -sim \"sim_cat.fits\" \\"
     echo "        -rec \"rec_cat.fits\" \\"
     echo "        -out \"output_dir\""
+    echo "    "
+    echo "    a3cosmos-MC-simulation-catalog-cross-match \\"
+    echo "        -sim \"sim_cat.fits\" \\"
+    echo "        -rec \"rec_cat.fits\" \\"
+    echo "        -out \"output_dir\" \\"
+    echo "        -by-id"
     echo ""
     echo "Input: "
     echo "    Two catalogs, the first one is the simulation source catalog, and the second one is the source recovery catalog. "
     echo "    This code will try to recognize columns therein and output a cross-matched catalog. "
-    echo "    The simulation source catalog should at least contain: ID RA Dec Flux Maj Min RMS_noise image_file simu_name beam_Maj beam_Min"
-    echo "    And the source recovery catalog should at least contain: ID RA Dec Flux Flux_error Peak_Flux Maj Min image_file simu_name"
+    echo "    The simulation source catalog should at least contain: ID RA Dec Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min beam_PA"
+    echo "    And the source recovery catalog should at least contain: ID RA Dec Flux Flux_error Peak_Flux Maj Min PA image_file simu_name"
     echo ""
     echo "Output: "
     echo "    A cross-matched catalog with columns: id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam"
@@ -62,6 +68,38 @@ fi
 # 
 # Read user input
 # 
+# We call
+#     source almacosmos_cmd_args "$@"
+# to parse the user inputs, so the user inputs are
+# stored into variables named like: 
+#     almacosmos_cmd_XXX
+#     almacosmos_cmd_YYY
+# where XXX and YYY are user input options, 
+# for example, if user inputs "-sim" "aaa.fits"
+# then the "almacosmos_cmd_args" script will create
+# a variable named "almacosmos_cmd_sim" and it contains
+# the string "aaa.fits"
+# 
+# To check whether user has input something, 
+# just check if variable "almacosmos_cmd_XXX" 
+# exists or not. 
+# 
+# Here we check whether user has input "-sim", 
+# "-sim-cat" or "-simulation-catalog" by checking
+# the exsitence of the variables:
+#     almacosmos_cmd_sim
+#     almacosmos_cmd_sim_cat
+#     almacosmos_cmd_simulation_catalog
+# 
+# User can also input something without an option, 
+# which is like: 
+#     a3cosmos-MC-simulation-catalog-cross-match "aaa.fits" "bbb.fits"
+# rather than:
+#     a3cosmos-MC-simulation-catalog-cross-match -sim "aaa.fits" -rec "bbb.fits"
+# If this happens, the "almacosmos_cmd_args" script
+# will store all args (inputs) without opts (options) into 
+# a list named "almacosmos_cmd_misc_args". 
+# 
 source almacosmos_cmd_args "$@"
 if [[ ! -z "$almacosmos_cmd_sim" ]]; then
     InputCat1="$almacosmos_cmd_sim"
@@ -98,16 +136,56 @@ elif [[ ! -z "$almacosmos_cmd_out" ]]; then
 else
     if [[ ${#almacosmos_cmd_misc_args[@]} -ge 3 ]]; then
         OutputDir="${almacosmos_cmd_misc_args[2]}"
+    fi
+fi
+
+
+
+# 
+# Check user input options
+# 
+# We call
+#     source almacosmos_cmd_args "$@"
+# to parse the user inputs, so the user options are
+# stored into a list named: 
+#     almacosmos_cmd_misc_opts
+# To check whether user has input an option, 
+# we loop the items in almacosmos_cmd_misc_opts and 
+# check if a specific option is included in there.
+# 
+crossmatch_by_id=0
+for (( i = 0; i < ${#almacosmos_cmd_misc_opts[@]}; i++ )); do
+    if [[ "${almacosmos_cmd_misc_opts[i]}" == *"-by-id" ]] || \
+        [[ "${almacosmos_cmd_misc_opts[i]}" == *"-by-ID" ]]; then
+        crossmatch_by_id=1
+    fi
+done
+
+
+
+# 
+# Set default OutputDir
+# 
+if [[ x"$OutputDir" == x"" ]]; then
+    if [[ $crossmatch_by_id -eq 1 ]]; then
+        OutputDir="datatable_CrossMatched_by_ID" # default value
     else
         OutputDir="datatable_CrossMatched" # default value
     fi
 fi
+
+
+
+# 
+# Check input files and prepare output directory
+# 
 check_input_file "$InputCat1"
 check_input_file "$InputCat2"
 create_output_dir "$OutputDir"
 echo "InputCat1 = $InputCat1" | tee "$OutputDir/cat_sim_input.txt"
 echo "InputCat2 = $InputCat2" | tee "$OutputDir/cat_rec_input.txt"
 echo "OutputDir = $OutputDir"
+
 
 
 # 
@@ -119,7 +197,7 @@ almacosmos_recognize_fits_table_column_names.py "$InputCat1" "${almacosmos_cmd_m
 echo almacosmos_recognize_fits_table_column_names.py "$InputCat2" "${almacosmos_cmd_misc_opts[@]}"
 almacosmos_recognize_fits_table_column_names.py "$InputCat2" "${almacosmos_cmd_misc_opts[@]}" > "$OutputDir/cat_rec_colums.txt"
 
-for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min; do
+for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min beam_PA; do
     cat_sim_col_name=$(cat "$OutputDir/cat_sim_colums.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g')
     cat_rec_col_name=$(cat "$OutputDir/cat_rec_colums.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g')
     eval "cat_sim_${col_type}=\"${cat_sim_col_name}\""
@@ -148,8 +226,8 @@ done
 
 # 
 # Check columns
-# The simulation catalog must contain these columns: ID RA Dec Flux Maj Min RMS_noise image_file simu_name (no Flux_error)
-# And the recovery catalog must contain: ID RA Dec Flux Flux_error Maj Min image_file simu_name (no RMS_noise)
+# The simulation catalog must contain these columns: ID RA Dec Flux Maj Min PA RMS_noise image_file simu_name (no Flux_error)
+# And the recovery catalog must contain: ID RA Dec Flux Flux_error Maj Min PA image_file simu_name (no RMS_noise)
 # 
 for col_type in ID RA Dec Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min; do
     eval "cat_sim_col_name=\"\${cat_sim_$col_type}\""
@@ -159,6 +237,7 @@ for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min PA image_file simu_n
     eval "cat_rec_col_name=\"\${cat_rec_$col_type}\""
     if [[ "$cat_rec_col_name" == "__NULL__" ]]; then echo "Error! Failed to find $col_type column from the recovery catalog \"$InputCat2\"!"; exit; fi
 done
+
 
 
 # 
@@ -193,6 +272,7 @@ cp "$InputCat1" "$OutputDir/cat_sim.fits"
 echo "Output to \"$OutputDir/cat_sim.fits\"!"
 
 
+
 # 
 # Test
 # 
@@ -215,40 +295,51 @@ echo "Output to \"$OutputDir/cat_sim.fits\"!"
 #                out="$OutputDir/cat_sim.test.1.txt"
 
 
+
 # 
 # Then cross-match all entries
 # 
+in1="$OutputDir/cat_rec_with_sim_RMS_noise.fits"
+in2="$OutputDir/cat_sim.fits"
+values1="$cat_rec_RA $cat_rec_Dec $cat_rec_image_file $cat_rec_simu_name"
+values2="$cat_sim_RA $cat_sim_Dec $cat_sim_image_file $cat_sim_simu_name"
+matcher="sky+exact+exact"
+if [[ $crossmatch_by_id -eq 1 ]]; then
+values1="$cat_rec_ID $cat_rec_image_file $cat_rec_simu_name"
+values2="$cat_sim_ID $cat_sim_image_file $cat_sim_simu_name"
+matcher="exact+exact+exact"
+fi
 topcat -stilts tmatchn \
                 nin=2 \
-                in1="$OutputDir/cat_rec_with_sim_RMS_noise.fits" \
-                values1="$cat_rec_RA $cat_rec_Dec $cat_rec_image_file $cat_rec_simu_name" \
+                in1="$in1" \
+                values1="$values1" \
                 suffix1="_from_rec_cat" \
-                in2="$OutputDir/cat_sim.fits" \
-                values2="$cat_sim_RA $cat_sim_Dec $cat_sim_image_file $cat_sim_simu_name" \
+                in2="$in2" \
+                values2="$values2" \
                 suffix2="_from_sim_cat" \
                 fixcols=all \
                 join1=always \
                 join2=always \
-                matcher="sky+exact+exact" \
+                matcher="$matcher" \
                 params=1.0 \
                 multimode=pairs \
                 iref=1 \
-                ocmd="addcol id \"${cat_sim_ID}_from_sim_cat\"" \
-                ocmd="addcol S_in \"${cat_sim_Flux}_from_sim_cat\"" \
-                ocmd="addcol S_out \"${cat_rec_Flux}_from_rec_cat\"" \
-                ocmd="addcol e_S_out \"${cat_rec_Flux_error}_from_rec_cat\"" \
-                ocmd="addcol S_peak \"${cat_rec_Peak_Flux}_from_rec_cat\"" \
-                ocmd="addcol S_res \"${cat_rec_Peak_Flux}_from_rec_cat*0.0\"" \
-                ocmd="addcol noise \"(!NULL_${cat_sim_RMS_noise}_from_sim_cat ? ${cat_sim_RMS_noise}_from_sim_cat : ${cat_rec_RMS_noise}_from_rec_cat)\"" \
-                ocmd="addcol Maj_in \"${cat_sim_Maj}_from_sim_cat\"" \
-                ocmd="addcol Min_in \"${cat_sim_Min}_from_sim_cat\"" \
-                ocmd="addcol PA_in \"${cat_sim_PA}_from_sim_cat\"" \
-                ocmd="addcol Maj_out \"${cat_rec_Maj}_from_rec_cat\"" \
-                ocmd="addcol Min_out \"${cat_rec_Min}_from_rec_cat\"" \
-                ocmd="addcol PA_out \"${cat_rec_PA}_from_rec_cat\"" \
-                ocmd="addcol Maj_beam \"${cat_sim_beam_Maj}_from_sim_cat\"" \
-                ocmd="addcol Min_beam \"${cat_sim_beam_Min}_from_sim_cat\"" \
-                ocmd="addcol PA_beam \"${cat_sim_beam_PA}_from_sim_cat\"" \
+                ocmd="addcol ID \"${cat_sim_ID}_from_sim_cat\"" \
+                ocmd="addcol S_in -units \"mJy\" \"${cat_sim_Flux}_from_sim_cat\"" \
+                ocmd="addcol S_out -units \"mJy\" \"${cat_rec_Flux}_from_rec_cat\"" \
+                ocmd="addcol e_S_out -units \"mJy\" \"${cat_rec_Flux_error}_from_rec_cat\"" \
+                ocmd="addcol S_peak -units \"mJy\" \"${cat_rec_Peak_Flux}_from_rec_cat\"" \
+                ocmd="addcol S_res -units \"mJy\" \"${cat_rec_Peak_Flux}_from_rec_cat*0.0\"" \
+                ocmd="addcol noise -units \"mJy\" \"(!NULL_${cat_sim_RMS_noise}_from_sim_cat ? ${cat_sim_RMS_noise}_from_sim_cat : ${cat_rec_RMS_noise}_from_rec_cat)\"" \
+                ocmd="addcol Maj_in -units \"arcsec\" -descriptions \"Deconvolved.\" \"${cat_sim_Maj}_from_sim_cat\"" \
+                ocmd="addcol Min_in -units \"arcsec\" -descriptions \"Deconvolved.\" \"${cat_sim_Min}_from_sim_cat\"" \
+                ocmd="addcol PA_in -units \"degree\" \"${cat_sim_PA}_from_sim_cat\"" \
+                ocmd="addcol Maj_out -units \"arcsec\" -descriptions \"Deconvolved.\" \"${cat_rec_Maj}_from_rec_cat\"" \
+                ocmd="addcol Min_out -units \"arcsec\" -descriptions \"Deconvolved.\" \"${cat_rec_Min}_from_rec_cat\"" \
+                ocmd="addcol PA_out -units \"degree\" \"${cat_rec_PA}_from_rec_cat\"" \
+                ocmd="addcol Maj_beam -units \"arcsec\" -descriptions \"Clean beam.\" \"${cat_sim_beam_Maj}_from_sim_cat\"" \
+                ocmd="addcol Min_beam -units \"arcsec\" -descriptions \"Clean beam.\" \"${cat_sim_beam_Min}_from_sim_cat\"" \
+                ocmd="addcol PA_beam -units \"degree\" \"${cat_sim_beam_PA}_from_sim_cat\"" \
                 ocmd="addcol flag_matched             \"(!NULL_${cat_sim_image_file}_from_sim_cat && !NULL_${cat_rec_image_file}_from_rec_cat)\"" \
                 ocmd="addcol flag_nonmatched_missed   \"(!NULL_${cat_sim_image_file}_from_sim_cat &&  NULL_${cat_rec_image_file}_from_rec_cat)\"" \
                 ocmd="addcol flag_nonmatched_spurious \"( NULL_${cat_sim_image_file}_from_sim_cat && !NULL_${cat_rec_image_file}_from_rec_cat)\"" \
@@ -283,7 +374,7 @@ echo "Output to \"$OutputDir/datatable_CrossMatched_all_entries.fits\"!"
 topcat -stilts tpipe \
                 in="$OutputDir/datatable_CrossMatched_all_entries.fits" \
                 cmd="select \"(flag_matched)\"" \
-                cmd="keepcols \"id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
+                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam image_file_STR simu_name_STR\"" \
                 ofmt="fits" \
                 out="$OutputDir/datatable_CrossMatched_only_matches.fits" \
                 | tee "$OutputDir/datatable_CrossMatched_only_matches.stilts.log"
@@ -291,6 +382,10 @@ topcat -stilts tpipe \
 echo "Output to \"$OutputDir/datatable_CrossMatched_only_matches.fits\"!"
 
 echo "Please also be careful about the unit of each column!!"
+
+
+
+
 
 
 
