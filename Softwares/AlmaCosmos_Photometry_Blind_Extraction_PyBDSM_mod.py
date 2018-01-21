@@ -54,6 +54,8 @@ if platform.system() == 'Darwin':
     CDLL(os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_pybdsf'+os.sep+'mac_python2.7'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.13-py2.7-macosx-10.12-x86_64.egg'+os.sep+'bdsf'+os.sep+'_cbdsm.so')
     # 
 else:
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages')
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux_mod'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux_mod'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages')
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux_mod'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-linux-x86_64.egg')
@@ -75,13 +77,14 @@ if len(sys.argv) <= 1:
     print('Usage: ')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Images.fits"                              # providing a FITS image')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Images.fits" "ALMA_Image_List.txt"        # or providing text file which contains a list of FITS images')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -rms 0.00015              # we can also input a constant rms value for all input FITS images')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -ngmax 1                  # we can also constrain the maximum number of fitted Gaussian to one Island')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -agmax 1                  # we can also set the maximum area of a Gaussian in unit of beam area, above which the Gaussian will be flagged/discarded.')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -flag_maxsize_fwhm 0.3    # we can also set the minimum size ratio of an island to a Gaussian therein, below which the Gaussian will be flagged/discarded. Gaussian can be larger than the island, so this ratio can be <1. Larger value will lead to more flagged Gaussians.')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -incl-empty               # we can also specify that we want to output empty islands which do not contain any valid Gaussian and have negative Source_id.')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -verbose                  # verbose output.')
-    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -start 1 -end 100         # we can specify the start end range for the input fits files including listed fits files in any input text file.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --rms-value 0.00015       # we can also input a constant rms value for all input FITS images')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -rms 0.00015              # (same as above)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --max-gaussian-number 1   # we can also constrain the maximum number of fitted Gaussian to one Island')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -ngmax 1                  # (same as above)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --max-gaussian-area 1     # we can also set the maximum area of a Gaussian in unit of beam area, above which the Gaussian will be flagged/discarded.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -agmax 1                  # (same as above)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --include-empty-islands   # we can also specify that we want to output empty islands which do not contain any valid Gaussian and have negative Source_id.')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -incl-empty               # (same as above)')
     sys.exit()
 
 

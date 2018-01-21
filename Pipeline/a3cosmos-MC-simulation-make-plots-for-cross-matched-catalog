@@ -2,11 +2,55 @@
 # 
 
 # 
+# Usage
+# 
+function usage() {
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog \"datatable_CrossMatched_by_ID/datatable_CrossMatched_only_matches.txt\""
+    echo "    a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog \"datatable_CrossMatched_by_ID/datatable_CrossMatched_only_matches.txt\" -out \"Statistics_quick_plots\""
+    echo ""
+    exit
+}
+
+
+
+# 
+# Check necessary files
+# 
+if [[ ! -f $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/SETUP.bash" ]]; then
+    echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/SETUP.bash\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+fi
+if [[ ! -f $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/almacosmos_cmd_args" ]]; then
+    echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/almacosmos_cmd_args\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+fi
+source $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/SETUP.bash"
+
+
+# 
+# Read user input
+# We use the bash script "almacosmos_cmd_args" to understand the user iput:
+# if user input "-XXX YYY ZZZ" then the script will create a bash array 'almacosmos_cmd_XXX' with values (YYY ZZZ).
+# if user input "XXX YYY -ZZZ" then the script will create a bash array 'almacosmos_cmd_misc_args' with content (XXX YYY) and 'almacosmos_cmd_misc_opts' with content (-ZZZ)
+# 
+source $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/almacosmos_cmd_args" "$@"
+if [[ ${#almacosmos_cmd_misc_args[@]} -eq 0 ]]; then
+    usage
+    exit
+fi
+
+
+# 
 # User-defined input and output file names
 # 
-crossmatched_cat="datatable_CrossMatched/datatable_CrossMatched_only_matches.txt" # the output of step_1_*.sh
+crossmatched_cat="${almacosmos_cmd_misc_args[0]}" # datatable_CrossMatched_by_ID/datatable_CrossMatched_only_matches.txt # the output of step_1_*.sh
 crossmatched_cat_fmt="ascii"
+if [[ ${#almacosmos_cmd_out[@]} -gt 0 ]]; then
+output_dir="${almacosmos_cmd_out[0]}"
+else
 output_dir="Statistics_quick_plots"
+fi
 
 
 # 
@@ -39,6 +83,23 @@ function check_input_file() {
         fi
     done
 }
+function almacosmos_cmd_has_opt() {
+    local i=1
+    if [[ $# -ge 1 ]]; then
+        if [[ ${#almacosmos_cmd_misc_opts[@]} -eq 0 ]]; then
+            echo 1; return
+        else
+            for (( i=0; i<${#almacosmos_cmd_misc_opts[@]}; i++ )); do
+                #echo "almacosmos_cmd_has_opt: checking $1 (vs "$(echo "${almacosmos_cmd_misc_opts[i]}" | sed -e 's/^--//g' | sed -e 's/^-//g' | tr '[:upper:]' '[:lower:]')")"
+                if [[ $(echo "${almacosmos_cmd_misc_opts[i]}" | sed -e 's/^--//g' | sed -e 's/^-//g' | tr '[:upper:]' '[:lower:]') == "$1" ]]; then
+                    echo 1; return
+                fi
+            done
+        fi
+    fi
+    echo 0; return
+}
+
 
 
 # 
@@ -55,11 +116,16 @@ fi
 # 
 # Run topcat
 # 
+# 
+# Tips: auxquant=30
+# 
 
 # 
 # plot scatter flux-flux comparison, with data points colored by cat_2 SNR ftotal
 # 
+if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
+echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
@@ -69,7 +135,7 @@ topcat -stilts plot2plane \
                 ylog=true \
                 \
                 auxvisible=true auxlabel="S/N \ total \ (rec.)" \
-                auxfunc=log \
+                auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
                 leglabel_1="flux comparison" \
@@ -94,11 +160,57 @@ topcat -stilts plot2plane \
                 texttype=latex \
                 omode=out \
                 out="$output_dir/Plot_scatter_S_in_vs_S_out.pdf"
+fi
+
+# 
+# plot scatter flux-flux comparison, with data points colored by cat_2 SNR peak
+# 
+if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
+margin=(100 70 100 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{total,\,sim.}" \
+                ylabel="\Large S_{total,\,rec.}" \
+                xlog=true \
+                ylog=true \
+                \
+                auxvisible=true auxlabel="S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                auxmap=rdbu auxflip=true auxfunc=log \
+                \
+                layer_1=Mark \
+                leglabel_1="flux comparison" \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select (S_out/e_S_out>0.1)" \
+                icmd_1="sort (S_peak/noise)" \
+                x_1="S_in" \
+                y_1="S_out" \
+                aux="(S_peak/noise)" \
+                shading_1=aux \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(x)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='1:1' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_scatter_S_in_vs_S_out_colored_by_S_peak.pdf"
+fi
 
 # 
 # plot (S_in-S_out)/e_S_out histogram
 # 
+if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
 margin=(100 70 20 20) # left, bottom, right, top
+echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
@@ -106,9 +218,10 @@ topcat -stilts plot2plane \
                 ylabel="\Large N" \
                 xlog=false \
                 ylog=true \
-                xmin=-5 xmax=5 \
+                xmin=-5 xmax=5 ymin=1e-3 ymax=2e1\
                 \
                 layer_1=histogram \
+                normalise_1=maximum \
                 thick_1=1 \
                 barform_1=semi_filled \
                 color_1=blue \
@@ -117,7 +230,7 @@ topcat -stilts plot2plane \
                 x_1="(S_in-S_out)/(e_S_out)" \
                 \
                 layer_3=function \
-                fexpr_3='(2e4*exp(-x*x/2.0))' \
+                fexpr_3='(exp(-x*x/2.0))' \
                 color_3=black \
                 antialias_3=true \
                 thick_3=1 \
@@ -129,21 +242,88 @@ topcat -stilts plot2plane \
                 texttype=latex \
                 omode=out \
                 out="$output_dir/Plot_histogram_S_in_S_out_e_S_out.pdf"
+fi
+
+# 
+# plot (S_in-S_out)/e_S_out histogram (S/N>10)
+# 
+if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
+margin=(100 70 20 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
+                ylabel="\Large N" \
+                xlog=false \
+                ylog=true \
+                xmin=-5 xmax=5 ymin=1e-3 ymax=2e1\
+                \
+                layer_1=histogram \
+                normalise_1=maximum \
+                thick_1=1 \
+                barform_1=semi_filled \
+                color_1=blue \
+                transparency_1=0 \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select \"(S_peak/noise>=10)\"" \
+                x_1="(S_in-S_out)/(e_S_out)" \
+                leglabel_1='\small $SNR_{peak} \ge 10$' \
+                \
+                layer_2=histogram \
+                normalise_2=maximum \
+                thick_2=1 \
+                barform_2=semi_filled \
+                color_2=yellow \
+                transparency_2=0 \
+                in_2="$crossmatched_cat" ifmt_2="$crossmatched_cat_fmt" \
+                icmd_2="select \"(S_peak/noise>=5 && S_peak/noise<10)\"" \
+                x_2="(S_in-S_out)/(e_S_out)" \
+                leglabel_2='\small $5 \le SNR_{peak} < 10$' \
+                \
+                layer_3=histogram \
+                normalise_3=maximum \
+                thick_3=1 \
+                barform_3=semi_filled \
+                color_3=red \
+                transparency_3=0 \
+                in_3="$crossmatched_cat" ifmt_3="$crossmatched_cat_fmt" \
+                icmd_3="select \"(S_peak/noise>=3 && S_peak/noise<5)\"" \
+                x_3="(S_in-S_out)/(e_S_out)" \
+                leglabel_3='\small $3 \le SNR_{peak} < 5$' \
+                \
+                layer_4=function \
+                fexpr_4='(exp(-x*x/2.0))' \
+                color_4=black \
+                antialias_4=true \
+                thick_4=1 \
+                leglabel_4='\small Gaussian \ ($\sigma=1$)' \
+                \
+                seq='_4,_3,_2,_1' \
+                legend=true \
+                legpos='0.02,0.98' \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_histogram_S_in_S_out_e_S_out_colored_by_SNR_peak.pdf"
+fi
 
 # 
 # plot scatter (S_in-S_out)/S_in vs S_in/noise
 # 
+if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
+echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\,sim.}/{\footnotesize rms\,noise}" \
+                xlabel="\Large S_{total,\,sim.}/\sigma_{rms\ noise}" \
                 ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,sim.}" \
-                xlog=true \
-                ylog=false ymin=-5 ymax=5 \
+                xlog=true xmin=1 \
+                ylog=false ymin=-2 ymax=2 \
                 \
                 auxvisible=true auxlabel="S/N \ total \ (rec.)" \
-                auxfunc=log \
+                auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
                 leglabel_1="flux comparison" \
@@ -168,21 +348,24 @@ topcat -stilts plot2plane \
                 texttype=latex \
                 omode=out \
                 out="$output_dir/Plot_scatter_rel_S_diff_vs_S_in.pdf"
+fi
 
 # 
 # plot scatter (S_in-S_out)/S_out vs S_out/noise
 # 
+if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
+echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\,rec.}/{\footnotesize rms\,noise}" \
+                xlabel="\Large S_{total,\,rec.}/\sigma_{rms\ noise}" \
                 ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,rec.}" \
-                xlog=true \
-                ylog=false ymin=-5 ymax=5 \
+                xlog=true xmin=1 \
+                ylog=false ymin=-2 ymax=2 \
                 \
                 auxvisible=true auxlabel="S/N \ total \ (rec.)" \
-                auxfunc=log \
+                auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
                 leglabel_1="flux comparison" \
@@ -207,6 +390,187 @@ topcat -stilts plot2plane \
                 texttype=latex \
                 omode=out \
                 out="$output_dir/Plot_scatter_rel_S_diff_vs_S_out.pdf"
+fi
+
+
+
+
+
+# 
+# plot scatter (S_in-S_out)/e_S_out vs S_in/noise
+# 
+if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
+margin=(100 70 100 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{total,\,sim.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/\sigma_{S_{total,\,sim.}}" \
+                xlog=true xmin=1 \
+                ylog=false ymin=-5 ymax=5 \
+                \
+                auxvisible=true auxlabel="S/N \ total \ (rec.)" \
+                auxmap=rdbu auxflip=true auxfunc=log \
+                \
+                layer_1=Mark \
+                leglabel_1="flux comparison" \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select (S_out/e_S_out>0.1)" \
+                x_1="S_in/noise" \
+                y_1="(S_in-S_out)/e_S_out" \
+                aux="(S_out/e_S_out)" \
+                shading_1=aux \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(0.0)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_scatter_norm_S_diff_vs_S_in.pdf"
+fi
+
+# 
+# plot scatter (S_in-S_out)/e_S_out vs S_out/noise
+# 
+if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
+margin=(100 70 100 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{total,\,rec.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/\sigma_{S_{total,\,rec.}}" \
+                xlog=true xmin=1 \
+                ylog=false ymin=-5 ymax=5 \
+                \
+                auxvisible=true auxlabel="S/N \ total \ (rec.)" \
+                auxmap=rdbu auxflip=true auxfunc=log \
+                \
+                layer_1=Mark \
+                leglabel_1="flux comparison" \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select (S_out/e_S_out>0.1)" \
+                x_1="S_out/noise" \
+                y_1="(S_in-S_out)/e_S_out" \
+                aux="(S_out/e_S_out)" \
+                shading_1=aux \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(0.0)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_scatter_norm_S_diff_vs_S_out.pdf"
+fi
+
+
+
+
+
+
+
+# 
+# plot scatter (S_in-S_out)/e_S_out vs S_peak/noise (colored by S_peak)
+# 
+if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
+margin=(100 70 100 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/\sigma_{S_{total,\,rec.}}" \
+                xlog=true xmin=1 \
+                ylog=false ymin=-5 ymax=5 \
+                \
+                auxvisible=true auxlabel="S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                auxmap=rdbu auxflip=true auxfunc=log \
+                \
+                layer_1=Mark \
+                leglabel_1="flux comparison" \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select (S_peak/noise>1)" \
+                icmd_1="sort (S_peak/noise)" \
+                x_1="S_peak/noise" \
+                y_1="(S_in-S_out)/e_S_out" \
+                aux="(S_peak/noise)" \
+                shading_1=aux \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(0.0)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_scatter_norm_S_diff_vs_S_peak_colored_by_S_peak.pdf"
+fi
+
+# 
+# plot scatter (S_in-S_out)/e_S_out vs S_peak/noise (colored by Maj_out)
+# 
+if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
+margin=(100 70 100 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/\sigma_{S_{total,\,rec.}}" \
+                xlog=true xmin=1 \
+                ylog=false ymin=-5 ymax=5 \
+                \
+                auxvisible=true auxlabel="Maj_{convol.,\,rec.}/Maj_{beam}" \
+                auxmap=rdbu auxflip=true auxfunc=linear \
+                \
+                layer_1=Mark \
+                leglabel_1="flux comparison" \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select (S_peak/noise>1)" \
+                icmd_1="sort (Maj_out/Maj_beam)" \
+                x_1="S_peak/noise" \
+                y_1="(S_in-S_out)/e_S_out" \
+                aux="(Maj_out/Maj_beam)" \
+                shading_1=aux \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(0.0)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_scatter_norm_S_diff_vs_S_peak_colored_by_Maj.pdf"
+fi
 
 
 

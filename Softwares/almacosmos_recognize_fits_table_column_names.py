@@ -132,6 +132,17 @@ def recognize_total_flux_error(input_str_list):
                                          )
 
 
+def recognize_residual_flux(input_str_list):
+    return match_str_list_to_pattern_list( input_str_list, 
+                                           [ '^(residual|Residual|Res|RES)_(flux|Flux|FLUX)($|[^a-zA-Z]+.*$)', 
+                                             '^(.*)[_](residual|Residual|Res|RES)_(flux|Flux|FLUX)$', 
+                                             '^(.*)[_](residual|Residual|Res|RES)_(flux|Flux|FLUX)[_]([a-zA-Z]*)$', 
+                                             '^(fres|f_res|fresidual|f_residual)($|[^a-zA-Z]+.*$)', 
+                                             '^(sim|rec)_(fres|f_res|fresidual|f_residual)$', 
+                                           ]
+                                         )
+
+
 def recognize_ra(input_str_list):
     return match_str_list_to_pattern_list( input_str_list, 
                                            [ '^(ra|RA)($|[^a-zA-Z]+.*$)', 
@@ -305,6 +316,7 @@ cols['Peak_Flux'] = recognize_peak_flux(col_names)
 cols['Peak_Flux_error'] = recognize_peak_flux_error(col_names)
 cols['Total_Flux'] = recognize_total_flux(col_names)
 cols['Total_Flux_error'] = recognize_total_flux_error(col_names)
+cols['Residual_Flux'] = recognize_residual_flux(col_names)
 cols['Maj'] = recognize_Maj(col_names)
 cols['Min'] = recognize_Min(col_names)
 cols['PA'] = recognize_PA(col_names)

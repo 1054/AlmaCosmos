@@ -197,7 +197,7 @@ almacosmos_recognize_fits_table_column_names.py "$InputCat1" "${almacosmos_cmd_m
 echo almacosmos_recognize_fits_table_column_names.py "$InputCat2" "${almacosmos_cmd_misc_opts[@]}"
 almacosmos_recognize_fits_table_column_names.py "$InputCat2" "${almacosmos_cmd_misc_opts[@]}" > "$OutputDir/cat_rec_colums.txt"
 
-for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min beam_PA; do
+for col_type in ID RA Dec Flux Flux_error Peak_Flux Residual_Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min beam_PA; do
     cat_sim_col_name=$(cat "$OutputDir/cat_sim_colums.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g')
     cat_rec_col_name=$(cat "$OutputDir/cat_rec_colums.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g')
     eval "cat_sim_${col_type}=\"${cat_sim_col_name}\""
@@ -237,6 +237,10 @@ for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min PA image_file simu_n
     eval "cat_rec_col_name=\"\${cat_rec_$col_type}\""
     if [[ "$cat_rec_col_name" == "__NULL__" ]]; then echo "Error! Failed to find $col_type column from the recovery catalog \"$InputCat2\"!"; exit; fi
 done
+
+if [[ "$cat_rec_Residual_Flux" == "__NULL__" ]]; then
+cat_rec_Residual_Flux="0.0*$cat_rec_Peak_Flux"
+fi
 
 
 
@@ -331,7 +335,7 @@ topcat -stilts tmatchn \
                 ocmd="addcol S_out -units \"mJy\" \"${cat_rec_Flux}_from_rec_cat\"" \
                 ocmd="addcol e_S_out -units \"mJy\" \"${cat_rec_Flux_error}_from_rec_cat\"" \
                 ocmd="addcol S_peak -units \"mJy\" \"${cat_rec_Peak_Flux}_from_rec_cat\"" \
-                ocmd="addcol S_res -units \"mJy\" \"${cat_rec_Peak_Flux}_from_rec_cat*0.0\"" \
+                ocmd="addcol S_res -units \"mJy\" \"${cat_rec_Residual_Flux}_from_rec_cat\"" \
                 ocmd="addcol noise -units \"mJy\" \"(!NULL_${cat_sim_RMS_noise}_from_sim_cat ? ${cat_sim_RMS_noise}_from_sim_cat : ${cat_rec_RMS_noise}_from_rec_cat)\"" \
                 ocmd="addcol Maj_in -units \"arcsec\" -desc \"Deconvolved.\" \"${cat_sim_Maj}_from_sim_cat\"" \
                 ocmd="addcol Min_in -units \"arcsec\" -desc \"Deconvolved.\" \"${cat_sim_Min}_from_sim_cat\"" \

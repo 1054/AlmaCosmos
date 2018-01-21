@@ -119,11 +119,12 @@ else:
 
 if 'Maj_out' in catalog_columns:
     data_Maj_out = catalog.getColumn('Maj_out')
-elif 'Maj_deconv' in catalog_columns and 'beam_maj' in catalog_columns and 'beam_min' in catalog_columns:
+elif 'Maj_deconv' in catalog_columns and 'beam_maj' in catalog_columns and 'beam_min' in catalog_columns and 'beam_PA' in catalog_columns:
     data_Maj_deconv = catalog.getColumn('Maj_deconv') * 3600.0 # convert to arcsec
     data_Maj_beam = catalog.getColumn('beam_maj')
     data_Min_beam = catalog.getColumn('beam_min')
-    data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + (data_Maj_beam * data_Min_beam))
+    data_PA_beam = catalog.getColumn('beam_PA')
+    data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + (data_Maj_beam * data_Min_beam)) #<TODO># 
 else:
     print('Error! Could not find "Maj_out" column!')
     sys.exit()

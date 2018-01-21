@@ -11,7 +11,7 @@ user_define_param_grid_using_galfit_flux_error
     set npar = 2
     set par1 = e_S_out/noise
     set par1_str = 'log e_{S_{out}}/\\sigma_{rms noise}'
-    set par1_grid = {0 0.1 1 2 3 5 10 100}
+    set par1_grid = {0 0.1 1 2 3 5 10 100 200 500 1000}
     set par2 = Maj_out
     set par2_str = 'FWHM_{source}'
     set par2_grid = <0 0.1 0.5 $(0.5+0.1) 1.0 2.0 3.0 4.0 5.0 100>
@@ -22,7 +22,7 @@ user_define_param_grid_no_galfit_error
     set npar = 2
     set par1 = S_peak/noise
     set par1_str = 'S_{peak}/\\sigma_{rms noise}'
-    set par1_grid = {1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5 6.0 7.0 8.0 10. 20. 50. 100}
+    set par1_grid = {1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5 6.0 7.0 8.0 10. 20. 50. 100 200 500 1000}
     set par2 = Maj_out/Maj_beam
     set par2_str = 'FWHM_{source}/FWHM_{beam}'
     set par2_grid = {0.00 0.25 0.50 1.00 1.50 2.00 2.50 3.00 3.50 5.00}
@@ -41,11 +41,12 @@ read_data_file
     # Read data file
     load rfile.sm
     data $inputdata
-    read {id 1 S_in 2 S_out 3 e_S_out 4 S_peak 5 S_res 6 noise 7 Maj_in 8 Min_in 9 Maj_out 10 Min_out 11 Maj_beam 12 Min_beam 13}
+    #read {id 1 S_in 2 S_out 3 e_S_out 4 S_peak 5 S_res 6 noise 7 Maj_in 8 Min_in 9 Maj_out 10 Min_out 11 Maj_beam 12 Min_beam 13}
+    read {id 1 S_in 2 S_out 3 e_S_out 4 S_peak 5 S_res 6 noise 7 Maj_in 8 Min_in 9 PA_in 10 Maj_out 11 Min_out 12 PA_out 13 Maj_beam 14 Min_beam 15 PA_beam 16}
     # 
     # check variables 
     define check_columns 1
-    foreach var {id Maj_in Min_in S_in S_out e_S_out S_peak S_res noise Maj_out Min_out Maj_beam Min_beam} {
+    foreach var {id Maj_in Min_in PA_in S_in S_out e_S_out S_peak S_res noise Maj_out Min_out PA_out Maj_beam Min_beam PA_beam} {
         if(!is_vector($var)) {
             define check_columns 0
             print 'Data column \"$var\" was not found in the input file!\n' {}
@@ -55,7 +56,7 @@ read_data_file
     # 
     # filter bad sources which have zero S_peak (at the edge of the image)
     set filter = (e_S_out>=0)
-    foreach var {id Maj_in Min_in S_in S_out e_S_out S_peak S_res noise Maj_out Min_out Maj_beam Min_beam} {
+    foreach var {id Maj_in Min_in PA_in S_in S_out e_S_out S_peak S_res noise Maj_out Min_out PA_out Maj_beam Min_beam PA_beam} {
         set $var = $var if(filter)
     }
     # 
@@ -138,6 +139,9 @@ compute_statistics_in_param_grid_cells
     declare cell_mean 0.f # (S_in - S_out) mean
     declare cell_median 0.f # (S_in - S_out) median
     declare cell_scatter 0.f # (S_in - S_out) scatter
+    declare cell_noi_mean 0.f # (S_in - S_out)/noise mean
+    declare cell_noi_median 0.f # (S_in - S_out)/noise median
+    declare cell_noi_scatter 0.f # (S_in - S_out)/noise scatter
     declare cell_rel_mean 0.f # (S_in - S_out)/S_in mean
     declare cell_rel_median 0.f # (S_in - S_out)/S_in median
     declare cell_rel_scatter 0.f # (S_in - S_out)/S_in scatter
@@ -145,6 +149,7 @@ compute_statistics_in_param_grid_cells
     declare cell_rel_scatter_H68 0.f # (S_in - S_out)/S_in scatter
     declare cell_rel_scatter_68 0.f # (S_in - S_out)/S_in scatter, the smaller one of L68 and H68
     declare cell_e_S_out_median 0.f # (e_S_out) median
+    declare cell_rms_noise_median 0.f # (noise) median
     do i = 1, npar {
         declare cell_par$i""_median 0.f
         #declare cell_par$i""_mean 0.f
@@ -226,10 +231,11 @@ compute_statistics_in_param_grid_cells
         if(sum(bin_selection)>=cell_minimum_data_points) {
             # 
             # get data arrays in each grid cell bin
-            foreach var {S_in S_out e_S_out} {set bin_$var = $var if(bin_selection)}
+            foreach var {S_in S_out e_S_out noise} {set bin_$var = $var if(bin_selection)}
             do i = 1, npar {set bin_par$i = par$i if(bin_selection)}
             set bin_rel_S_diff = (bin_S_in-bin_S_out)/bin_S_in
             set bin_S_diff = (bin_S_in-bin_S_out)
+            set bin_noi_S_diff = (bin_S_in-bin_S_out)/bin_noise #<20180121># 
             # 
             # store param median in each bin
             do i = 1, npar {
@@ -244,6 +250,20 @@ compute_statistics_in_param_grid_cells
             set cell_mean = cell_mean concat calc_bin_mean
             set cell_median = cell_median concat calc_bin_median
             set cell_scatter = cell_scatter concat calc_bin_sigma
+            # 
+            # 
+            # 
+            # store (S_in-S_out) median -- noise-normalized fbias
+            calc_mean_median bin_noi_S_diff
+            set cell_noi_mean = cell_noi_mean concat calc_bin_mean
+            set cell_noi_median = cell_noi_median concat calc_bin_median
+            # 
+            # store (S_in-S_out) median -- noise-normalized scatter after the removal fbias
+            set bin_noi_S_diff_unbias = bin_noi_S_diff - calc_bin_median
+            calc_mean_median bin_noi_S_diff_unbias
+            set cell_noi_scatter = cell_noi_scatter concat calc_bin_sigma
+            # 
+            # 
             # 
             # store (S_in-S_out)/S_in median -- relative fbias
             calc_mean_median bin_rel_S_diff 10.0
@@ -276,9 +296,15 @@ compute_statistics_in_param_grid_cells
                 }
             }
             # 
+            # 
+            # 
             # store (S_in-S_out)/S_in scatter -- mean galfit flux error
             calc_mean_median bin_e_S_out 10.0
             set cell_e_S_out_median = cell_e_S_out_median concat calc_bin_median
+            # 
+            # store cell_rms_noise_median
+            calc_mean_median bin_noise 10.0
+            set cell_rms_noise_median = cell_rms_noise_median concat calc_bin_median
             # 
             # store cell_id
             set cell_id = cell_id concat ($icell)
@@ -309,7 +335,11 @@ compute_statistics_in_param_grid_cells
     # 
     # write 
     load wfile.sm
-    set wfile_vectors = {cell_id cell_size cell_mean cell_median cell_scatter cell_rel_mean cell_rel_median cell_rel_scatter cell_rel_scatter_L68 cell_rel_scatter_H68 cell_rel_scatter_68 cell_e_S_out_median}
+    set wfile_vectors = {cell_id cell_size cell_mean cell_median cell_scatter}
+    set wfile_vectors = wfile_vectors concat {cell_noi_mean cell_noi_median cell_noi_scatter}
+    set wfile_vectors = wfile_vectors concat {cell_rel_mean cell_rel_median cell_rel_scatter}
+    set wfile_vectors = wfile_vectors concat {cell_rel_scatter_L68 cell_rel_scatter_H68 cell_rel_scatter_68}
+    set wfile_vectors = wfile_vectors concat {cell_e_S_out_median cell_rms_noise_median}
     do i = 1, npar { set wfile_vectors = wfile_vectors concat <cell_par$i""_median> }
     wfile $outdir"/datatable_correction.txt"
     # 

@@ -70,7 +70,8 @@ if [[ ! -f "$OutputDir/simu_data_input_0.txt" ]]; then
     topcat -stilts tpipe \
                 in="$InputCat" \
                 ifmt="$InputFmt" \
-                cmd="keepcols \"id S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
+                cmd="select \"S_peak/noise>=3.0\"" \
+                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam image_file_STR simu_name_STR\"" \
                 ofmt=ascii \
                 out="$OutputDir/simu_data_input_0.txt"
 fi
@@ -118,10 +119,18 @@ rm -rf sim_diagram_output_no_galfit_flux_error/* 2>/dev/null
 
 cp "simu_data_input_0.txt" "simu_data_input.txt"
 
+
+# 
+# The first step is to make bins in the parameter space and compute (S_in-S_out) statistics in each bin.
+# For doing this, we use the code "almacosmos_plot_simu_stats.sm".
 # 
 echo "macro read almacosmos_calc_simu_stats.sm calc_simu_stats" | sm | tee "log_calc_simu_stats_1.log"
 echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_1.log"
 
+
+# 
+# Then, we use python code "almacosmos_fit_simu_corr_fbias.py" to fit a function to the flux bias.
+# 
 cd sim_diagram_output_no_galfit_flux_error
 $(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_fbias.py "datatable_correction.txt" | tee "log_fit_simu_corr_fbias_1.log"
 cd ..
@@ -130,6 +139,11 @@ if [[ ! -f "sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm" 
     exit 1
 fi
 
+
+# 
+# After fitted the flux bias correction functions, we re-plot.
+# For doing this, we use the code "almacosmos_plot_simu_stats.sm".
+# 
 echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_1.log"
 cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_peak_SNR.pdf Plot_rel_S_diff_vs_peak_SNR_1.pdf
 cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_FWHM_maj.pdf Plot_rel_S_diff_vs_FWHM_maj_1.pdf
@@ -137,23 +151,46 @@ cp sim_diagram_output_no_galfit_flux_error/datatable_correction.txt datatable_co
 cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm best_fit_function_fbias_1.sm
 
 
+# 
+# After fitted the flux bias correction functions, we apply the correction to the input data "simu_data_input.txt"
+# For doing this, we use the code "almacosmos_apply_simu_corr.sm". #<TODO># SWITCH TO PYTHON
+# 
 echo "macro read almacosmos_apply_simu_corr.sm apply_simulation_based_corrections simu_data_input.txt" | sm | tee "log_apply_simu_corr_1.log"
 cp sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt apply_simu_corr_fbias_1.txt
 
 
 # 
+# Backup current stage files
+# 
 cp "simu_data_input_corrected.txt" "simu_data_input_1.txt"
 cp "simu_data_input_corrected.txt" "simu_data_input.txt"
 
+
+
+
+
+
+# 
+# Then, after fitted the flux bias correction functions, we re-compute (S_in-S_out) statistics in each bin.
 # 
 echo "macro read almacosmos_calc_simu_stats.sm calc_simu_stats" | sm | tee "log_calc_simu_stats_2.log"
 echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_2.log"
 
+
+# 
+# Then, after flux bias corrected, we use python code "almacosmos_fit_simu_corr_fbias.py" again to fit a 2D function to the flux bias, which should be very small, 
+# And we fit use the python code "almacosmos_fit_simu_corr_ecorr.py" to fit a 2D function to the flux errors.
+# 
 cd sim_diagram_output_no_galfit_flux_error
 $(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_ecorr.py "datatable_correction.txt" | tee "log_fit_simu_corr_ecorr_1.log"
 $(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools/almacosmos_fit_simu_corr_fbias.py "datatable_correction.txt" | tee "log_fit_simu_corr_fbias_1.log"
 cd ..
 
+
+# 
+# After re-fitted the flux bias correction function and the flux error function, we do re-plot.
+# For doing this, we use the code "almacosmos_plot_simu_stats.sm". It will check if there are exsiting "best_fit_function_ecorr.sm" and "best_fit_function_fbias.sm" and plot them.
+# 
 echo "macro read almacosmos_plot_simu_stats.sm plot_simu_stats" | sm | tee "log_plot_simu_stats_2.log"
 cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_peak_SNR.pdf Plot_rel_S_diff_vs_peak_SNR_2.pdf
 cp sim_diagram_output_no_galfit_flux_error/Plot_rel_S_diff_vs_FWHM_maj.pdf Plot_rel_S_diff_vs_FWHM_maj_2.pdf
@@ -162,15 +199,31 @@ cp sim_diagram_output_no_galfit_flux_error/best_fit_function_fbias.sm best_fit_f
 cp sim_diagram_output_no_galfit_flux_error/best_fit_function_ecorr.sm best_fit_function_ecorr_2.sm
 
 
+# 
+# After re-fitted the flux bias correction function and the flux error function, we apply the correction to the input data "simu_data_input.txt"
+# For doing this, we use the code "almacosmos_apply_simu_corr.sm". #<TODO># SWITCH TO PYTHON
+# 
 echo "macro read almacosmos_apply_simu_corr.sm apply_simulation_based_corrections simu_data_input.txt" | sm | tee "log_apply_simu_corr_2.log"
 cp sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt apply_simu_corr_fbias_2.txt
 cp sim_diagram_output_no_galfit_flux_error/apply_simu_corr_ecorr.txt apply_simu_corr_ecorr_2.txt
 
 
 # 
+# Backup current stage files
+# 
 cp "simu_data_input_corrected.txt" "simu_data_input_2.txt"
 
 
+
+
+
+
+
+
+
+
+# 
+# Final checks
 # 
 if [[ -f "simu_data_input_0.txt" ]] && [[ -f "simu_data_input_1.txt" ]] && [[ -f "simu_data_input_2.txt" ]] && \
     [[ -f "sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt" ]] && \
@@ -198,6 +251,15 @@ else
 fi
 
 
+
+
+
+
+
+
+# 
+# Finally, make some plots with topcat
+# 
 if [[ -f "simu_data_input_0.txt" ]] && [[ -f "simu_data_input_1.txt" ]] && [[ -f "simu_data_input_2.txt" ]] && \
     [[ -f "sim_diagram_output_no_galfit_flux_error/apply_simu_corr_fbias.txt" ]] && \
     [[ -f "sim_diagram_output_no_galfit_flux_error/apply_simu_corr_ecorr.txt" ]] && \
@@ -339,11 +401,12 @@ if [[ -f "simu_data_input_0.txt" ]] && [[ -f "simu_data_input_1.txt" ]] && [[ -f
                 xlabel="\Large (S_{total,\,sim.}-S_{total,\,rec.}^{corr.})/\sigma_{S_{total,\,rec.}^{corr.}}" \
                 ylabel="\Large N" \
                 xlog=false xmin=-8 xmax=8 \
-                ylog=true ymin=0.6 ymax=5e4 \
+                ylog=true ymin=1e-3 ymax=1e2 \
                 \
                 layer1=histogram \
                 thick1=1 \
                 barform1=semi_filled \
+                normalise1=maximum \
                 color1=blue \
                 transparency1=0 \
                 binsize1="0.1" \
@@ -355,6 +418,7 @@ if [[ -f "simu_data_input_0.txt" ]] && [[ -f "simu_data_input_1.txt" ]] && [[ -f
                 layer2=histogram \
                 thick2=1 \
                 barform2=semi_filled \
+                normalise2=maximum \
                 color2=red \
                 transparency2=0 \
                 binsize2="0.1" \
@@ -366,6 +430,7 @@ if [[ -f "simu_data_input_0.txt" ]] && [[ -f "simu_data_input_1.txt" ]] && [[ -f
                 layer22=histogram \
                 thick22=1 \
                 barform22=semi_filled \
+                normalise22=maximum \
                 color22=orange \
                 transparency22=0 \
                 binsize22="0.1" \
@@ -375,7 +440,7 @@ if [[ -f "simu_data_input_0.txt" ]] && [[ -f "simu_data_input_1.txt" ]] && [[ -f
                 x22="(S_in-S_out_corr)/(e_S_out)" \
                 \
                 layer3=function \
-                fexpr3='250*exp(-x*x/2)' \
+                fexpr3='exp(-x*x/2)' \
                 color3=black \
                 antialias3=true \
                 thick3=2 \
