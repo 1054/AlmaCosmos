@@ -119,7 +119,8 @@ for alma_image_name in alma_image_list:
             sim_x = idl.CENX
             sim_y = idl.CENY
             sim_pixsc = idl.PIXSCL * 3600.0 # arcsec
-            sim_Maj = idl.SOURCE_SIZE * idl.BEAMSIZE_PIX * sim_pixsc # arcsec
+            #sim_Maj = idl.SOURCE_SIZE * idl.BEAMSIZE_PIX * sim_pixsc # arcsec #<20171229><BUG># SOURCE_SIZE = sim_Size * BEAMSIZE_PIX
+            sim_Maj = idl.SOURCE_SIZE * sim_pixsc # arcsec #<20171229><BUG># SOURCE_SIZE = sim_Size * BEAMSIZE_PIX
             sim_Min = sim_Maj * idl.AR # arcsec
             sim_PA = idl.PA # degree
             sim_fpeak = idl.PEAK_FLUX # Jy/beam

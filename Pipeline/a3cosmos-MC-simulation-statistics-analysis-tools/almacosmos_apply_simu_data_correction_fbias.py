@@ -36,12 +36,8 @@ while i < len(sys.argv):
 
 
 # 
-# TODO
-#input_catalog_file = 'catalog.txt'
-
-
-# 
 # Check input data file
+# 
 if not os.path.isfile(input_catalog_file):
     print('Error! "%s" was not found!'%(input_catalog_file))
     sys.exit()
@@ -49,6 +45,7 @@ if not os.path.isfile(input_catalog_file):
 
 # 
 # Import python packages
+# 
 import numpy
 import astropy
 import astropy.io.ascii as asciitable
@@ -56,17 +53,11 @@ import scipy.optimize
 import matplotlib
 from matplotlib import pyplot
 from pprint import pprint
-#sys.path.append(os.path.dirname(sys.argv[0])+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
-#from CrabTable import *
-#sys.path.append(os.path.dirname(sys.argv[0])+os.sep+'lib_python_dzliu'+os.sep+'crabplot')
-#from CrabPlot import *
-#sys.path.append(os.path.dirname(sys.argv[0])+os.sep+'lib_python_dzliu'+os.sep+'crabcurvefit')
-#from CrabCurveFit import *
-sys.path.insert(1,'/Users/dzliu/Softwares/Python/lib/crab/crabtable')
+sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
 from CrabTable import *
-sys.path.insert(1,'/Users/dzliu/Softwares/Python/lib/crab/crabplot')
+sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabplot')
 from CrabPlot import *
-sys.path.insert(1,'/Users/dzliu/Softwares/Python/lib/crab/crabcurvefit')
+sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabcurvefit')
 from CrabCurveFit import *
 
 
@@ -74,64 +65,71 @@ from CrabCurveFit import *
 # Read input catalog file
 if input_catalog_file.endswith('.fits'):
     catalog_struct = CrabTable(input_catalog_file)
-    catalog_columns = catalog_struct.getColumnNames()
+    catalog_column_names = catalog_struct.getColumnNames()
     catalog = catalog_struct
 else:
     #catalog = asciitable.read(input_catalog_file)
     catalog_struct = CrabTable(input_catalog_file)
-    catalog_columns = catalog_struct.getColumnNames()
+    catalog_column_names = catalog_struct.getColumnNames()
     catalog = catalog_struct
 
 
 # 
 # Read data
-if 'S_out' in catalog_columns:
+col_S_out = ''
+mal_S_out = 1.0 # multiplification factor
+if 'S_out' in catalog_column_names:
     data_S_out = catalog.getColumn('S_out')
-elif 'Total_flux' in catalog_columns:
-    data_S_out = catalog.getColumn('Total_flux') * 1e3 # convert to mJy
+    col_S_out = 'S_out'
+    mal_S_out = 1.0
+elif 'Total_flux' in catalog_column_names:
+    col_S_out = 'Total_flux'
+    mal_S_out = 1e3
 else:
     print('Error! Could not find "S_out" column!')
     sys.exit()
+data_S_out = catalog.getColumn(col_S_out) * mal_S_out # convert to mJy
+#if 'e_S_out' in catalog_column_names:
+#    data_e_S_out = catalog.getColumn('e_S_out')
+#elif 'E_Total_flux' in catalog_column_names:
+#    data_e_S_out = catalog.getColumn('E_Total_flux') * 1e3 # convert to mJy
+#else:
+#    print('Error! Could not find "e_S_out" column!')
+#    sys.exit()
 
-if 'e_S_out' in catalog_columns:
-    data_e_S_out = catalog.getColumn('e_S_out')
-elif 'E_Total_flux' in catalog_columns:
-    data_e_S_out = catalog.getColumn('E_Total_flux') * 1e3 # convert to mJy
-else:
-    print('Error! Could not find "e_S_out" column!')
-    sys.exit()
-
-if 'S_peak' in catalog_columns:
+if 'S_peak' in catalog_column_names:
     data_S_peak = catalog.getColumn('S_peak')
-elif 'Peak_flux' in catalog_columns:
+elif 'Peak_flux' in catalog_column_names:
     data_S_peak = catalog.getColumn('Peak_flux') * 1e3 # convert to mJy
 else:
     print('Error! Could not find "S_peak" column!')
     sys.exit()
 
-if 'noise' in catalog_columns:
+if 'noise' in catalog_column_names:
     data_noise = catalog.getColumn('noise') # mJy
-elif 'rms' in catalog_columns:
+elif 'rms' in catalog_column_names:
     data_noise = catalog.getColumn('rms') # mJy
 else:
     print('Error! Could not find "noise" column!')
     sys.exit()
 
-if 'Maj_out' in catalog_columns:
+if 'Maj_out' in catalog_column_names:
     data_Maj_out = catalog.getColumn('Maj_out')
-elif 'Maj_deconv' in catalog_columns and 'beam_maj' in catalog_columns and 'beam_min' in catalog_columns and 'beam_PA' in catalog_columns:
+elif 'Maj_deconv' in catalog_column_names and 'beam_maj' in catalog_column_names and 'beam_min' in catalog_column_names and 'beam_PA' in catalog_column_names:
     data_Maj_deconv = catalog.getColumn('Maj_deconv') * 3600.0 # convert to arcsec
     data_Maj_beam = catalog.getColumn('beam_maj')
     data_Min_beam = catalog.getColumn('beam_min')
     data_PA_beam = catalog.getColumn('beam_PA')
-    data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + (data_Maj_beam * data_Min_beam)) #<TODO># 
+    data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + numpy.power(data_Maj_beam,2)) #<TODO># do the source size convolution
 else:
     print('Error! Could not find "Maj_out" column!')
     sys.exit()
 
-if 'Maj_beam' in catalog_columns:
+col_Maj_beam = ''
+mal_Maj_beam = 1.0 # multiplification factor
+if 'Maj_beam' in catalog_column_names:
     data_Maj_beam = catalog.getColumn('Maj_beam')
-elif 'beam_maj' in catalog_columns:
+elif 'beam_maj' in catalog_column_names:
     data_Maj_beam = catalog.getColumn('beam_maj')
 else:
     print('Error! Could not find "Maj_beam" column!')
@@ -266,7 +264,7 @@ print('Output to "datatable_applying_correction_fbias.txt"!')
 # 
 
 S_out_uncorr = data_S_out
-S_out_corr = S_out_uncorr / (1.0 - fbias_from_function)
+S_out_corr = S_out_uncorr / (1.0 - fbias_from_interpolation) # (1.0 - fbias_from_function)
 
 asciitable.write(numpy.column_stack((S_out_corr, S_out_uncorr, x2, x1)), 
                     'datatable_applied_correction_fbias.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
@@ -274,6 +272,29 @@ asciitable.write(numpy.column_stack((S_out_corr, S_out_uncorr, x2, x1)),
 os.system('sed -i.bak -e "1s/^ /#/" "datatable_applied_correction_fbias.txt"')
 
 print('Output to "datatable_applied_correction_fbias.txt"!')
+
+
+
+
+
+# 
+# output corrected 'input_catalog_file'
+# 
+input_catalog_file_name, input_catalog_file_ext = os.path.splitext(input_catalog_file)
+
+catalog.TableData[col_S_out] = S_out_corr / mal_S_out
+
+asciitable.write(catalog.TableData, input_catalog_file_name+'_corrected.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
+                    names=catalog_column_names, overwrite=True)
+os.system('sed -i.bak -e "1s/^ /#/" "%s"'%(input_catalog_file_name+'_corrected.txt'))
+
+print('Output to "%s"!'%(input_catalog_file_name+'_corrected.txt'))
+
+
+
+
+
+
 
 
 

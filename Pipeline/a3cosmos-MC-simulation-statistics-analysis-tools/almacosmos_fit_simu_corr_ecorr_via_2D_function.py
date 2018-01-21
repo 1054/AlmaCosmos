@@ -79,7 +79,6 @@ if input_simu_data_table.endswith('.fits'):
     data_table_struct = CrabTable(input_simu_data_table)
     data_table = data_table_struct.TableData
 else:
-    #data_table = asciitable.read(input_data_table_file)
     data_table_struct = CrabTable(input_simu_data_table)
     data_table = data_table_struct
 
@@ -181,7 +180,7 @@ def my_func((x1,x2), a1, k1, n1, a2, k2, n2):
     #f_poly = a1 + k1 * numpy.log10(x1) + n1 * numpy.log10(x1)**2 + a2 * numpy.log10(x1)**3 + k2 * numpy.log10(x1)**4
     #f1 = a1 + k1 * numpy.exp(numpy.log10(x1)**n1)
     #f_xmax = 
-    log_of_scatter_over_noise = (a1 + k1*numpy.log10(x1) + n1*numpy.log10(x1)**2 + a2*x2 + k2*x2**2 + n2*x2**3)
+    log_of_scatter_over_noise = (a1 + a2*x2 + k2*x2**2 + n2*x2**3)
     return log_of_scatter_over_noise
 
 
@@ -233,12 +232,12 @@ from pymc import MCMC
 def M_model(x1, x2, y_obs_log, y_err_log):
     # 
     # priors
-    a1 = pymc.Uniform('a1',  -20.0,  +20.0, value = -11.0)
-    k1 = pymc.Uniform('k1',  -20.0,  +20.0, value = -8.0)
-    n1 = pymc.Uniform('n1',  -20.0,  +20.0, value = -13.0)
-    a2 = pymc.Uniform('a2',  -20.0,  +20.0, value = +4.00)
-    k2 = pymc.Uniform('k2',  -20.0,  +20.0, value = -1.00)
-    n2 = pymc.Uniform('n2',  -20.0,  +20.0, value = +4.00)
+    a1 = pymc.Uniform('a1',  -20.0,  +20.0, value = +0.5)
+    k1 = pymc.Uniform('k1',  -20.0,  +20.0, value = +0.5)
+    n1 = pymc.Uniform('n1',  -20.0,  +20.0, value = +0.5)
+    a2 = pymc.Uniform('a2',  -20.0,  +20.0, value = +0.01)
+    k2 = pymc.Uniform('k2',  -20.0,  +20.0, value = +0.01)
+    n2 = pymc.Uniform('n2',  -20.0,  +20.0, value = -0.01)
     # 
     # M_func = pymc.deterministic(*kwargs)
     @pymc.deterministic(plot=False)
@@ -418,20 +417,15 @@ pyplot.savefig('best_fit_function_ecorr.pdf')
 print('')
 print('Output to "best_fit_function_ecorr.pdf"!')
 # 
-# try
-try:
-    # 
-    # zoom
-    for ax in fig.axes:
-        ax.set_ylim([0.5,10])
-        ax.set_yscale('linear')
-    # 
-    # savefig
-    pyplot.savefig('best_fit_function_ecorr_zoomed.pdf')
-    print('')
-    print('Output to "best_fit_function_ecorr_zoomed.pdf"!')
-except:
-    pass
+# zoom
+for ax in fig.axes:
+    ax.set_ylim([0.5,10])
+    ax.set_yscale('linear')
+# 
+# savefig
+pyplot.savefig('best_fit_function_ecorr_zoomed.pdf')
+print('')
+print('Output to "best_fit_function_ecorr_zoomed.pdf"!')
 # 
 # clear
 pyplot.clf()
@@ -457,7 +451,7 @@ os.system('echo "set n1 = %0.20e"                                               
 os.system('echo "set a2 = %0.20e"                                                                   >> best_fit_function_ecorr.sm'%(popt[3]))
 os.system('echo "set k2 = %0.20e"                                                                   >> best_fit_function_ecorr.sm'%(popt[4]))
 os.system('echo "set n2 = %0.20e"                                                                   >> best_fit_function_ecorr.sm'%(popt[5]))
-os.system('echo "set log_of_scatter_over_noise = (a1 + k1*lg(x1) + n1*lg(x1)**2 + a2*x2 + k2*x2**2 + n2*x2**3)"                       >> best_fit_function_ecorr.sm')
+os.system('echo "set log_of_scatter_over_noise = (a1 + a2*x2 + k2*x2**2 + n2*x2**3)"                >> best_fit_function_ecorr.sm')
 os.system('echo "set y_fit = log_of_scatter_over_noise"                                             >> best_fit_function_ecorr.sm')
 os.system('echo ""                                                                                  >> best_fit_function_ecorr.sm')
 print('')
@@ -490,7 +484,7 @@ os.system('echo "    n1 = %0.20e"                                               
 os.system('echo "    a2 = %0.20e"                                                                                           >> best_fit_function_ecorr_via_CurveFit.py'%(popt[3]))
 os.system('echo "    k2 = %0.20e"                                                                                           >> best_fit_function_ecorr_via_CurveFit.py'%(popt[4]))
 os.system('echo "    n2 = %0.20e"                                                                                           >> best_fit_function_ecorr_via_CurveFit.py'%(popt[5]))
-os.system('echo "    log_of_scatter_over_noise = (a1 + k1*numpy.log10(x1) + n1*numpy.log10(x1)**2 + a2*x2 + k2*x2**2 + n2*x2**3)"                                         >> best_fit_function_ecorr_via_CurveFit.py')
+os.system('echo "    log_of_scatter_over_noise = (a1 + a2*x2 + k2*x2**2 + n2*x2**3)"                                        >> best_fit_function_ecorr_via_CurveFit.py')
 os.system('echo "    return log_of_scatter_over_noise"                                                                      >> best_fit_function_ecorr_via_CurveFit.py')
 os.system('echo ""                                                                                                          >> best_fit_function_ecorr_via_CurveFit.py')
 print('')
@@ -515,7 +509,7 @@ os.system('echo "    n1 = %0.20e"                                               
 os.system('echo "    a2 = %0.20e"                                                                                           >> best_fit_function_ecorr_via_MCMC.py'%(popt_mean[3]))
 os.system('echo "    k2 = %0.20e"                                                                                           >> best_fit_function_ecorr_via_MCMC.py'%(popt_mean[4]))
 os.system('echo "    n2 = %0.20e"                                                                                           >> best_fit_function_ecorr_via_MCMC.py'%(popt_mean[5]))
-os.system('echo "    log_of_scatter_over_noise = (a1 + k1*numpy.log10(x1) + n1*numpy.log10(x1)**2 + a2*x2 + k2*x2**2 + n2*x2**3)"                                         >> best_fit_function_ecorr_via_MCMC.py')
+os.system('echo "    log_of_scatter_over_noise = (a1 + a2*x2 + k2*x2**2 + n2*x2**3)"                                        >> best_fit_function_ecorr_via_MCMC.py')
 os.system('echo "    return log_of_scatter_over_noise"                                                                      >> best_fit_function_ecorr_via_MCMC.py')
 os.system('echo ""                                                                                                          >> best_fit_function_ecorr_via_MCMC.py')
 print('')

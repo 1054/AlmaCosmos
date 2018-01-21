@@ -165,7 +165,7 @@ echo "Output to \"${OutputName}_all_entries.fits\"!"
 topcat -stilts tpipe \
                 in="${OutputName}_all_entries.fits" \
                 cmd="select \"(flag_matched && S_peak>0 && e_S_out>0)\"" \
-                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
+                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam image_file_STR simu_name_STR\"" \
                 ofmt="ascii" \
                 out="${OutputName}_only_matches.txt" \
                 | tee "${OutputName}_only_matches.stilts.log"
@@ -173,12 +173,29 @@ topcat -stilts tpipe \
 echo "Output to \"${OutputName}_only_matches.txt\"!"
 
 
+
 # 
-# mkdir Statistics
+# Then select only matches and S_peak/noise>=2 for statistics analysis
 # 
-#mkdir Statistics
-#cp "$OutputDir/datatable_CrossMatched_only_matches.txt" Statistics/
-#echo "Output to \"Statistics/datatable_CrossMatched_only_matches.txt\"!"
+topcat -stilts tpipe \
+                in="${OutputName}_only_matches.txt" \
+                ifmt="ascii" \
+                cmd="select \"(S_peak/noise>=2)\"" \
+                ofmt="ascii" \
+                out="${OutputName}_only_matches_SNR_GE_2.txt" \
+                | tee "${OutputName}_only_matches_SNR_GE_2.stilts.log"
+
+echo "Output to \"${OutputName}_only_matches_SNR_GE_2.txt\"!"
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -371,7 +371,7 @@ for i2 in range(n2):
         print('add_subplot(%d,%d,%d)', n2, n1, n1*i2+i1+1)
         ax = fig.add_subplot(n2, n1, n1*i2+i1+1)
         # 
-        ax.set_xlim([0.1,1e3]) # (numpy.power(10,[numpy.min(x1_sparse),numpy.max(x1_sparse)]))
+        ax.set_xlim([1.0,1e3]) # (numpy.power(10,[numpy.min(x1_sparse),numpy.max(x1_sparse)]))
         ax.set_ylim([-2.0,2.0])
         ax.set_xscale('log')
         # 

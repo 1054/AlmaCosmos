@@ -20,18 +20,14 @@ if len(sys.argv) <= 1:
 
 # 
 # Read input arguments
-# 
 input_simu_data_table = ''
 input_catalog_file = ''
-column_x1 = 'cell_par1_median'
-column_x2 = 'cell_par2_median'
-column_fbias = 'cell_rel_median'
-column_ecorr = 'cell_scatter' # 'cell_rel_scatter_68'
-column_ecorr_noi = 'cell_noi_scatter'
-column_rms_noise = 'cell_rms_noise_median'
-column_ecorr_L68 = 'cell_rel_scatter_L68'
-column_ecorr_H68 = 'cell_rel_scatter_H68'
-column_cell_size = 'cell_size'
+column_x1 = 'cell_par1_median' # column number starts from 1.
+column_x2 = 'cell_par2_median' # column number starts from 1.
+column_fbias = 'cell_rel_median' # column number starts from 1.
+column_ecorr = 'cell_rel_scatter_68' # column number starts from 1.
+column_ecorr_L68 = 'cell_rel_scatter_L68' # column number starts from 1.
+column_ecorr_H68 = 'cell_rel_scatter_H68' # column number starts from 1.
 
 i = 1
 while i < len(sys.argv):
@@ -46,8 +42,12 @@ while i < len(sys.argv):
 
 
 # 
-# Check input data file
+# TODO
+#input_simu_data_table = 'datatable_correction.txt'
+
+
 # 
+# Check input data file
 if not os.path.isfile(input_simu_data_table):
     print('Error! "%s" was not found!'%(input_simu_data_table))
     sys.exit()
@@ -55,13 +55,12 @@ if not os.path.isfile(input_simu_data_table):
 
 # 
 # Import python packages
-# 
 import numpy
 import astropy
 import astropy.io.ascii as asciitable
 import scipy.optimize
-#import matplotlib
-#from matplotlib import pyplot
+import matplotlib
+from matplotlib import pyplot
 from pprint import pprint
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
 from CrabTable import *
@@ -79,7 +78,6 @@ from CrabCurveFit import *
 
 # 
 # Read input data table file
-# 
 if input_simu_data_table.endswith('.fits'):
     data_table_struct = CrabTable(input_simu_data_table)
     data_table = data_table_struct.TableData
@@ -90,7 +88,6 @@ else:
 
 # 
 # Read X Y YErr XErr data array 
-# 
 data_x1 = []
 data_x2 = []
 data_fbias = []
@@ -101,67 +98,36 @@ data_x1 = data_table.getColumn(int(column_x1)-1) if column_x1.isdigit() else dat
 data_x2 = data_table.getColumn(int(column_x2)-1) if column_x2.isdigit() else data_table.getColumn(column_x2)
 data_fbias = data_table.getColumn(int(column_fbias)-1) if column_fbias.isdigit() else data_table.getColumn(column_fbias)
 data_ecorr = data_table.getColumn(int(column_ecorr)-1) if column_ecorr.isdigit() else data_table.getColumn(column_ecorr)
-data_ecorr_noi = data_table.getColumn(int(column_ecorr_noi)-1) if column_ecorr_noi.isdigit() else data_table.getColumn(column_ecorr_noi)
 data_ecorr_L68 = data_table.getColumn(int(column_ecorr_L68)-1) if column_ecorr_L68.isdigit() else data_table.getColumn(column_ecorr_L68)
 data_ecorr_H68 = data_table.getColumn(int(column_ecorr_H68)-1) if column_ecorr_H68.isdigit() else data_table.getColumn(column_ecorr_H68)
-data_cell_size = data_table.getColumn(int(column_cell_size)-1) if column_cell_size.isdigit() else data_table.getColumn(column_cell_size)
-#if len(data_y) == 0: print('Error! Could not determine y!')
-#if len(data_x) == 0: sys.exit()
-#if len(data_y) == 0: sys.exit()
 
 
 # 
-# Read data array
-# 
-#y_fbias = data_fbias
-#y_ecorr = data_ecorr # just use 'cell_rel_scatter_68', which is the minimum of(L68,H68)
-#y_ecorr_L68 = data_ecorr_L68
-#y_ecorr_H68 = data_ecorr_H68
-#for i in range(len(y_ecorr)):
-#    if y_ecorr_L68[i] > 0 and y_ecorr_H68[i] > 0:
-#        if y_ecorr_L68[i] > y_ecorr_H68[i]:
-#            y_ecorr[i] = y_ecorr_L68[i] # choose the larger error one
-#        else:
-#            y_ecorr[i] = y_ecorr_H68[i] # choose the larger error one
-##y_ecorr = numpy.log10(1/y_ecorr)
-
-
-# 
-# Filter out some data points (after several times of tuning)
-# 
+# set data array
+y_obs = data_fbias
+y_err = data_ecorr
+y_fbias = data_fbias
+y_ecorr = data_ecorr
+y_ecorr_L68 = data_ecorr_L68
+y_ecorr_H68 = data_ecorr_H68
+for i in range(len(y_ecorr)):
+    if y_ecorr_L68[i] > 0 and y_ecorr_H68[i] > 0:
+        if y_ecorr_L68[i] > y_ecorr_H68[i]:
+            y_ecorr[i] = y_ecorr_L68[i]
+        else:
+            y_ecorr[i] = y_ecorr_H68[i]
+y_ecorr = numpy.log10(1/y_ecorr)
 x1 = data_x1
 x2 = data_x2
-y_obs = data_ecorr_noi  # scatter of ((S_in-S_out) / noise)
-y_err = numpy.sqrt(10.0/data_cell_size) * y_obs # <TODO> assign larger errors to larger x2
-y_obs_log = numpy.log10(y_obs)
-y_err_log = y_err/y_obs
-#imask = (data_x2<3.0)
-#x1 = data_x1[imask]
-#x2 = data_x2[imask]
-#y_obs = y_fbias[imask]
-#y_err = y_ecorr[imask]
-#col_names = ['x1 (S_peak/rms_noise)','x2 (Maj_convol/Maj_beam)','median (S_in-S_out)/S_in','sigma (S_in-S_out)/S_in']
-col_names = ['x1 (S_peak/rms_noise)','x2 (Maj_convol/Maj_beam)','scatter of ((S_in-S_out) / noise)','1 / cell size']
-col_width = len('| ' + ' | '.join(col_names) + ' |')
-print('-'*col_width)
-asciitable.write(numpy.column_stack((x1,x2,y_obs,y_err)), sys.stdout, 
-                    names=col_names,
-                    Writer=asciitable.FixedWidthTwoLine, delimiter='|', delimiter_pad=' ', position_char='-', bookend=True)
-print('-'*col_width)
-
-
-# 
-# note that x1 is in linear, x2 is in linear, 
-# 
-
+#y_ecorr = y_ecorr / numpy.log10(x1)
 
 
 
 # 
 # Make x grid
-x1_sparse = numpy.arange(numpy.log10(2.0), numpy.log10(1000.0), 0.05)
+x1_sparse = numpy.arange(numpy.log10(2.0), numpy.log10(500.0), 0.05)
 x2_sparse = numpy.arange(0.0, 5.5, 0.5)
-x1_interval = 0.01
+x1_interval = 0.05
 x2_interval = 0.5
 x1_grid, x2_grid = numpy.meshgrid(x1_sparse, x2_sparse)
 x_grid = numpy.column_stack((x1_grid.flatten(),x2_grid.flatten()))
@@ -173,18 +139,18 @@ from scipy import interpolate
 
 x_arr = numpy.column_stack((numpy.log10(x1),x2))
 
-#fbias_array_extrapolated = interpolate.griddata(x_arr, y_fbias, x_grid, method='nearest')
-#fbias_array = interpolate.griddata(x_arr, y_fbias, x_grid, method='linear')
-#fbias_array_mask = numpy.isnan(fbias_array)
-#fbias_array[fbias_array_mask] = fbias_array_extrapolated[fbias_array_mask]
-#fbias_grid = fbias_array.reshape(x1_grid.shape)
-#fbias_grid_mask = fbias_array_mask.reshape(x1_grid.shape)
-##pprint(x1_grid)
-##pprint(x2_grid)
-##pprint(fbias_grid)
+fbias_array_extrapolated = interpolate.griddata(x_arr, y_fbias, x_grid, method='nearest')
+fbias_array = interpolate.griddata(x_arr, y_fbias, x_grid, method='linear')
+fbias_array_mask = numpy.isnan(fbias_array)
+fbias_array[fbias_array_mask] = fbias_array_extrapolated[fbias_array_mask]
+fbias_grid = fbias_array.reshape(x1_grid.shape)
+fbias_grid_mask = fbias_array_mask.reshape(x1_grid.shape)
+#pprint(x1_grid)
+#pprint(x2_grid)
+#pprint(fbias_grid)
 
-ecorr_array_extrapolated = interpolate.griddata(x_arr, y_obs, x_grid, method='nearest')
-ecorr_array = interpolate.griddata(x_arr, y_obs, x_grid, method='linear')
+ecorr_array_extrapolated = interpolate.griddata(x_arr, y_ecorr, x_grid, method='nearest')
+ecorr_array = interpolate.griddata(x_arr, y_ecorr, x_grid, method='linear')
 ecorr_array_mask = numpy.isnan(ecorr_array)
 ecorr_array[ecorr_array_mask] = ecorr_array_extrapolated[ecorr_array_mask]
 ecorr_grid = ecorr_array.reshape(x1_grid.shape)
@@ -217,7 +183,7 @@ for i2 in range(n2):
         ax = fig.add_subplot(n2, n1, n1*i2+i1+1)
         # 
         ax.set_xlim([1.0,1000.0])
-        ax.set_ylim([1e-2,1e2])
+        ax.set_ylim([0.5,1000.0])
         ax.set_xscale('log')
         ax.set_yscale('log')
         # 
@@ -227,17 +193,18 @@ for i2 in range(n2):
         if len(iselect) > 0:
             x1_for_plot = x1[imask]
             x2_for_plot = x2[imask]
-            y_for_plot = y_obs[imask]
+            y_for_plot = numpy.power(10,y_ecorr[imask])
+            #pprint(numpy.column_stack((x1_for_plot,x2_for_plot,y_for_plot)))
             ax.scatter(x1_for_plot, y_for_plot, marker='.', color='dodgerblue', s=100, zorder=5)
             # 
             plot_text(ax, 0, 0.48, r' %0.2f '%(numpy.mean(x2_for_plot)), NormalizedCoordinate=True, fontdict=font, verticalalignment='top', horizontalalignment='left', color='dodgerblue', zorder=4)
         # 
         # fit observed data
         if len(iselect) > 1:
-            p_fit = fit_func_polynomial_xylog(x1_for_plot, y_for_plot) # note that x1_for_plot is linear. 
-            y_fit = fit_func_polynomial_xylog_func(numpy.power(10,x1_sparse), (p_fit['fit_param']))
-            #p_fit = fit_func_spoon_shape_45_degree_xylog(x1_for_plot, y_for_plot) # note that x1_for_plot is linear. 
-            #y_fit = fit_func_spoon_shape_45_degree_xylog_func(numpy.power(10,x1_sparse), *(p_fit['fit_param']))
+            #p_fit = fit_func_polynomial_xylog(x1_for_plot, y_for_plot) # note that x1_for_plot is linear. 
+            #y_fit = fit_func_polynomial_xylog_func(numpy.power(10,x1_sparse), (p_fit['fit_param']))
+            p_fit = fit_func_spoon_shape_45_degree_xylog(x1_for_plot, y_for_plot) # note that x1_for_plot is linear. 
+            y_fit = fit_func_spoon_shape_45_degree_xylog_func(numpy.power(10,x1_sparse), *(p_fit['fit_param']))
             #asciitable.write(numpy.column_stack((numpy.log10(x1_for_plot), y_for_plot)), 'dump_fit_func_x_y_%0.2f.txt'%(numpy.mean(x2_for_plot)))
             pprint(p_fit)
             # 
@@ -259,21 +226,21 @@ for i2 in range(n2):
         if len(iselect) > 0:
             x1_for_plot = numpy.power(10,x1_grid[imask])
             x2_for_plot = x2_grid[imask]
-            y_for_plot = ecorr_grid[imask] # numpy.power(10,ecorr_grid[imask])
+            y_for_plot = numpy.power(10,ecorr_grid[imask])
             y_mask_for_plot = ecorr_grid_mask[imask]
             #pprint(numpy.column_stack((x1_for_plot,x2_for_plot,y_for_plot)))
             ax.plot(x1_for_plot, y_for_plot, color='black', marker='x', ls='None', ms=3, mew=1.5, zorder=6)
             ax.plot(x1_for_plot[y_mask_for_plot], y_for_plot[y_mask_for_plot], color='darkgray', marker='x', ls='None', ms=3, mew=1.5, zorder=7)
         
         # 
-        # plot a line with Y=1
-        plot_line(ax, 0.1, 1, 1e3, 1, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1, zorder=1)
+        # plot a line with Y=X
+        plot_line(ax, 0.1, 0.1, 1e3, 1e3, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1, zorder=1)
         # 
         # show or hide xylabel
         if i1==0 and i2==n2-1:
             ax.set_xlabel('peak flux / rms noise', fontdict=font)
         elif i1==0 and i2==int((n2-1)/2):
-            ax.set_ylabel('scatter of $((S_{in} - S_{out}) / rms \ noise)$', fontdict=font)
+            ax.set_ylabel('$1/$scatter of $(S_{in} - S_{out}) / S_{in}$', fontdict=font)
         # 
         # show or hide xyticks
         if i1!=0:
@@ -298,7 +265,7 @@ print('Output to "best_fit_function_ecorr.json"!')
 
 base_interp = {}
 base_interp['x'] = x_arr.tolist() # note that here x1 is in log. 
-base_interp['ecorr'] = y_obs.tolist()
+base_interp['ecorr'] = y_ecorr.tolist()
 with open('base_interp_array_for_ecorr.json', 'w') as fp:
     json.dump(base_interp, fp)
 print('Output to "base_interp_array_for_ecorr.json"!')

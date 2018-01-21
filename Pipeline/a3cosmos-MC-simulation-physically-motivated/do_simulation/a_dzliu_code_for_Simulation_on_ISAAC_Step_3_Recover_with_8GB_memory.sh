@@ -124,7 +124,13 @@ fi
 
 for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
-    FitsName="${FitsNames[i]}"
+    # check FitsName not empty
+    if [[ x"${FitsNames[i]}" == x"" ]]; then
+        continue
+    fi
+    
+    # get FitsName without path and suffix
+    FitsName=$(basename "${FitsNames[i]}" | sed -e 's/\.cont.I.image.fits//g')
     
     # check parallel
     if [[ x"$SLURM_ARRAY_TASK_ID" != x"" ]]; then
@@ -140,8 +146,12 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     fi
     
     # check non-COSMOS fields
-    if [[ "$FitsName" == *"2011.0.00539.S_SB1_GB1_MB1_ECDFS02_field3_sci.spw0_1_2_3"* ]] || \
-        [[ "$FitsName" == *"2011.0.00539.S_SB1_GB1_MB2_ELS01_field2_sci.spw0_1_2_3"* ]] ; then
+    if [[ "$FitsName" == "2011.0.00539.S_"*"_ECDFS02_"* ]] || \
+        [[ "$FitsName" == "2011.0.00539.S_"*"_ELS01_"* ]] || \
+        [[ "$FitsName" == "2011.0.00539.S_"*"_ADFS01_"* ]] || \
+        [[ "$FitsName" == "2011.0.00539.S_"*"_XMM01_"* ]] || \
+        [[ "$FitsName" == "2011.0.00742.S_"*"__RX_J094144.51+385434.8__"* ]] || \
+        [[ "$FitsName" == "2012.1.00596.S_"*"_PKS0215+015_"* ]] ; then
         echo "Warning! \"$FitsName\" is a non-COSMOS field! Skip and continue!"
         continue
     fi
@@ -151,9 +161,12 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         [[ "$FitsName" == *"2015.1.00695.S_SB1_GB1_MB1_COSMOS_824759_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.00695.S_SB2_GB1_MB1_COSMOS_823380_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.00695.S_SB3_GB1_MB1_COSMOS_822872_sci.spw0_1_2_3"* ]] || \
+        [[ "$FitsName" == *"2015.1.00695.S_SB3_GB1_MB1_COSMOS_822965_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.00695.S_SB4_GB1_MB1_COSMOS_810344_sci.spw0_1_2_3"* ]] || \
+        [[ "$FitsName" == *"2015.1.00695.S_SB4_GB1_MB1_COSMOS_839268_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.00928.S_SB3_GB1_MB1_LBG-1_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.01345.S_SB1_GB1_MB1_AzTEC1_sci.spw0_1_2_3"* ]] || \
+        [[ "$FitsName" == *"2015.1.01345.S_SB1_GB1_MB1_AzTEC4_sci.spw0_1_2_3"* ]] || \
         [[ "$FitsName" == *"2015.1.01345.S_SB2_GB1_MB1_AzTEC8_sci.spw0_1_2_3"* ]] ; then
         echo "Warning! \"$FitsName\" is a very high-res. image! Skip and continue!"
         continue
