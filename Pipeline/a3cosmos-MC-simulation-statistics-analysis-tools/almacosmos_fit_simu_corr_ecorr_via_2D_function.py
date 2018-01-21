@@ -418,15 +418,20 @@ pyplot.savefig('best_fit_function_ecorr.pdf')
 print('')
 print('Output to "best_fit_function_ecorr.pdf"!')
 # 
-# zoom
-for ax in fig.axes:
-    ax.set_ylim([0.5,10])
-    ax.set_yscale('linear')
-# 
-# savefig
-pyplot.savefig('best_fit_function_ecorr_zoomed.pdf')
-print('')
-print('Output to "best_fit_function_ecorr_zoomed.pdf"!')
+# try
+try:
+    # 
+    # zoom
+    for ax in fig.axes:
+        ax.set_ylim([0.5,10])
+        ax.set_yscale('linear')
+    # 
+    # savefig
+    pyplot.savefig('best_fit_function_ecorr_zoomed.pdf')
+    print('')
+    print('Output to "best_fit_function_ecorr_zoomed.pdf"!')
+except:
+    pass
 # 
 # clear
 pyplot.clf()
