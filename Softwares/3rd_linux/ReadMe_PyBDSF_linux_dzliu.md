@@ -33,8 +33,12 @@ python2.7 setup.py build_ext --inplace --include-dirs="/usr/include" --library-d
 Then, we still need to copy some library files manually
 
 ```
-cp bdsf/*.so        "$HOME/Cloud/Github/AlmaCosmos/Softwares/3rd_linux/lib64/python2.7/site-packages/bdsf-1.8.12-py2.7-linux-x86_64.egg/bdsf/"
-cp bdsf/nat/*.so    "$HOME/Cloud/Github/AlmaCosmos/Softwares/3rd_linux/lib64/python2.7/site-packages/bdsf-1.8.12-py2.7-linux-x86_64.egg/bdsf/nat/"
+# Be careful about the version
+grep "__version" bdsf/_version.py
+__version__ = '1.8.13'
+
+cp bdsf/*.so        "$HOME/Cloud/Github/AlmaCosmos/Softwares/3rd_linux/lib64/python2.7/site-packages/bdsf-1.8.13-py2.7-linux-x86_64.egg/bdsf/"
+cp bdsf/nat/*.so    "$HOME/Cloud/Github/AlmaCosmos/Softwares/3rd_linux/lib64/python2.7/site-packages/bdsf-1.8.13-py2.7-linux-x86_64.egg/bdsf/nat/"
 ```
 
 
