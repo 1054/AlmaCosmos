@@ -145,90 +145,82 @@ while i < len(sys.argv):
             print('Warning! "%s" was not found!'%(sys.argv[i]))
             print('')
     elif sys.argv[i].startswith('-'):
-        if sys.argv[i].lower() == '-start':
+        # strip input arg str
+        temp_arg_str = sys.argv[i].lower().replace('--','-').replace('_','-')
+        # check input arg str
+        if temp_arg_str == '-start':
             if i+1 <= len(sys.argv)-1:
                 input_loop_start = long(sys.argv[i+1])
                 i = i + 1
-        elif sys.argv[i].lower() == '-end':
+        elif temp_arg_str == '-end':
             if i+1 <= len(sys.argv)-1:
                 input_loop_end = long(sys.argv[i+1])
                 i = i + 1
-        elif sys.argv[i].lower() == '-rms' or sys.argv[i].lower() == '--rms-value':
+        elif temp_arg_str == '-rms' or temp_arg_str == '-rms-value':
             if i+1 <= len(sys.argv)-1:
                 input_rms_value = float(sys.argv[i+1])
                 i = i + 1
-        elif sys.argv[i].lower() == '-out' or sys.argv[i].lower() == '--output-dir':
+        elif temp_arg_str == '-out' or temp_arg_str == '-output-dir':
             if i+1 <= len(sys.argv)-1:
                 output_root = str(sys.argv[i+1])
                 i = i + 1
-        elif sys.argv[i].lower() == '--max-gaussian-number' or \
-            sys.argv[i].lower() == '-ngmax' or \
-            sys.argv[i].lower() == '--number-gaussian' or \
-            sys.argv[i].lower() == '--numb-gauss' or \
-            sys.argv[i].lower() == '--max-numb-gaussian' or \
-            sys.argv[i].lower() == '--max-numb-gauss' or \
-            sys.argv[i].lower() == '--max-gaussian-numb':
+        elif temp_arg_str == '-max-gaussian-number' or \
+            temp_arg_str == '-ngmax' or \
+            temp_arg_str == '-number-gaussian' or \
+            temp_arg_str == '-numb-gauss' or \
+            temp_arg_str == '-max-numb-gaussian' or \
+            temp_arg_str == '-max-numb-gauss' or \
+            temp_arg_str == '-max-gaussian-numb':
             if i+1 <= len(sys.argv)-1:
                 input_ini_gausfit = 'ngmax'+' '+(sys.argv[i+1])
                 input_peak_fit = False
                 print('Setting ini_gausfit to %s'%(input_ini_gausfit))
                 i = i + 1
-        elif sys.argv[i].lower() == '--max-gaussian-area' or \
-            sys.argv[i].lower() == '-agmax' or \
-            sys.argv[i].lower() == '-maxarea' or \
-            sys.argv[i].lower() == '-maxsize' or \
-            sys.argv[i].lower() == '--flag-maxsize' or \
-            sys.argv[i].lower() == '-flag-maxsize-bm' or \
-            sys.argv[i].lower() == '-flag_maxsize_bm' or \
-            sys.argv[i].lower() == '--flag-maxsize-bm' or \
-            sys.argv[i].lower() == '--flag_maxsize_bm':
+        elif temp_arg_str == '-max-gaussian-area' or \
+            temp_arg_str == '-agmax' or \
+            temp_arg_str == '-maxarea' or \
+            temp_arg_str == '-maxsize' or \
+            temp_arg_str == '-flag-maxsize' or \
+            temp_arg_str == '-flag-maxsize-bm':
             if i+1 <= len(sys.argv)-1:
                 input_flag_maxsize_bm = float(sys.argv[i+1])
                 print('Setting flag_maxsize_bm to %s'%(input_flag_maxsize_bm))
                 i = i + 1
-        elif sys.argv[i].lower() == '-igmin' or \
-            sys.argv[i].lower() == '-flag-maxsize-fwhm' or \
-            sys.argv[i].lower() == '-flag_maxsize_fwhm' or \
-            sys.argv[i].lower() == '--flag-maxsize-fwhm' or \
-            sys.argv[i].lower() == '--flag_maxsize_fwhm':
+        elif temp_arg_str == '-igmin' or \
+            temp_arg_str == '-flag-maxsize-fwhm':
             if i+1 <= len(sys.argv)-1:
                 input_flag_maxsize_fwhm = float(sys.argv[i+1])
                 print('Setting flag_maxsize_fwhm to %s'%(input_flag_maxsize_fwhm))
                 i = i + 1
-        elif sys.argv[i].lower() == '-thresh_pix' or \
-            sys.argv[i].lower() == '--thresh-pix' or \
-            sys.argv[i].lower() == '--threshold-pixel' or \
-            sys.argv[i].lower() == '--threshold-pixels':
+        elif temp_arg_str == '-thresh-pix' or \
+            temp_arg_str == '-threshold-pixel' or \
+            temp_arg_str == '-threshold-pixels':
             if i+1 <= len(sys.argv)-1:
                 input_thresh_pix = float(sys.argv[i+1])
                 print('Setting thresh_pix to %s'%(input_thresh_pix))
                 i = i + 1
-        elif sys.argv[i].lower() == '-thresh_rms' or \
-            sys.argv[i].lower() == '--thresh-rms' or \
-            sys.argv[i].lower() == '--threshold-rms' or \
-            sys.argv[i].lower() == '--threshold-detection':
+        elif temp_arg_str == '-thresh-rms' or \
+            temp_arg_str == '-threshold-rms' or \
+            temp_arg_str == '-threshold-detection':
             if i+1 <= len(sys.argv)-1:
                 input_thresh_rms = float(sys.argv[i+1])
                 print('Setting thresh_rms to %s'%(input_thresh_rms))
                 i = i + 1
-        elif sys.argv[i].lower() == '-verbose' or \
-            sys.argv[i].lower() == '--verbose' or \
-            sys.argv[i].lower() == '--verbose-fitting':
+        elif temp_arg_str == '-verbose' or \
+            temp_arg_str == '-verbose-fitting':
             input_verbose_fitting = True
             print('Setting verbose_fitting to %s'%(input_verbose_fitting))
-        elif sys.argv[i].lower() == '-incl-empty' or \
-            sys.argv[i].lower() == '--include-empty-island' or \
-            sys.argv[i].lower() == '--include-empty-islands':
+        elif temp_arg_str == '-incl-empty' or \
+            temp_arg_str == '-include-empty-island' or \
+            temp_arg_str == '-include-empty-islands':
             input_incl_empty = True
             print('Setting incl_empty to %s'%(input_incl_empty))
-        elif sys.argv[i].lower() == '-group_by_isl' or \
-            sys.argv[i].lower() == '--group-by-isl' or \
-            sys.argv[i].lower() == '--group-by-islands':
+        elif temp_arg_str == '-group-by-isl' or \
+            temp_arg_str == '-group-by-islands':
             input_group_by_isl = True
             print('Setting group_by_isl to %s'%(input_group_by_isl))
-        elif sys.argv[i].lower() == '-group_by_gauss' or \
-            sys.argv[i].lower() == '--group-by-gauss' or \
-            sys.argv[i].lower() == '--group-by-gaussian':
+        elif temp_arg_str == '-group-by-gauss' or \
+            temp_arg_str == '-group-by-gaussian':
             input_group_by_isl = False
             print('Setting group_by_isl to %s'%(input_group_by_isl))
     else:
