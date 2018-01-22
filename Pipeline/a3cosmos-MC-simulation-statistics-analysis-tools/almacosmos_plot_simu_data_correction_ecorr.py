@@ -217,7 +217,7 @@ for i2 in range(n2):
         ax = fig.add_subplot(n2, n1, n1*i2+i1+1)
         # 
         ax.set_xlim([1.0,1000.0])
-        ax.set_ylim([1e-2,1e2])
+        ax.set_ylim([1e-3,1e3])
         ax.set_xscale('log')
         ax.set_yscale('log')
         # 

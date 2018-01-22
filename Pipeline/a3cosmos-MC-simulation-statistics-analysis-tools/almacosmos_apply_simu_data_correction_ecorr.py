@@ -21,6 +21,7 @@ if len(sys.argv) <= 1:
 # Read input arguments
 # 
 input_catalog_file = ''
+apply_by_method = 'interpolation'
 
 i = 1
 while i < len(sys.argv):
@@ -28,6 +29,8 @@ while i < len(sys.argv):
         if i+1 < len(sys.argv):
             input_catalog_file = sys.argv[i+1]
             i = i + 1
+    elif sys.argv[i].lower() == '-by-function':
+        apply_by_method = 'function'
     else:
         if input_catalog_file == '':
             input_catalog_file = sys.argv[i]
@@ -52,7 +55,7 @@ import astropy
 import astropy.io.ascii as asciitable
 import scipy.optimize
 import matplotlib
-from matplotlib import pyplot
+#from matplotlib import pyplot
 from pprint import pprint
 sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
 from CrabTable import *
@@ -280,6 +283,14 @@ print('Output to "datatable_applying_correction_ecorr.txt"!')
 
 
 
+# choose which method to use
+if apply_by_method == 'function':
+    ecorr_used = ecorr_from_function
+else:
+    ecorr_used = ecorr_from_interpolation
+
+
+
 
 
 # 
@@ -291,11 +302,11 @@ print('Output to "datatable_applying_correction_ecorr.txt"!')
 #S_out_corr = fbias_table['S_out_corr']
 
 e_S_out_uncorr = data_e_S_out
-e_S_out_corr = data_noise * ecorr_from_interpolation # S_out_corr * (1/ecorr_from_function)
+e_S_out_corr = data_noise * ecorr_used # S_out_corr * (1/ecorr_from_function)
 
-asciitable.write(numpy.column_stack((e_S_out_corr, e_S_out_uncorr, x2, x1)), 
+asciitable.write(numpy.column_stack((e_S_out_corr, e_S_out_uncorr, ecorr_used, x2, x1)), 
                     'datatable_applied_correction_ecorr.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
-                    names=['e_S_out_corr','e_S_out_uncorr','x2','x1'], overwrite=True)
+                    names=['e_S_out_corr','e_S_out_uncorr','ecorr_used','x2','x1'], overwrite=True)
 os.system('sed -i.bak -e "1s/^ /#/" "datatable_applied_correction_ecorr.txt"')
 
 print('Output to "datatable_applied_correction_ecorr.txt"!')

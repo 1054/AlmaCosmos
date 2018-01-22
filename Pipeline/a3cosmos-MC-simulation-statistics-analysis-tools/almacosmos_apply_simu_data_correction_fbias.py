@@ -20,6 +20,7 @@ if len(sys.argv) <= 1:
 # 
 # Read input arguments
 input_catalog_file = ''
+apply_by_method = 'interpolation'
 
 i = 1
 while i < len(sys.argv):
@@ -27,6 +28,8 @@ while i < len(sys.argv):
         if i+1 < len(sys.argv):
             input_catalog_file = sys.argv[i+1]
             i = i + 1
+    elif sys.argv[i].lower() == '-by-function':
+        apply_by_method = 'function'
     else:
         if input_catalog_file == '':
             input_catalog_file = sys.argv[i]
@@ -51,7 +54,7 @@ import astropy
 import astropy.io.ascii as asciitable
 import scipy.optimize
 import matplotlib
-from matplotlib import pyplot
+#from matplotlib import pyplot
 from pprint import pprint
 sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
 from CrabTable import *
@@ -229,7 +232,7 @@ for i in range(len(x2)):
         func_a_lo.append(0.5)
         func_a_hi.append(0.5)
 
-func_y_array = numpy.array(func_a_lo) * numpy.array(func_y_lo) + numpy.array(func_a_hi) * numpy.array(func_y_hi)
+func_y_array = numpy.array(func_a_lo) * numpy.array(func_y_lo) + numpy.array(func_a_hi) * numpy.array(func_y_hi) # do an interpolation for the functions which are calibrated at each x2 (Maj_source_convol/Maj_beam) parameter grid.
 
 asciitable.write(numpy.column_stack((func_i_lo, func_i_hi, x2, x1, func_y_lo, func_y_hi, func_a_lo, func_a_hi, func_y_array)), 
                     'datatable_applying_correction_fbias_by_function.txt', Writer=asciitable.FixedWidth, delimiter=" ", 
@@ -257,6 +260,14 @@ print('Output to "datatable_applying_correction_fbias.txt"!')
 
 
 
+# choose which method to use
+if apply_by_method == 'function':
+    fbias_used = fbias_from_function
+else:
+    fbias_used = fbias_from_interpolation
+
+
+
 
 
 # 
@@ -264,11 +275,11 @@ print('Output to "datatable_applying_correction_fbias.txt"!')
 # 
 
 S_out_uncorr = data_S_out
-S_out_corr = S_out_uncorr / (1.0 - fbias_from_interpolation) # (1.0 - fbias_from_function)
+S_out_corr = S_out_uncorr / (1.0 - fbias_used) # (1.0 - fbias_from_function)
 
-asciitable.write(numpy.column_stack((S_out_corr, S_out_uncorr, x2, x1)), 
+asciitable.write(numpy.column_stack((S_out_corr, S_out_uncorr, fbias_used, x2, x1)), 
                     'datatable_applied_correction_fbias.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
-                    names=['S_out_corr','S_out_uncorr','x2','x1'], overwrite=True)
+                    names=['S_out_corr','S_out_uncorr','fbias_used','x2','x1'], overwrite=True)
 os.system('sed -i.bak -e "1s/^ /#/" "datatable_applied_correction_fbias.txt"')
 
 print('Output to "datatable_applied_correction_fbias.txt"!')

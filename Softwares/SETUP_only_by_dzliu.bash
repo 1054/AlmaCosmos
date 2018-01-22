@@ -17,6 +17,7 @@ wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/astrodepth_prior_extraction_photometry_go_getpix.sm     -O astrodepth_prior_extraction_photometry_go_getpix.sm
 
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/pixscale -O pixscale
+wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/imcenter -O imcenter
 
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/sky2xy  -O sky2xy
 wget -q https://raw.githubusercontent.com/1054/DeepFields.SuperDeblending/master/Softwares/xy2sky  -O xy2sky

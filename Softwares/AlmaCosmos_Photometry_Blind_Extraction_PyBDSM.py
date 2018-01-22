@@ -3,6 +3,8 @@
 # Aim: run the PyBDSM tool () to extract sources from FITS format images. 
 # 
 # Last update: 2017-11-08
+#              2017-12-07 updated mac pybdsf to 1.8.13, no major updates in this version. 
+#              2018-01-21 updated linux pybdsf to 1.8.13, no major updates in this version. 
 # 
 
 import os, sys, re
@@ -11,11 +13,13 @@ import logging
 import platform
 if platform.system() == 'Darwin':
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_mac'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
-    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_mac'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg')
+    #sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_mac'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg')
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_mac'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.13-py2.7-macosx-10.12-x86_64.egg')
 else:
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
     sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages')
-    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-linux-x86_64.egg')
+    #sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-linux-x86_64.egg')
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.13-py2.7-linux-x86_64.egg')
 #print sys.path
 
 import numpy
@@ -38,6 +42,10 @@ if len(sys.argv) <= 1:
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -agmax 1                  # (same as above)')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" --include-empty-islands   # we can also specify that we want to output empty islands which do not contain any valid Gaussian and have negative Source_id.')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -incl-empty               # (same as above)')
+    print('    ')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -thresh_pix               # (new parameter to tune, default 3.5)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -thresh_rms               # (new parameter to tune, default 3.5)')
+    print('    ')
     sys.exit()
 
 
@@ -77,6 +85,9 @@ input_incl_empty = False
 input_flag_maxsize_bm = 25.0 # flag (discard) a Gaussian if its area is larger than 25.0 times the beam area. <20171109><NOTE><DZLIU> THIS IS NOT GAUSSIAN_SIZE/BEAM_SIZE BUT GAUSSIAN_AREA/BEAM_AREA!!!
 input_flag_maxsize_fwhm = 0.5 # flag (discard) a Gaussian if ... -- see -- http://www.astron.nl/citt/pybdsm/process_image.html#flagging-options
                               # DOCUMENTATION IS WRONG! THE DEFAULT VALUE IS 0.5.
+input_thresh_rms = 3.5
+input_thresh_pix = 3.5
+input_group_by_isl = True
 output_root = 'Output_Blind_Extraction_Photometry_PyBDSM'
 
 i = 1
@@ -140,15 +151,42 @@ while i < len(sys.argv):
                 input_flag_maxsize_fwhm = float(sys.argv[i+1])
                 print('Setting flag_maxsize_fwhm to %s'%(input_flag_maxsize_fwhm))
                 i = i + 1
+        elif sys.argv[i].lower() == '-thresh_pix' or \
+            sys.argv[i].lower() == '--thresh-pix' or \
+            sys.argv[i].lower() == '--threshold-pixel' or \
+            sys.argv[i].lower() == '--threshold-pixels':
+            if i+1 <= len(sys.argv)-1:
+                input_thresh_pix = float(sys.argv[i+1])
+                print('Setting thresh_pix to %s'%(input_thresh_pix))
+                i = i + 1
+        elif sys.argv[i].lower() == '-thresh_rms' or \
+            sys.argv[i].lower() == '--thresh-rms' or \
+            sys.argv[i].lower() == '--threshold-rms' or \
+            sys.argv[i].lower() == '--threshold-detection':
+            if i+1 <= len(sys.argv)-1:
+                input_thresh_rms = float(sys.argv[i+1])
+                print('Setting thresh_rms to %s'%(input_thresh_rms))
+                i = i + 1
         elif sys.argv[i].lower() == '-verbose' or \
             sys.argv[i].lower() == '--verbose' or \
             sys.argv[i].lower() == '--verbose-fitting':
             input_verbose_fitting = True
             print('Setting verbose_fitting to %s'%(input_verbose_fitting))
         elif sys.argv[i].lower() == '-incl-empty' or \
-            sys.argv[i].lower() == '--include-empty-island' or sys.argv[i].lower() == '--include-empty-islands':
+            sys.argv[i].lower() == '--include-empty-island' or \
+            sys.argv[i].lower() == '--include-empty-islands':
             input_incl_empty = True
             print('Setting incl_empty to %s'%(input_incl_empty))
+        elif sys.argv[i].lower() == '-group_by_isl' or \
+            sys.argv[i].lower() == '--group-by-isl' or \
+            sys.argv[i].lower() == '--group-by-islands':
+            input_group_by_isl = True
+            print('Setting group_by_isl to %s'%(input_group_by_isl))
+        elif sys.argv[i].lower() == '-group_by_gauss' or \
+            sys.argv[i].lower() == '--group-by-gauss' or \
+            sys.argv[i].lower() == '--group-by-gaussian':
+            input_group_by_isl = False
+            print('Setting group_by_isl to %s'%(input_group_by_isl))
     else:
         if os.path.isfile(sys.argv[i]):
             with open(sys.argv[i]) as fp:
@@ -215,15 +253,18 @@ for i in range(len(input_fits_files)):
     # 
     # process fits image
     if input_rms_value > 0.0:
-        fit_result = bdsf.process_image(input_fits_file, thresh_isl = 3.0, thresh_pix = 3.5, \
-                                        group_by_isl = True, \
+        # fix input rms value
+        fit_result = bdsf.process_image(input_fits_file, thresh_isl = input_thresh_rms, thresh_pix = input_thresh_pix, \
+                                        group_by_isl = input_group_by_isl, \
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
                                         rms_map = False, rms_value = input_rms_value, mean_map = 'zero', \
                                         flag_maxsize_bm = input_flag_maxsize_bm, \
                                         flag_maxsize_fwhm = input_flag_maxsize_fwhm, \
                                         verbose_fitting = input_verbose_fitting) # <20171105> allow input rms value
     else:
-        fit_result = bdsf.process_image(input_fits_file, thresh_isl = 3.0, thresh_pix = 3.5, \
+        # let PyBDSM to determine rms value, which might be not uniform.
+        fit_result = bdsf.process_image(input_fits_file, thresh_isl = input_thresh_rms, thresh_pix = input_thresh_pix, \
+                                        group_by_isl = input_group_by_isl, \
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
                                         mean_map = 'zero', \
                                         flag_maxsize_bm = input_flag_maxsize_bm, \
