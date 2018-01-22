@@ -4,7 +4,7 @@
 # 
 # Last update: 2017-11-08
 #              2017-12-07 updated mac pybdsf to 1.8.13, no major updates in this version. 
-#              2018-01-21 TODO: update linux pybdsf (modified version) to 1.8.13. 
+#              2018-01-21 updated linux pybdsf (modified version) to 1.8.13. 
 # 
 
 import os, sys, re

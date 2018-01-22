@@ -4,7 +4,7 @@
 # 
 # Last update: 2017-11-08
 #              2017-12-07 updated mac pybdsf to 1.8.13, no major updates in this version. 
-#              2018-01-21 updated linux pybdsf to 1.8.13, no major updates in this version. 
+#              2018-01-21 updated linux pybdsf to 1.8.13. This version of pybdsf has a new input option "rmsmean_map_filename". Files "opts.py" and "rmsimage.py" are changed. A bug in "wavelet_atrous.py" is also fixed.
 # 
 
 import os, sys, re
