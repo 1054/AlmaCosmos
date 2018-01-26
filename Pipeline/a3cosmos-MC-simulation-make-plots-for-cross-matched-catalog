@@ -311,6 +311,130 @@ fi
 # 
 # plot scatter (S_in-S_out)/S_in vs S_in/noise
 # 
+if [[ $(almacosmos_cmd_has_opt "flux2") -eq 1 ]]; then
+margin=(100 70 100 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,sim.}" \
+                xlog=true xmin=1 \
+                ylog=false ymin=-2 ymax=2 \
+                \
+                auxvisible=true auxlabel="S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                auxmap=rdbu auxflip=true auxfunc=log \
+                \
+                layer_1=Mark \
+                leglabel_1="flux comparison" \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select (S_out/e_S_out>0.1)" \
+                x_1="S_peak/noise" \
+                y_1="(S_in-S_out)/S_in" \
+                aux="(S_peak/noise)" \
+                shading_1=aux \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(0.0)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_scatter_rel_S_diff_vs_S_out_peak.pdf"
+fi
+
+# 
+# plot scatter (S_in-S_out)/S_in vs S_in/noise
+# 
+if [[ $(almacosmos_cmd_has_opt "flux31") -eq 1 ]]; then
+margin=(100 70 100 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,sim.}" \
+                xlog=true xmin=1 \
+                ylog=false ymin=-2 ymax=2 \
+                \
+                layer_1=Mark \
+                leglabel_1="flux comparison" \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select (S_out/e_S_out>0.1)" \
+                x_1="S_peak/noise" \
+                y_1="(S_in-S_out)/S_in" \
+                shading_1=density \
+                densefunc_1=sqrt \
+                densemap_1=rdbu \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(0.0)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_scatter_rel_S_diff_vs_S_out_peak_colored_by_density.pdf"
+fi
+
+# 
+# plot scatter (S_in-S_out)/S_in vs S_in/noise
+# 
+if [[ $(almacosmos_cmd_has_opt "flux3") -eq 1 ]]; then
+margin=(100 70 100 20) # left, bottom, right, top
+echo ""
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,sim.}" \
+                xlog=true xmin=1 \
+                ylog=false ymin=-2 ymax=2 \
+                \
+                auxvisible=true auxlabel="Maj_{convol,\,rec.}/Maj_{beam}" \
+                auxmap=rdbu auxflip=true auxfunc=log \
+                \
+                layer_1=Mark \
+                leglabel_1="flux comparison" \
+                in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
+                icmd_1="select (S_out/e_S_out>0.1)" \
+                x_1="S_peak/noise" \
+                y_1="(S_in-S_out)/S_in" \
+                aux="(Maj_out/Maj_beam)" \
+                shading_1=aux \
+                size_1=2 \
+                \
+                layer_3=function \
+                fexpr_3='(0.0)' \
+                color_3=black \
+                antialias_3=true \
+                thick_3=1 \
+                leglabel_3='Y=0' \
+                \
+                seq='_3,_1' \
+                legend=false \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out="$output_dir/Plot_scatter_rel_S_diff_vs_S_out_peak_colored_by_source_size.pdf"
+fi
+
+# 
+# plot scatter (S_in-S_out)/S_in vs S_in/noise
+# 
 if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
