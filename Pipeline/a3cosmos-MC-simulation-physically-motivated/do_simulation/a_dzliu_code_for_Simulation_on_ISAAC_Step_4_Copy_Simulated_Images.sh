@@ -16,11 +16,22 @@ IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
 
 echo "FitsNames = ${FitsNames[@]}"
 
+
 if [[ ! -d "Output_images" ]]; then
     mkdir "Output_images"
 fi
 
-for FitsName in ${FitsNames[@]}; do
+
+for (( i=0; i<${#FitsNames[@]}; i++ )); do
+    
+    # check FitsName not empty
+    if [[ x"${FitsNames[i]}" == x"" ]]; then
+        continue
+    fi
+    
+    # get FitsName without path and suffix
+    FitsName=$(basename "${FitsNames[i]}" | sed -e 's/\.cont.I.image.fits//g')
+    echo "${FitsNames[i]} ($((i+1))/${#FitsNames[@]})"
     
     # get wavelength from fits header
     obsfreq=$(gethead "Input_images/$FitsName.cont.I.image.fits" CRVAL3)

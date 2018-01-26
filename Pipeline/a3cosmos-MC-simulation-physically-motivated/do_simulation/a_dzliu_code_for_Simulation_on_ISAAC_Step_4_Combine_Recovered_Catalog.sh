@@ -21,9 +21,16 @@ fi
 # 
 IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
 
+
 for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
-    FitsName="${FitsNames[i]}"
+    # check FitsName not empty
+    if [[ x"${FitsNames[i]}" == x"" ]]; then
+        continue
+    fi
+    
+    # get FitsName without path and suffix
+    FitsName=$(basename "${FitsNames[i]}" | sed -e 's/\.cont.I.image.fits//g')
     echo "${FitsNames[i]} ($((i+1))/${#FitsNames[@]})"
     
     # check non-COSMOS fields
