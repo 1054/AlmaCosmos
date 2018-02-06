@@ -9,7 +9,7 @@ IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
 
 for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
-    FitsName="${FitsNames[i]}"
+    FitsName=$(basename "${FitsNames[i]}")
     echo "${FitsNames[i]} ($((i+1))/${#FitsNames[@]})"
     
     # check non-COSMOS fields
