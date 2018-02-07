@@ -39,35 +39,58 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         continue
     fi
     
-    # check simulation directory and datatable
-    if [[ ! -f "Simulated/$FitsName/datatable_Simulated.txt" ]]; then
-        echo "Error! \"Simulated/$FitsName/datatable_Simulated.txt\" was not found!"
-        exit
+    # check already packed tar file
+    if [[ -f "Recovered/$FitsName.tar.gz" ]]; then
+        echo -n "Found existing \"Recovered/$FitsName.tar.gz\"! Checking integrity ... "
+        if ! tar tf "Recovered/$FitsName.tar.gz" &> /dev/null; then 
+            echo "Broken! Deleting it!"
+            rm "Recovered/$FitsName.tar.gz"
+        else
+            echo "OK! Now let us delete the folder \"Recovered/$FitsName\"!"
+            if [[ -d "Recovered/$FitsName" ]]; then
+                rm -rf "Recovered/$FitsName"
+            fi
+        fi
+    fi
+    # 
+    if [[ -f "Simulated/$FitsName.tar.gz" ]]; then
+        echo -n "Found existing \"Simulated/$FitsName.tar.gz\"! Checking integrity ... "
+        if ! tar tf "Simulated/$FitsName.tar.gz" &> /dev/null; then 
+            echo "Broken! Deleting it!"
+            rm "Simulated/$FitsName.tar.gz"
+        else
+            echo "OK! Now let us delete the folder \"Simulated/$FitsName\"!"
+            if [[ -d "Simulated/$FitsName" ]]; then
+                rm -rf "Simulated/$FitsName"
+            fi
+        fi
     fi
     
-    # check recovered directory
-    if [[ ! -d "Recovered/$FitsName/" ]]; then
-        echo "Error! \"Recovered/$FitsName/\" was not found!"
-        exit
+    # 
+    if [[ ! -f "Simulated/$FitsName.tar.gz" ]]; then
+        # check simulation directory and datatable
+        if [[ ! -f "Simulated/$FitsName/datatable_Simulated.txt" ]]; then
+            echo "Error! \"Simulated/$FitsName/datatable_Simulated.txt\" was not found!"
+            exit
+        fi
+        # cd, tar, cd back
+        cd "Simulated"
+        tar -czf "$FitsName.tar.gz" "$FitsName"
+        cd "../"
     fi
     
-    # cd 
-    cd "Recovered"
-    
-    # tar
-    tar -czf "$FitsName.tar.gz" "$FitsName"
-    
-    # cd back
-    cd "../"
-    
-    # cd 
-    cd "Simulated"
-    
-    # tar
-    tar -czf "$FitsName.tar.gz" "$FitsName"
-    
-    # cd back
-    cd "../"
+    # 
+    if [[ ! -f "Recovered/$FitsName.tar.gz" ]]; then
+        # check recovered directory
+        if [[ ! -d "Recovered/$FitsName/" ]]; then
+            echo "Error! \"Recovered/$FitsName/\" was not found!"
+            exit
+        fi
+        # cd, tar, cd back
+        cd "Recovered"
+        tar -czf "$FitsName.tar.gz" "$FitsName"
+        cd "../"
+    fi
     
 done
 
