@@ -1,0 +1,93 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -lt 2 ]]; then
+    echo "Usage: "
+    echo "    a3cosmos-ALMA-source-query-by-ra-dec input_ra input_dec"
+    echo "Input: "
+    echo "    Source RA Dec"
+    echo "Output: "
+    echo "    Output found ALMA continuum fits images."
+    echo ""
+    exit
+fi
+
+
+# 
+# Check code and necessary files
+# 
+if [[ $(type almacosmos_recognize_source_in_fits_meta_table.py 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    else
+        echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash"\" was not found! Please make sure you have downloaded this code from \"https://github.com/1054/AlmaCosmos.git\" completely!"
+        exit 1
+    fi
+fi
+FitsMetaTable=$(dirname $(dirname "${BASH_SOURCE[0]}"))/Data/fits_meta_table_v20180102.txt
+if [[ ! -f "$FitsMetaTable" ]]; then
+    echo "Error! \"$FitsMetaTable\" was not found! Please make sure you have downloaded this code from \"https://github.com/1054/AlmaCosmos.git\" completely!"
+    exit 1
+fi
+
+
+# 
+# Read Input RA Dec
+# 
+InputRADEC=("$@")
+RA=()
+DEC=()
+i=0
+while [[ $i -lt ${#InputRADEC[@]} ]]; do
+    j=$((i+1))
+    if [[ $j -le ${#InputRADEC[@]} ]]; then
+        if [[ "${InputRADEC[i]}" == *":"* ]] || [[ "${InputRADEC[j]}" == *":"* ]] || \
+            [[ "${InputRADEC[i]}" == *"h"* ]] || [[ "${InputRADEC[j]}" == *"d"* ]] || \
+            [[ "${InputRADEC[i]}" == *"m"* ]] || [[ "${InputRADEC[j]}" == *"m"* ]] || \
+            [[ "${InputRADEC[i]}" == *"s"* ]] || [[ "${InputRADEC[j]}" == *"s"* ]] || \
+            [[ "${InputRADEC[j]}" == *"\'"* ]] || [[ "${InputRADEC[j]}" == *"\""* ]]; then
+            TempRADEC=($(radec2degree "${InputRADEC[i]}" "${InputRADEC[j]}"))
+            if [[ ${#TempRADEC[@]} -ge 2 ]]; then
+                RA+=(${TempRADEC[0]})
+                DEC+=(${TempRADEC[1]})
+            fi
+        else
+            RA+=(${InputRADEC[i]})
+            DEC+=(${InputRADEC[j]})
+        fi
+    fi
+    i=$((i+2))
+done
+
+
+# 
+# Run python code to check source intersection with any fits image
+# 
+for (( i = 0; i < ${#RA[@]}; i++ )); do
+    almacosmos_recognize_source_in_fits_meta_table.py ${RA[i]} ${DEC[i]} "$FitsMetaTable"
+done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
