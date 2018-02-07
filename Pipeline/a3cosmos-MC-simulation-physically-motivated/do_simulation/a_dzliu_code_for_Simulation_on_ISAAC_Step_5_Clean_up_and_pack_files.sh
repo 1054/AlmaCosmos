@@ -7,7 +7,7 @@
 # 
 IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
 
-for (( i=0; i<${#FitsNames[@]}; i++ )); do
+for (( i=38; i<${#FitsNames[@]}; i++ )); do
     
     FitsName=$(basename "${FitsNames[i]}" | sed -e 's/\.cont.I.image.fits$//g')
     echo "${FitsNames[i]} ($((i+1))/${#FitsNames[@]})"
