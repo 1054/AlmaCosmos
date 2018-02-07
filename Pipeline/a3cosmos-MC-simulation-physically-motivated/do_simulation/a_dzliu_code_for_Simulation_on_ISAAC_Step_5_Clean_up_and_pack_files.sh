@@ -46,10 +46,12 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
             echo "Broken! Deleting it!"
             rm "Recovered/$FitsName.tar.gz"
         else
-            echo "OK! Now let us delete the folder \"Recovered/$FitsName\"!"
+            echo -n "OK!" 
             if [[ -d "Recovered/$FitsName" ]]; then
-                rm -rf "Recovered/$FitsName"
+                echo -n " Now let us delete the folder \"Recovered/$FitsName\"!"
+                #rm -rf "Recovered/$FitsName"
             fi
+            echo ""
         fi
     fi
     # 
@@ -59,10 +61,12 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
             echo "Broken! Deleting it!"
             rm "Simulated/$FitsName.tar.gz"
         else
-            echo "OK! Now let us delete the folder \"Simulated/$FitsName\"!"
+            echo -n "OK!" 
             if [[ -d "Simulated/$FitsName" ]]; then
-                rm -rf "Simulated/$FitsName"
+                echo -n " Now let us delete the folder \"Simulated/$FitsName\"!"
+                #rm -rf "Simulated/$FitsName"
             fi
+            echo ""
         fi
     fi
     
