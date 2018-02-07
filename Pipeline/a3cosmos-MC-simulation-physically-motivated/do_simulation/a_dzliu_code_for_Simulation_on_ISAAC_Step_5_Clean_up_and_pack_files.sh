@@ -49,6 +49,7 @@ for (( i=38; i<${#FitsNames[@]}; i++ )); do
             echo -n "OK!" 
             if [[ -d "Recovered/$FitsName" ]]; then
                 echo -n " Now let us delete the folder \"Recovered/$FitsName\"!"
+                echo "rm -rf \"Recovered/$FitsName\""
                 #rm -rf "Recovered/$FitsName"
             fi
             echo ""
@@ -64,6 +65,7 @@ for (( i=38; i<${#FitsNames[@]}; i++ )); do
             echo -n "OK!" 
             if [[ -d "Simulated/$FitsName" ]]; then
                 echo -n " Now let us delete the folder \"Simulated/$FitsName\"!"
+                echo "rm -rf \"Simulated/$FitsName\""
                 #rm -rf "Simulated/$FitsName"
             fi
             echo ""
