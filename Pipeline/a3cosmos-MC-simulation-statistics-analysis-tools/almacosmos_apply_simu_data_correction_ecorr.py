@@ -95,7 +95,7 @@ else:
     print('Error! Could not find "S_out" column!')
     sys.exit()
 data_S_out = catalog.getColumn(col_S_out) * mal_S_out # convert to mJy
-#---------------# e_S_out will not be updated because this code only deals with fbias
+#---------------# e_S_out will also be updated
 col_e_S_out = ''
 mal_e_S_out = 1.0 # multiplification factor
 if 'e_S_out' in catalog_column_names:
@@ -121,6 +121,8 @@ if 'noise' in catalog_column_names:
     data_noise = catalog.getColumn('noise') # mJy
 elif 'rms' in catalog_column_names:
     data_noise = catalog.getColumn('rms') # mJy
+elif 'Isl_rms' in catalog_column_names:
+    data_noise = catalog.getColumn('Isl_rms') * 1e3 # convert to mJy
 else:
     print('Error! Could not find "noise" column!')
     sys.exit()
@@ -132,18 +134,25 @@ elif 'Maj_deconv' in catalog_column_names and 'beam_maj' in catalog_column_names
     data_Maj_beam = catalog.getColumn('beam_maj')
     data_Min_beam = catalog.getColumn('beam_min')
     data_PA_beam = catalog.getColumn('beam_PA')
-    #data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + (data_Maj_beam * data_Min_beam)) #<TODO># do the source size convolution
+    data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + numpy.power(data_Maj_beam,2)) #<TODO># do the source size convolution
+elif 'Maj_deconv' in catalog_column_names and 'Beam_MAJ' in catalog_column_names and 'Beam_MIN' in catalog_column_names and 'Beam_PA' in catalog_column_names:
+    data_Maj_deconv = catalog.getColumn('Maj_deconv') * 3600.0 # convert to arcsec
+    data_Maj_beam = catalog.getColumn('Beam_MAJ') * 3600.0 # convert to arcsec
+    data_Min_beam = catalog.getColumn('Beam_MIN') * 3600.0 # convert to arcsec
+    data_PA_beam = catalog.getColumn('Beam_PA')
     data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + numpy.power(data_Maj_beam,2)) #<TODO># do the source size convolution
 else:
     print('Error! Could not find "Maj_out" column!')
     sys.exit()
 #---------------
-#col_Maj_beam = ''
-#mal_Maj_beam = 1.0 # multiplification factor
+col_Maj_beam = ''
+mal_Maj_beam = 1.0 # multiplification factor
 if 'Maj_beam' in catalog_column_names:
     data_Maj_beam = catalog.getColumn('Maj_beam')
 elif 'beam_maj' in catalog_column_names:
     data_Maj_beam = catalog.getColumn('beam_maj')
+elif 'Beam_MAJ' in catalog_column_names:
+    data_Maj_beam = catalog.getColumn('Beam_MAJ') * 3600.0 # convert to arcsec
 else:
     print('Error! Could not find "Maj_beam" column!')
     sys.exit()
@@ -154,7 +163,7 @@ else:
 # 
 x1 = data_S_peak/data_noise
 x2 = data_Maj_out/data_Maj_beam
-x = numpy.column_stack((numpy.log10(x1),x2))
+
 
 # 
 # read best_fit_function
@@ -169,6 +178,35 @@ with open('base_interp_array_for_ecorr.json', 'r') as fp:
     base_interp = json.load(fp)
 
 
+
+# 
+# constrain data range
+param_x1 = [t[0] for t in base_interp['x']]
+param_x2 = [t[1] for t in base_interp['x']]
+param_min_x1 = numpy.min(param_x1)
+param_max_x1 = numpy.max(param_x1)
+param_min_x2 = numpy.min(param_x2)
+param_max_x2 = numpy.max(param_x2)
+data_mask = (~numpy.isfinite(x1)) | (~numpy.isfinite(x2))
+x1[data_mask] = param_min_x1
+x2[data_mask] = param_min_x2
+data_min_x1 = numpy.min(x1)
+data_max_x1 = numpy.max(x1)
+data_min_x2 = numpy.min(x2)
+data_max_x2 = numpy.max(x2)
+print('param_min_x1 = %s'%(param_min_x1))
+print('param_min_x2 = %s'%(param_min_x2))
+print('data_min_x1 = %s'%(data_min_x1))
+print('data_min_x2 = %s'%(data_min_x2))
+
+
+
+# 
+# column_stack x1 x2
+x = numpy.column_stack((numpy.log10(x1),x2))
+
+
+
 # 
 # 2D interpolation
 from scipy import interpolate
@@ -178,6 +216,7 @@ ecorr_array_interpolated = interpolate.griddata(numpy.array(base_interp['x']), n
 ecorr_array_mask = numpy.isnan(ecorr_array_interpolated)
 ecorr_array = ecorr_array_interpolated
 ecorr_array[ecorr_array_mask] = ecorr_array_extrapolated[ecorr_array_mask]
+ecorr_array[data_mask] = numpy.nan
 #pprint(x1_grid)
 #pprint(x2_grid)
 #pprint(ecorr_grid)
@@ -322,11 +361,14 @@ input_catalog_file_name, input_catalog_file_ext = os.path.splitext(input_catalog
 
 catalog.TableData[col_e_S_out] = e_S_out_corr / mal_e_S_out
 
-asciitable.write(catalog.TableData, input_catalog_file_name+'_corrected.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
-                    names=catalog_column_names, overwrite=True)
-os.system('sed -i.bak -e "1s/^ /#/" "%s"'%(input_catalog_file_name+'_corrected.txt'))
+catalog.saveAs(input_catalog_file_name+'_corrected'+input_catalog_file_ext)
 
-print('Output to "%s"!'%(input_catalog_file_name+'_corrected.txt'))
+#asciitable.write(catalog.TableData, input_catalog_file_name+'_corrected.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
+#                    names=catalog_column_names, overwrite=True)
+#os.system('sed -i.bak -e "1s/^ /#/" "%s"'%(input_catalog_file_name+'_corrected.txt'))
+#
+#print('Output to "%s"!'%(input_catalog_file_name+'_corrected.txt'))
+print('Output to "%s"!'%(input_catalog_file_name+'_corrected'+input_catalog_file_ext))
 
 
 
