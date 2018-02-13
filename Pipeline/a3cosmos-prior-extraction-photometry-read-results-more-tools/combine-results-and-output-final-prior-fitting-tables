@@ -74,9 +74,12 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 ocmd="addcol E_Galfit_flux -units \"Jy\" \"df_${str_Fit}/1e3\"" \
                 ocmd="addcol Peak_flux -units \"Jy\" \"source_peak\"" \
                 ocmd="addcol E_Peak_flux -units \"Jy\" \"source_peak_err\"" \
+                ocmd="addcol Residual_flux -units \"Jy\" \"fres_${str_Fit}/1e3\"" \
                 ocmd="addcol Total_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3\"" \
                 ocmd="addcol Peak_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3/sqrt(source_area_in_pix)\"" \
-                ocmd="addcol Residual_flux -units \"Jy\" \"fres_${str_Fit}/1e3\"" \
+                ocmd="addcol RMS -units \"Jy/beam\" \"Peak_RMS\"" \
+                ocmd="addcol Total_SNR \"Total_flux/E_Total_flux\"" \
+                ocmd="addcol Peak_SNR \"Peak_flux/Peak_RMS\"" \
                 ocmd="addcol Maj_deconv -units \"degrees\" \"maj_${str_Fit}/3600.0\"" \
                 ocmd="addcol E_Maj_deconv -units \"degrees\" \"maj_err_${str_Fit}/3600.0\"" \
                 ocmd="addcol Min_deconv -units \"degrees\" \"min_${str_Fit}/3600.0\"" \
@@ -113,7 +116,7 @@ if [[ $use_Gaussian -eq 1 ]]; then
     # 
     topcat -stilts tpipe \
                 in="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits" \
-                cmd="keepcols \"ID RA Dec Total_flux E_Total_flux Galfit_flux E_Galfit_flux Peak_flux E_Peak_flux Residual_flux RMS Maj_deconv E_Maj_deconv Min_deconv E_Min_deconv PA_deconv E_PA_deconv Pixel_noise Pixel_scale Beam_area Obs_frequency Obs_wavelength Pb_corr_pb_image Pb_corr_equation Galfit_chi_square Galfit_reduced_chi_square Galfit_N_aperture_pixel Galfit_N_free_parameter Flag_size_lower_boundary Flag_size_upper_boundary Flag_size_initial_guess Flag_zero_galfit_flux_error Flag_zero_galfit_size_error Image_file_name Image\"" \
+                cmd="keepcols \"ID RA Dec Total_flux E_Total_flux Galfit_flux E_Galfit_flux Peak_flux E_Peak_flux Residual_flux Total_RMS Peak_RMS RMS Total_SNR Peak_SNR Maj_deconv E_Maj_deconv Min_deconv E_Min_deconv PA_deconv E_PA_deconv Pixel_noise Pixel_scale Beam_area Obs_frequency Obs_wavelength Pb_corr_pb_image Pb_corr_equation Galfit_chi_square Galfit_reduced_chi_square Galfit_N_aperture_pixel Galfit_N_free_parameter Flag_size_lower_boundary Flag_size_upper_boundary Flag_size_initial_guess Flag_zero_galfit_flux_error Flag_zero_galfit_size_error Image_file_name Image\"" \
                 out="A-COSMOS_prior_${str_Date}_${str_Type}.fits"
     # 
     echo "Output to \"A-COSMOS_prior_${str_Date}_${str_Type}.fits\"!"
