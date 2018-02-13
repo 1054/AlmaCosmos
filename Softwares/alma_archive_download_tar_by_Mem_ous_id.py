@@ -71,8 +71,13 @@ for Member_ous_id in Member_ous_ids:
         continue
     
     # archive url
+    # 'http://almascience.org',
+    # 'https://almascience.eso.org',
+    # 'https://almascience.nrao.edu',
+    # 'https://almascience.nao.ac.jp',
+    # 'https://beta.cadc-ccda.hia-iha.nrc-cnrc.gc.ca'
     if Use_alma_site == 'eso':
-        Alma.archive_url = u'http://almascience.eso.org'
+        Alma.archive_url = u'https://almascience.eso.org'
     else:
         Alma.archive_url = u'https://almascience.nrao.edu'
     
