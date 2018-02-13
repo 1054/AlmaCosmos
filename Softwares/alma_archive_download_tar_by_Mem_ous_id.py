@@ -15,12 +15,16 @@ import os, sys, re
 # 
 Member_ous_ids = []
 Login_user_name = ''
+Use_alma_site = 'nrao'
 if len(sys.argv) > 1:
+    i = 0
     for i in range(1,len(sys.argv)):
         if sys.argv[i].find("uid")==0:
             Member_ous_ids.append(sys.argv[1])
         elif sys.argv[i].find("user:")==0:
             Login_user_name = sys.argv[i].replace('user:','')
+        elif sys.argv[i].lower().find("-eso")==0 or sys.argv[i].lower().find("--eso")==0:
+            Use_alma_site = 'eso'
 else:
     print('Usage: alma_archive_download_tar_by_Mem_ous_id.py "uid://A001/X148/X119" "user:dzliu"')
     sys.exit()
@@ -67,7 +71,10 @@ for Member_ous_id in Member_ous_ids:
         continue
     
     # archive url
-    Alma.archive_url = u'https://almascience.nrao.edu'
+    if Use_alma_site == 'eso':
+        Alma.archive_url = u'http://almascience.eso.org'
+    else:
+        Alma.archive_url = u'https://almascience.nrao.edu'
     
     # login
     if Login_user_name != '':
