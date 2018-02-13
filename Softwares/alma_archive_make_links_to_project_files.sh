@@ -57,6 +57,8 @@ for project_id in 2013.1.00034.S; do
     iGB=0
     iMB=0
     for (( i = 0; i < ${#list_of_mem_ous_ids[@]}; i++ )); do
+        # 
+        # determine SB GB MB number, auto-increased
         str_SB=$(echo "${list_of_mem_ous_ids[i]}" | perl -pe 's%.*/(sci[^/]+)/.*%\1%g')
         str_GB=$(echo "${list_of_mem_ous_ids[i]}" | perl -pe 's%.*/(group[^/]+)/.*%\1%g')
         str_MB=$(echo "${list_of_mem_ous_ids[i]}" | perl -pe 's%.*/(mem[^/]+)$%\1%g')
@@ -81,7 +83,14 @@ for project_id in 2013.1.00034.S; do
         elif [[ "$str_MB" != "$pre_str_MB" ]]; then
             iMB=$(echo "$iMB+1" | bc)
         fi
-        echo "ln -fsT ${list_of_mem_ous_ids[i]} SB${iSB}_GB${iGB}_MB${iMB}"
+        # 
+        # try to get SB name (SB = scheduling block)
+        str_SB_name=""
+        if [[ -f "${list_of_mem_ous_ids[i]}/README" ]]; then
+            str_SB_name=$(cat "${list_of_mem_ous_ids[i]}/README" | grep "^SB name" | head -n 1 | perl -pe 's/SB name: *(.*) *$/\1/g' | sed -e 's/[^0-9a-zA-Z_.=+-]/_/g')
+        fi
+        # 
+        echo "ln -fsT ${list_of_mem_ous_ids[i]} SB${iSB}_GB${iGB}_MB${iMB}_${str_SB_name}"
         #ln -fsT ${list_of_mem_ous_ids[i]} SB${iSB}_GB${iGB}_MB${iMB}
         pre_str_SB="$str_SB"
         pre_str_GB="$str_GB"
