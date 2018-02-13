@@ -76,7 +76,7 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 ocmd="addcol E_Peak_flux -units \"Jy\" \"source_peak_err\"" \
                 ocmd="addcol Residual_flux -units \"Jy\" \"fres_${str_Fit}/1e3\"" \
                 ocmd="addcol Total_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3\"" \
-                ocmd="addcol Peak_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3/sqrt(source_area_in_pix)\"" \
+                ocmd="addcol Peak_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3/sqrt(convol_area_in_pix)\"" \
                 ocmd="addcol RMS -units \"Jy/beam\" \"Peak_RMS\"" \
                 ocmd="addcol Total_SNR \"Total_flux/E_Total_flux\"" \
                 ocmd="addcol Peak_SNR \"Peak_flux/Peak_RMS\"" \
