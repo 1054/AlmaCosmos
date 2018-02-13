@@ -275,7 +275,8 @@ calc_sky_frequency 00
     }
     if(!is_file("image_sci_sky_frequency.txt")) {
         print 'Error! Could not find sky frequency from the input fits file header!\n' {}
-        exit
+        print "WARNING_NO_SKY_FREQUENCY" 'Error! Could not find sky frequency from the input fits file header!\n' {}
+        #exit
     }
 
 
