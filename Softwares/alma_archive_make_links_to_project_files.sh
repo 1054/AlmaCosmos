@@ -1,8 +1,9 @@
 #!/bin/bash
 # 
 
-if [[ ! -d ../../../By_Project ]]; then 
-    echo "Error! ../../../By_Project does not exist!"
+data_dir_by_project="../../By_Project"
+if [[ ! -d "$data_dir_by_project" ]]; then 
+    echo "Error! \"$data_dir_by_project\" does not exist!"
     exit 1
 fi
 
@@ -44,14 +45,14 @@ for project_id in 2013.1.00034.S; do
     
     echo "cd Level_1_Raw/"
     cd Level_1_Raw/
-    echo "ln -fsT ../../../By_Project/${archival_prefix}${project_id} ${project_id}.cache"
-    ln -fsT ../../../By_Project/${archival_prefix}${project_id} ${project_id}.cache
+    echo "ln -fsT ../$data_dir_by_project/${archival_prefix}${project_id} ${project_id}.cache"
+    ln -fsT ../$data_dir_by_project/${archival_prefix}${project_id} ${project_id}.cache
     echo "cd ../"
     cd ../
     
     echo "cd Level_2_Calib/"
     cd Level_2_Calib/
-    list_of_mem_ous_ids=($(ls -1d ../../../By_Project/${archival_prefix}${project_id}/sci*/group*/mem* | sort -V))
+    list_of_mem_ous_ids=($(ls -1d ../$data_dir_by_project/${archival_prefix}${project_id}/sci*/group*/mem* | sort -V))
     iSB=0
     iGB=0
     iMB=0
