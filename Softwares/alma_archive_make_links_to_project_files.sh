@@ -90,8 +90,10 @@ for project_id in 2013.1.00034.S; do
             str_SB_name=$(cat "${list_of_mem_ous_ids[i]}/README" | grep "^SB name" | head -n 1 | perl -pe 's/SB name: *(.*) *$/\1/g' | sed -e 's/[^0-9a-zA-Z_.=+-]/_/g')
         fi
         # 
-        echo "ln -fsT ${list_of_mem_ous_ids[i]} SB${iSB}_GB${iGB}_MB${iMB}_${str_SB_name}"
-        #ln -fsT ${list_of_mem_ous_ids[i]} SB${iSB}_GB${iGB}_MB${iMB}
+        echo "ln -fsT ${list_of_mem_ous_ids[i]} ${project_id}_SB${iSB}_GB${iGB}_MB${iMB}_${str_SB_name}"
+        ln -fsT ${list_of_mem_ous_ids[i]} ${project_id}_SB${iSB}_GB${iGB}_MB${iMB}_${str_SB_name}
+        # 
+        # store str SB GB MB for next loop comparison, so that we know if we need to increase SB GB MB number or not.
         pre_str_SB="$str_SB"
         pre_str_GB="$str_GB"
         pre_str_MB="$str_MB"
