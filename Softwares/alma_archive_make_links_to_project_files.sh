@@ -62,8 +62,8 @@ for project_id in 2013.1.00034.S; do
         str_MB=$(echo "${list_of_mem_ous_ids[i]}" | perl -pe 's%.*/(mem[^/]+)$%\1%g')
         if [[ $iSB -eq 0 ]]; then 
             iSB=1
-            iGB=1
-            iMB=1
+            iGB=0
+            iMB=0
         elif [[ "$str_SB" != "$pre_str_SB" ]]; then
             iSB=$(echo "$iSB+1" | bc)
             iGB=0
@@ -71,7 +71,7 @@ for project_id in 2013.1.00034.S; do
         fi
         if [[ $iGB -eq 0 ]]; then 
             iGB=1
-            iMB=1
+            iMB=0
         elif [[ "$str_GB" != "$pre_str_GB" ]]; then
             iGB=$(echo "$iGB+1" | bc)
             iMB=0
