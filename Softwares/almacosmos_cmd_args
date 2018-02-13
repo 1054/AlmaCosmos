@@ -8,8 +8,15 @@
 # 
 # Example:
 #          In a bash script, we write: 
-#          source $(which almacosmos_cmd_args) -sim aaa.fits -rec bbb.fits
-#          Then after this, we can use varibales ${almacosmos_cmd_sim} ${almacosmos_cmd_rec}
+#              source $(which almacosmos_cmd_args) -sim aaa.fits -rec bbb.fits
+#          Then after this, the following array varibales will be created 
+#          with aaa.fits and bbb.fits as their contents: 
+#              ${almacosmos_cmd_sim} ${almacosmos_cmd_rec}
+#          
+#          Or, if we write
+#               source $(which almacosmos_cmd_args) -xlog -ylog
+#          Then, we will have "-xlog" "-ylog" in the array variable: 
+#               ${almacosmos_cmd_misc_opts[@]}
 # 
 
 
@@ -81,22 +88,24 @@ while [[ iarg_iarg -le $# ]]; do
     #echo "$iarg_iarg ${!iarg_iarg}"
     # 
     if echo "${!iarg_iarg}" | grep -q -e "^-[a-zA-Z]" -e "^--[a-zA-Z]"; then
-        if [[ iarg_iarg -eq $# ]]; then
-            almacosmos_cmd_misc_opts+=("${!iarg_iarg}") # record misc opts without arg value, if this is the last input. 
-        else
-            if [[ ! -z "$iarg_name" ]]; then
-                iarg_numb=$(eval "echo \${#$iarg_name[@]}")
-                if [[ $iarg_numb -eq 0 ]]; then
-                    almacosmos_cmd_misc_opts+=("$iarg_text") # record misc opts without arg value, if its next input is also an option.
-                fi
+        iarg_name_prev="$iarg_name"
+        iarg_text_prev="$iarg_text"
+        if [[ ! -z "$iarg_name_prev" ]]; then
+            iarg_numb=$(eval "echo \${#$iarg_name_prev[@]}")
+            echo "dimension $iarg_name_prev $iarg_numb"
+            if [[ $iarg_numb -eq 0 ]]; then
+                almacosmos_cmd_misc_opts+=("$iarg_text_prev") # record misc opts without arg value, if its next input is also an option.
             fi
-            iarg_name=$(echo "${!iarg_iarg}" | sed -e 's/^--/^-/g' | sed -e 's/^-/almacosmos_cmd_/g' | sed -e 's/[^a-zA-Z_0-9]/_/g')
-            iarg_text="${!iarg_iarg}"
-            #echo "declare -a $iarg_name"
-            declare -a $iarg_name
-            #echo "almacosmos_cmd_main_opts+=(\"$iarg_text\")"
-            almacosmos_cmd_main_opts+=("$iarg_text") # all the opts. An opt is an input string starting with "-" or "--". 
         fi
+        iarg_name=$(echo "${!iarg_iarg}" | sed -e 's/^--/^-/g' | sed -e 's/^-/almacosmos_cmd_/g' | sed -e 's/[^a-zA-Z_0-9]/_/g')
+        iarg_text="${!iarg_iarg}"
+        echo "declare -a $iarg_name"
+        declare -a $iarg_name
+        if [[ iarg_iarg -eq $# ]]; then
+            almacosmos_cmd_misc_opts+=("$iarg_text") # record misc opts without arg value, if this is the last input. 
+        fi
+        #echo "almacosmos_cmd_main_opts+=(\"$iarg_text\")"
+        almacosmos_cmd_main_opts+=("$iarg_text") # all the opts. An opt is an input string starting with "-" or "--". 
     elif [[ ! -z "$iarg_name" ]]; then
         eval "$iarg_name+=(\"${!iarg_iarg}\")"
         eval "almacosmos_cmd_main_args+=(\"${!iarg_iarg}\")"

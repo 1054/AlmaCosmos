@@ -1,0 +1,280 @@
+#!/bin/bash
+# 
+# 
+# This code runs topcat stilts cross-matching by sky
+# 
+# Usage: 
+#   source ~/Cloud/Github/AlmaCosmos/Softwares/SETUP.bash
+# 
+
+
+# 
+# Usage
+# 
+function Usage() {
+    echo "Usage: "
+    echo "    almacosmos_topcat_plot_scatter \\"
+    echo "                                   -cat1 cat_1.fits -x1 \"x1\" -y1 \"y1\" -label1 \"data 1\" -color2 \"#1e90ff\" \\"
+    echo "                                   -cat2 cat_2.fits -x2 \"x2\" -y2 \"y2\" -label2 \"data 2\" -aux2 \"(flux/error)\" \\"
+    echo "                                   -xtitle \"flux_1\" -ytitle \"flux_2\" -xrange \"0 100\" -yrange \"0 100\" -xlog -ylog \\"
+    echo "                                   -out output.pdf \\"
+    echo ""
+}
+
+if [[ $# -eq 0 ]]; then
+    Usage; exit
+fi
+
+
+# 
+# Source necessary software dependency
+# 
+if [[ -f "$(dirname ${BASH_SOURCE[0]})/SETUP.bash" ]]; then
+    source "$(dirname ${BASH_SOURCE[0]})/SETUP.bash"
+else
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/SETUP.bash\" was not found!"
+    exit 1
+fi
+
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! \"topcat\" was not found!"
+    exit 1
+fi
+
+
+# 
+# Read input arguments
+# 
+#source $(which almacosmos_cmd_args) "$@"
+source almacosmos_cmd_args "$@"
+
+
+
+
+# 
+# title
+xtitle="X"
+ytitle="Y"
+if [[ ${#almacosmos_cmd_xtitle[@]} -gt 0 ]]; then
+    xtitle="${almacosmos_cmd_xtitle[@]}"
+fi
+if [[ ${#almacosmos_cmd_ytitle[@]} -gt 0 ]]; then
+    ytitle="${almacosmos_cmd_ytitle[@]}"
+fi
+
+# 
+# log
+xlog="false"
+ylog="false"
+auxlog="false"
+auxflip="false"
+legend="true"
+for (( i = 0; i < ${#almacosmos_cmd_misc_opts[@]}; i++ )); do
+    echo "${almacosmos_cmd_misc_opts[i]}"
+    if [[ "${almacosmos_cmd_misc_opts[i]}" == "-xlog" ]]; then
+        xlog="true"
+    elif [[ "${almacosmos_cmd_misc_opts[i]}" == "-ylog" ]]; then
+        ylog="true"
+    elif [[ "${almacosmos_cmd_misc_opts[i]}" == "-auxlog" ]]; then
+        auxlog="true"
+    elif [[ "${almacosmos_cmd_misc_opts[i]}" == "-auxflip" ]]; then
+        auxflip="true"
+    elif [[ "${almacosmos_cmd_misc_opts[i]}" == "-no-legend" ]]; then
+        legend="false"
+    fi
+done
+echo "xlog = $xlog"
+echo "ylog = $ylog"
+
+# 
+# xminmax
+xminmax="" # "xmin=0.01 xmax=200"
+if [[ ${#almacosmos_cmd_xrange[@]} -eq 1 ]]; then
+    xminmax="xmin=${almacosmos_cmd_xrange[0]}"
+elif [[ ${#almacosmos_cmd_xrange[@]} -ge 2 ]]; then
+    if [[ "${almacosmos_cmd_xrange[0]}" == "none" ]] || [[ "${almacosmos_cmd_xrange[0]}" == "null" ]] || [[ "${almacosmos_cmd_xrange[0]}" == "nan" ]]; then
+        xminmax="xmax=${almacosmos_cmd_xrange[1]}"
+    else
+        xminmax="xmin=${almacosmos_cmd_xrange[0]} xmax=${almacosmos_cmd_xrange[1]}"
+    fi
+fi
+echo "xminmax = $xminmax"
+
+# 
+# yminmax
+yminmax="" # "ymin=0.01 ymax=200"
+if [[ ${#almacosmos_cmd_yrange[@]} -eq 1 ]]; then
+    yminmax="xmin=${almacosmos_cmd_yrange[0]}"
+elif [[ ${#almacosmos_cmd_yrange[@]} -ge 2 ]]; then
+    if [[ "${almacosmos_cmd_yrange[0]}" == "none" ]] || [[ "${almacosmos_cmd_yrange[0]}" == "null" ]] || [[ "${almacosmos_cmd_yrange[0]}" == "nan" ]]; then
+        yminmax="xmax=${almacosmos_cmd_yrange[1]}"
+    else
+        yminmax="xmin=${almacosmos_cmd_yrange[0]} xmax=${almacosmos_cmd_yrange[1]}"
+    fi
+fi
+echo "yminmax = $yminmax"
+
+# 
+# aux (colorbar)
+auxlabel=""
+if [[ ${#almacosmos_cmd_auxlabel[@]} -gt 0 ]]; then
+    auxlabel="auxlabel=\"${almacosmos_cmd_auxlabel[0]}\" "
+    if [[ "$auxlog" == "true" ]]; then
+        auxlabel="${auxlabel}auxfunc=log "
+    fi
+    if [[ ${#almacosmos_cmd_auxmap[@]} -gt 0 ]]; then
+        auxlabel="${auxlabel}auxmap=\"${almacosmos_cmd_auxmap[0]}\" "
+    fi
+    if [[ "$auxflip" == "true" ]]; then
+        auxlabel="${auxlabel}auxflip=true "
+    fi
+fi
+
+# 
+# margin
+margin=(80 50 20 20) # left, bottom, right, top
+for (( i = 0; i < ${#almacosmos_cmd_main_opts[@]}; i++ )); do
+    if [[ "${almacosmos_cmd_main_opts[i]}" == "-aux"* ]]; then
+        margin[2]=80
+    fi
+done
+if [[ ${#almacosmos_cmd_margin[@]} -eq 4 ]]; then
+    margin=(${almacosmos_cmd_margin[@]}) # left, bottom, right, top
+elif [[ ${#almacosmos_cmd_margin_left[@]} -ge 1 ]]; then
+    margin[0]=${almacosmos_cmd_margin_left[0]}
+elif [[ ${#almacosmos_cmd_margin_bottom[@]} -ge 1 ]]; then
+    margin[1]=${almacosmos_cmd_margin_bottom[0]}
+elif [[ ${#almacosmos_cmd_margin_right[@]} -ge 1 ]]; then
+    margin[2]=${almacosmos_cmd_margin_right[0]}
+elif [[ ${#almacosmos_cmd_margin_top[@]} -ge 1 ]]; then
+    margin[3]=${almacosmos_cmd_margin_top[0]}
+fi
+
+# 
+# output
+output_name="Plot_scatter"
+if [[ ${#almacosmos_cmd_out[@]} -ge 1 ]]; then
+    output_name=$(echo "${almacosmos_cmd_out[0]}" | sed -e 's/\.pdf$//g')
+fi
+echo "output_name = $output_name"
+
+
+
+
+
+# 
+# finally, do the plot!
+# 
+plot_script_name="$output_name.sh"
+echo "plot_script_name = $plot_script_name"
+echo "#!/bin/bash"                                                                        >  "$plot_script_name"
+echo ""                                                                                   >> "$plot_script_name"
+echo "cd \"$(pwd)\""                                                                      >> "$plot_script_name"
+echo ""                                                                                   >> "$plot_script_name"
+echo "topcat -stilts plot2plane \\"                                                       >> "$plot_script_name"
+echo "                xpix=500 ypix=400 \\"                                               >> "$plot_script_name"
+echo "                insets=\"${margin[3]},${margin[0]},${margin[1]},${margin[2]}\" \\"  >> "$plot_script_name"
+echo "                xlabel=\"\\Large ${xtitle}\" \\"                                    >> "$plot_script_name"
+echo "                ylabel=\"\\Large ${ytitle}\" \\"                                    >> "$plot_script_name"
+echo "                xlog=$xlog $xminmax \\"                                             >> "$plot_script_name"
+echo "                ylog=$ylog $yminmax \\"                                             >> "$plot_script_name"
+echo "                $auxlabel\\"                                                        >> "$plot_script_name"
+# 
+# plot function
+i=1
+while [[ $(eval "echo \${#almacosmos_cmd_function$i[@]}") -gt 0 ]]; do
+fexprx=$(eval "echo \"\${almacosmos_cmd_function$i[0]}\"")
+colorx="black";         if [[ $(eval "echo \${#almacosmos_cmd_function${i}color[@]}") -gt 0 ]]; then colorx=$(eval "echo \"\${almacosmos_cmd_function${i}color[0]}\""); fi
+thickx="1";             if [[ $(eval "echo \${#almacosmos_cmd_function${i}thick[@]}") -gt 0 ]]; then thickx=$(eval "echo \"\${almacosmos_cmd_function${i}thick[0]}\""); fi
+labelx="function\\ $i"; if [[ $(eval "echo \${#almacosmos_cmd_function${i}label[@]}") -gt 0 ]]; then labelx=$(eval "echo \"\${almacosmos_cmd_function${i}label[0]}\""); fi
+echo "                \\"                                                                 >> "$plot_script_name"
+echo "                layer_function_${i}=function \\"                                    >> "$plot_script_name"
+echo "                fexpr_function_${i}=\"$fexprx\" \\"                                 >> "$plot_script_name"
+echo "                color_function_${i}=$colorx \\"                                     >> "$plot_script_name"
+echo "                thick_function_${i}=$thickx \\"                                     >> "$plot_script_name"
+echo "                antialias_function_${i}=true \\"                                    >> "$plot_script_name"
+echo "                leglabel_function_${i}=\"$labelx\" \\"                              >> "$plot_script_name"
+i=$((i+1))
+done
+# 
+# plot data points
+i=1
+while [[ $(eval "echo \${#almacosmos_cmd_x$i[@]}") -gt 0 ]] && [[ $(eval "echo \${#almacosmos_cmd_y$i[@]}") -gt 0 ]]; do
+xx=$(eval "echo \${almacosmos_cmd_x$i[0]}")
+yy=$(eval "echo \${almacosmos_cmd_y$i[0]}")
+echo "x${i} = $xx"
+echo "y${i} = $yy"
+if [[ $(eval "echo \${#almacosmos_cmd_cat$i[@]}") -gt 0 ]]; then 
+    catx=$(eval "echo \${almacosmos_cmd_cat$i[0]}")
+    fmtx="fits"
+    if [[ $(eval "echo \${#almacosmos_cmd_fmt$i[@]}") -gt 0 ]]; then 
+        fmtx=$(eval "echo \${almacosmos_cmd_fmt$i[0]}")
+    fi
+elif [[ $(eval "echo \${#almacosmos_cmd_cat[@]}") -gt 0 ]]; then
+    catx=$(eval "echo \${almacosmos_cmd_cat[0]}")
+    fmtx="fits"
+    if [[ $(eval "echo \${#almacosmos_cmd_fmt[@]}") -gt 0 ]]; then 
+        fmtx=$(eval "echo \${almacosmos_cmd_fmt[0]}")
+    fi
+else
+    echo "Error! Please input catalog with the \"-cat\" option!"
+    rm "$plot_script_name"
+    exit
+fi
+layerx="mark";          if [[ $(eval "echo \${#almacosmos_cmd_layer$i[@]}")     -gt 0 ]]; then layerx=$(eval "echo \${almacosmos_cmd_layer$i[0]}"); fi
+shapex="filled_circle"; if [[ $(eval "echo \${#almacosmos_cmd_shape$i[@]}")     -gt 0 ]]; then shapex=$(eval "echo \${almacosmos_cmd_shape$i[0]}"); fi
+sizex="2";              if [[ $(eval "echo \${#almacosmos_cmd_size$i[@]}")      -gt 0 ]]; then sizex=$(eval "echo \${almacosmos_cmd_size$i[0]}"); fi
+colorx="#1e90ff";       if [[ $(eval "echo \${#almacosmos_cmd_color$i[@]}")     -gt 0 ]]; then colorx=$(eval "echo \${almacosmos_cmd_color$i[0]}"); fi
+thickx="1";             if [[ $(eval "echo \${#almacosmos_cmd_thick$i[@]}")     -gt 0 ]]; then thickx=$(eval "echo \${almacosmos_cmd_thick$i[0]}"); fi
+shadingx="flat";        if [[ $(eval "echo \${#almacosmos_cmd_shading$i[@]}")   -gt 0 ]]; then shadingx=$(eval "echo \${almacosmos_cmd_shading$i[0]}"); fi
+labelx="dataset\\ $i";  if [[ $(eval "echo \${#almacosmos_cmd_label$i[@]}")     -gt 0 ]]; then labelx=$(eval "echo \"\${almacosmos_cmd_label$i[0]}\""); fi
+fexprx="";              if [[ $(eval "echo \${#almacosmos_cmd_fexpr$i[@]}")     -gt 0 ]]; then fexprx=$(eval "echo \"\${almacosmos_cmd_fexpr$i[0]}\""); fi
+if [[ $(eval "echo \${#almacosmos_cmd_aux$i[@]}") -gt 0 ]]; then
+    shadingx="aux aux${i}=\""$(eval "echo \${almacosmos_cmd_aux$i[0]}")"\""
+else
+    shadingx="$shadingx color${i}=\"$colorx\""
+fi
+if [[ "$layerx" == "function" ]]; then
+echo "                \\"                                                                 >> "$plot_script_name"
+echo "                layer${i}=function \\"                                              >> "$plot_script_name"
+echo "                fexpr${i}=\"$fexprx\" \\"                                           >> "$plot_script_name"
+echo "                color${i}=$colorx \\"                                               >> "$plot_script_name"
+echo "                thick${i}=$thickx \\"                                               >> "$plot_script_name"
+echo "                antialias${i}=true \\"                                              >> "$plot_script_name"
+echo "                leglabel${i}=\"$labelx\" \\"                                        >> "$plot_script_name"
+else
+echo "                \\"                                                                 >> "$plot_script_name"
+echo "                layer${i}=mark \\"                                                  >> "$plot_script_name"
+echo "                shape${i}=$shapex \\"                                               >> "$plot_script_name"
+echo "                size${i}=$sizex \\"                                                 >> "$plot_script_name"
+echo "                shading${i}=$shadingx \\"                                           >> "$plot_script_name"
+echo "                in${i}=$catx \\"                                                    >> "$plot_script_name"
+echo "                ifmt${i}=$fmtx \\"                                                  >> "$plot_script_name"
+echo "                leglabel${i}=\"$labelx\" \\"                                        >> "$plot_script_name"
+echo "                x${i}=\"$xx\" \\"                                                   >> "$plot_script_name"
+echo "                y${i}=\"$yy\" \\"                                                   >> "$plot_script_name"
+fi
+i=$((i+1))
+done
+if [[ "$legend" == "true" ]]; then legpos="legpos=0.08,0.94"; else legpos=""; fi; if [[ $(eval "echo \${#almacosmos_cmd_legpos[@]}") -gt 0 ]]; then legpos=$(eval "echo legpos=\${almacosmos_cmd_legpos[0]}")" "; fi
+fontsize="15"; if [[ $(eval "echo \${#almacosmos_cmd_fontsize[@]}") -gt 0 ]]; then fontsize=$(eval "echo legpos=\${almacosmos_cmd_fontsize[0]}"); fi
+echo "                \\"                                                                           >> "$plot_script_name"
+echo "                legend=$legend $legpos\\"                                                     >> "$plot_script_name"
+echo "                fontsize=$fontsize \\"                                                        >> "$plot_script_name"
+echo "                texttype=latex \\"                                                            >> "$plot_script_name"
+echo "                omode=out \\"                                                                 >> "$plot_script_name"
+echo "                out=\"$output_name.pdf\""                                                     >> "$plot_script_name"
+echo "                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html"     >> "$plot_script_name"
+echo "                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html"  >> "$plot_script_name"
+echo ""                                                                                             >> "$plot_script_name"
+
+
+echo ""
+echo "Running the plotting script \"$plot_script_name\""
+echo ""
+chmod +x "$plot_script_name"
+./"$plot_script_name"
+
+
+
+

@@ -198,6 +198,14 @@ print('param_min_x1 = %s'%(param_min_x1))
 print('param_min_x2 = %s'%(param_min_x2))
 print('data_min_x1 = %s'%(data_min_x1))
 print('data_min_x2 = %s'%(data_min_x2))
+print('param_max_x1 = %s'%(param_max_x1))
+print('param_max_x2 = %s'%(param_max_x2))
+print('data_max_x1 = %s'%(data_max_x1))
+print('data_max_x2 = %s'%(data_max_x2))
+x2mask = (x2<param_min_x2)
+x2[x2mask] = param_min_x2
+x2mask = (x2>param_max_x2)
+x2[x2mask] = param_max_x2
 
 
 
@@ -361,7 +369,7 @@ input_catalog_file_name, input_catalog_file_ext = os.path.splitext(input_catalog
 
 catalog.TableData[col_e_S_out] = e_S_out_corr / mal_e_S_out
 
-catalog.saveAs(input_catalog_file_name+'_corrected'+input_catalog_file_ext)
+catalog.saveAs(input_catalog_file_name+'_corrected'+input_catalog_file_ext, overwrite=True)
 
 #asciitable.write(catalog.TableData, input_catalog_file_name+'_corrected.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
 #                    names=catalog_column_names, overwrite=True)
