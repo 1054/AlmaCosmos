@@ -39,6 +39,7 @@ while [[ $i -le $# ]]; do
     else
         list_of_input_dirs+=("${!i}")
     fi
+    i=$((i+1))
 done
 
 # get current directory
