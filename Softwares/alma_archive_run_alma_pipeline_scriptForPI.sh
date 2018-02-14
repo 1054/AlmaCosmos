@@ -49,7 +49,21 @@ current_dir=$(pwd)
 # find "scriptForPI.py" files
 
 for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
+    # 
+    # skip empty input dir
+    if [[ x"${list_of_input_dirs[i]}" == x"" ]]; then
+        continue
+    fi
+    # 
+    # check input dir existance
+    if [[ ! -d "${list_of_input_dirs[i]}" ]] && [[ ! -L "${list_of_input_dirs[i]}" ]]; then
+        echo "Error! The input direcotry \"${list_of_input_dirs[i]}\" does not exist!"
+    fi
+    # 
+    # find "scriptForPI.py" files
     list_of_script_files=($(find "${list_of_input_dirs[i]}" -type f -name "scriptForPI.py"))
+    # 
+    # loop "scriptForPI.py" file 
     for (( j = 0; j < ${#list_of_script_files[@]}; j++ )); do
         # 
         # store script file name and dir path
