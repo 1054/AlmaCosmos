@@ -28,7 +28,7 @@ casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
 
 list_of_input_dirs=()
 log_file=""
-i=0
+i=1
 while [[ $i -le $# ]]; do
     str_arg=$(echo "${!i}" | sed -e 's/^--/-/g' | awk '{print tolower($0)}')
     if [[ "$str_arg" == "-log" ]]; then
@@ -58,6 +58,7 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
     # check input dir existance
     if [[ ! -d "${list_of_input_dirs[i]}" ]] && [[ ! -L "${list_of_input_dirs[i]}" ]]; then
         echo "Error! The input direcotry \"${list_of_input_dirs[i]}\" does not exist!"
+        exit 1
     fi
     # 
     # find "scriptForPI.py" files
