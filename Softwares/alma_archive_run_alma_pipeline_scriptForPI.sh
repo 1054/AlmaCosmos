@@ -92,6 +92,14 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             list_of_ms_split_cal_dirs=($(find "$script_dir/calibrated/" -mindepth 1 -maxdepth 1 -type d -name "uid___*.ms.split.cal"))
             if [[ ${#list_of_ms_split_cal_dirs[@]} -gt 0 ]]; then
                 echo "Found \"$script_dir/calibrated\" and \"uid___*.ms.split.cal\" therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will try to concatenate them."
+                # check README file which contains CASA version
+                if [[ ! -f "$script_dir/README" ]] && [[ ! -L "$script_dir/README" ]]; then
+                    echo "Error! File \"$script_dir/README\" was not found!"
+                    exit 1
+                fi
+                # source CASA version
+                source "$casa_setup_script_path" "$script_dir/README"
+                # run CASA concat
                 if [[ $(type alma_archive_run_alma_pipeline_concat_ms_split_cal.sh 2>/dev/null | wc -l) -ge 1 ]]; then
                     alma_archive_run_alma_pipeline_concat_ms_split_cal.sh "$script_dir/calibrated"
                     if [[ ! -d "$script_dir/calibrated/calibrated.ms" ]]; then
