@@ -31,7 +31,6 @@ log_file=""
 i=0
 while [[ $i -le $# ]]; do
     str_arg=$(echo "${!i}" | sed -e 's/^--/-/g' | awk '{print tolower($0)}')
-done
     if [[ "$str_arg" == "-log" ]]; then
         if [[ $((i+1)) -le $# ]]; then
             i=$((i+1))
