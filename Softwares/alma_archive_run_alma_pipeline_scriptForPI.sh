@@ -49,7 +49,7 @@ current_dir=$(pwd)
 # find "scriptForPI.py" files
 
 for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
-    list_of_script_files=(find "${list_of_input_dirs[i]}" -type f -name "scriptForPI.py")
+    list_of_script_files=($(find "${list_of_input_dirs[i]}" -type f -name "scriptForPI.py"))
     for (( j = 0; j < ${#list_of_script_files[@]}; j++ )); do
         # 
         # store script file name and dir path
