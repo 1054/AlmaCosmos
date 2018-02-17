@@ -68,6 +68,10 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
     # loop sim image list
     for (( im = 0; im < ${#sim_imlist[@]}; im++ )); do
         # now we get the simulated image file path
+        # check if it is empty of not
+        if [[ x"${sim_imlist[im]}" = x"" ]]; then
+            continue
+        fi
         # check if it is an absolution path (starting with "/") or not. If not, then we prepend the "$sim_imlist_dir" path. 
         if [[ "${sim_imlist[im]}" != "/"* ]]; then
             sim_image_file="../${sim_imlist_dir}/${sim_imlist[im]}"
@@ -110,8 +114,8 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
 export IDL_PATH="+$HOME/Softwares/IDL/lib:$IDL_PATH"
 idl -quiet << EOF
 restore, "../$sim_model_file", verbose=false
-sim_x = CENX
-sim_y = CENY
+sim_x = CENX+1 ; CENX starts from 0, see dist_ellipse.pro
+sim_y = CENY+1 ; CENY starts from 0, see dist_ellipse.pro
 sim_pixsc = PIXSCL * 3600.0 ; arcsec
 ;sim_Maj = SOURCE_SIZE * BEAMSIZE_PIX * sim_pixsc # arcsec #<20171229><BUG># SOURCE_SIZE = sim_Size * BEAMSIZE_PIX
 sim_Maj = SOURCE_SIZE * sim_pixsc ; arcsec #<20171229><BUG># SOURCE_SIZE = sim_Size * BEAMSIZE_PIX
