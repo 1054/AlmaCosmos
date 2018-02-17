@@ -151,7 +151,8 @@ EOF
         echo "              -cat \"Input_Catalogs/${sim_image_name}_catalog.txt\" \\" >> "do_prior_fitting.sh"
         echo "              -sci \"Input_Images/${sim_image_name}_model.fits\" \\" >> "do_prior_fitting.sh"
         echo "              -output-dir \"Output_Photometry\" \\" >> "do_prior_fitting.sh"
-        echo "              -output-name \"${sim_image_name}\" " >> "do_prior_fitting.sh"
+        echo "              -output-name \"${sim_image_name}\" \\" >> "do_prior_fitting.sh"
+        echo "              -steps getpix galfit gaussian final " >> "do_prior_fitting.sh"
         echo "" >> "do_prior_fitting.sh"
         
     done
