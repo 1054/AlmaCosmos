@@ -92,6 +92,8 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
         # unzip sim image file into "Input_Images" for running a3cosmos-prior-extraction-photometry
         if [[ ! -d "Input_Images" ]]; then
             mkdir "Input_Images"
+        fi
+        if [[ ! -f "Input_Images/${sim_image_name}_model.fits" ]]; then
             cd "Input_Images"
             echo "gunzip \"../$sim_image_file\""
             gunzip "../$sim_image_file"
