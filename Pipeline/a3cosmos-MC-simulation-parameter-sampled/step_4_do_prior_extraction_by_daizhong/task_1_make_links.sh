@@ -1,6 +1,9 @@
 #!/bin/bash
 # 
 
+set -e
+
+
 
 if [[ $(hostname) != "aida42198" ]]; then
     echo "Sorry, this code can only be ran on aida42198 machine!"
