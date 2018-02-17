@@ -95,8 +95,8 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
         fi
         if [[ ! -f "Input_Images/${sim_image_name}_model.fits" ]]; then
             cd "Input_Images"
-            echo "gunzip \"../$sim_image_file\""
-            gunzip "../$sim_image_file"
+            echo "gunzip -c \"../$sim_image_file\" > \"${sim_image_name}_model.fits\""
+            gunzip -c "../$sim_image_file" > "${sim_image_name}_model.fits"
             cd "../"
         fi
         # 
