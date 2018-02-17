@@ -103,7 +103,7 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
             cd "Input_Catalogs"
             echo "running idl to read \"../$sim_model_file\""
 export IDL_PATH="+$HOME/Softwares/IDL/lib:$IDL_PATH"
-idl << EOF
+idl -quiet << EOF
 .restore "../$sim_model_file", verbose=false
 sim_x = CENX
 sim_y = CENY
@@ -126,8 +126,8 @@ sim_SNR_peak = float(strmid("$sim_image_name", str_pos_1, str_pos_2 - str_pos_1)
 str_pos_1 = strpos("$sim_image_name","_number")+strlen("_number")
 sim_id = fix(strmid("$sim_image_name", str_pos_1))
 sim_rms = sim_fpeak / sim_SNR_peak
-sim_image_name = "$sim_image_name"
-sim_image_dir = "$sim_project_name"
+sim_image_name = '$sim_image_name'
+sim_image_dir = '$sim_project_name'
 CrabImageXY2AD, sim_x, sim_y, "../Input_Images/${sim_image_name}_model.fits", sim_ra, sim_dec
 CrabTablePrintC, "${sim_image_name}_catalog.txt", sim_id, sim_ra, sim_dec, sim_Maj, sim_Min, sim_PA, sim_beam_maj, sim_beam_min, sim_beam_pa, sim_fpeak, sim_f, sim_rms, sim_Size, sim_SNR_peak, sim_image_dir, sim_image_name
 EOF
