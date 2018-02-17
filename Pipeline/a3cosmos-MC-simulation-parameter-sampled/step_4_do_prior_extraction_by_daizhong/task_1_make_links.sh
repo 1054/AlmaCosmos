@@ -104,7 +104,7 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
             echo "running idl to read \"../$sim_model_file\""
 export IDL_PATH="+$HOME/Softwares/IDL/lib:$IDL_PATH"
 idl -quiet << EOF
-.restore "../$sim_model_file", verbose=false
+restore, "../$sim_model_file", verbose=false
 sim_x = CENX
 sim_y = CENY
 sim_pixsc = PIXSCL * 3600.0 ; arcsec
