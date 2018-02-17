@@ -14,15 +14,21 @@ if [[ ! -d "/disk1/ALMA_COSMOS/A3COSMOS/simulations/output_GALFIT_dzliu" ]]; the
     chmod -R 777 "/disk1/ALMA_COSMOS/A3COSMOS/simulations/output_GALFIT_dzliu"
 fi
 
+cd "/disk1/ALMA_COSMOS/A3COSMOS/simulations/output_GALFIT_dzliu"
+
+
+
 if [[ ! -d "../models" ]]; then
     echo "Error! \"../models\" does not exist!"
     exit 255
 fi
 
 
+
 find "../models" -maxdepth 1 -mindepth 1 -type d > list_of_sim_projects.txt
 
 IFS=$'\n' read -d '' -r -a list_of_sim_projects < "list_of_sim_projects.txt"
+
 
 
 for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
