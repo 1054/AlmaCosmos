@@ -13,7 +13,6 @@ if [[ ! -d "/disk1/ALMA_COSMOS/A3COSMOS/simulations/output_GALFIT_dzliu" ]]; the
     mkdir -p "/disk1/ALMA_COSMOS/A3COSMOS/simulations/output_GALFIT_dzliu"
     chmod -R 777 "/disk1/ALMA_COSMOS/A3COSMOS/simulations/output_GALFIT_dzliu"
 fi
-
 cd "/disk1/ALMA_COSMOS/A3COSMOS/simulations/output_GALFIT_dzliu"
 
 
@@ -25,8 +24,9 @@ fi
 
 
 
-find "../models" -maxdepth 1 -mindepth 1 -type d > list_of_sim_projects.txt
-
+if [[ ! -f "list_of_sim_projects.txt" ]]; then
+    find "../models" -maxdepth 1 -mindepth 1 -type d > "list_of_sim_projects.txt"
+fi
 IFS=$'\n' read -d '' -r -a list_of_sim_projects < "list_of_sim_projects.txt"
 
 
