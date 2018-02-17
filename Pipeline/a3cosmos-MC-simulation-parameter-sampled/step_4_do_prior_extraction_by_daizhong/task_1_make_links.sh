@@ -117,8 +117,8 @@ sim_pixsc = PIXSCL * 3600.0 ; arcsec
 sim_Maj = SOURCE_SIZE * sim_pixsc ; arcsec #<20171229><BUG># SOURCE_SIZE = sim_Size * BEAMSIZE_PIX
 sim_Min = sim_Maj * AR ; arcsec
 sim_PA = PA ; degree
-sim_fpeak = PEAK_FLUX ; Jy/beam
-sim_f = TOTAL_FLUX ; Jy
+sim_peak_flux = double(PEAK_FLUX) ; Jy/beam
+sim_total_flux = double(TOTAL_FLUX) ; Jy
 sim_beam_maj = BEAMSIZE_PIX * sim_pixsc ; arcsec
 sim_beam_min = BEAMSIZE_MINOR_PIX * sim_pixsc ; arcsec
 sim_beam_pa = BEAMPA ; degree
@@ -130,13 +130,13 @@ str_pos_2 = strpos("$sim_image_name","_number")
 sim_SNR_peak = float(strmid("$sim_image_name", str_pos_1, str_pos_2 - str_pos_1))
 str_pos_1 = strpos("$sim_image_name","_number")+strlen("_number")
 sim_id = fix(strmid("$sim_image_name", str_pos_1))
-sim_rms = sim_fpeak / sim_SNR_peak
+sim_rms = sim_peak_flux / sim_SNR_peak
 sim_image_name = '$sim_image_name'
 sim_image_dir = '$sim_project_name'
 sim_ra = 0.0D
 sim_dec = 0.0D
 CrabImageXY2AD, sim_x, sim_y, "../Input_Images/${sim_image_name}_model.fits", sim_ra, sim_dec
-CrabTablePrintC, "${sim_image_name}_catalog.txt", sim_id, sim_ra, sim_dec, sim_Maj, sim_Min, sim_PA, sim_beam_maj, sim_beam_min, sim_beam_pa, sim_fpeak, sim_f, sim_rms, sim_Size, sim_SNR_peak, sim_image_dir, sim_image_name
+CrabTablePrintC, "${sim_image_name}_catalog.txt", sim_id, sim_ra, sim_dec, sim_Maj, sim_Min, sim_PA, sim_beam_maj, sim_beam_min, sim_beam_pa, sim_peak_flux, sim_total_flux, sim_rms, sim_Size, sim_SNR_peak, sim_image_dir, sim_image_name
 EOF
             cd "../"
         fi
