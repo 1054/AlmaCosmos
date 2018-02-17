@@ -50,7 +50,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
             if [[ -d "Recovered/$FitsName" ]]; then
                 echo -n " Now let us delete the folder \"Recovered/$FitsName\"!"
                 echo "rm -rf \"Recovered/$FitsName\""
-                #rm -rf "Recovered/$FitsName"
+                rm -rf "Recovered/$FitsName"
             fi
             echo ""
         fi
@@ -66,7 +66,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
             if [[ -d "Simulated/$FitsName" ]]; then
                 echo -n " Now let us delete the folder \"Simulated/$FitsName\"!"
                 echo "rm -rf \"Simulated/$FitsName\""
-                #rm -rf "Simulated/$FitsName"
+                rm -rf "Simulated/$FitsName"
             fi
             echo ""
         fi
@@ -80,8 +80,11 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
             exit
         fi
         # cd, tar, cd back
+        echo "cd \"Simulated\""
         cd "Simulated"
+        echo "tar -czf \"$FitsName.tar.gz\" \"$FitsName\""
         tar -czf "$FitsName.tar.gz" "$FitsName"
+        echo "cd \"../\""
         cd "../"
     fi
     
@@ -93,8 +96,11 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
             exit
         fi
         # cd, tar, cd back
+        echo "cd \"Recovered\""
         cd "Recovered"
+        echo "tar -czf \"$FitsName.tar.gz\" \"$FitsName\""
         tar -czf "$FitsName.tar.gz" "$FitsName"
+        echo "cd \"../\""
         cd "../"
     fi
     
