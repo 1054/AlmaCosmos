@@ -36,6 +36,10 @@ IFS=$'\n' read -d '' -r -a list_of_sim_projects < "list_of_sim_projects.txt"
 
 for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
     
+    if [[ x"${list_of_sim_projects[i]}" == x ]]; then
+        continue
+    fi
+    
     sim_project="${list_of_sim_projects[i]}"
     sim_project_name=$(basename "${list_of_sim_projects[i]}")
     
@@ -144,6 +148,10 @@ CrabTablePrintC, "${sim_image_name}_catalog.txt", sim_id, sim_ra, sim_dec, sim_M
 EOF
             cd "../"
         fi
+        # 
+        # get image rms and fake a image pixel rms txt file
+        Gaussian_sigma=$(cat "Input_Catalogs/${sim_image_name}_catalog.txt" | grep -v '^#' | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 12)
+        echo "Gaussian_sigma = $Gaussian_sigma" > "Input_Images/${sim_image_name}_model.fits.pixel.statistics.txt"
         # 
         # prepare batch script for running a3cosmos-prior-extraction-photometry
         echo "" >> "do_prior_fitting.sh"
