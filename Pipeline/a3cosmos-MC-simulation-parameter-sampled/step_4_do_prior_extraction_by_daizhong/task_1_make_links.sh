@@ -125,6 +125,7 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
             cd "Input_Catalogs"
             echo "running idl to read \"../$sim_model_file\""
 export IDL_PATH="+$HOME/Softwares/IDL/lib:$IDL_PATH"
+echo "IDL_PATH = $IDL_PATH"
 idl -quiet << EOF
 restore, "../$sim_model_file", verbose=false
 sim_x = CENX+1 ; CENX starts from 0, see dist_ellipse.pro
