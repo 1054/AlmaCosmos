@@ -54,8 +54,10 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
     # read _imlist.txt
     sim_imlist_file=$(echo "$sim_project" | sed -e 's/$/_imlist.txt/g')
     if [[ ! -f "$sim_imlist_file" ]]; then
-        echo "Error! \"$sim_imlist_file\" does not exist!"
-        exit 255
+        echo "Error! \"$sim_imlist_file\" does not exist! Skip!"
+        echo "Error! \"$sim_imlist_file\" does not exist! Skip!" >> "log_errors.txt"
+        continue
+        #exit 255
     fi
     sim_imlist_dir=$(dirname "$sim_imlist_file")
     
