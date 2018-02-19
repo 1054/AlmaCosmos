@@ -44,6 +44,13 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
     sim_project_name=$(basename "${list_of_sim_projects[i]}")
     
     # 
+    # check if this sim project has already been prepared well
+    if [[ -f "$sim_project_name/do_prior_fitting.sh.ok" ]]; then
+        echo "Found \"$sim_project_name/do_prior_fitting.sh.ok\"! Skip!"
+        continue
+    fi
+    
+    # 
     # read _imlist.txt
     sim_imlist_file=$(echo "$sim_project" | sed -e 's/$/_imlist.txt/g')
     if [[ ! -f "$sim_imlist_file" ]]; then
@@ -150,8 +157,10 @@ EOF
         fi
         # 
         # get image rms and fake a image pixel rms txt file
-        Gaussian_sigma=$(cat "Input_Catalogs/${sim_image_name}_catalog.txt" | grep -v '^#' | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 12)
-        echo "Gaussian_sigma = $Gaussian_sigma" > "Input_Images/${sim_image_name}_model.fits.pixel.statistics.txt"
+        if [[ ! -f "Input_Images/${sim_image_name}_model.fits.pixel.statistics.txt" ]]; then
+            Gaussian_sigma=$(cat "Input_Catalogs/${sim_image_name}_catalog.txt" | grep -v '^#' | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 12)
+            echo "Gaussian_sigma = $Gaussian_sigma" > "Input_Images/${sim_image_name}_model.fits.pixel.statistics.txt"
+        fi
         # 
         # prepare batch script for running a3cosmos-prior-extraction-photometry
         echo "" >> "do_prior_fitting.sh"
@@ -166,12 +175,16 @@ EOF
     done
     
     # 
+    # now finish the preparation
+    date "%Y-%m-%d %H:%M:%S %Z" > "do_prior_fitting.sh.ok"
+    
+    # 
     # cd back
     cd "../"
     
     # 
     # debug break
-    break
+    #break
     
 done
 
