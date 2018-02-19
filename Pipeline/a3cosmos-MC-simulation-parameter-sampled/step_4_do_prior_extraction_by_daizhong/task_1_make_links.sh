@@ -167,6 +167,7 @@ EOF
             Gaussian_sigma=$(cat "Input_Catalogs/${sim_image_name}_catalog.txt" | grep -v '^#' | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 12)
             if [[ x"$Gaussian_sigma" != x"" ]]; then
                 echo "Gaussian_sigma = $Gaussian_sigma" > "Input_Images/${sim_image_name}_model.fits.pixel.statistics.txt"
+                echo "Inner_sigma = $Gaussian_sigma" >> "Input_Images/${sim_image_name}_model.fits.pixel.statistics.txt"
             else
                 echo "Error! Failed to get Gaussian_sigma from \"Input_Catalogs/${sim_image_name}_catalog.txt\"! Exit!"
                 exit 255
