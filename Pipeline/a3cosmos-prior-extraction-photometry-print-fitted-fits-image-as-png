@@ -25,6 +25,17 @@ if [[ $(type ds9 2>/dev/null | wc -l) -eq 0 ]]; then
     exit 1
 fi
 if [[ $(type CrabFitsHeader 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Pipeline/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Pipeline/SETUP.bash
+    fi
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    fi
+fi
+if [[ $(type CrabFitsHeader 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname "${BASH_SOURCE[0]}")/SETUP.bash ]]; then
+        source $(dirname "${BASH_SOURCE[0]}")/SETUP.bash
+    fi
     echo "Error! CrabFitsHeader was not installed!"
     exit 1
 fi
