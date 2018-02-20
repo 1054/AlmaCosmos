@@ -16,6 +16,7 @@ function Usage() {
     echo "    almacosmos_topcat_plot_scatter \\"
     echo "                                   -cat1 cat_1.fits -x1 \"x1\" -y1 \"y1\" -label1 \"data 1\" -color2 \"#1e90ff\" \\"
     echo "                                   -cat2 cat_2.fits -x2 \"x2\" -y2 \"y2\" -label2 \"data 2\" -aux2 \"(flux/error)\" \\"
+    echo "                                   -function1 \"x\" \\"
     echo "                                   -xtitle \"flux_1\" -ytitle \"flux_2\" -xrange \"0 100\" -yrange \"0 100\" -xlog -ylog \\"
     echo "                                   -out output.pdf \\"
     echo ""

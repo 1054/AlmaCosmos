@@ -13,13 +13,11 @@
 # 
 function Usage() {
     echo "Usage: "
-    echo "    almacosmos_topcat_crossmatch_by_radec \\"
+    echo "    almacosmos_topcat_crossmatch_by_exact \\"
     echo "                                          cat_1.fits \\"
     echo "                                          cat_2.fits \\"
     echo "                                          -out output.fits \\"
-    echo "                                          [-radec ra_column_in_cat_1 dec_column_in_cat_1 RA_column_in_cat_2 DEC_column_in_cat_2] \\"
     echo "                                          [-exact additional_column_in_cat_1 additional_column_in_cat_2] \\"
-    echo "                                          [-radius 1.0] \\"
     echo "                                          [-suffix \"_cat_1\" \"_cat_2\"] \\"
     echo "                                          [-only-matches]"
     echo ""
@@ -74,30 +72,18 @@ else
     echo "The default output file name is: $OutputCat"
 fi
 
-# the RA Dec columns in the two input catalogs
-cat_1_radec=("RA" "Dec")
-cat_2_radec=("RA" "Dec")
-if [[ ! -z "$almacosmos_cmd_radec" ]]; then
-    if [[ "${#almacosmos_cmd_radec[@]}" -ge 2 ]]; then
-        cat_1_radec=("${almacosmos_cmd_radec[0]}" "${almacosmos_cmd_radec[1]}")
-    elif [[ "${#almacosmos_cmd_radec[@]}" -ge 4 ]]; then
-        cat_1_radec=("${almacosmos_cmd_radec[0]}" "${almacosmos_cmd_radec[1]}")
-        cat_2_radec=("${almacosmos_cmd_radec[2]}" "${almacosmos_cmd_radec[3]}")
-    fi
-fi
-echo cat_1_radec="\"${cat_1_radec[@]}\""
-echo cat_2_radec="\"${cat_2_radec[@]}\""
-
 # additional exact-matching columns in the two input catalogs
 cat_1_exact=()
 cat_2_exact=()
-matcher="sky"
+matcher="exact"
 if [[ ! -z "$almacosmos_cmd_exact" ]]; then
     if [[ "${#almacosmos_cmd_exact[@]}" -ge 2 ]]; then
         for (( i=0; i<${#almacosmos_cmd_exact[@]}; i+=2 )); do
             cat_1_exact+=("${almacosmos_cmd_exact[i]}")
             cat_2_exact+=("${almacosmos_cmd_exact[i+1]}")
-            matcher="${matcher}+exact"
+            if [[ $i -ge 1 ]]; then
+                matcher="${matcher}+exact"
+            fi
         done
     fi
 fi
@@ -108,21 +94,12 @@ echo matcher="$matcher"
 # output column suffix
 cat_1_suffix="_cat_1"
 cat_2_suffix="_cat_2"
-if [[ ! -z "$almacosmos_cmd_suffix" ]]; then
-    if [[ "${#almacosmos_cmd_suffix[@]}" -ge 2 ]]; then
-        cat_1_suffix=$(echo "${almacosmos_cmd_suffix[i]}" | sed -e 's/^ *//g' | sed -e 's/ *$//g')
-        cat_2_suffix=$(echo "${almacosmos_cmd_suffix[i+1]}" | sed -e 's/^ *//g' | sed -e 's/ *$//g')
-    fi
+if [[ "${#almacosmos_cmd_suffix[@]}" -ge 2 ]]; then
+    cat_1_suffix=$(echo "${almacosmos_cmd_suffix[i]}" | sed -e 's/^ *//g' | sed -e 's/ *$//g')
+    cat_2_suffix=$(echo "${almacosmos_cmd_suffix[i+1]}" | sed -e 's/^ *//g' | sed -e 's/ *$//g')
 fi
 echo cat_1_suffix="\"$cat_1_suffix\""
 echo cat_2_suffix="\"$cat_2_suffix\""
-
-# cross-match sky radius
-radius="1.0"
-if [[ ! -z "$almacosmos_cmd_radius" ]]; then
-    radius=$(echo "$almacosmos_cmd_radius" | sed -e 's/^ *//g' | sed -e 's/ *$//g')
-fi
-echo radius="\"$radius\""
 
 # output all entries or only matches
 do_all_entries=1
@@ -170,17 +147,16 @@ topcat -stilts tmatchn \
                 nin=2 \
                 in1="$InputCat1" \
                 ifmt1="$cat_1_fmt" \
-                values1="${cat_1_radec[0]} ${cat_1_radec[1]} ${cat_1_exact[*]}" \
+                values1="${cat_1_exact[*]}" \
                 suffix1="$cat_1_suffix" \
                 in2="$InputCat2" \
                 ifmt2="$cat_2_fmt" \
-                values2="${cat_2_radec[0]} ${cat_2_radec[1]} ${cat_2_exact[*]}" \
+                values2="${cat_2_exact[*]}" \
                 suffix2="$cat_2_suffix" \
                 fixcols=all \
                 join1=always \
                 join2=always \
                 matcher="$matcher" \
-                params="$radius" \
                 multimode=group \
                 ofmt="$cat_out_fmt" \
                 out="$cat_out_name" \
@@ -189,17 +165,17 @@ topcat -stilts tmatchn \
 echo ""
 
 # cross-match only matches
-if [[ $do_all_entries == 0 ]]; then
-echo "cross-matching only matches"
-cat_in_name="$cat_out_name"
-topcat -stilts tpipe \
-                in="$cat_in_name" \
-                ifmt="$cat_out_fmt" \
-                cmd="select \"(!NULL_${cat_1_radec[0]}${cat_1_suffix} && !NULL_${cat_2_radec[0]}${cat_2_suffix})\"" \
-                ofmt="$cat_out_fmt" \
-                out="$OutputCat" \
-                | tee  "$OutputCat.stilts.log"
-fi
+#if [[ $do_all_entries == 0 ]]; then
+#echo "cross-matching only matches"
+#cat_in_name="$cat_out_name"
+#topcat -stilts tpipe \
+#                in="$cat_in_name" \
+#                ifmt="$cat_out_fmt" \
+#                cmd="select \"(!NULL_${cat_1_radec[0]}${cat_1_suffix} && !NULL_${cat_2_radec[0]}${cat_2_suffix})\"" \
+#                ofmt="$cat_out_fmt" \
+#                out="$OutputCat" \
+#                | tee  "$OutputCat.stilts.log"
+#fi
 
 echo ""
 echo "Done!"

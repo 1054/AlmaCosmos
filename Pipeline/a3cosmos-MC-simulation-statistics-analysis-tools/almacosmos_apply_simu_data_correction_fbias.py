@@ -121,6 +121,8 @@ if 'noise' in catalog_column_names:
     data_noise = catalog.getColumn('noise') # mJy
 elif 'rms' in catalog_column_names:
     data_noise = catalog.getColumn('rms') # mJy
+elif 'RMS' in catalog_column_names:
+    data_noise = catalog.getColumn('RMS') * 1e3 # convert to mJy
 elif 'Isl_rms' in catalog_column_names:
     data_noise = catalog.getColumn('Isl_rms') * 1e3 # convert to mJy
 else:

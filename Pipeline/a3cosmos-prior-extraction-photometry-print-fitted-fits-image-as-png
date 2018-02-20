@@ -94,8 +94,27 @@ Image_input=($(ls -1 "${InputDir_fitted_fits}"/*.-.fit_2.fits))
 for (( i=0; i<${#Image_input[@]}; i++ )); do
     # 
     Image_dir=$(dirname "${Image_input[i]}")
-    Image_name=$(basename "${Image_input[i]}" | sed -e 's/.-.fit_2.fits$//g' | perl -p -e 's/\.cut_[0-9+-]+_[0-9+-]+_[0-9+-]+_[0-9+-]+$//g')
+    # 
+    Image_file="${Image_input[i]}"
+    if [[ "${Image_input[i]}" == *" "* ]]; then
+        # if the image name contains white space
+        Image_file=$(basename "${Image_input[i]}" | sed -e 's/ /_/g')
+        ln -fsT "${Image_input[i]}" "$Image_file"
+    fi
+    # 
+    Image_name=$(basename "$Image_file" | sed -e 's/.-.fit_2.fits$//g')
+    #Image_name_split=($(basename "$Image_file" | sed -e 's/.-.fit_2.fits$//g' | perl -p -e 's/(.*)(\.cut_[0-9+-]+_[0-9+-]+_[0-9+-]+_[0-9+-]+)$/\1 \2/g'))
+    #if [[ "${#Image_name_split[@]}" -eq 2 ]]; then
+    #    Image_name="${Image_name_split[0]}"
+    #    Image_cut_rect="${Image_name_split[1]}"
+    #else
+    #    Image_name="${Image_name_split[@]}"
+    #    Image_cut_rect=""
+    #fi
+    echo "--------------------------------------------------------"
+    echo "Image_file = $Image_file"
     echo "Image_name = $Image_name"
+    #echo "Image_cut_rect = $Image_cut_rect"
     # 
     if [[ -f "$OutputDir/$Image_name.grey.png" ]] && [[ -f "$OutputDir/$Image_name.aips0.png" ]]; then
         continue
@@ -117,11 +136,16 @@ for (( i=0; i<${#Image_input[@]}; i++ )); do
         almacosmos_convert_galfit_fits_header_to_ds9_region_file "${Image_input[i]}" "${Image_input[i]}.ds9.reg"
     fi
     # 
-    echo ds9 -title "ds_${i}" -multiframe "${Image_input[i]}" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame 3 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit
-         ds9 -title "ds_${i}" -multiframe "${Image_input[i]}" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame 3 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit
-    echo ds9 -title "ds_${i}" -multiframe "${Image_input[i]}" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame 3 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.aips0.png" -quit
-         ds9 -title "ds_${i}" -multiframe "${Image_input[i]}" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame 3 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.aips0.png" -quit
+    echo ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit
+         ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit
+    echo ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.aips0.png" -quit
+         ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -geometry 2400x600 -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.aips0.png" -quit
     # 
+    # 
+    if [[ "${Image_input[i]}" == *" "* ]]; then
+        # if the image name contains white space
+        rm "$Image_file"
+    fi
     #break
 done
 
