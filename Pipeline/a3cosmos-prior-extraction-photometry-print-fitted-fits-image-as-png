@@ -114,14 +114,14 @@ for (( i=0; i<${#Image_input[@]}; i++ )); do
     fi
     # 
     Image_name=$(basename "$Image_file" | sed -e 's/.-.fit_2.fits$//g')
-    #Image_name_split=($(basename "$Image_file" | sed -e 's/.-.fit_2.fits$//g' | perl -p -e 's/(.*)(\.cut_[0-9+-]+_[0-9+-]+_[0-9+-]+_[0-9+-]+)$/\1 \2/g'))
-    #if [[ "${#Image_name_split[@]}" -eq 2 ]]; then
-    #    Image_name="${Image_name_split[0]}"
-    #    Image_cut_rect="${Image_name_split[1]}"
-    #else
-    #    Image_name="${Image_name_split[@]}"
-    #    Image_cut_rect=""
-    #fi
+    Image_name_split=($(basename "$Image_file" | sed -e 's/.-.fit_2.fits$//g' | perl -p -e 's/(.*)(\.cut_[0-9+-]+_[0-9+-]+_[0-9+-]+_[0-9+-]+)$/\1 \2/g'))
+    if [[ "${#Image_name_split[@]}" -eq 2 ]]; then
+        Image_name_nocut="${Image_name_split[0]}"
+        Image_cut_rect="${Image_name_split[1]}"
+    else
+        Image_name_nocut="${Image_name_split[@]}"
+        Image_cut_rect=""
+    fi
     echo "--------------------------------------------------------"
     echo "Image_file = $Image_file"
     echo "Image_name = $Image_name"
@@ -131,7 +131,7 @@ for (( i=0; i<${#Image_input[@]}; i++ )); do
         continue
     fi
     # 
-    Image_rms_file="${InputDir_fits}/${Image_name}.fits.pixel.statistics.txt"
+    Image_rms_file="${InputDir_fits}/${Image_name_nocut}.fits.pixel.statistics.txt"
     if [[ ! -f "${Image_rms_file}" ]]; then
         echo "Error! \"${Image_rms_file}\" was not found!"; exit
     fi
