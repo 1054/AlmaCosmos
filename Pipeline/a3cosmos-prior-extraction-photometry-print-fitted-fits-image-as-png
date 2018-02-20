@@ -147,10 +147,10 @@ for (( i=0; i<${#Image_input[@]}; i++ )); do
         almacosmos_convert_galfit_fits_header_to_ds9_region_file "${Image_input[i]}" "${Image_input[i]}.ds9.reg"
     fi
     # 
-    echo ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 1800x600 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit
-         ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 1800x600 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit
-    echo ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 1800x600 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.aips0.png" -quit
-         ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 1800x600 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.aips0.png" -quit
+    echo ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 2400x600 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit
+         ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 2400x600 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit
+    echo ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 2400x600 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.aips0.png" -quit
+         ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 2400x600 -frame 2 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -cmap aips0 -saveimage "$OutputDir/$Image_name.aips0.png" -quit
     # 
     # 
     if [[ "${Image_input[i]}" == *" "* ]]; then
