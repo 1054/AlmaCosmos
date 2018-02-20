@@ -13,6 +13,9 @@ fi
 if [[ -f "Output_Prior_Galfit_Gaussian_Condon_errors.txt" ]]; then
     mv "Output_Prior_Galfit_Gaussian_Condon_errors.txt" "Output_Prior_Galfit_Gaussian_Condon_errors.txt.backup"
 fi
+if [[ -f "Output_Prior_Getpix_000.txt" ]]; then
+    mv "Output_Prior_Getpix_000.txt" "Output_Prior_Getpix_000.txt.backup"
+fi
 
 
 
@@ -81,6 +84,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     # cd recovered directory
     cd "Recovered/$FitsName/"
     
+    
     # find
     IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.all.txt"))
     echo "${#ResultFiles[@]}"
@@ -112,6 +116,25 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         fi
         tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt"
     done
+    
+    
+    
+    # find
+    IFS=$'\n' ResultFiles=($(find . -name "getpix.txt"))
+    echo "${#ResultFiles[@]}"
+    
+    # loop
+    for (( k=0; k<${#ResultFiles[@]}; k++ )); do
+        TempRect=$(echo $(basename $(dirname "${ResultFiles[k]}")))
+        TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
+        TempImage="$FitsName"
+        #echo "$TempImage $TempSimu (Condon_errors)"
+        if [[ ! -f "../../Output_Prior_Getpix_000.txt" ]]; then
+            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "../../Output_Prior_Getpix_000.txt"
+        fi
+        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "../../Output_Prior_Getpix_000.txt"
+    done
+    
     
     # cd back
     cd "../../"
