@@ -114,40 +114,8 @@ if [[ $use_Gaussian -eq 1 ]]; then
     # 
     echo "Output to \"A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits\"!"
     # 
-    # 20180221 and_with_getpix
-    topcat -stilts tmatchn \
-                nin=3 \
-                in1="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits" \
-                \
-                in2="Read_Results_all_final_getpix.result" ifmt2=ascii \
-                icmd2="keepcols \"cat_id image_file f_peak f_int rms_noise pb_corr\"" \
-                icmd2="replacecol cat_id -name \"cat_id_2\" \"cat_id\"" \
-                icmd2="replacecol image_file -name \"image_file_2\" \"image_file\"" \
-                icmd2="replacecol f_peak -name \"getpix_peak_flux\" -units \"Jy\" \"f_peak\"" \
-                icmd2="replacecol f_int -name \"getpix_total_flux\" -units \"Jy\" \"f_int\"" \
-                icmd2="replacecol rms_noise -name \"getpix_rms_noise\" -units \"Jy\" \"rms_noise\"" \
-                icmd2="replacecol pb_corr -name \"getpix_pb_corr\" \"pb_corr\"" \
-                values2="cat_id_2 image_file_2" \
-                \
-                in3="Read_Results_all_final_getpix.txt" ifmt3=ascii \
-                icmd3="keepcols \"cat_id image_file pix_000 pix_rad pix_scl\"" \
-                icmd3="replacecol cat_id -name \"cat_id_3\" \"cat_id\"" \
-                icmd3="replacecol image_file -name \"image_file_3\" \"image_file\"" \
-                icmd3="replacecol pix_000 -name \"getpix_pixel_value\" -units \"Jy/beam\" \"pix_000\"" \
-                icmd3="replacecol pix_rad -name \"getpix_aperture_radius\" -units \"pixel\" \"pix_rad\"" \
-                icmd3="replacecol pix_scl -name \"getpix_pixel_scale\" -units \"arcsec/pixel\" \"pix_scl\"" \
-                values3="cat_id_3 image_file_3" \
-                \
-                matcher="exact+exact" \
-                multimode=pairs \
-                iref=1 \
-                join1=always \
-                out="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns_and_with_getpix.fits"
-    # 
-    # 
     topcat -stilts tpipe \
-                in="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns_and_with_getpix.fits" \
-                cmd="select \"(getpix_pixel_value!=0)\"" \
+                in="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits" \
                 cmd="keepcols \"ID RA Dec Total_flux E_Total_flux Galfit_flux E_Galfit_flux Peak_flux E_Peak_flux Residual_flux Total_RMS Peak_RMS RMS Total_SNR Peak_SNR Maj_deconv E_Maj_deconv Min_deconv E_Min_deconv PA_deconv E_PA_deconv Pixel_noise Pixel_scale Beam_area Obs_frequency Obs_wavelength Pb_corr_pb_image Pb_corr_equation Galfit_chi_square Galfit_reduced_chi_square Galfit_N_aperture_pixel Galfit_N_free_parameter Flag_size_lower_boundary Flag_size_upper_boundary Flag_size_initial_guess Flag_zero_galfit_flux_error Flag_zero_galfit_size_error Image_file_name Image\"" \
                 out="A-COSMOS_prior_${str_Date}_${str_Type}.fits"
     # 
@@ -159,13 +127,6 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 out="A-COSMOS_prior_${str_Date}_${str_Type}_SNR_GE_3.fits"
     # 
     echo "Output to \"A-COSMOS_prior_${str_Date}_${str_Type}_SNR_GE_3.fits\"!"
-    # 
-    topcat -stilts tpipe \
-                in="A-COSMOS_prior_${str_Date}_${str_Type}.fits" \
-                cmd="select (Total_flux/E_Total_flux>=5.0)" \
-                out="A-COSMOS_prior_${str_Date}_${str_Type}_SNR_GE_5.fits"
-    # 
-    echo "Output to \"A-COSMOS_prior_${str_Date}_${str_Type}_SNR_GE_5.fits\"!"
 fi
 
 

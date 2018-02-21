@@ -8,31 +8,48 @@ fi
 
 
 
-#topcat -stilts tpipe in='Output_Prior_Galfit_Gaussian_Condon_errors.txt' ifmt=ascii \
-#                    cmd='keepcols "cat_id"' \
-#                    out='Output_Prior_Galfit_Gaussian_Condon_errors.id.txt' ofmt=ascii
-#
-#topcat -stilts tpipe in='Output_Prior_Galfit_Gaussian_main_result.txt' ifmt=ascii \
-#                    cmd='keepcols "id_fit_2_str"' \
-#                    out='Output_Prior_Galfit_Gaussian_main_result.id.txt' ofmt=ascii
-#
-#cat 'Output_Prior_Galfit_Gaussian_Condon_errors.id.txt' | wc -l # 495971
-#cat 'Output_Prior_Galfit_Gaussian_main_result.id.txt' | wc -l # 495930
+topcat -stilts tpipe in='Output_Prior_Galfit_Gaussian_Condon_errors.txt' ifmt=ascii \
+                    cmd='keepcols "cat_id"' \
+                    out='Output_Prior_Galfit_Gaussian_Condon_errors.id.txt' ofmt=ascii
+
+topcat -stilts tpipe in='Output_Prior_Galfit_Gaussian_main_result.txt' ifmt=ascii \
+                    cmd='keepcols "id_fit_2_str"' \
+                    out='Output_Prior_Galfit_Gaussian_main_result.id.txt' ofmt=ascii
+
+cat 'Output_Prior_Galfit_Gaussian_Condon_errors.id.txt' | wc -l # 495971
+cat 'Output_Prior_Galfit_Gaussian_main_result.id.txt' | wc -l # 495930
 
 
 
-
+if [[ 1 == 1 ]]; then
+    # Now we combine resulting catalogs.
+    # Here we also cross-match Getpix catalog, so as to filter out some sources which are simulated on NaN pixels
     topcat -stilts tmatchn \
-                nin=2 \
+                nin=3 \
                 in1='Output_Prior_Galfit_Gaussian_main_result.txt' \
                 ifmt1=ascii \
-                values1="id_fit_2_str Image Simu" \
+                icmd1="replacecol Image -name \"Image_1\" \"Image\"" \
+                icmd1="replacecol Simu -name \"Simu_1\" \"Simu\"" \
+                values1="id_fit_2_str Image_1 Simu_1" \
+                \
                 in2='Output_Prior_Galfit_Gaussian_Condon_errors.txt' \
                 ifmt2=ascii \
-                values2="cat_id Image Simu" \
+                icmd2="replacecol Image -name \"Image_2\" \"Image\"" \
+                icmd2="replacecol Simu -name \"Simu_2\" \"Simu\"" \
+                values2="cat_id Image_2 Simu_2" \
+                \
+                in3='Output_Prior_Getpix_000.txt' \
+                ifmt3=ascii \
+                icmd3="keepcols \"pix_000 cat_id Simu Image\"" \
+                icmd3="replacecol cat_id -name \"getpix_id\" \"cat_id\"" \
+                icmd3="replacecol Image -name \"getpix_Image\" \"Image\"" \
+                icmd3="replacecol Simu -name \"getpix_Simu\" \"Simu\"" \
+                values3="getpix_id getpix_Image getpix_Simu" \
+                \
                 matcher="exact+exact+exact" \
                 ofmt=fits \
                 ocmd="select \"(flag_buffer==0)\"" \
+                ocmd="select \"(pix_000 != 0)\"" \
                 ocmd="addcol ID \"id_fit_2_str\"" \
                 ocmd="addcol RA \"ra_fit_2\"" \
                 ocmd="addcol Dec \"dec_fit_2\"" \
@@ -43,7 +60,7 @@ fi
                 ocmd="addcol Peak_flux -units \"mJy\" \"source_peak * 1e3\"" \
                 ocmd="addcol E_Peak_flux -units \"mJy\" \"source_peak_err * 1e3\"" \
                 ocmd="addcol Residual_flux -units \"mJy\" \"fres_fit_2\"" \
-                ocmd="addcol RMS -units \"mJy/beam\" \"rms_fit_2\"" \
+                ocmd="addcol Total_RMS -units \"mJy/beam\" \"rms_fit_2\"" \
                 ocmd="addcol Maj_deconv -units \"arcsec\" \"maj_fit_2\"" \
                 ocmd="addcol E_Maj_deconv -units \"arcsec\" \"maj_err_fit_2\"" \
                 ocmd="addcol Min_deconv -units \"arcsec\" \"min_fit_2\"" \
@@ -79,7 +96,7 @@ fi
                 # 
                 # converts all units to Jy, Jy/beam.
                 # 
-                # note: rms = pixnoise * fluxconv
+                # note: Total_RMS = pixnoise * fluxconv
                 # 
     # 
     echo "Output to \"Output_Prior_Galfit_Gaussian_Catalog.fits\"!"
@@ -91,6 +108,6 @@ fi
     #            out="Output_Prior_Galfit_Gaussian_Catalog_SNR_GE_3.fits"
     ## 
     #echo "Output to \"Output_Prior_Galfit_Gaussian_Catalog_SNR_GE_3.fits\"!"
-
+fi
 
 
