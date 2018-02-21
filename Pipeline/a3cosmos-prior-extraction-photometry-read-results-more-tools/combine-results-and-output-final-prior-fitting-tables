@@ -121,7 +121,7 @@ if [[ $use_Gaussian -eq 1 ]]; then
     topcat -stilts tmatchn \
                 nin=3 \
                 in1="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits" \
-                values2="ID Image_file_name" \
+                values1="ID Image_file_name" \
                 \
                 in2="Read_Results_all_final_getpix.result" ifmt2=ascii \
                 icmd2="keepcols \"cat_id image_file f_peak f_int rms_noise pb_corr\"" \
