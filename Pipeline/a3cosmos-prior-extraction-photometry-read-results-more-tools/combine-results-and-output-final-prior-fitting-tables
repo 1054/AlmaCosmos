@@ -54,6 +54,9 @@ if [[ $use_Gaussian -eq 1 ]]; then
     topcat -stilts tmatchn \
                 nin=3 \
                 in1="Read_Results_all_final_${str_Fit}.result.all.txt" \
+                icmd1="replacecol pix_noise -name \"pix_noise_1\" pix_noise" \
+                icmd1="replacecol pix_scale -name \"pix_scale_1\" pix_scale" \
+                icmd1="replacecol beam_area -name \"beam_area_1\" beam_area" \
                 ifmt1=ascii \
                 values1="index" \
                 in2="Read_Results_all_final_${str_Fit}.result.source_err.txt" \
@@ -86,9 +89,9 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 ocmd="addcol E_Min_deconv -units \"degrees\" \"min_err_${str_Fit}/3600.0\"" \
                 ocmd="addcol PA_deconv -units \"degrees\" \"PA_${str_Fit}/3600.0\"" \
                 ocmd="addcol E_PA_deconv -units \"degrees\" \"PA_err_${str_Fit}/3600.0\"" \
-                ocmd="addcol Pixel_noise -units \"Jy/beam\" \"pix_noise\"" \
-                ocmd="addcol Pixel_scale -units \"arcsec/pixel\" \"pix_scale\"" \
-                ocmd="addcol Beam_area -units \"square-arcsec\" \"beam_area\"" \
+                ocmd="addcol Pixel_noise -units \"Jy/beam\" \"pix_noise_1\"" \
+                ocmd="addcol Pixel_scale -units \"arcsec/pixel\" \"pix_scale_1\"" \
+                ocmd="addcol Beam_area -units \"square-arcsec\" \"beam_area_1\"" \
                 ocmd="addcol Obs_frequency -units \"GHz\" \"obs_freq\"" \
                 ocmd="addcol Obs_wavelength -units \"um\" \"obs_lambda\"" \
                 ocmd="addcol Pb_corr_pb_image \"pbcorr\"" \
@@ -118,6 +121,7 @@ if [[ $use_Gaussian -eq 1 ]]; then
     topcat -stilts tmatchn \
                 nin=3 \
                 in1="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits" \
+                values2="ID Image_file_name" \
                 \
                 in2="Read_Results_all_final_getpix.result" ifmt2=ascii \
                 icmd2="keepcols \"cat_id image_file f_peak f_int rms_noise pb_corr\"" \
