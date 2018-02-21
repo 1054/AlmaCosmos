@@ -57,8 +57,6 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 icmd1="replacecol pix_noise -name \"pix_noise_1\" pix_noise" \
                 icmd1="replacecol pix_scale -name \"pix_scale_1\" pix_scale" \
                 icmd1="replacecol beam_area -name \"beam_area_1\" beam_area" \
-                icmd1="delcols \"cat_index\"" \
-                icmd1="replacecol cat_id -name \"cat_id_1\" cat_id" \
                 icmd1="replacecol image_file -name \"image_file_1\" image_file" \
                 ifmt1=ascii \
                 values1="index" \
