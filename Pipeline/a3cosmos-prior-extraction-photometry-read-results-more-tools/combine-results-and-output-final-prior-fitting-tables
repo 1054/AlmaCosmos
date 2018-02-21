@@ -100,7 +100,7 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 ocmd="addcol Galfit_reduced_chi_square \"rchisq\"" \
                 ocmd="addcol Galfit_N_aperture_pixel \"n_aperpix\"" \
                 ocmd="addcol Galfit_N_free_parameter \"n_freepar\"" \
-                ocmd="addcol Flag_size_lower_boundary \"(abs(maj_${str_Fit}-1.0*pix_scale)<0.02)\"" \
+                ocmd="addcol Flag_size_lower_boundary \"(abs(maj_${str_Fit}-1.0*Pixel_scale)<0.02)\"" \
                 ocmd="addcol Flag_size_upper_boundary \"(abs(maj_${str_Fit}-3.0)<0.02)\"" \
                 ocmd="addcol Flag_size_initial_guess \"(abs(maj_${str_Fit}-0.25)<0.02)\"" \
                 ocmd="addcol Flag_zero_galfit_flux_error \"(df_${str_Fit}==0)\"" \
