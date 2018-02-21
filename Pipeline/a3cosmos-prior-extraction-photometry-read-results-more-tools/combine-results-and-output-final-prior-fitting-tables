@@ -57,12 +57,21 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 icmd1="replacecol pix_noise -name \"pix_noise_1\" pix_noise" \
                 icmd1="replacecol pix_scale -name \"pix_scale_1\" pix_scale" \
                 icmd1="replacecol beam_area -name \"beam_area_1\" beam_area" \
+                icmd1="replacecol cat_index -name \"cat_index_1\" cat_index" \
+                icmd1="replacecol cat_id -name \"cat_id_1\" cat_id" \
+                icmd1="replacecol image_file -name \"image_file_1\" image_file" \
                 ifmt1=ascii \
                 values1="index" \
                 in2="Read_Results_all_final_${str_Fit}.result.source_err.txt" \
+                icmd2="replacecol cat_index -name \"cat_index_2\" cat_index" \
+                icmd2="replacecol cat_id -name \"cat_id_2\" cat_id" \
+                icmd2="replacecol image_file -name \"image_file_2\" image_file" \
                 ifmt2=ascii \
                 values2="index" \
                 in3="Read_Results_all_final_${str_Fit}.result.source_area.txt" \
+                icmd3="replacecol cat_index -name \"cat_index_3\" cat_index" \
+                icmd3="replacecol cat_id -name \"cat_id_3\" cat_id" \
+                icmd3="replacecol image_file -name \"image_file_3\" image_file" \
                 ifmt3=ascii \
                 values3="index" \
                 matcher=exact \
@@ -125,22 +134,22 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 \
                 in2="Read_Results_all_final_getpix.result" ifmt2=ascii \
                 icmd2="keepcols \"cat_id image_file f_peak f_int rms_noise pb_corr\"" \
-                icmd2="replacecol cat_id -name \"cat_id_2\" \"cat_id\"" \
-                icmd2="replacecol image_file -name \"image_file_2\" \"image_file\"" \
+                icmd2="replacecol cat_id -name \"cat_id_4\" \"cat_id\"" \
+                icmd2="replacecol image_file -name \"image_file_4\" \"image_file\"" \
                 icmd2="replacecol f_peak -name \"getpix_peak_flux\" -units \"Jy\" \"f_peak\"" \
                 icmd2="replacecol f_int -name \"getpix_total_flux\" -units \"Jy\" \"f_int\"" \
                 icmd2="replacecol rms_noise -name \"getpix_rms_noise\" -units \"Jy\" \"rms_noise\"" \
                 icmd2="replacecol pb_corr -name \"getpix_pb_corr\" \"pb_corr\"" \
-                values2="cat_id_2 image_file_2" \
+                values2="cat_id_4 image_file_4" \
                 \
                 in3="Read_Results_all_final_getpix.txt" ifmt3=ascii \
                 icmd3="keepcols \"cat_id image_file pix_000 pix_rad pix_scl\"" \
-                icmd3="replacecol cat_id -name \"cat_id_3\" \"cat_id\"" \
-                icmd3="replacecol image_file -name \"image_file_3\" \"image_file\"" \
+                icmd3="replacecol cat_id -name \"cat_id_5\" \"cat_id\"" \
+                icmd3="replacecol image_file -name \"image_file_5\" \"image_file\"" \
                 icmd3="replacecol pix_000 -name \"getpix_pixel_value\" -units \"Jy/beam\" \"pix_000\"" \
                 icmd3="replacecol pix_rad -name \"getpix_aperture_radius\" -units \"pixel\" \"pix_rad\"" \
                 icmd3="replacecol pix_scl -name \"getpix_pixel_scale\" -units \"arcsec/pixel\" \"pix_scl\"" \
-                values3="cat_id_3 image_file_3" \
+                values3="cat_id_5 image_file_5" \
                 \
                 matcher="exact+exact" \
                 multimode=pairs \
