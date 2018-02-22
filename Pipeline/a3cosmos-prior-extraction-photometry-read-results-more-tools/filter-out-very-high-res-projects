@@ -1,0 +1,64 @@
+#!/bin/bash
+# 
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+# Usage
+if [[ $# -lt 2 ]]; then
+    echo "Usage: "
+    echo "  This code will filter out \"beam_maj<0.1\" sources in the input catalog \"A-COSMOS_prior_\"*.fits."
+    echo "  To run this code, please input the catalog file path:"
+    echo "  e.g., $(basename ${BASH_SOURCE[0]}) A-COSMOS_prior_2018-02-21a_Gaussian_SNR_GE_3.fits"
+    echo ""
+    exit
+fi
+
+
+if [[ "$1" != *".fits" ]]; then
+    echo "Error! The input \"$1\" is not a *.fits file!"
+    exit 255
+fi
+
+
+topcat -stilts tmatchn \
+        nin=2 \
+        in1="A-COSMOS_prior_2017-12-08_Gaussian.fits" \
+        in2="list_project_rms_for_v20170604_no_header_units.txt" ifmt2=ascii \
+        icmd2="replacecol rms -name rms_image \"rms\" " \
+        matcher="exact" multimode=pairs iref=1 join1=always values1="Image" values2="image_file" \
+        out="A-COSMOS_prior_2017-12-08_Gaussian_with_meta.fits"
+
+topcat -stilts tpipe \
+        in="A-COSMOS_prior_2017-12-08_Gaussian_with_meta.fits" \
+        cmd="select \"(beam_maj > 0.1) && (Galfit_chi_square < 100)\"" \
+        out="A-COSMOS_prior_2017-12-08_Gaussian_with_meta_no_very_high-res_projects.fits"
+
+
+
+
+
+
+
+topcat -stilts tmatchn \
+        nin=2 \
+        in1="A-COSMOS_prior_2017-12-08_negative_Gaussian.fits" \
+        in2="list_project_rms_for_v20170604_no_header_units.txt" ifmt2=ascii \
+        icmd2="replacecol rms -name rms_image \"rms\" " \
+        matcher="exact" multimode=pairs iref=1 join1=always values1="Image" values2="image_file" \
+        out="A-COSMOS_prior_2017-12-08_negative_Gaussian_with_meta.fits"
+
+topcat -stilts tpipe \
+        in="A-COSMOS_prior_2017-12-08_negative_Gaussian_with_meta.fits" \
+        cmd="select \"(beam_maj > 0.1) && (Galfit_chi_square < 100)\"" \
+        out="A-COSMOS_prior_2017-12-08_negative_Gaussian_with_meta_no_very_high-res_projects.fits"
+
+
+
+
+
+
+
+

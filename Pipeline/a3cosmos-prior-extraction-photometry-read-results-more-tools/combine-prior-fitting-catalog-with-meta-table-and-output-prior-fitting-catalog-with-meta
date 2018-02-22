@@ -1,0 +1,74 @@
+#!/bin/bash
+# 
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+# Usage
+if [[ $# -lt 2 ]]; then
+    echo "Usage: "
+    echo "  This code will combine \"A-COSMOS_prior_\"*.fits catalog and the meta table."
+    echo "  To run this code, please input the catalog file path and the meta table file path:"
+    echo "  e.g., $(basename ${BASH_SOURCE[0]}) A-COSMOS_prior_2018-02-21a_Gaussian_SNR_GE_3.fits fits_meta_table_v20180102_no_header_units.txt"
+    echo ""
+    echo "  Note that the meta table should be a txt file, and the first row should be #-commented header line, and the second row the data."
+    echo ""
+    exit
+fi
+
+
+if [[ "$1" != *".fits" ]]; then
+    echo "Error! The input \"$1\" is not a *.fits file!"
+    exit 255
+fi
+if [[ "$2" != *".txt" ]]; then
+    echo "Error! The input \"$2\" is not a *.txt file!"
+    exit 255
+fi
+
+
+if [[ ! -f "$1" ]] && [[ ! -L "$1" ]]; then
+    echo "Error! The input \"$1\" does not exist!"
+    exit 255
+fi
+if [[ ! -f "$2" ]] && [[ ! -L "$2" ]]; then
+    echo "Error! The input \"$2\" does not exist!"
+    exit 255
+fi
+
+
+cat_input=$(echo "$1" | sed -e 's/\.fits$//g')
+meta_table=$(echo "$2" | sed -e 's/\.txt$//g') # fits_meta_table_v20180102_no_header_units.txt"
+meta_table_name=$(basename "$2" | sed -e 's/\.txt$//g') # fits_meta_table_v20180102_no_header_units.txt"
+
+N_data_line=2
+while [[ $(cat "${meta_table}.txt" | head -n $N_data_line | tail -n 1 | grep "^#" | wc -l) -eq 1 ]]; do
+    N_data_line=$((N_data_line+1))
+done
+cat "${meta_table}.txt" | awk "(NR==1||NR>=$N_data_line) {print}" > "${meta_table_name}_reformatted_for_topcat.txt"
+meta_table="${meta_table_name}_reformatted_for_topcat"
+
+
+
+topcat -stilts tmatchn \
+                nin=2 \
+                in1="${cat_input}.fits" \
+                values1="Image" \
+                in2="${meta_table}.txt" \
+                ifmt2=ascii \
+                icmd2="replacecol image_file -name \"image_file_meta_table\" \"image_file\"" \
+                icmd2="replacecol rms -name \"rms_meta_table\" \"rms\"" \
+                values2="image_file_meta_table" \
+                matcher=exact \
+                multimode=pairs \
+                iref=1 \
+                join1=always \
+                ocmd="delcols \"image_file_meta_table\"" \
+                out="${cat_input}_with_meta.fits"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
+
+
+
+
