@@ -145,6 +145,18 @@ for (( i=0; i<${#Image_input[@]}; i++ )); do
     # read fits image header
     if [[ ! -f "${Image_input[i]}.ds9.reg" ]]; then
         almacosmos_convert_galfit_fits_header_to_ds9_region_file "${Image_input[i]}" "${Image_input[i]}.ds9.reg"
+        # 
+        # append source id
+        cat_index_file="$Image_dir/$Image_name.-.fit_2.cat_index.txt"
+        if [[ -f "$cat_index_file" ]]; then
+            cat_index_list=($(cat "$cat_index_file" | grep -v "^#" | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 1))
+            cp "${Image_input[i]}.ds9.reg" "${Image_input[i]}.ds9.reg.1"
+            head -n 2 "${Image_input[i]}.ds9.reg.1" > "${Image_input[i]}.ds9.reg"
+            for (( isou = 0; isou < ${#cat_index_list[@]}; isou++ )); do
+                cat_id=$((${cat_index_list[isou]}+1))
+                head -n $((isou+2)) "${Image_input[i]}.ds9.reg.1" | tail -n 1 | sed -e "s/$/ text={$cat_id}/g" >> "${Image_input[i]}.ds9.reg"
+            done
+        fi
     fi
     # 
     echo ds9 -title "ds_${i}" -multiframe "$Image_file" -tile mode column -scale limits ${scale_limits[0]} ${scale_limits[1]} -lock frame image -lock scale yes -lock colorbar yes -frame delete 1 -geometry 1600x600 -frame 3 -regions load "${Image_input[i]}.ds9.reg" -zoom to fit -saveimage "$OutputDir/$Image_name.grey.png" -quit

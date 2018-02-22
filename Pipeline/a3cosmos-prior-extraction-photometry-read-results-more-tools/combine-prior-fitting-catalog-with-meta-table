@@ -11,7 +11,7 @@ if [[ $# -lt 2 ]]; then
     echo "Usage: "
     echo "  This code will combine \"A-COSMOS_prior_\"*.fits catalog and the meta table."
     echo "  To run this code, please input the catalog file path and the meta table file path:"
-    echo "  e.g., $(basename ${BASH_SOURCE[0]}) A-COSMOS_prior_2018-02-21a_Gaussian_SNR_GE_3.fits fits_meta_table_v20180102_no_header_units.txt"
+    echo "  e.g., $(basename ${BASH_SOURCE[0]}) A-COSMOS_prior_2018-02-21a_Gaussian_SNR_GE_3.fits fits_meta_table_v20180102.txt"
     echo ""
     echo "  Note that the meta table should be a txt file, and the first row should be #-commented header line, and the second row the data."
     echo ""
@@ -56,10 +56,10 @@ topcat -stilts tmatchn \
                 nin=2 \
                 in1="${cat_input}.fits" \
                 values1="Image" \
+                icmd1="delcols \"RMS\"" \
                 in2="${meta_table}.txt" \
                 ifmt2=ascii \
                 icmd2="replacecol image_file -name \"image_file_meta_table\" \"image_file\"" \
-                icmd2="replacecol rms -name \"rms_meta_table\" \"rms\"" \
                 values2="image_file_meta_table" \
                 matcher=exact \
                 multimode=pairs \

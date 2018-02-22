@@ -1,0 +1,44 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -lt 0 ]]; then
+    echo "Usage: "
+    echo "    a3cosmos-prior-extraction-photometry-copy-fitted-fits-image"
+    echo "Input: "
+    echo "    A directory containing \"fit_2.fits\" images."
+    echo "Output: "
+    echo "    Output png images to \"output_directory\"."
+    echo ""
+    exit
+fi
+
+
+if [[ $# -ge 2 ]]; then
+    output_dir="$2"
+else
+    output_dir="$1""_fit_2_fits"
+fi
+
+
+if [[ ! -d "$1" ]]; then
+    echo "Error! Directory \"$1\" does not exist!"
+    exit 255
+fi
+
+
+find "$1" -name "fit_2.fits" -print0 | while read -d '' -r file; do
+    cp "$file" $(dirname "$file")".-."$(basename "$file")
+done
+
+
+find "$1" -name "fit_2.cat_index.txt" -print0 | while read -d '' -r file; do
+    cp "$file" $(dirname "$file")".-."$(basename "$file")
+done
+
+
+
+

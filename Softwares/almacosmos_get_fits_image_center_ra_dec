@@ -1,0 +1,76 @@
+#!/bin/bash
+# 
+# Aim:
+#     print the RA Dec of the central pixel of input fits images
+# 
+# Output:
+#     a text data table containing: "RA_center" "Dec_center" "cutouts_image_file"
+# 
+# Last update:
+#     20180222
+# 
+
+
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: almacosmos_get_fits_image_center_ra_dec *.fits"
+fi
+
+if [[ $(type xy2sky 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! xy2sky was not found!"
+    exit 1
+fi
+
+
+
+Input_files=("$@")
+
+
+printf "# %-48s %15s %15s %15s %15s   %-s\n" \
+        "OBJECT" "RA_center" "Dec_center" "X_center" "Y_center" "Fits_image_file"
+
+
+
+for (( i=0; i<${#Input_files[@]}; i++ )); do
+    Input_file="${Input_files[i]}"
+    if [[ "$Input_files" == *".fits" || "$Input_files" == *".FITS" ]]; then
+        Fits_image_files=("$Input_file")
+    else
+        Fits_image_files=($(cat "$Input_file" | sed -e 's/^ *//g' | grep -v "^#" | grep -i ".fits$"))
+    fi
+    for (( j=0; j<${#Fits_image_files[@]}; j++ )); do
+        Fits_image_file="${Fits_image_files[j]}"
+        Fits_image_OBJECT=$(gethead "$Fits_image_file" "OBJECT" | sed -e 's%[ /]%%g')
+        Fits_image_NAXIS1=$(gethead "$Fits_image_file" "NAXIS1")
+        Fits_image_NAXIS2=$(gethead "$Fits_image_file" "NAXIS2")
+        Fits_image_CENPOSX=$(awk "BEGIN {print ((${Fits_image_NAXIS1})+1.0)/2.0;}")
+        Fits_image_CENPOSY=$(awk "BEGIN {print ((${Fits_image_NAXIS2})+1.0)/2.0;}")
+        #echo xy2sky -d -n 10 "$Fits_image_file" "$Fits_image_CENPOSX" "$Fits_image_CENPOSY"
+        Cutouts_RADec_center=($(xy2sky -d -n 10 "$Fits_image_file" "$Fits_image_CENPOSX" "$Fits_image_CENPOSY" | grep "J2000" | sed -e 's/J2000//g' | sed -e 's/->//g' | tr -s ' '))
+        #echo ${Cutouts_RADec_center[@]}
+        # 
+        if [[ ${#Cutouts_RADec_center[@]} -ge 2 ]]; then
+            if [[ x"$Fits_image_OBJECT" != x ]]; then
+                printf "%-50s %15.10f %15.10f %15.4f %15.4f   %-s\n" \
+                        "$Fits_image_OBJECT" "${Cutouts_RADec_center[0]}" "${Cutouts_RADec_center[1]}" "$Fits_image_CENPOSX" "$Fits_image_CENPOSY" "$Fits_image_file"
+            else
+                printf "%-50s %15.10f %15.10f %15.4f %15.4f   %-s\n" \
+                        "___" "${Cutouts_RADec_center[0]}" "${Cutouts_RADec_center[1]}" "$Fits_image_CENPOSX" "$Fits_image_CENPOSY" "$Fits_image_file"
+            fi
+        else
+            echo "# Error! Failed to run xy2sky for \"$Fits_image_file\"!"
+        fi
+    done
+done
+
+
+
+
+
+
+
+
+
+
+
+
