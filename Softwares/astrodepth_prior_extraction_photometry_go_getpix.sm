@@ -610,7 +610,8 @@ print_result
         }
         # 
         if(is_file("getpix.txt")) {
-            data "getpix.txt" read {pix_max 2.f pix_sum 3.f pix_num 4.f cat_index 9.f cat_id 10.s}
+            #data "getpix.txt" read {pix_max 2.f pix_sum 3.f pix_num 4.f cat_index 9.f cat_id 10.s} #<20180222># added pix_nan in getpix.txt
+            data "getpix.txt" read {pix_max 2.f pix_sum 3.f pix_num 4.f cat_index 10.f cat_id 11.s} #<20180222># added pix_nan in getpix.txt
             # 
             # read pb_corr
             if(!is_file("image_sci_primary_beam_correction.txt")) { calc_primary_beam_correction }
@@ -652,7 +653,8 @@ print_result_on_negative_image
         }
         # 
         if(is_file("getpix_on_negative_image.txt")) {
-            data "getpix_on_negative_image.txt" read {pix_max 2.f pix_sum 3.f pix_num 4.f cat_index 9.f cat_id 10.s}
+            #data "getpix_on_negative_image.txt" read {pix_max 2.f pix_sum 3.f pix_num 4.f cat_index 9.f cat_id 10.s} #<20180222># added pix_nan in getpix.txt
+            data "getpix_on_negative_image.txt" read {pix_max 2.f pix_sum 3.f pix_num 4.f cat_index 10.f cat_id 11.s} #<20180222># added pix_nan in getpix.txt
             # 
             # read pb_corr
             if(!is_file("image_sci_primary_beam_correction.txt")) { calc_primary_beam_correction }
