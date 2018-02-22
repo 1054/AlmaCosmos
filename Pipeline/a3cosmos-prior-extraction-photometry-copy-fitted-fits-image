@@ -20,7 +20,10 @@ fi
 if [[ $# -ge 2 ]]; then
     output_dir="$2"
 else
-    output_dir="$1""_fit_2_fits"
+    output_dir=$(basename "$1")"_fit_2_fits"
+fi
+if [[ ! -d "$output_dir" ]]; then
+    mkdir "$output_dir"
 fi
 
 
