@@ -450,7 +450,8 @@ go_getpix
     set pix_rad = px * 0.0 - 99
     set pix_max = px * 0.0 - 99 # max of pixel values
     set pix_sum = px * 0.0 - 99 # sum of pixel values
-    set pix_num = px * 0.0 - 99
+    set pix_num = px * 0.0 - 99 # number of valid pixels in aperture
+    set pix_nan = px * 0.0 - 99 # number of NaN pixels in aperture #<20180222># updated
     set pix_000 = px * 0.0 - 99 # the pixel value at the right source position
     set pix_scl = px * 0.0 + pixscale
     set pix_yes = 0
@@ -463,11 +464,12 @@ go_getpix
         set radstr = sprintf('%0.4f',radius[$rai])
         print "getpix.radius."$(radstr)".arcsec.input" '%15.3f %15.3f %15.3f %15.0f %15s\n' {px py rad cat_index cat_id}
         
-        !CrabPhotAperPhot -header-in-comment "image_sci.fits" "null" "getpix.radius."$(radstr)".arcsec.input" > "getpix.radius."$(radstr)".arcsec.output"
-        !sed -i -e 's/nan/-99/g' "getpix.radius."$(radstr)".arcsec.output"
+        !CrabPhotAperPhot -header-in-comment "image_sci_input.fits" "null" "getpix.radius."$(radstr)".arcsec.input" > "getpix.radius."$(radstr)".arcsec.output"
+        !sed -i -e 's/[ +-]nan/ -99/g' "getpix.radius."$(radstr)".arcsec.output"
         #!cat "getpix.input"
         #!cat "getpix.output"
-        data "getpix.radius."$(radstr)".arcsec.output" read {pix_num_ 4 pix_sum_ 5 pix_max_ 7}
+        #data "getpix.radius."$(radstr)".arcsec.output" read {pix_num_ 4 pix_sum_ 5 pix_max_ 7} #<20180222># updated
+        data "getpix.radius."$(radstr)".arcsec.output" read {pix_num_ 4 pix_sum_ 5 pix_max_ 7 pix_nan_ 21} #<20180222># updated
         
         if(dimen(pix_num_)>0) {
             set pix_coo = (pix_sum_>=pix_sum)
@@ -475,6 +477,7 @@ go_getpix
             set pix_sum = (pix_coo) ? pix_sum_ : pix_sum
             set pix_max = (pix_coo) ? pix_max_ : pix_max
             set pix_num = (pix_coo) ? pix_num_ : pix_num
+            set pix_nan = (pix_coo) ? pix_nan_ : pix_nan #<20180222># updated
             set pix_yes = 1
             if(radius[$rai]==0.00) {
                 set pix_000 = pix_sum_
@@ -485,8 +488,10 @@ go_getpix
     if(pix_yes==1) {
         # 
         # print results
-        print "getpix.txt" '%15g %15g %15g %15g %15.3f %15.3f %15.3f %15g %15.0f %15s\n' \
-                {pix_000 pix_max pix_sum pix_num px py pix_rad pix_scl cat_index cat_id}
+        #print "getpix.txt" '%15g %15g %15g %15g %15.3f %15.3f %15.3f %15g %15.0f %15s\n' \
+        #        {pix_000 pix_max pix_sum pix_num px py pix_rad pix_scl cat_index cat_id} #<20180222># updated
+        print "getpix.txt" '%15g %15g %15g %15g %15.3f %15.3f %15.3f %15g %15g %15.0f %15s\n' \
+                {pix_000 pix_max pix_sum pix_num px py pix_rad pix_scl pix_nan cat_index cat_id} #<20180222># updated
         # 
         # # 
         # # prepare big array for output
@@ -535,9 +540,10 @@ go_getpix_on_negative_image
     #<20170719># set radius = 1.5
     set radius = 0.00,2.00,0.25
     set pix_rad = px * 0.0 - 99
-    set pix_max = px * 0.0 - 99
-    set pix_sum = px * 0.0 - 99
-    set pix_num = px * 0.0 - 99
+    set pix_max = px * 0.0 - 99 # max of pixel values
+    set pix_sum = px * 0.0 - 99 # sum of pixel values
+    set pix_num = px * 0.0 - 99 # number of valid pixels in aperture
+    set pix_nan = px * 0.0 - 99 # number of NaN pixels in aperture #<20180222># updated
     set pix_000 = px * 0.0 - 99 # the pixel value at the right source position
     set pix_scl = px * 0.0 + pixscale
     set pix_yes = 0
@@ -550,11 +556,12 @@ go_getpix_on_negative_image
         set radstr = sprintf('%0.4f',radius[$rai])
         print "getpix_on_negative_image.radius."$(radstr)".arcsec.input" '%15.3f %15.3f %15.3f %15.0f %15s\n' {px py rad cat_index cat_id}
         
-        !CrabPhotAperPhot -header-in-comment "image_negative.fits" "null" "getpix_on_negative_image.radius."$(radstr)".arcsec.input" > "getpix_on_negative_image.radius."$(radstr)".arcsec.output"
-        !sed -i -e 's/nan/-99/g' "getpix_on_negative_image.radius."$(radstr)".arcsec.output"
+        !CrabPhotAperPhot -header-in-comment "image_negative_input.fits" "null" "getpix_on_negative_image.radius."$(radstr)".arcsec.input" > "getpix_on_negative_image.radius."$(radstr)".arcsec.output"
+        !sed -i -e 's/[ +-]nan/ -99/g' "getpix_on_negative_image.radius."$(radstr)".arcsec.output"
         #!cat "getpix.input"
         #!cat "getpix.output"
-        data "getpix_on_negative_image.radius."$(radstr)".arcsec.output" read {pix_num_ 4 pix_sum_ 5 pix_max_ 7}
+        #data "getpix_on_negative_image.radius."$(radstr)".arcsec.output" read {pix_num_ 4 pix_sum_ 5 pix_max_ 7} #<20180222># updated
+        data "getpix_on_negative_image.radius."$(radstr)".arcsec.output" read {pix_num_ 4 pix_sum_ 5 pix_max_ 7 pix_nan_ 21} #<20180222># updated
         
         if(dimen(pix_num_)>0) {
             set pix_coo = (pix_sum_>=pix_sum)
@@ -562,6 +569,7 @@ go_getpix_on_negative_image
             set pix_sum = (pix_coo) ? pix_sum_ : pix_sum
             set pix_max = (pix_coo) ? pix_max_ : pix_max
             set pix_num = (pix_coo) ? pix_num_ : pix_num
+            set pix_nan = (pix_coo) ? pix_nan_ : pix_nan #<20180222># updated
             set pix_yes = 1
             if(radius[$rai]==0.00) {
                 set pix_000 = pix_sum_
@@ -572,8 +580,10 @@ go_getpix_on_negative_image
     if(pix_yes==1) { 
         # 
         # print results
-        print "getpix_on_negative_image.txt" '%15g %15g %15g %15g %15.3f %15.3f %15.3f %15g %15.0f %15s\n' \
-                {pix_000 pix_max pix_sum pix_num px py pix_rad pix_scl cat_index cat_id}
+        #print "getpix_on_negative_image.txt" '%15g %15g %15g %15g %15.3f %15.3f %15.3f %15g %15.0f %15s\n' \
+        #        {pix_000 pix_max pix_sum pix_num px py pix_rad pix_scl cat_index cat_id} #<20180222># updated
+        print "getpix_on_negative_image.txt" '%15g %15g %15g %15g %15.3f %15.3f %15.3f %15g %15g %15.0f %15s\n' \
+                {pix_000 pix_max pix_sum pix_num px py pix_rad pix_scl pix_nan cat_index cat_id} #<20180222># updated
     }
 
 

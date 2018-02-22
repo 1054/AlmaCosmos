@@ -35,6 +35,11 @@ usage() {
     echo ""
 }
 
+# 
+# Updates:
+#     2018-02-22 now also create "image_negative_input.fits"
+# 
+
 # Check current directory
 AstroDepth_ScriptDir=$(dirname ${BASH_SOURCE[0]})
 if [[ $(uname) == "Darwin" ]]; then
@@ -449,6 +454,7 @@ for (( j=0; j<${#AstroDepth_INP_IMAGE_SCI[@]}; j++ )); do
         echo "#!/bin/bash" > "image_check.sh"
         echo "source \"$AstroDepth_ScriptDir/SETUP.bash\"" >> "image_check.sh"
         echo "CrabFitsImageArithmetic image_sci_input.fits times '+1.0' image_sci.fits      -remove-nan" >> "image_check.sh"
+        echo "CrabFitsImageArithmetic image_sci_input.fits times '-1.0' image_negative_input.fits"       >> "image_check.sh" #<20180222>#
         echo "CrabFitsImageArithmetic image_sci_input.fits times '-1.0' image_negative.fits -remove-nan" >> "image_check.sh"
         # 
         if [[ ! -f "image_rms_input.fits" ]]; then
