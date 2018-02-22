@@ -23,7 +23,7 @@ else
     output_dir=$(basename "$1")"_fit_2_fits"
 fi
 if [[ ! -d "$output_dir" ]]; then
-    mkdir "$output_dir"
+    mkdir -p "$output_dir"
 fi
 
 
