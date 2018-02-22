@@ -31,12 +31,12 @@ fi
 
 
 find "$1" -name "fit_2.fits" -print0 | while read -d '' -r file; do
-    cp "$file" $(dirname "$file")".-."$(basename "$file")
+    cp "$file" "$output_dir/"$(dirname "$file")".-."$(basename "$file")
 done
 
 
 find "$1" -name "fit_2.cat_index.txt" -print0 | while read -d '' -r file; do
-    cp "$file" $(dirname "$file")".-."$(basename "$file")
+    cp "$file" "$output_dir/"$(dirname "$file")".-."$(basename "$file")
 done
 
 
