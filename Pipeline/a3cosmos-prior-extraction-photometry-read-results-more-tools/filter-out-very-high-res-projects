@@ -7,7 +7,7 @@ if [[ $(type topcat | wc -l) -eq 0 ]]; then
 fi
 
 # Usage
-if [[ $# -lt 2 ]]; then
+if [[ $# -lt 1 ]]; then
     echo "Usage: "
     echo "  This code will filter out \"beam_maj<0.1\" sources in the input catalog \"A-COSMOS_prior_\"*.fits."
     echo "  To run this code, please input the catalog file path:"

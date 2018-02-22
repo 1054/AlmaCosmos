@@ -149,11 +149,11 @@ for (( i=0; i<${#Image_input[@]}; i++ )); do
         # append source id
         cat_index_file="$Image_dir/$Image_name.-.fit_2.cat_index.txt"
         if [[ -f "$cat_index_file" ]]; then
-            cat_index_list=($(cat "$cat_index_file" | grep -v "^#" | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 1))
+            cat_index_list=($(cat "$cat_index_file" | grep -v "^#" | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 2)) # note that column 1 is cat_index and column 2 is cat_id. we read column 2!
             cp "${Image_input[i]}.ds9.reg" "${Image_input[i]}.ds9.reg.1"
             head -n 2 "${Image_input[i]}.ds9.reg.1" > "${Image_input[i]}.ds9.reg"
             for (( isou = 0; isou < ${#cat_index_list[@]}; isou++ )); do
-                cat_id=$((${cat_index_list[isou]}+1))
+                cat_id="${cat_index_list[isou]}"
                 head -n $((isou+2)) "${Image_input[i]}.ds9.reg.1" | tail -n 1 | sed -e "s/$/ text={$cat_id}/g" >> "${Image_input[i]}.ds9.reg"
             done
         fi

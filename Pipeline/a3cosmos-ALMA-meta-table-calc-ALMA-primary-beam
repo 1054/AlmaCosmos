@@ -1,0 +1,84 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    a3cosmos-ALMA-meta-table-calc-ALMA-primary-beam input_meta_table.txt output_meta_table.txt"
+    echo "Input: "
+    echo "    Meta table ASCII file."
+    echo "Output: "
+    echo "    An ASCII table named \"output_meta_table.txt\" will be written."
+    echo "    If the second argument is not given, then the default output name will be \"input_meta_table_with_pbeam.txt\"."
+    echo ""
+    exit
+fi
+
+
+# 
+# Check topcat and necessary files
+# 
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! topcat was not installed!"
+    exit 1
+fi
+
+
+# 
+# Output name
+# 
+if [[ $# -ge 2 ]]; then
+    output_name="$2"
+else
+    output_name=$(basename "$1" | sed -e 's/\.txt/_with_pbeam/g')
+fi
+
+input_name=$(basename "$1" | sed -e 's/\.txt$//g')
+
+
+# 
+# reformat meta table
+# 
+N_data_line=2
+while [[ $(cat "$1" | head -n $N_data_line | tail -n 1 | grep "^#" | wc -l) -eq 1 ]]; do
+    N_data_line=$((N_data_line+1))
+done
+cat "$1" | awk "(NR==1||NR>=$N_data_line) {print}" > "${input_name}_reformatted_for_topcat.txt"
+meta_table="${input_name}_reformatted_for_topcat"
+
+
+# 
+# Calc
+# 
+
+topcat -stilts tpipe in="${meta_table}.txt" ifmt=ascii \
+                    cmd="addcol primary_beam -after \"wavelength\" -units \"arcsec\" -desc \"ALMA 12m antenna primary beam FWHM, 1.13*w/D/pi*180*3600\" \"1.13 * wavelength / (12.0*1e6) / PI() * 180.0 * 3600.0\"" \
+                    cmd="replacecol rms -units \"mJy/beam\" -desc \"Image rms noise calculated from Gaussian fitting to pixel histogram\" \"rms\"" \
+                    cmd="replacecol beam_maj -units \"arcsec\" -desc \"Synthesized beam FWHM along major axis\" \"beam_maj\"" \
+                    cmd="replacecol beam_min -units \"arcsec\" -desc \"Synthesized beam FWHM along minor axis\" \"beam_min\"" \
+                    cmd="replacecol beam_PA -units \"degree\" -desc \"Synthesized beam PA\" \"beam_PA\"" \
+                    cmd="replacecol wavelength -units \"um\" -desc \"ALMA obs sky wavelength\" \"wavelength\"" \
+                    cmd="replacecol obs_ra -units \"degree\" -desc \"ALMA obs phase center\" \"obs_ra\"" \
+                    cmd="replacecol obs_dec -units \"degree\" -desc \"ALMA obs phase center\" \"obs_dec\"" \
+                    cmd="replacecol cen_ra -units \"degree\" -desc \"Image central pixel RA\" \"cen_ra\"" \
+                    cmd="replacecol cen_dec -units \"degree\" -desc \"Image central pixel Dec\" \"cen_dec\"" \
+                    cmd="replacecol FoV_ra -units \"arcsec\" -desc \"Image FoV\" \"FoV_ra\"" \
+                    cmd="replacecol FoV_dec -units \"arcsec\" -desc \"Image FoV\" \"FoV_dec\"" \
+                    cmd="replacecol NAXIS1 -units \"pixel\" \"NAXIS1\"" \
+                    cmd="replacecol NAXIS2 -units \"pixel\" \"NAXIS2\"" \
+                    cmd="replacecol PIXSC1 -units \"arcsec/pixel\" \"PIXSC1\"" \
+                    cmd="replacecol PIXSC2 -units \"arcsec/pixel\" \"PIXSC2\"" \
+                    out="${output_name}.fits" ofmt=fits
+
+topcat -stilts tpipe in="${output_name}.fits" ifmt=fits \
+                    out="${output_name}.Ipac" ofmt=Ipac
+
+topcat -stilts tpipe in="${output_name}.fits" ifmt=fits \
+                    out="${output_name}.txt" ofmt=ascii
+
+
+
+

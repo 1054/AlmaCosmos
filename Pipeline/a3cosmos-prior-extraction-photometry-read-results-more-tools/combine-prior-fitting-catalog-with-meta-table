@@ -9,7 +9,7 @@ fi
 # Usage
 if [[ $# -lt 2 ]]; then
     echo "Usage: "
-    echo "  This code will combine \"A-COSMOS_prior_\"*.fits catalog and the meta table."
+    echo "  This code will combine \"A-COSMOS_prior_*.fits\" catalog and the meta table."
     echo "  To run this code, please input the catalog file path and the meta table file path:"
     echo "  e.g., $(basename ${BASH_SOURCE[0]}) A-COSMOS_prior_2018-02-21a_Gaussian_SNR_GE_3.fits fits_meta_table_v20180102.txt"
     echo ""
@@ -23,8 +23,16 @@ if [[ "$1" != *".fits" ]]; then
     echo "Error! The input \"$1\" is not a *.fits file!"
     exit 255
 fi
-if [[ "$2" != *".txt" ]]; then
-    echo "Error! The input \"$2\" is not a *.txt file!"
+if [[ "$2" == *".fits" ]]; then
+    meta_table_fmt="fits"
+    meta_table_file="$2"
+    meta_table_name=$(basename "$2" | sed -e 's/\.fits$//g')
+elif [[ "$2" == *".txt" ]]; then
+    meta_table_fmt="ascii"
+    meta_table_file="$2"
+    meta_table_name=$(basename "$2" | sed -e 's/\.txt$//g')
+else
+    echo "Error! The input \"$2\" is not a *.txt nor a *.fits file!"
     exit 255
 fi
 
@@ -40,16 +48,19 @@ fi
 
 
 cat_input=$(echo "$1" | sed -e 's/\.fits$//g')
-meta_table=$(echo "$2" | sed -e 's/\.txt$//g') # fits_meta_table_v20180102_no_header_units.txt"
-meta_table_name=$(basename "$2" | sed -e 's/\.txt$//g') # fits_meta_table_v20180102_no_header_units.txt"
 
-N_data_line=2
-while [[ $(cat "${meta_table}.txt" | head -n $N_data_line | tail -n 1 | grep "^#" | wc -l) -eq 1 ]]; do
-    N_data_line=$((N_data_line+1))
-done
-cat "${meta_table}.txt" | awk "(NR==1||NR>=$N_data_line) {print}" > "${meta_table_name}_reformatted_for_topcat.txt"
-meta_table="${meta_table_name}_reformatted_for_topcat"
 
+# 
+# reformat meta table, so that there are no extra commented line between the header line and the first data line
+# 
+if [[ "$meta_table_fmt" == "ascii" ]]; then
+    N_data_line=2
+    while [[ $(cat "${meta_table_file}" | head -n $N_data_line | tail -n 1 | grep "^#" | wc -l) -eq 1 ]]; do
+        N_data_line=$((N_data_line+1))
+    done
+    cat "${meta_table_file}" | awk "(NR==1||NR>=$N_data_line) {print}" > "${meta_table_name}_reformatted_for_topcat.txt"
+    meta_table_file="${meta_table_name}_reformatted_for_topcat.txt"
+fi
 
 
 topcat -stilts tmatchn \
@@ -57,8 +68,8 @@ topcat -stilts tmatchn \
                 in1="${cat_input}.fits" \
                 values1="Image" \
                 icmd1="delcols \"RMS\"" \
-                in2="${meta_table}.txt" \
-                ifmt2=ascii \
+                in2="${meta_table_file}" \
+                ifmt2="${meta_table_fmt}" \
                 icmd2="replacecol image_file -name \"image_file_meta_table\" \"image_file\"" \
                 values2="image_file_meta_table" \
                 matcher=exact \
