@@ -253,7 +253,9 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                         fi
                         
                         # clean
-                        rm -rf "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName."*
+                        if [[ " $@ " != *" test "* ]]; then
+                            rm -rf "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName."*
+                        fi
                         
                     else
                         
