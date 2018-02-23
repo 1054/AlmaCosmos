@@ -183,7 +183,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         do
         if [[ ! -f "Input_images/$(basename $file_to_download)" ]]; then
             cd "Input_images/"
-            #almacosmos_gdownload.py "$file_to_download" #<TODO># now we do not download from Google, but directly rsync to there.
+            almacosmos_gdownload.py "$file_to_download" #<TODO># now we do not download from Google, but directly rsync to there.
             cd "../"
         fi
         if [[ ! -f "Input_images/$(basename $file_to_download)" ]]; then
