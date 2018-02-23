@@ -40,16 +40,20 @@ if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
     exit 1
 fi
 
+if [[ x"$SLURM_SUBMIT_DIR" == x"" ]]; then
+    SLURM_SUBMIT_DIR="."
+fi
+
 if [[ ! -f "$SLURM_SUBMIT_DIR/list_projects.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Work_Dir.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Data_Version.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt" ]]; then
-    echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_List_Projects.sh\" first!"
+    echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_Prepare.sh\" and prepare the \"Input*.txt\" and \"list_projects.txt\" files first!"
     exit 1
 fi
 
-Work_Dir=$SLURM_SUBMIT_DIR
+Work_Dir="$SLURM_SUBMIT_DIR"
 
 Script_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt")
 
@@ -105,12 +109,10 @@ Input_Type_SED=("MS" "SB")
 IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
 
 if [[ " $@ " == *" test "* ]]; then
-Input_z=("5.000")
-Input_lgMstar=("11.00")
-Input_Type_SED=("MS")
-FitsNames=( \
-    "2015.1.00379.S_SB1_GB1_MB1_VUDS5170072382_sci.spw0_1_2_3" \
-)
+    Input_z=("1.000")
+    Input_lgMstar=("11.00")
+    Input_Type_SED=("MS")
+    FitsNames=("2012.1.00523.S_SB1_GB1_MB1_hz3_sci.spw0_1_2_3")
 fi
 
 

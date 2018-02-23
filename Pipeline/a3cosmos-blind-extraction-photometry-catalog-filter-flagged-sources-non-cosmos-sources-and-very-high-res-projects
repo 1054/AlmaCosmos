@@ -1,0 +1,110 @@
+#!/bin/bash
+# 
+
+set -e
+
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    $(basename ${BASH_SOURCE[0]}) \\"
+    echo "        \"cat_pybdsm_concatenated_141117_with_meta.fits\""
+    echo ""
+    echo "    $(basename ${BASH_SOURCE[0]}) \\"
+    echo "        \"cat_pybdsm_concatenated_020118_with_meta.fits\""
+    echo ""
+    exit
+fi
+
+
+echo "# Field RA_COSMOS_Center Dec_COSMOS_Center" > "cosmos_field_radec.txt"
+echo "COSMOS 150.1191666667 2.2058333333" >> "cosmos_field_radec.txt"
+
+
+cat_input=$(echo "$1" | sed -e 's/\.fits$//g')
+
+
+# cross-match with COSMOS field center
+topcat -stilts tskymatch2 \
+                in1="$cat_input.fits" ifmt1=fits \
+                ra1="RA" dec1="Dec" \
+                in2="cosmos_field_radec.txt" ifmt2=ascii \
+                ra2="RA_COSMOS_Center" dec2="Dec_COSMOS_Center" \
+                error=5400.0 \
+                join=all1 \
+                find=best1 \
+                out="${cat_input}_tmp_within_cosmos_including_flagged_sources.fits"
+                # http://www.star.bris.ac.uk/~mbt/stilts/sun256/tskymatch2.html
+                # http://www.star.bris.ac.uk/~mbt/stilts/sun256/tskymatch2-usage.html
+
+# filter Source_id_in_image
+topcat -stilts tpipe \
+                in="${cat_input}_tmp_within_cosmos_including_flagged_sources.fits" \
+                cmd="select \"(Source_id_in_image>=0)\"" \
+                out="${cat_input}_tmp_within_cosmos_without_flagged_sources.fits"
+
+
+# cp
+cp "${cat_input}_tmp_within_cosmos_without_flagged_sources.fits" "${cat_input}_Jy_within_cosmos.fits"
+
+
+# 
+topcat -stilts tpipe \
+                in="${cat_input}_Jy_within_cosmos.fits" \
+                cmd="replacecol Total_flux -units \"mJy\" \"Total_flux*1e3\"" \
+                cmd="replacecol E_Total_flux -units \"mJy\" \"E_Total_flux*1e3\"" \
+                cmd="replacecol Peak_flux -units \"mJy\" \"Peak_flux*1e3\"" \
+                cmd="replacecol E_Peak_flux -units \"mJy\" \"E_Peak_flux*1e3\"" \
+                cmd="replacecol Maj_deconv -units \"arcsec\" \"Maj_deconv*3600.0\"" \
+                cmd="replacecol E_Maj_deconv -units \"arcsec\" \"E_Maj_deconv*3600.0\"" \
+                cmd="replacecol Min_deconv -units \"arcsec\" \"Min_deconv*3600.0\"" \
+                cmd="replacecol E_Min_deconv -units \"arcsec\" \"E_Min_deconv*3600.0\"" \
+                out="${cat_input}_mJy_within_cosmos.fits"
+                #cmd="replacecol Beam_MAJ -name \"beam_maj\" -units \"arcsec\" \"Beam_MAJ*3600.0\"" \
+                #cmd="replacecol Beam_MIN -name \"beam_min\" -units \"arcsec\" \"Beam_MIN*3600.0\"" \
+
+
+# 
+topcat -stilts tpipe \
+                in="${cat_input}_Jy_within_cosmos.fits" \
+                cmd="replacecol Separation -name \"Distance_to_COSMOS_Center\" -units \"arcmin\" \"Separation/60.0\"" \
+                cmd="select \"(beam_maj>0.1)\"" \
+                out="${cat_input}_Jy_within_cosmos_without_very_high_res_projects.fits"
+echo "Date: "$(date +"%Y-%m-%d %H:%M:%S %Z") > "${cat_input}_Jy_within_cosmos_without_very_high_res_projects.readme.txt"
+echo "Script name: "$(basename ${BASH_SOURCE[0]}) >> "${cat_input}_Jy_within_cosmos_without_very_high_res_projects.readme.txt"
+echo "Input catalog: \"${cat_input}\"" >> "${cat_input}_Jy_within_cosmos_without_very_high_res_projects.readme.txt"
+echo "Filtered out sources not in the 2 sq. deg. COSMOS field, " >> "${cat_input}_Jy_within_cosmos_without_very_high_res_projects.readme.txt"
+#if [[ x"$meta_table" != x"" ]]; then
+#echo "cross-matched with mete table \"${meta_table}\", " >> "${cat_input}_Jy_within_cosmos_without_very_high_res_projects.readme.txt"
+#fi
+echo "and filtered out projects which have beam_maj < 0.1 arcsec. " >> "${cat_input}_Jy_within_cosmos_without_very_high_res_projects.readme.txt"
+
+# 
+topcat -stilts tpipe \
+                in="${cat_input}_mJy_within_cosmos.fits" \
+                cmd="replacecol Separation -name \"Distance_to_COSMOS_Center\" -units \"arcmin\" \"Separation/60.0\"" \
+                cmd="select \"(beam_maj>0.1)\"" \
+                out="${cat_input}_mJy_within_cosmos_without_very_high_res_projects.fits"
+echo "Date: "$(date +"%Y-%m-%d %H:%M:%S %Z") > "${cat_input}_mJy_within_cosmos_without_very_high_res_projects.readme.txt"
+echo "Script name: "$(basename ${BASH_SOURCE[0]}) >> "${cat_input}_mJy_within_cosmos_without_very_high_res_projects.readme.txt"
+echo "Input catalog: \"${cat_input}\"" >> "${cat_input}_mJy_within_cosmos_without_very_high_res_projects.readme.txt"
+echo "Filtered out sources not in the 2 sq. deg. COSMOS field, " >> "${cat_input}_mJy_within_cosmos_without_very_high_res_projects.readme.txt"
+#if [[ x"$meta_table" != x"" ]]; then
+#echo "cross-matched with mete table \"${meta_table}\", " >> "${cat_input}_mJy_within_cosmos_without_very_high_res_projects.readme.txt"
+#fi
+echo "converted flux units to mJy and size units to arcsec, " >> "${cat_input}_mJy_within_cosmos_without_very_high_res_projects.readme.txt"
+echo "and filtered out projects which have beam_maj < 0.1 arcsec. " >> "${cat_input}_mJy_within_cosmos_without_very_high_res_projects.readme.txt"
+
+# 
+# delete intermediate stage file
+rm "${cat_input}_tmp_"*".fits"
+
+# 
+# print final output file name
+echo "Output to \"${cat_input}_mJy_within_cosmos*.fits\"!"
+
+
