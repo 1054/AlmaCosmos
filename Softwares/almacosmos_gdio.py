@@ -372,6 +372,8 @@ class CAAP_Google_Drive_Operator(object):
                     # now we need to get the all the file_parents for file_item
                     file_parents = self.get_parents(file_item)
                     file_pathi = 3
+                    if verbose:
+                        print('Checking file item "%s"'%(file_item))
                     while file_pathi <= len(file_paths):
                         file_pathj = len(file_paths) - file_pathi
                         file_pathk = len(file_parents) - file_pathi
@@ -530,7 +532,7 @@ class CAAP_Google_Drive_Operator(object):
                 done = False
                 while not done:
                     status, done = downloader.next_chunk()
-                    print('Downloading "%s" (%.0f%%)' % (file_resource.get('name'), status.progress()*100.0))
+                    print('Downloading "%s" (Id: %s, Md5: %s) (%.0f%%)' % (file_resource.get('name'), file_resource.get('id'), file_resource.get('md5Checksum'), status.progress()*100.0))
                     #time.sleep(0.25) # Google Drive has a limit of 10 query per second per user
                 #<BytesIO># # 
                 #<BytesIO># # write to file, if we use "fh = io.BytesIO()"
