@@ -1,0 +1,11 @@
+Min    = -0.0001085100812
+Max    = 0.0003260803933
+Mean   = 2.044280762e-07
+Median = 3.933428161e-08
+Mode   = -3.926335557e-05
+Sigma  = 2.686023618e-05
+Inner_mu    = 2.661941956e-08   # FitInnerSigma = 5.0
+Inner_sigma = 2.616113125e-05   # FitInnerSigma = 5.0
+Gaussian_A     = 4107.516632
+Gaussian_mu    = -2.639203505e-08
+Gaussian_sigma = 2.435698139e-05

@@ -1,0 +1,5 @@
+data prior_source_catalog.txt
+read {id 1 ra 2 dec 3}
+print "prior_source_catalog.ds9.reg" 'circle(%0.8f,%0.8f,0.7\") \# text={%.0f}' {ra dec id}
+print "prior_source_catalog.ds9.reg" 'circle(%0.8f,%0.8f,0.7\") \# text={%.0f}\n' {ra dec id}
+quit
