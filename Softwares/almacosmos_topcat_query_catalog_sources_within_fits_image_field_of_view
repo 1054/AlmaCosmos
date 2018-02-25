@@ -1,0 +1,140 @@
+#!/bin/bash
+# 
+# 
+# This code runs topcat stilts cross-matching by sky
+# 
+# Usage: 
+#   source ~/Cloud/Github/AlmaCosmos/Softwares/SETUP.bash
+# 
+
+
+# 
+# Usage
+# 
+function Usage() {
+    echo "Usage: "
+    echo "    almacosmos_topcat_query_catalog_sources_within_fits_image_field_of_view \\"
+    echo "                                          input_catalog.fits \\"
+    echo "                                          input_fits_image.fits \\"
+    echo "                                          output_catalog.fits \\"
+    echo "                                          [-radec ra_column_name dec_column_name]"
+    echo ""
+}
+
+if [[ $# -lt 3 ]]; then
+    Usage; exit
+fi
+
+
+# 
+# Source necessary software dependency
+# 
+if [[ -f "$(dirname ${BASH_SOURCE[0]})/SETUP.bash" ]]; then
+    source "$(dirname ${BASH_SOURCE[0]})/SETUP.bash"
+else
+    echo "Error! \"$(dirname ${BASH_SOURCE[0]})/SETUP.bash\" was not found!"
+    exit 1
+fi
+
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! \"topcat\" was not found!"
+    exit 1
+fi
+
+
+# 
+# Read input arguments
+# 
+#source $(which almacosmos_cmd_args) "$@"
+source almacosmos_cmd_args "$@"
+
+if [[ "${#almacosmos_cmd_misc_args[@]}" -ge 1 ]]; then
+    InputCat="${almacosmos_cmd_misc_args[0]}"
+else
+    Usage; exit
+fi
+
+if [[ "${#almacosmos_cmd_misc_args[@]}" -ge 2 ]]; then
+    InputFitsImage="${almacosmos_cmd_misc_args[1]}"
+else
+    Usage; exit
+fi
+
+if [[ "${#almacosmos_cmd_misc_args[@]}" -ge 3 ]]; then
+    OutputCat="${almacosmos_cmd_misc_args[2]}"
+else
+    Usage; exit
+fi
+
+
+
+# 
+# Get fits image field of view
+# 
+fits_rect=($(almacosmos_get_fits_image_rectangle "$InputFitsImage" | grep -v "^#" | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 2,3,4,5))
+echo "fits_rect = ${fits_rect[@]}"
+if [[ ${#fits_rect[@]} -ne 4 ]]; then
+    echo "Error! Failed to get fits image rectangle by running \"almacosmos_get_fits_image_rectangle $InputFitsImage\"!"
+    exit 255
+fi
+
+
+
+
+# the RA Dec columns in the two input catalogs
+cat_ra="RA"
+cat_dec="Dec"
+if [[ ! -z "$almacosmos_cmd_radec" ]]; then
+    if [[ "${#almacosmos_cmd_radec[@]}" -ge 2 ]]; then
+        cat_ra="${almacosmos_cmd_radec[0]}"
+        cat_dec="${almacosmos_cmd_radec[1]}"
+    fi
+fi
+echo "cat_ra = ${cat_ra}"
+echo "cat_dec = ${cat_dec}"
+
+
+# 
+# Check input catalog format
+# 
+if [[ "$InputCat" == *".fits" ]] || [[ "$InputCat" == *".FITS" ]] || [[ "$InputCat" == *".fits.gz" ]] || [[ "$InputCat" == *".FITS.gz" ]] || [[ "$InputCat" == *".FITS.GZ" ]]; then
+    cat_in_fmt="fits"
+else
+    cat_in_fmt="ascii"
+fi
+if [[ "$OutputCat" == *".fits" ]] || [[ "$OutputCat" == *".FITS" ]] || [[ "$OutputCat" == *".fits.gz" ]] || [[ "$OutputCat" == *".FITS.gz" ]] || [[ "$OutputCat" == *".FITS.GZ" ]]; then
+    cat_out_fmt="fits"
+else
+    cat_out_fmt="ascii"
+fi
+
+
+
+# 
+# Run topcat stilts
+# 
+echo "Running topcat stilts tpipe"
+echo "Selecting \"(${cat_ra}>=${fits_rect[0]}) && (${cat_ra}<=${fits_rect[1]}) && (${cat_dec}>=${fits_rect[2]}) && (${cat_dec}<=${fits_rect[3]})\""
+topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt="$cat_in_fmt" \
+                cmd="select \"(${cat_ra}>=${fits_rect[0]}) && (${cat_ra}<=${fits_rect[1]}) && (${cat_dec}>=${fits_rect[2]}) && (${cat_dec}<=${fits_rect[3]})\"" \
+                ofmt="$cat_out_fmt" \
+                out="$OutputCat" \
+                | tee  "$OutputCat.stilts.log"
+
+#if [[ "$cat_out_fmt" != "ascii" ]]; then
+#topcat -stilts tpipe \
+#                in="$OutputCat" \
+#                ifmt="$cat_out_fmt" \
+#                ofmt="ascii" \
+#                out=$(echo "$OutputCat" | sed -e "s/\.$cat_out_fmt$//g")".txt"
+#fi
+
+echo ""
+echo "Done!"
+
+
+
+
+

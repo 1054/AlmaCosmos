@@ -458,7 +458,7 @@ for (( j=0; j<${#AstroDepth_INP_IMAGE_SCI[@]}; j++ )); do
         echo "CrabFitsImageArithmetic image_sci_input.fits times '-1.0' image_negative_input.fits"        >> "image_check.sh" #<20180222>#
         echo "CrabFitsImageArithmetic image_sci_input.fits times '-1.0' image_negative.fits -remove-nan"  >> "image_check.sh"
         # 
-        if [[ ! -f "image_rms_input.fits" ]]; then
+        if [[ ! -f "image_rms_input.fits" ]] && [[ ! -L "image_rms_input.fits" ]]; then
             echo "CrabFitsImageArithmetic image_sci.fits times 0.0 image_zero.fits -remove-nan"  >> "image_check.sh"
             if [[ ! -f "image_rms_input.txt" ]]; then
                 echo "CrabFitsImageArithmetic image_zero.fits adds 1.0 image_rms.fits -remove-nan" >> "image_check.sh"
@@ -577,13 +577,26 @@ for (( j=0; j<${#AstroDepth_INP_IMAGE_SCI[@]}; j++ )); do
         # 
         # get pixnoise
         if [[ ! -f "image_sci_pixnoise.txt" ]]; then
-            #tmp_pixel_statistics_txt=$(readlink -f "${AstroDepth_INP_IMAGE_SCI[j]}" | sed -e 's/\.cut_[^\.]*//g')".pixel.statistics.txt"
-            tmp_pixel_statistics_txt=$(astrodepth_abs_path "${AstroDepth_INP_IMAGE_SCI[j]}" | sed -e 's/\.cut_[^\.]*//g')".pixel.statistics.txt"
-            if [[ -f "$tmp_pixel_statistics_txt" ]]; then
-                cat "$tmp_pixel_statistics_txt" | grep "Gaussian_sigma =" | perl -p -e 's/(.*) *= *(.*)/\2/g' > "image_sci_pixnoise.txt"
+            if [[ -f "image_rms_input.fits" ]] || [[ -L "image_rms_input.fits" ]]; then
+                tmp_image_rms_naxis1=$(gethead "image_rms_input.fits" NAXIS1)
+                tmp_image_rms_naxis2=$(gethead "image_rms_input.fits" NAXIS2)
+                tmp_image_rms_cenx=$(awk "BEGIN {print int(($tmp_image_rms_naxis1+1)/2);}")
+                tmp_image_rms_ceny=$(awk "BEGIN {print int(($tmp_image_rms_naxis2+1)/2);}")
+                getpix "%0.15e" "image_rms_input.fits" "$tmp_image_rms_cenx" "$tmp_image_rms_ceny" > "image_sci_pixnoise.txt"
+            elif [[ -f "image_rms_input.txt" ]] || [[ -L "image_rms_input.txt" ]]; then
+                echo "image_rms_input.txt" | grep -v "^#" | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 1 > "image_sci_pixnoise.txt"
             else
-                echo "Warning! \"$tmp_pixel_statistics_txt\" was not found! Will compute image pixel noise by the CrabPhotImageStatistics tool!"
-                echo "Warning! \"$tmp_pixel_statistics_txt\" was not found! Will compute image pixel noise by the CrabPhotImageStatistics tool!" > "image_sci_pixnoise.warning.txt"
+                if [[ "${AstroDepth_INP_IMAGE_SCI[j]}" == "/"* ]]; then
+                    tmp_pixel_statistics_txt=$(astrodepth_abs_path "${AstroDepth_INP_IMAGE_SCI[j]}" | sed -e 's/\.cut_[^\.]*//g')".pixel.statistics.txt"
+                else
+                    tmp_pixel_statistics_txt=$(astrodepth_abs_path "../../${AstroDepth_INP_IMAGE_SCI[j]}" | sed -e 's/\.cut_[^\.]*//g')".pixel.statistics.txt"
+                fi
+                if [[ -f "$tmp_pixel_statistics_txt" ]]; then
+                    cat "$tmp_pixel_statistics_txt" | grep "Gaussian_sigma =" | perl -p -e 's/(.*) *= *(.*)/\2/g' > "image_sci_pixnoise.txt"
+                else
+                    echo "Warning! \"$tmp_pixel_statistics_txt\" was not found! Will compute image pixel noise by the CrabPhotImageStatistics tool!"
+                    echo "Warning! \"$tmp_pixel_statistics_txt\" was not found! Will compute image pixel noise by the CrabPhotImageStatistics tool!" > "image_sci_pixnoise.warning.txt"
+                fi
             fi
         fi
         # 

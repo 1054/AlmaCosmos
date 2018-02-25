@@ -624,6 +624,8 @@ print_result
                     set f_int = pix_sum * fluxconv # convert flux unit to Jy (integrated over source pixels)
                     set err_peak = pixnoise # do not convert flux unit
                     set err_int = pixnoise * sqrt(pix_num) * fluxconv # convert flux unit to Jy (integrated over source pixels)
+                    set err_peak = (f_peak>0) ? err_peak : 1e30 #<20180225># prevent from dividing zero
+                    set err_int = (f_int>0) ? err_int : 1e30 #<20180225># prevent from dividing zero
                     set snr_peak = (f_peak>0) ? (f_peak / err_peak) : 0.0
                     set snr_int = (f_int>0) ? (f_int / err_int) : 0.0
                     set rms_noise = f_peak*0.0 + pixnoise
@@ -667,6 +669,8 @@ print_result_on_negative_image
                     set f_int = pix_sum * fluxconv # convert flux unit to Jy (integrated over source pixels)
                     set err_peak = pixnoise # do not convert flux unit
                     set err_int = pixnoise * sqrt(pix_num) * fluxconv # convert flux unit to Jy (integrated over source pixels)
+                    set err_peak = (f_peak>0) ? err_peak : 1e30 #<20180225># prevent from dividing zero
+                    set err_int = (f_int>0) ? err_int : 1e30 #<20180225># prevent from dividing zero
                     set snr_peak = (f_peak>0) ? (f_peak / err_peak) : 0.0
                     set snr_int = (f_int>0) ? (f_int / err_int) : 0.0
                     set rms_noise = f_peak*0.0 + pixnoise
