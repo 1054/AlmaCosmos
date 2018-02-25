@@ -676,9 +676,9 @@ go_galfit 01
         writeGalfitLimit fit_$1.limit
         #<BUG><20180109><DZLIU># WRONGLY USED image_sci.fits IN NEGATIVE FITTING MODE
         if(index('$1','n')==0) {
-            writeGalfitInput fit_$1.input image_negative.fits fit_$1.fits image_rms.fits image_psf.fits fit_$1.limit
+            writeGalfitInput fit_$1.input image_negative.fits fit_$1.fits image_rms.fits image_psf.fits image_nan_mask.fits fit_$1.limit
         } else {
-            writeGalfitInput fit_$1.input image_sci.fits fit_$1.fits image_rms.fits image_psf.fits fit_$1.limit
+            writeGalfitInput fit_$1.input image_sci.fits fit_$1.fits image_rms.fits image_psf.fits image_nan_mask.fits fit_$1.limit
         }
         exec_galfit $1
         if(is_file(fit_$1.fits)) {
