@@ -19,7 +19,7 @@ topcat -stilts plot2plane \
                 ifmt1=ascii \
                 leglabel1='interp.' \
                 x1='x1' \
-                y1='fbias' \
+                y1='fbias_from_interpolation' \
                 \
                 aux='x2' auxvisible=true auxlabel="Maj_{source}/Maj_{beam}" \
                 \
@@ -36,11 +36,53 @@ topcat -stilts plot2plane \
                 texttype=latex \
                 aspect=1.0 \
                 omode=out \
-                out='Plot_corrected_fbias.pdf'
+                out='Plot_corrected_fbias_from_interpolation.pdf'
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 
-echo "Output to \"Plot_corrected_fbias.pdf\"!"
+echo "Output to \"Plot_corrected_fbias_from_interpolation.pdf\"!"
+
+
+
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak} / rms\;noise" \
+                ylabel="\Large Median \ of \ ((S_{in}-S_{out})/S_{in})" \
+                xlog=true \
+                ylog=false \
+                xmin=1 xmax=500 ymin=-2 ymax=2 \
+                \
+                layer2=mark \
+                shape2=filled_circle \
+                size2=1 \
+                shading2=aux \
+                in2='datatable_applying_correction_fbias.txt' \
+                ifmt2=ascii \
+                leglabel2='function' \
+                x2='x1' \
+                y2='fbias_from_function' \
+                \
+                aux='x2' auxvisible=true auxlabel="Maj_{source}/Maj_{beam}" auxmap=plasma \
+                \
+                layer3=function \
+                fexpr3='0.0' \
+                color3=black \
+                antialias3=true \
+                thick3=1 \
+                leglabel3='Y=0' \
+                \
+                legpos=0.08,0.94 \
+                seq="3,2" \
+                fontsize=16 \
+                texttype=latex \
+                aspect=1.0 \
+                omode=out \
+                out='Plot_corrected_fbias_from_function.pdf'
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+
+echo "Output to \"Plot_corrected_fbias_from_function.pdf\"!"
 
 
 
@@ -184,7 +226,9 @@ echo "Output to \"Plot_corrected_fbias_histogram.pdf\"!"
 
 
 
-convert -density 150 "Plot_corrected_fbias.pdf" "Plot_corrected_fbias.png"
+convert -density 150 "Plot_corrected_fbias_from_interpolation.pdf" "Plot_corrected_fbias_from_interpolation.png"
+
+convert -density 150 "Plot_corrected_fbias_from_function.pdf" "Plot_corrected_fbias_from_function.png"
 
 convert -density 150 "Plot_corrected_fbias_vs_uncorrected.pdf" "Plot_corrected_fbias_vs_uncorrected.png"
 

@@ -6,20 +6,20 @@ margin=(80 60 80 20) # left, bottom, right, top
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{peak} / rms \; noise" \
-                ylabel="\Large Scatter \ of \ ((S_{in}-S_{out}) / rms \; noise)" \
+                xlabel="\Large S_{peak} / rms\;noise" \
+                ylabel="\Large 1/Scatter \ of \ ((S_{in}-S_{out})/S_{in})" \
                 xlog=true \
                 ylog=true \
-                xmin=1 xmax=1000 ymin=1 ymax=1000 \
+                xmin=1 xmax=500 ymin=1 ymax=500 \
                 \
                 layer1=mark \
                 shape1=open_circle \
                 shading1=aux \
                 in1='datatable_applying_correction_ecorr.txt' \
                 ifmt1=ascii \
-                icmd1='sort x2' \
+                leglabel1='interp.' \
                 x1='x1' \
-                y1='ecorr' \
+                y1='ecorr_from_interpolation' \
                 \
                 aux='x2' auxvisible=true auxlabel="Maj_{source}/Maj_{beam}" \
                 \
@@ -28,104 +28,62 @@ topcat -stilts plot2plane \
                 color3=black \
                 antialias3=true \
                 thick3=1 \
+                leglabel3='1:1' \
                 \
-                legend=false \
+                legpos=0.08,0.94 \
                 seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
+                aspect=1.0 \
                 omode=out \
-                out='Plot_corrected_ecorr.pdf'
+                out='Plot_corrected_ecorr_from_interpolation.pdf'
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 
-echo "Output to \"Plot_corrected_ecorr.pdf\"!"
+echo "Output to \"Plot_corrected_ecorr_from_interpolation.pdf\"!"
+
 
 
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{out} / \sigma_{S_{out,\,uncorr.}}" \
-                ylabel="\Large S_{out} / \sigma_{S_{out,\,corr.}}" \
+                xlabel="\Large S_{peak} / rms\;noise" \
+                ylabel="\Large 1/Scatter \ of \ ((S_{in}-S_{out})/S_{in})" \
                 xlog=true \
                 ylog=true \
-                xmin=1 xmax=1000 ymin=1 ymax=1000 \
+                xmin=1 xmax=500 ymin=1 ymax=500 \
                 \
-                layer1=mark \
-                shape1=open_circle \
-                shading1=aux \
-                in1='datatable_applied_correction_ecorr.txt' \
-                ifmt1=ascii \
-                icmd1='sort x2' \
-                x1='S_out/e_S_out_uncorr' \
-                y1='S_out/e_S_out_corr' \
+                layer2=mark \
+                shape2=filled_circle \
+                size2=1 \
+                shading2=aux \
+                in2='datatable_applying_correction_ecorr.txt' \
+                ifmt2=ascii \
+                leglabel2='function' \
+                x2='x1' \
+                y2='ecorr_from_function' \
                 \
-                aux='x2' auxvisible=true auxlabel="Maj_{source}/Maj_{beam}" \
+                aux='x2' auxvisible=true auxlabel="Maj_{source}/Maj_{beam}" auxmap=plasma \
                 \
                 layer3=function \
                 fexpr3='(x)' \
                 color3=black \
                 antialias3=true \
                 thick3=1 \
+                leglabel3='1:1' \
                 \
-                legend=false \
-                seq="3,1" \
+                legpos=0.08,0.94 \
+                seq="3,2" \
                 fontsize=16 \
                 texttype=latex \
+                aspect=1.0 \
                 omode=out \
-                out='Plot_corrected_ecorr_SNR.pdf'
+                out='Plot_corrected_ecorr_from_function.pdf'
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 
-echo "Output to \"Plot_corrected_ecorr_SNR.pdf\"!"
+echo "Output to \"Plot_corrected_ecorr_from_function.pdf\"!"
 
-
-topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
-                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{out} / \sigma_{S_{out,\,uncorr.}}" \
-                ylabel="\Large (S/N_{out,\,corr.}) / (S/N_{out,\,uncorr.})" \
-                xlog=true \
-                ylog=true \
-                xmin=1 xmax=1000 ymin=0.1 ymax=50 \
-                \
-                layer1=mark \
-                shape1=open_circle \
-                shading1=aux \
-                in1='datatable_applied_correction_ecorr.txt' \
-                ifmt1=ascii \
-                icmd1='sort x2' \
-                x1='S_out/e_S_out_uncorr' \
-                y1='(S_out/e_S_out_corr)/(S_out/e_S_out_uncorr)' \
-                \
-                aux='x2' auxvisible=true auxlabel="Maj_{source}/Maj_{beam}" \
-                \
-                layer3=function \
-                fexpr3='(1)' \
-                color3=black \
-                antialias3=true \
-                thick3=1 \
-                \
-                legend=false \
-                seq="3,1" \
-                fontsize=16 \
-                texttype=latex \
-                omode=out \
-                out='Plot_corrected_ecorr_SNR_ratio.pdf'
-                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
-                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
-
-echo "Output to \"Plot_corrected_ecorr_SNR_ratio.pdf\"!"
-
-
-
-convert -density 150 "Plot_corrected_ecorr.pdf" "Plot_corrected_ecorr.png"
-
-convert -density 150 "Plot_corrected_ecorr_SNR.pdf" "Plot_corrected_ecorr_SNR.png"
-
-convert -density 150 "Plot_corrected_ecorr_SNR_ratio.pdf" "Plot_corrected_ecorr_SNR_ratio.png"
-
-
-exit
 
 
 # 
@@ -174,7 +132,7 @@ topcat -stilts plot2plane \
                 in1='datatable_applied_correction_ecorr.txt' \
                 ifmt1=ascii \
                 leglabel1='uncorr' \
-                x1="S_out/e_S_out_uncorr" \
+                x1="S_out_uncorr/e_S_out_uncorr" \
                 \
                 layer2=histogram \
                 thick2=1 \
@@ -185,7 +143,7 @@ topcat -stilts plot2plane \
                 in2='datatable_applied_correction_ecorr.txt' \
                 ifmt2=ascii \
                 leglabel2='corr' \
-                x2="S_out/e_S_out_corr" \
+                x2="S_out_corr/e_S_out_corr" \
                 \
                 layer6=histogram \
                 thick6=1 \
@@ -321,6 +279,12 @@ topcat -stilts plot2plane \
 fi
 
 echo "Output to \"Plot_corrected_ecorr_histogram.pdf\"!"
+
+
+
+convert -density 150 "Plot_corrected_ecorr_from_interpolation.pdf" "Plot_corrected_ecorr_from_interpolation.png"
+
+convert -density 150 "Plot_corrected_ecorr_from_function.pdf" "Plot_corrected_ecorr_from_function.png"
 
 convert -density 150 "Plot_corrected_ecorr_histogram.pdf" "Plot_corrected_ecorr_histogram.png"
 

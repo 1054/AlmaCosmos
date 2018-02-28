@@ -6,7 +6,7 @@
 # A bunch of function fitting
 # 
 #   Last update: 
-#            20180202, initialized
+#            20180102, initialized
 # 
 #####################################
 
@@ -128,8 +128,8 @@ def fit_func_polynomial_xylog_func(x, fit_param):
     fit_model = numpy.poly1d(fit_param)
     return numpy.power(10,fit_model(numpy.log10(x)))
 
-def fit_func_polynomial_xylog(x, y_obs, y_err=None, initial_guess=None):
-    fit_order = 3
+def fit_func_polynomial_xylog(x, y_obs, y_err=None, initial_guess=None, fit_order=3):
+    #fit_order = 3
     fit_param = numpy.polyfit(numpy.log10(x), numpy.log10(y_obs), fit_order)
     fit_model = numpy.poly1d(fit_param)
     fit_curve = fit_model(numpy.log10(x))
@@ -145,6 +145,10 @@ def fit_func_polynomial_xylog(x, y_obs, y_err=None, initial_guess=None):
             'fit_param':fit_param.tolist(), 'func':'numpy.poly1d(fit_param)'}
     # 
     return p_fit
+
+
+
+
 
 
 

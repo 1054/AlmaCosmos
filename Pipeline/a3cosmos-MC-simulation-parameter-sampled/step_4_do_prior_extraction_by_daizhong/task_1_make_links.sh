@@ -34,6 +34,11 @@ IFS=$'\n' read -d '' -r -a list_of_sim_projects < "list_of_sim_projects.txt"
 
 
 
+export IDL_PATH="+$HOME/Softwares/IDL/lib:$IDL_PATH"
+#echo "IDL_PATH = $IDL_PATH"
+
+
+
 for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
     
     if [[ x"${list_of_sim_projects[i]}" == x ]]; then
@@ -124,10 +129,9 @@ for (( i = 0; i < ${#list_of_sim_projects[@]}; i++ )); do
         if [[ ! -f "Input_Catalogs/${sim_image_name}_catalog.txt" ]]; then
             cd "Input_Catalogs"
             echo "running idl to read \"../$sim_model_file\""
-export IDL_PATH="+$HOME/Softwares/IDL/lib:$IDL_PATH"
-#echo "IDL_PATH = $IDL_PATH"
+
 idl -quiet << EOF
-restore, "../$sim_model_file", verbose=false
+restore, '../$sim_model_file', verbose=false
 sim_x = CENX+1 ; CENX starts from 0, see dist_ellipse.pro
 sim_y = CENY+1 ; CENY starts from 0, see dist_ellipse.pro
 sim_pixsc = PIXSCL * 3600.0 ; arcsec
@@ -140,25 +144,26 @@ sim_total_flux = double(TOTAL_FLUX) ; Jy
 sim_beam_maj = BEAMSIZE_PIX * sim_pixsc ; arcsec
 sim_beam_min = BEAMSIZE_MINOR_PIX * sim_pixsc ; arcsec
 sim_beam_pa = BEAMPA ; degree
-str_pos_1 = strpos("$sim_image_name","Size")+strlen("Size")
-str_pos_2 = strpos("$sim_image_name","_SN")
-sim_Size = float(strmid("$sim_image_name", str_pos_1, str_pos_2 - str_pos_1))
-str_pos_1 = strpos("$sim_image_name","_SN")+strlen("_SN")
-str_pos_2 = strpos("$sim_image_name","_number")
-sim_SNR_peak = float(strmid("$sim_image_name", str_pos_1, str_pos_2 - str_pos_1))
-str_pos_1 = strpos("$sim_image_name","_number")+strlen("_number")
-sim_id = fix(strmid("$sim_image_name", str_pos_1))
+str_pos_1 = strpos('$sim_image_name','Size')+strlen('Size')
+str_pos_2 = strpos('$sim_image_name','_SN')
+sim_Size = float(strmid('$sim_image_name', str_pos_1, str_pos_2 - str_pos_1))
+str_pos_1 = strpos('$sim_image_name','_SN')+strlen('_SN')
+str_pos_2 = strpos('$sim_image_name','_number')
+sim_SNR_peak = float(strmid('$sim_image_name', str_pos_1, str_pos_2 - str_pos_1))
+str_pos_1 = strpos('$sim_image_name','_number')+strlen('_number')
+sim_id = fix(strmid('$sim_image_name', str_pos_1))
 sim_rms = sim_peak_flux / sim_SNR_peak
 sim_image_name = '$sim_image_name'
 sim_image_dir = '$sim_project_name'
 sim_ra = 0.0D
 sim_dec = 0.0D
-fits_header = headfits("../Input_Images/${sim_image_name}_model.fits")
+fits_header = headfits('../Input_Images/${sim_image_name}_model.fits')
 extast, fits_header, fits_astro
-;CrabImageXY2AD, sim_x, sim_y, "../Input_Images/${sim_image_name}_model.fits", sim_ra, sim_dec
+;CrabImageXY2AD, sim_x, sim_y, '../Input_Images/${sim_image_name}_model.fits', sim_ra, sim_dec
 xy2ad, CENX, CENY, fits_astro, sim_ra, sim_dec
-CrabTablePrintC, "${sim_image_name}_catalog.txt", sim_id, sim_ra, sim_dec, sim_Maj, sim_Min, sim_PA, sim_beam_maj, sim_beam_min, sim_beam_pa, sim_peak_flux, sim_total_flux, sim_rms, sim_Size, sim_SNR_peak, sim_image_dir, sim_image_name
+CrabTablePrintC, '${sim_image_name}_catalog.txt', sim_id, sim_ra, sim_dec, sim_Maj, sim_Min, sim_PA, sim_beam_maj, sim_beam_min, sim_beam_pa, sim_peak_flux, sim_total_flux, sim_rms, sim_Size, sim_SNR_peak, sim_image_dir, sim_image_name
 EOF
+
             cd "../"
         fi
         # 

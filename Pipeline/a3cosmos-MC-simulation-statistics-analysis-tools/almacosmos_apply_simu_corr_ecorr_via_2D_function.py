@@ -51,13 +51,15 @@ import numpy
 import astropy
 import astropy.io.ascii as asciitable
 import scipy.optimize
-import matplotlib
-from matplotlib import pyplot
+#import matplotlib
+#from matplotlib import pyplot
 from pprint import pprint
 sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
 from CrabTable import *
 sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabplot')
 from CrabPlot import *
+sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabgaussian')
+from CrabGaussian import *
 sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabcurvefit')
 from CrabCurveFit import *
 
@@ -79,7 +81,7 @@ else:
 # 
 # Read data
 # 
-#---------------# S_out will be updated after this code
+#---------------# S_out will not be updated 
 col_S_out = ''
 mal_S_out = 1.0 # multiplification factor
 if 'S_out' in catalog_column_names:
@@ -92,7 +94,7 @@ else:
     print('Error! Could not find "S_out" column!')
     sys.exit()
 data_S_out = catalog.getColumn(col_S_out) * mal_S_out # convert to mJy
-#---------------# e_S_out will not be updated because this code only deals with fbias
+#---------------# e_S_out will be updated after this code
 col_e_S_out = ''
 mal_e_S_out = 1.0 # multiplification factor
 if 'e_S_out' in catalog_column_names:
@@ -122,17 +124,50 @@ else:
     print('Error! Could not find "noise" column!')
     sys.exit()
 #---------------
-if 'Maj_out' in catalog_column_names:
-    data_Maj_out = catalog.getColumn('Maj_out')
-elif 'Maj_deconv' in catalog_column_names and 'beam_maj' in catalog_column_names and 'beam_min' in catalog_column_names and 'beam_PA' in catalog_column_names:
-    data_Maj_deconv = catalog.getColumn('Maj_deconv') * 3600.0 # convert to arcsec
-    data_Maj_beam = catalog.getColumn('beam_maj')
-    data_Min_beam = catalog.getColumn('beam_min')
+if 'Maj_out' in catalog_column_names and \
+   'Min_out' in catalog_column_names and \
+   'PA_out' in catalog_column_names and \
+   'Maj_beam' in catalog_column_names and \
+   'Min_beam' in catalog_column_names and \
+   'PA_beam' in catalog_column_names:
+    data_Maj_out = catalog.getColumn('Maj_out') # assuming arcsec
+    data_Min_out = catalog.getColumn('Min_out') # assuming arcsec
+    data_PA_out = catalog.getColumn('PA_out') 
+    data_Maj_beam = catalog.getColumn('Maj_beam') # assuming arcsec
+    data_Min_beam = catalog.getColumn('Min_beam') # assuming arcsec
+    data_PA_beam = catalog.getColumn('PA_beam') 
+    print('Computing source sizes convolved with beam')
+    data_Maj_out_convol, data_Min_out_convol, data_PA_out_convol = convolve_2D_Gaussian_Maj_Min_PA(data_Maj_out, data_Min_out, data_PA_out, data_Maj_beam, data_Min_beam, data_PA_beam)
+elif 'Maj_deconv' in catalog_column_names and \
+     'Min_deconv' in catalog_column_names and \
+     'PA_deconv' in catalog_column_names and \
+     'beam_maj' in catalog_column_names and \
+     'beam_min' in catalog_column_names and \
+     'beam_PA' in catalog_column_names:
+    data_Maj_out = catalog.getColumn('Maj_deconv') * 3600.0 # convert to arcsec
+    data_Min_out = catalog.getColumn('Min_deconv') * 3600.0 # convert to arcsec
+    data_PA_out = catalog.getColumn('PA_deconv')
+    data_Maj_beam = catalog.getColumn('beam_maj') # assuming arcsec
+    data_Min_beam = catalog.getColumn('beam_min') # assuming arcsec
     data_PA_beam = catalog.getColumn('beam_PA')
-    #data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + (data_Maj_beam * data_Min_beam)) #<TODO># do the source size convolution
-    data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + numpy.power(data_Maj_beam,2)) #<TODO># do the source size convolution
+    print('Computing source sizes convolved with beam')
+    data_Maj_out_convol, data_Min_out_convol, data_PA_out_convol = convolve_2D_Gaussian_Maj_Min_PA(data_Maj_out, data_Min_out, data_PA_out, data_Maj_beam, data_Min_beam, data_PA_beam)
+elif 'Maj_deconv' in catalog_column_names and \
+     'Min_deconv' in catalog_column_names and \
+     'PA_deconv' in catalog_column_names and \
+     'Beam_MAJ' in catalog_column_names and \
+     'Beam_MIN' in catalog_column_names and \
+     'Beam_PA' in catalog_column_names:
+    data_Maj_out = catalog.getColumn('Maj_deconv') * 3600.0 # assuming degree, converting to arcsec
+    data_Min_out = catalog.getColumn('Min_deconv') * 3600.0 # assuming degree, converting to arcsec
+    data_PA_out = catalog.getColumn('PA_deconv')
+    data_Maj_beam = catalog.getColumn('Beam_MAJ') * 3600.0 # assuming degree, converting to arcsec
+    data_Min_beam = catalog.getColumn('Beam_MIN') * 3600.0 # assuming degree, converting to arcsec
+    data_PA_beam = catalog.getColumn('Beam_PA')
+    print('Computing source sizes convolved with beam')
+    data_Maj_out_convol, data_Min_out_convol, data_PA_out_convol = convolve_2D_Gaussian_Maj_Min_PA(data_Maj_out, data_Min_out, data_PA_out, data_Maj_beam, data_Min_beam, data_PA_beam)
 else:
-    print('Error! Could not find "Maj_out" column!')
+    print('Error! Could not compute "Maj_out_convol" data!')
     sys.exit()
 #---------------
 #col_Maj_beam = ''
@@ -150,7 +185,7 @@ else:
 # prepare x1, x2
 # 
 x1 = data_S_peak/data_noise
-x2 = data_Maj_out/data_Maj_beam
+x2 = data_Maj_out_convol/data_Maj_beam
 x = numpy.column_stack((numpy.log10(x1),x2))
 
 
@@ -213,11 +248,13 @@ input_catalog_file_name, input_catalog_file_ext = os.path.splitext(input_catalog
 
 catalog.TableData[col_e_S_out] = e_S_out_corr / mal_e_S_out
 
-asciitable.write(catalog.TableData, input_catalog_file_name+'_corrected.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
-                    names=catalog_column_names, overwrite=True)
-os.system('sed -i.bak -e "1s/^ /#/" "%s"'%(input_catalog_file_name+'_corrected.txt'))
-
-print('Output to "%s"!'%(input_catalog_file_name+'_corrected.txt'))
+if input_catalog_file_ext == '.fits':
+    catalog.saveAs(input_catalog_file_name+'_corrected.fits')
+else:
+    asciitable.write(catalog.TableData, input_catalog_file_name+'_corrected.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
+                        names=catalog_column_names, overwrite=True)
+    os.system('sed -i.bak -e "1s/^ /#/" "%s"'%(input_catalog_file_name+'_corrected.txt'))
+    print('Output to "%s"!'%(input_catalog_file_name+'_corrected.txt'))
 
 
 

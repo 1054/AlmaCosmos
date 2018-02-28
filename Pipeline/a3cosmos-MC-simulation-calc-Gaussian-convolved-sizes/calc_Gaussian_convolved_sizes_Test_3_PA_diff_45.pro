@@ -1,4 +1,4 @@
-PRO test_1_Gaussian_2D
+PRO calc_Gaussian_convolved_sizes_Test_3_PA_diff_45
     
     print, 'Checking !PATH'
     print, !PATH
@@ -15,8 +15,8 @@ PRO test_1_Gaussian_2D
     ; Create Gaussian with PSF_Gaussian (but setting PA is not working)
     ;Gaussian_1 = PSF_Gaussian(FWHM=[10.0,7.0],NPIXEL=[301,301],XY_CORREL=0.9)
     ;Image_1 = IMAGE(Gaussian_1)
-    FWHM_1 = [30,18]
-    PA_1 = -90.0
+    FWHM_1 = [30,22]
+    PA_1 = -45.0 ; +X axis direction
     Gaussian_1 = CrabImageGaussian2D(FWHM=FWHM_1, NPIXEL=301, XArray=X, YArray=Y, PA=PA_1)
     print, 'MAX(Gaussian) =', MAX(Gaussian_1)
     print, 'TOTAL(Gaussian) =', TOTAL(Gaussian_1)
@@ -29,8 +29,8 @@ PRO test_1_Gaussian_2D
     ; Create PSF Image ;
     ; ---------------- ;
     
-    FWHM_PSF = [15,10]
-    PA_PSF = 30.0
+    FWHM_PSF = [30,5]
+    PA_PSF = 0.0 ; +Y axis direction
     Gaussian_PSF = CrabImageGaussian2D(FWHM=FWHM_PSF, NPIXEL=301, PA=PA_PSF)
     
     
@@ -53,6 +53,18 @@ PRO test_1_Gaussian_2D
     print, 'total/peak =', TOTAL(Gaussian_Convol) / MAX(Gaussian_Convol)
     print, 'A_source =', !PI/(4*alog(2))*SQRT(FWHM_1[0]^2+FWHM_PSF[0]^2)*SQRT(FWHM_1[1]^2+FWHM_PSF[1]^2)
     print, ''
+    
+    
+    
+    ; --------------- ;
+    ; Save the images
+    ; --------------- ;
+    MKHDR, Gaussian_Convol_Header, Gaussian_Convol
+    sxaddpar, Gaussian_Convol_Header, 'BMAJ', FWHM_PSF[0]
+    sxaddpar, Gaussian_Convol_Header, 'BMIN', FWHM_PSF[1]
+    sxaddpar, Gaussian_Convol_Header, 'BPA', PA_PSF
+    sxaddpar, Gaussian_Convol_Header, 'BUNIT', 'Jy/beam'
+    MWRFITS, Gaussian_Convol, 'Gaussian_Convol.fits', Gaussian_Convol_Header, /Create
     
     
     
@@ -89,7 +101,7 @@ PRO test_1_Gaussian_2D
     print, 'Input PSF PA =', (PA_PSF)
     print, 'Fitted convolved Maj FWHM =', Fit_Param[2] * 2.0*SQRT(2.0*alog(2.0))
     print, 'Fitted convolved Min FWHM =', Fit_Param[3] * 2.0*SQRT(2.0*alog(2.0))
-    print, 'Fitted convolved PA =', (90.0-Fit_Param[6]/!PI*180.0) ; Param[6] is the Rotation of T radians from the X axis, in the clockwise direction.
+    print, 'Fitted convolved PA =', (90.0-(Fit_Param[6])/!PI*180.0) ; Param[6] is the Rotation of T radians from the X axis, in the clockwise direction.
     print, ''
     print, 'Fitted intri+PSF Maj^2+Min^2 = ', (FWHM_1[0])^2 + (FWHM_1[1])^2 + (FWHM_PSF[0])^2 + (FWHM_PSF[1])^2
     print, 'Fitted convolved Maj^2+Min^2 = ', (Fit_Param[2] * 2.0*SQRT(2.0*alog(2.0)))^2 + (Fit_Param[3] * 2.0*SQRT(2.0*alog(2.0)))^2

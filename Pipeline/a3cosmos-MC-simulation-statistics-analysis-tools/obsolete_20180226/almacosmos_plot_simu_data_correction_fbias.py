@@ -14,39 +14,25 @@ import os, sys
 
 if len(sys.argv) <= 1:
     print('Usage: almacosmos_plot_simu_data_correction_fbias.py simu_data_correction_table.txt')
+    print('# Note: simu_data_correction_table.txt is the output file of "almacosmos_calc_simu_stats.py"!')
     sys.exit()
 
 
 # 
 # Read input arguments
+# 
 input_simu_data_table = ''
 input_catalog_file = ''
-column_x1 = 'cell_par1_median' # column number starts from 1.
-column_x2 = 'cell_par2_median' # column number starts from 1.
-column_fbias = 'cell_rel_median' # column number starts from 1.
-column_ecorr = 'cell_rel_scatter_68' # column number starts from 1.
-column_ecorr_L68 = 'cell_rel_scatter_L68' # column number starts from 1.
-column_ecorr_H68 = 'cell_rel_scatter_H68' # column number starts from 1.
+column_x1 = 'cell_par1_median'
+column_x2 = 'cell_par2_median'
+column_fbias = 'cell_rel_median'
 
-i = 1
-while i < len(sys.argv):
-    if sys.argv[i].lower() == '-sim':
-        if i+1 < len(sys.argv):
-            input_simu_data_table = sys.argv[i+1]
-            i = i + 1
-    else:
-        if input_simu_data_table == '':
-            input_simu_data_table = sys.argv[i]
-    i = i + 1
-
-
-# 
-# TODO
-#input_simu_data_table = 'datatable_correction.txt'
+input_simu_data_table = sys.argv[1]
 
 
 # 
 # Check input data file
+# 
 if not os.path.isfile(input_simu_data_table):
     print('Error! "%s" was not found!'%(input_simu_data_table))
     sys.exit()
@@ -54,12 +40,13 @@ if not os.path.isfile(input_simu_data_table):
 
 # 
 # Import python packages
+# 
 import numpy
 import astropy
 import astropy.io.ascii as asciitable
 import scipy.optimize
-import matplotlib
-from matplotlib import pyplot
+#import matplotlib
+#from matplotlib import pyplot
 from pprint import pprint
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
 from CrabTable import *
@@ -87,42 +74,28 @@ else:
 
 # 
 # Read X Y YErr XErr data array 
+# 
 data_x1 = []
 data_x2 = []
 data_fbias = []
-data_ecorr = []
-data_ecorr_L68 = []
-data_ecorr_H68 = []
-data_x1 = data_table.getColumn(int(column_x1)-1) if column_x1.isdigit() else data_table.getColumn(column_x1)
-data_x2 = data_table.getColumn(int(column_x2)-1) if column_x2.isdigit() else data_table.getColumn(column_x2)
-data_fbias = data_table.getColumn(int(column_fbias)-1) if column_fbias.isdigit() else data_table.getColumn(column_fbias)
-data_ecorr = data_table.getColumn(int(column_ecorr)-1) if column_ecorr.isdigit() else data_table.getColumn(column_ecorr)
-data_ecorr_L68 = data_table.getColumn(int(column_ecorr_L68)-1) if column_ecorr_L68.isdigit() else data_table.getColumn(column_ecorr_L68)
-data_ecorr_H68 = data_table.getColumn(int(column_ecorr_H68)-1) if column_ecorr_H68.isdigit() else data_table.getColumn(column_ecorr_H68)
+data_x1 = data_table.getColumn(column_x1)
+data_x2 = data_table.getColumn(column_x2)
+data_fbias = data_table.getColumn(column_fbias)
 
 
 # 
 # set data array
-y_obs = data_fbias
-y_err = data_ecorr
-y_fbias = data_fbias
-y_ecorr = data_ecorr
-y_ecorr_L68 = data_ecorr_L68
-y_ecorr_H68 = data_ecorr_H68
-for i in range(len(y_ecorr)):
-    if y_ecorr_L68[i] > 0 and y_ecorr_H68[i] > 0:
-        if y_ecorr_L68[i] > y_ecorr_H68[i]:
-            y_ecorr[i] = y_ecorr_L68[i]
-        else:
-            y_ecorr[i] = y_ecorr_H68[i]
-y_ecorr = numpy.log10(1/y_ecorr)
-x1 = data_x1
-x2 = data_x2
+# 
+nan_filter = (~numpy.isnan(data_fbias))
+y_fbias = data_fbias[nan_filter]
+x1 = data_x1[nan_filter]
+x2 = data_x2[nan_filter]
 
 
 
 # 
 # Make x grid
+# 
 x1_sparse = numpy.arange(numpy.log10(2.0), numpy.log10(500.0), 0.05)
 x2_sparse = numpy.arange(0.0, 5.5, 0.5)
 x1_interval = 0.05
@@ -131,8 +104,10 @@ x1_grid, x2_grid = numpy.meshgrid(x1_sparse, x2_sparse)
 x_grid = numpy.column_stack((x1_grid.flatten(),x2_grid.flatten()))
 
 
+
 # 
 # 2D interpolation
+# 
 from scipy import interpolate
 
 x_arr = numpy.column_stack((numpy.log10(x1),x2))
@@ -143,28 +118,18 @@ fbias_array_mask = numpy.isnan(fbias_array)
 fbias_array[fbias_array_mask] = fbias_array_extrapolated[fbias_array_mask]
 fbias_grid = fbias_array.reshape(x1_grid.shape)
 fbias_grid_mask = fbias_array_mask.reshape(x1_grid.shape)
-#pprint(x1_grid)
-#pprint(x2_grid)
-#pprint(fbias_grid)
 
-ecorr_array_extrapolated = interpolate.griddata(x_arr, y_ecorr, x_grid, method='nearest')
-ecorr_array = interpolate.griddata(x_arr, y_ecorr, x_grid, method='linear')
-ecorr_array_mask = numpy.isnan(ecorr_array)
-ecorr_array[ecorr_array_mask] = ecorr_array_extrapolated[ecorr_array_mask]
-ecorr_grid = ecorr_array.reshape(x1_grid.shape)
-ecorr_grid_mask = ecorr_array_mask.reshape(x1_grid.shape)
-#pprint(x1_grid)
-#pprint(x2_grid)
-#pprint(ecorr_grid)
 
 
 # 
-# note that x1_grid is in log, and ecorr_ is also in log, but x1 is not in log. 
+# note that x1_grid is in log, but x1 is not in log. 
 # 
 
 
+
 # 
-# Plot subplot
+# Plot subplot and fit functions
+# 
 fig = pyplot.figure()
 fig.set_size_inches(6.5,13.5)
 font = {'family': 'serif',
@@ -245,6 +210,7 @@ for i2 in range(n2):
 
 # 
 # savefig
+# 
 pyplot.savefig('Plot_simu_datatable_correction_fbias.pdf')
 pyplot.clf()
 print('Output to "Plot_simu_datatable_correction_fbias.pdf"!')
@@ -252,6 +218,7 @@ print('Output to "Plot_simu_datatable_correction_fbias.pdf"!')
 
 # 
 # save best_fit_function
+# 
 import json
 with open('best_fit_function_fbias.json', 'w') as fp:
     json.dump(best_func, fp)

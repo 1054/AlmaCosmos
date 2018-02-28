@@ -14,7 +14,7 @@ import os, sys
 
 if len(sys.argv) <= 1:
     print('Usage: almacosmos_plot_simu_data_correction_ecorr.py simu_data_correction_table.txt')
-    print('# Note: simu_data_correction_table.txt is the output file of "almacosmos_calc_simu_stats.sm"!')
+    print('# Note: simu_data_correction_table.txt is the output file of "almacosmos_calc_simu_stats.py"!')
     sys.exit()
 
 
@@ -26,24 +26,13 @@ input_catalog_file = ''
 column_x1 = 'cell_par1_median'
 column_x2 = 'cell_par2_median'
 column_fbias = 'cell_rel_median'
-column_ecorr = 'cell_scatter' # 'cell_rel_scatter_68'
+column_ecorr = 'cell_scatter'
 column_ecorr_noi = 'cell_noi_scatter'
-column_rms_noise = 'cell_rms_noise_median'
-column_ecorr_68 = 'cell_rel_scatter_68' # 'cell_rel_scatter_68'
 column_ecorr_L68 = 'cell_rel_scatter_L68'
 column_ecorr_H68 = 'cell_rel_scatter_H68'
 column_cell_size = 'cell_size'
 
-i = 1
-while i < len(sys.argv):
-    if sys.argv[i].lower() == '-sim':
-        if i+1 < len(sys.argv):
-            input_simu_data_table = sys.argv[i+1]
-            i = i + 1
-    else:
-        if input_simu_data_table == '':
-            input_simu_data_table = sys.argv[i]
-    i = i + 1
+input_simu_data_table = sys.argv[1]
 
 
 # 
@@ -98,38 +87,18 @@ data_fbias = []
 data_ecorr = []
 data_ecorr_L68 = []
 data_ecorr_H68 = []
-data_x1 = data_table.getColumn(int(column_x1)-1) if column_x1.isdigit() else data_table.getColumn(column_x1)
-data_x2 = data_table.getColumn(int(column_x2)-1) if column_x2.isdigit() else data_table.getColumn(column_x2)
-data_fbias = data_table.getColumn(int(column_fbias)-1) if column_fbias.isdigit() else data_table.getColumn(column_fbias)
-data_ecorr = data_table.getColumn(int(column_ecorr)-1) if column_ecorr.isdigit() else data_table.getColumn(column_ecorr)
-data_ecorr_noi = data_table.getColumn(int(column_ecorr_noi)-1) if column_ecorr_noi.isdigit() else data_table.getColumn(column_ecorr_noi)
-data_ecorr_68 = data_table.getColumn(int(column_ecorr_68)-1) if column_ecorr_68.isdigit() else data_table.getColumn(column_ecorr_68)
-data_ecorr_L68 = data_table.getColumn(int(column_ecorr_L68)-1) if column_ecorr_L68.isdigit() else data_table.getColumn(column_ecorr_L68)
-data_ecorr_H68 = data_table.getColumn(int(column_ecorr_H68)-1) if column_ecorr_H68.isdigit() else data_table.getColumn(column_ecorr_H68)
-data_cell_size = data_table.getColumn(int(column_cell_size)-1) if column_cell_size.isdigit() else data_table.getColumn(column_cell_size)
-#if len(data_y) == 0: print('Error! Could not determine y!')
-#if len(data_x) == 0: sys.exit()
-#if len(data_y) == 0: sys.exit()
+data_x1 = data_table.getColumn(column_x1)
+data_x2 = data_table.getColumn(column_x2)
+data_fbias = data_table.getColumn(column_fbias)
+data_ecorr = data_table.getColumn(column_ecorr)
+data_ecorr_noi = data_table.getColumn(column_ecorr_noi)
+data_ecorr_L68 = data_table.getColumn(column_ecorr_L68)
+data_ecorr_H68 = data_table.getColumn(column_ecorr_H68)
+data_cell_size = data_table.getColumn(column_cell_size)
 
 
 # 
-# Read data array
-# 
-#y_fbias = data_fbias
-#y_ecorr = data_ecorr # just use 'cell_rel_scatter_68', which is the minimum of(L68,H68)
-#y_ecorr_L68 = data_ecorr_L68
-#y_ecorr_H68 = data_ecorr_H68
-#for i in range(len(y_ecorr)):
-#    if y_ecorr_L68[i] > 0 and y_ecorr_H68[i] > 0:
-#        if y_ecorr_L68[i] > y_ecorr_H68[i]:
-#            y_ecorr[i] = y_ecorr_L68[i] # choose the larger error one
-#        else:
-#            y_ecorr[i] = y_ecorr_H68[i] # choose the larger error one
-##y_ecorr = numpy.log10(1/y_ecorr)
-
-
-# 
-# Filter out some data points (after several times of tuning)
+# Set data array
 # 
 x1 = data_x1
 x2 = data_x2
@@ -137,12 +106,11 @@ y_obs = data_ecorr_noi  # scatter of ((S_in-S_out) / noise)
 y_err = numpy.sqrt(10.0/data_cell_size) * y_obs # <TODO> assign larger errors to larger x2
 y_obs_log = numpy.log10(y_obs)
 y_err_log = y_err/y_obs
-#imask = (data_x2<3.0)
-#x1 = data_x1[imask]
-#x2 = data_x2[imask]
-#y_obs = y_fbias[imask]
-#y_err = y_ecorr[imask]
-#col_names = ['x1 (S_peak/rms_noise)','x2 (Maj_convol/Maj_beam)','median (S_in-S_out)/S_in','sigma (S_in-S_out)/S_in']
+
+
+# 
+# Print data array
+# 
 col_names = ['x1 (S_peak/rms_noise)','x2 (Maj_convol/Maj_beam)','scatter of ((S_in-S_out) / noise)','1 / cell size']
 col_width = len('| ' + ' | '.join(col_names) + ' |')
 print('-'*col_width)
@@ -161,6 +129,7 @@ print('-'*col_width)
 
 # 
 # Make x grid
+# 
 x1_sparse = numpy.arange(numpy.log10(2.0), numpy.log10(1000.0), 0.05)
 x2_sparse = numpy.arange(0.0, 5.5, 0.5)
 x1_interval = 0.01
@@ -169,8 +138,10 @@ x1_grid, x2_grid = numpy.meshgrid(x1_sparse, x2_sparse)
 x_grid = numpy.column_stack((x1_grid.flatten(),x2_grid.flatten()))
 
 
+
 # 
 # 2D interpolation
+# 
 from scipy import interpolate
 
 x_arr = numpy.column_stack((numpy.log10(x1),x2))
@@ -196,13 +167,16 @@ ecorr_grid_mask = ecorr_array_mask.reshape(x1_grid.shape)
 #pprint(ecorr_grid)
 
 
+
 # 
 # note that x1_grid is in log, and ecorr_ is also in log, but x1 is not in log. 
 # 
 
 
+
 # 
-# Plot subplot
+# Plot subplot and fit functions
+# 
 fig = pyplot.figure()
 fig.set_size_inches(6.5,13.5)
 font = {'family': 'serif',
@@ -285,6 +259,7 @@ for i2 in range(n2):
 
 # 
 # savefig
+# 
 pyplot.savefig('Plot_simu_datatable_correction_ecorr.pdf')
 pyplot.clf()
 print('Output to "Plot_simu_datatable_correction_ecorr.pdf"!')
@@ -292,6 +267,7 @@ print('Output to "Plot_simu_datatable_correction_ecorr.pdf"!')
 
 # 
 # save best_fit_function
+# 
 import json
 with open('best_fit_function_ecorr.json', 'w') as fp:
     json.dump(best_func, fp)

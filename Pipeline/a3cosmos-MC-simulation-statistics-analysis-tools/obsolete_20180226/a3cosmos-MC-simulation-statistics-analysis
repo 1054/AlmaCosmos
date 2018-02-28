@@ -1,0 +1,332 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-statistics-analysis \"datatable_CrossMatched_only_matches_filtered_nonphysical.fits\""
+    echo "Input: "
+    echo "    A catalog which contains \"S_in\", \"S_out\", \"flag_matched\", \"flag_nonmatched_missed\" columns"
+    echo "Output: "
+    echo "    A directory named \"Statistics/\""
+    echo ""
+    exit
+fi
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Supermongo was not installed!"
+    exit 1
+fi
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+    exit 1
+fi
+if [[ ! -d $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools ]]; then
+    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+fi
+if [[ $(type a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname "${BASH_SOURCE[0]}")/SETUP.bash ]]; then
+        source $(dirname "${BASH_SOURCE[0]}")/SETUP.bash
+    else
+        echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/SETUP.bash"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+        exit 1
+    fi
+fi
+
+
+# 
+# Read Input cat
+# 
+InputCat="$1"
+
+
+# 
+# Set Output dir
+# 
+if [[ $# -ge 2 ]]; then
+    OutputDir="$2"
+else
+    OutputDir="Statistics"
+fi
+
+
+# 
+# Check output dir
+# 
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir -p "$OutputDir"
+fi
+
+
+# 
+# Extract formatted data table
+# 
+if [[ "$InputCat" == *".fits" ]] || [[ "$InputCat" == *".FITS" ]]; then
+    InputFmt="fits"
+else
+    InputFmt="ascii"
+fi
+if [[ ! -f "$OutputDir/simu_data_input.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt="$InputFmt" \
+                cmd="select \"S_peak/noise>=2.5\"" \
+                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam image_file_STR simu_name_STR\"" \
+                ofmt=ascii \
+                out="$OutputDir/simu_data_input.txt"
+fi
+if [[ ! -f "$OutputDir/simu_data_input.txt" ]]; then
+    echo "Error! Failed to output \"$OutputDir/simu_data_input.txt\"!"
+    exit 1
+fi
+
+
+# 
+# Change dir to OutputDir
+# 
+cd "$OutputDir"
+
+
+
+# 
+# Check analysis tools from 'a3cosmos-MC-simulation-statistics-analysis-tools'
+# 
+ScriptDir="$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools"
+ScriptCheck="OK"
+for ScriptName in "almacosmos_calc_simu_stats.py" \
+                  "almacosmos_fit_simu_corr_ecorr_via_2D_function.py" \
+                  "almacosmos_fit_simu_corr_ecorr_via_2D_interpolation.py" \
+                  "almacosmos_fit_simu_corr_ecorr_via_function.py" \
+                  "almacosmos_fit_simu_corr_ecorr_via_spline.py" \
+                  "almacosmos_fit_simu_corr_fbias_via_2D_function.py" \
+                  "almacosmos_fit_simu_corr_fbias_via_2D_interpolation.py" \
+                  "almacosmos_fit_simu_corr_fbias_via_function.py" \
+                  "almacosmos_fit_simu_corr_fbias_via_spline.py" \
+                  "almacosmos_plot_simu_corr.py"
+do
+    if [[ ! -f "$ScriptDir/$ScriptName" ]]; then
+        echo "Error! \"$ScriptDir/$ScriptName\" was not found! Please clone the entire \"https://github.com/1054/AlmaCosmos.git\"!"
+        ScriptCheck="ERROR"
+    fi
+done
+if [[ "$ScriptCheck" != "OK" ]]; then
+    exit 255
+fi
+
+
+
+
+
+
+
+
+
+# 
+# The first step is to make bins in the parameter space and compute (S_in-S_out) statistics in each bin.
+# For doing this, we use the code "almacosmos_plot_simu_stats.py".
+# 
+if [[ ! -d "sim_diagram_output_no_galfit_flux_error_1" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input.txt" "|" "tee" "log_calc_simu_stats_1.log"
+    "$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input.txt" -out "sim_diagram_output_no_galfit_flux_error_1" | tee "log_calc_simu_stats_1.log"
+    if [[ ! -d "sim_diagram_output_no_galfit_flux_error_1" ]]; then
+        echo "Failed to run \"./almacosmos_calc_simu_stats.py simu_data_input.txt\"!"
+        exit 255
+    fi
+fi
+cd "sim_diagram_output_no_galfit_flux_error_1"
+
+# 
+# Then, we run
+#   "almacosmos_fit_simu_corr_fbias.py" to fit a 2D function to the flux bias.
+# 
+if [[ ! -f "best_fit_function_fbias.py" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_2D_function.py" "datatable_param_grid_cell_statistics.txt"
+    "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_2D_function.py" "datatable_param_grid_cell_statistics.txt"
+    if [[ ! -f "best_fit_function_fbias.py" ]]; then
+        echo "Failed to run \"../almacosmos_fit_simu_corr_fbias_via_2D_function.py datatable_param_grid_cell_statistics.txt\"!"
+        exit 255
+    fi
+fi
+
+# 
+# Then, we use python code "almacosmos_fit_simu_corr_fbias_via_2D_interpolation.py" to interpolate the flux bias.
+# 
+if [[ ! -f "interp_table_fbias.json" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_2D_interpolation.py" "datatable_param_grid_cell_statistics.txt"
+    "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_2D_interpolation.py" "datatable_param_grid_cell_statistics.txt"
+    if [[ ! -f "interp_table_fbias.json" ]]; then
+        echo "Failed to run \"../almacosmos_fit_simu_corr_fbias_via_2D_interpolation.py datatable_param_grid_cell_statistics.txt\"!"
+        exit 255
+    fi
+fi
+
+# 
+# Then, we use python code "almacosmos_fit_simu_corr_fbias_via_spline.py" to spline the flux bias.
+# 
+if [[ ! -f "spline_table_fbias.json" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_spline.py" "datatable_param_grid_cell_statistics.txt"
+    "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_spline.py" "datatable_param_grid_cell_statistics.txt"
+    if [[ ! -f "spline_table_fbias.json" ]]; then
+        echo "Failed to run \"../almacosmos_fit_simu_corr_fbias_via_spline.py datatable_param_grid_cell_statistics.txt\"!"
+        exit 255
+    fi
+fi
+
+# 
+# Then, we use python code "almacosmos_fit_simu_corr_fbias_via_function.py" to fit 1D function to the flux bias.
+# 
+if [[ ! -f "fitfun_table_fbias.json" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_spline.py" "datatable_param_grid_cell_statistics.txt"
+    "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_spline.py" "datatable_param_grid_cell_statistics.txt"
+    if [[ ! -f "fitfun_table_fbias.json" ]]; then
+        echo "Failed to run \"../almacosmos_fit_simu_corr_fbias_via_spline.py datatable_param_grid_cell_statistics.txt\"!"
+        exit 255
+    fi
+fi
+
+# 
+# Then, we use python code "almacosmos_fit_simu_corr_fbias_via_function.py" to plot the flux bias.
+# 
+if [[ ! -f "fitfun_table_fbias.json" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_spline.py" "datatable_param_grid_cell_statistics.txt"
+    "$ScriptDir/almacosmos_fit_simu_corr_fbias_via_spline.py" "datatable_param_grid_cell_statistics.txt"
+    if [[ ! -f "fitfun_table_fbias.json" ]]; then
+        echo "Failed to run \"../almacosmos_fit_simu_corr_fbias_via_spline.py datatable_param_grid_cell_statistics.txt\"!"
+        exit 255
+    fi
+fi
+
+exit
+
+# 
+# After fitted the flux bias correction functions, we apply the correction to the input data "simu_data_input.txt"
+# For doing this, we use the Python code "almacosmos_apply_simu_corr_fbias_via_2D_function.py"
+# 
+if [[ ! -f "../simu_data_input_corrected.txt" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_apply_simu_corr_fbias_via_2D_interpolation.py" "../simu_data_input.txt"
+    #"$ScriptDir/almacosmos_apply_simu_corr_fbias_via_2D_function.py" "../simu_data_input.txt"
+    "$ScriptDir/almacosmos_apply_simu_corr_fbias_via_2D_interpolation.py" "../simu_data_input.txt"
+    if [[ ! -f "../simu_data_input_corrected.txt" ]]; then
+        echo "Failed to run \"../almacosmos_apply_simu_corr_fbias_via_2D_interpolation.py ../simu_data_input.txt\"!"
+        exit 255
+    fi
+fi
+cd ..
+
+
+
+
+
+
+
+
+# 
+# Repeat for ecorr
+# 
+if [[ ! -d "sim_diagram_output_no_galfit_flux_error_2" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input_corrected.txt" "|" "tee" "log_calc_simu_stats_2.log"
+    "$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input_corrected.txt" -out "sim_diagram_output_no_galfit_flux_error_2" | tee "log_calc_simu_stats_2.log"
+    if [[ ! -d "sim_diagram_output_no_galfit_flux_error_2" ]]; then
+        echo "Failed to run \"./almacosmos_calc_simu_stats.py simu_data_input_corrected.txt\"!"
+        exit 255
+    fi
+fi
+cd "sim_diagram_output_no_galfit_flux_error_2"
+
+# 
+# Repeat for ecorr
+# 
+if [[ ! -f "best_fit_function_ecorr.py" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_fit_simu_corr_ecorr_via_2D_function.py" "datatable_param_grid_cell_statistics.txt" "|" "tee" "log_fit_simu_corr_2_ecorr.log"
+    "$ScriptDir/almacosmos_fit_simu_corr_ecorr_via_2D_function.py" "datatable_param_grid_cell_statistics.txt" | tee "log_fit_simu_corr_2_ecorr.log"
+    if [[ ! -f "best_fit_function_ecorr.py" ]]; then
+        echo "Failed to run \"../almacosmos_fit_simu_corr_ecorr_via_2D_function.py datatable_param_grid_cell_statistics.txt\"!"
+        exit 255
+    fi
+fi
+
+# 
+# Then, we use python code "almacosmos_fit_simu_corr_ecorr_via_2D_interpolation.py" to interpolate the flux bias.
+# 
+if [[ ! -f "base_interp_array_for_ecorr.json" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_fit_simu_corr_ecorr_via_2D_interpolation.py" "datatable_param_grid_cell_statistics.txt" "|" "tee" "log_plot_simu_corr_2_ecorr.log"
+    "$ScriptDir/almacosmos_fit_simu_corr_ecorr_via_2D_interpolation.py" "datatable_param_grid_cell_statistics.txt" | tee "log_plot_simu_corr_2_ecorr.log"
+    if [[ ! -f "base_interp_array_for_ecorr.json" ]]; then
+        echo "Failed to run \"../almacosmos_fit_simu_corr_ecorr_via_2D_interpolation.py datatable_param_grid_cell_statistics.txt\"!"
+        exit 255
+    fi
+fi
+
+# 
+# Repeat for ecorr
+# 
+if [[ ! -f "../simu_data_input_corrected_corrected.txt" ]]; then
+    echo ""; echo "$ScriptDir/almacosmos_apply_simu_corr_ecorr_via_2D_interpolation.py" "../simu_data_input_corrected.txt" "|" "tee" "log_apply_simu_corr_2_ecorr.log"
+    #"$ScriptDir/almacosmos_apply_simu_corr_ecorr_via_2D_function.py" "../simu_data_input_corrected.txt" | tee "log_apply_simu_corr_2_ecorr.log"
+    "$ScriptDir/almacosmos_apply_simu_corr_ecorr_via_2D_interpolation.py" "../simu_data_input_corrected.txt" | tee "log_apply_simu_corr_2_ecorr.log"
+    if [[ ! -f "../simu_data_input_corrected_corrected.txt" ]]; then
+        echo "Failed to run \"../almacosmos_apply_simu_corr_fbias_via_2D_interpolation.py ../simu_data_input_corrected.txt\"!"
+        exit 255
+    fi
+fi
+cd ..
+
+
+
+
+
+
+
+# 
+# Clear sim_diagram_output_no_galfit_flux_error
+# 
+if [[ -d "sim_diagram_output_no_galfit_flux_error" ]]; then
+    mv "sim_diagram_output_no_galfit_flux_error" "sim_diagram_output_no_galfit_flux_error_2"
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 
+# Make plots
+# 
+a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 
+# Print final message
+# 
+echo "************"
+echo "Output to \"$OutputDir\"!"
+
+

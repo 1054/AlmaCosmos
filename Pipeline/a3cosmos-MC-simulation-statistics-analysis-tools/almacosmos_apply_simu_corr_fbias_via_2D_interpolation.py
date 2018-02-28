@@ -10,7 +10,7 @@ pkg_resources.require("numpy")
 pkg_resources.require("astropy")
 pkg_resources.require("scipy")
 
-import os, sys
+import os, sys, json
 
 if len(sys.argv) <= 1:
     print('Usage: almacosmos_apply_simu_data_correction_fbias.py catalog.txt')
@@ -29,8 +29,6 @@ while i < len(sys.argv):
         if i+1 < len(sys.argv):
             input_catalog_file = sys.argv[i+1]
             i = i + 1
-    elif sys.argv[i].lower() == '-by-function':
-        apply_by_method = 'function'
     else:
         if input_catalog_file == '':
             input_catalog_file = sys.argv[i]
@@ -61,6 +59,8 @@ sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))
 from CrabTable import *
 sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabplot')
 from CrabPlot import *
+sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabgaussian')
+from CrabGaussian import *
 sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabcurvefit')
 from CrabCurveFit import *
 
@@ -129,22 +129,50 @@ else:
     print('Error! Could not find "noise" column!')
     sys.exit()
 #---------------
-if 'Maj_out' in catalog_column_names:
-    data_Maj_out = catalog.getColumn('Maj_out')
-elif 'Maj_deconv' in catalog_column_names and 'beam_maj' in catalog_column_names and 'beam_min' in catalog_column_names and 'beam_PA' in catalog_column_names:
-    data_Maj_deconv = catalog.getColumn('Maj_deconv') * 3600.0 # convert to arcsec
-    data_Maj_beam = catalog.getColumn('beam_maj')
-    data_Min_beam = catalog.getColumn('beam_min')
+if 'Maj_out' in catalog_column_names and \
+   'Min_out' in catalog_column_names and \
+   'PA_out' in catalog_column_names and \
+   'Maj_beam' in catalog_column_names and \
+   'Min_beam' in catalog_column_names and \
+   'PA_beam' in catalog_column_names:
+    data_Maj_out = catalog.getColumn('Maj_out') # assuming arcsec
+    data_Min_out = catalog.getColumn('Min_out') # assuming arcsec
+    data_PA_out = catalog.getColumn('PA_out') 
+    data_Maj_beam = catalog.getColumn('Maj_beam') # assuming arcsec
+    data_Min_beam = catalog.getColumn('Min_beam') # assuming arcsec
+    data_PA_beam = catalog.getColumn('PA_beam') 
+    print('Computing source sizes convolved with beam')
+    data_Maj_out_convol, data_Min_out_convol, data_PA_out_convol = convolve_2D_Gaussian_Maj_Min_PA(data_Maj_out, data_Min_out, data_PA_out, data_Maj_beam, data_Min_beam, data_PA_beam)
+elif 'Maj_deconv' in catalog_column_names and \
+     'Min_deconv' in catalog_column_names and \
+     'PA_deconv' in catalog_column_names and \
+     'beam_maj' in catalog_column_names and \
+     'beam_min' in catalog_column_names and \
+     'beam_PA' in catalog_column_names:
+    data_Maj_out = catalog.getColumn('Maj_deconv') * 3600.0 # convert to arcsec
+    data_Min_out = catalog.getColumn('Min_deconv') * 3600.0 # convert to arcsec
+    data_PA_out = catalog.getColumn('PA_deconv')
+    data_Maj_beam = catalog.getColumn('beam_maj') # assuming arcsec
+    data_Min_beam = catalog.getColumn('beam_min') # assuming arcsec
     data_PA_beam = catalog.getColumn('beam_PA')
-    data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + numpy.power(data_Maj_beam,2)) #<TODO># do the source size convolution
-elif 'Maj_deconv' in catalog_column_names and 'Beam_MAJ' in catalog_column_names and 'Beam_MIN' in catalog_column_names and 'Beam_PA' in catalog_column_names:
-    data_Maj_deconv = catalog.getColumn('Maj_deconv') * 3600.0 # convert to arcsec
-    data_Maj_beam = catalog.getColumn('Beam_MAJ') * 3600.0 # convert to arcsec
-    data_Min_beam = catalog.getColumn('Beam_MIN') * 3600.0 # convert to arcsec
+    print('Computing source sizes convolved with beam')
+    data_Maj_out_convol, data_Min_out_convol, data_PA_out_convol = convolve_2D_Gaussian_Maj_Min_PA(data_Maj_out, data_Min_out, data_PA_out, data_Maj_beam, data_Min_beam, data_PA_beam)
+elif 'Maj_deconv' in catalog_column_names and \
+     'Min_deconv' in catalog_column_names and \
+     'PA_deconv' in catalog_column_names and \
+     'Beam_MAJ' in catalog_column_names and \
+     'Beam_MIN' in catalog_column_names and \
+     'Beam_PA' in catalog_column_names:
+    data_Maj_out = catalog.getColumn('Maj_deconv') * 3600.0 # assuming degree, converting to arcsec
+    data_Min_out = catalog.getColumn('Min_deconv') * 3600.0 # assuming degree, converting to arcsec
+    data_PA_out = catalog.getColumn('PA_deconv')
+    data_Maj_beam = catalog.getColumn('Beam_MAJ') * 3600.0 # assuming degree, converting to arcsec
+    data_Min_beam = catalog.getColumn('Beam_MIN') * 3600.0 # assuming degree, converting to arcsec
     data_PA_beam = catalog.getColumn('Beam_PA')
-    data_Maj_out = numpy.sqrt(numpy.power(data_Maj_deconv,2) + numpy.power(data_Maj_beam,2)) #<TODO># do the source size convolution
+    print('Computing source sizes convolved with beam')
+    data_Maj_out_convol, data_Min_out_convol, data_PA_out_convol = convolve_2D_Gaussian_Maj_Min_PA(data_Maj_out, data_Min_out, data_PA_out, data_Maj_beam, data_Min_beam, data_PA_beam)
 else:
-    print('Error! Could not find "Maj_out" column!')
+    print('Error! Could not compute "Maj_out_convol" data!')
     sys.exit()
 #---------------
 col_Maj_beam = ''
@@ -164,18 +192,13 @@ else:
 # prepare x1, x2
 # 
 x1 = data_S_peak/data_noise
-x2 = data_Maj_out/data_Maj_beam
+x2 = data_Maj_out_convol/data_Maj_beam
+
+
 
 
 # 
-# read best_fit_function
-import json
-with open('best_fit_function_fbias.json', 'r') as fp:
-    best_func = json.load(fp)
-
-
-# 
-# read best_fit_function
+# read base_interp_array_for_fbias
 with open('base_interp_array_for_fbias.json', 'r') as fp:
     base_interp = json.load(fp)
 
@@ -238,72 +261,6 @@ asciitable.write(numpy.column_stack((x2, x1, fbias_array_extrapolated, fbias_arr
 print('Output to "datatable_applying_correction_fbias_by_interpolation.txt"!')
 
 
-# 
-# or apply best fit functions. these functions are separated by x2 values. 
-print('--------- best_func ---------')
-for i in range(len(best_func)):
-    print(best_func[i]['x2'], best_func[i]['p_fit']['popt'])
-    # best_func[i]['x2'] MUST BE MONOCHROMATICALLY INCREASING!
-
-func_i_lo = numpy.array([-1]*len(x2))
-func_i_hi = numpy.array([len(best_func)]*len(x2))
-print(len(func_i_lo))
-print(len(func_i_hi))
-for i in range(len(best_func)):
-    # 
-    # find the nearby lower and upper x2 from best_func['x2']
-    temp_diff = (x2 - best_func[i]['x2'])
-    temp_mask = (temp_diff >= 0)
-    temp_argwhere = numpy.argwhere(temp_mask)
-    #print('--------- %d ---------'%(i))
-    #print(best_func[i]['x2'])
-    #print(len(temp_argwhere))
-    if len(temp_argwhere) > 0:
-        func_i_lo[temp_mask] = func_i_lo[temp_mask]+1
-    # 
-    temp_diff = (best_func[i]['x2'] - x2)
-    temp_mask = (temp_diff >= 0)
-    temp_argwhere = numpy.argwhere(temp_mask)
-    if len(temp_argwhere) > 0:
-        func_i_hi[temp_mask] = func_i_hi[temp_mask]-1
-
-
-temp_mask = (func_i_lo < 0)
-temp_argwhere = numpy.argwhere(temp_mask)
-if len(temp_argwhere) > 0:
-    func_i_lo[temp_mask] = 0
-
-temp_mask = (func_i_hi > len(best_func)-1)
-temp_argwhere = numpy.argwhere(temp_mask)
-if len(temp_argwhere) > 0:
-    func_i_hi[temp_mask] = len(best_func)-1
-
-func_y_lo = []
-func_y_hi = []
-func_a_lo = []
-func_a_hi = []
-for i in range(len(x2)):
-    func_y = fit_func_gravity_energy_field_func(x1[i], *(best_func[func_i_lo[i]]['p_fit']['popt']))
-    func_y_lo.append(func_y)
-    func_y = fit_func_gravity_energy_field_func(x1[i], *(best_func[func_i_hi[i]]['p_fit']['popt']))
-    func_y_hi.append(func_y)
-    # 
-    if (best_func[func_i_hi[i]]['x2'] - best_func[func_i_lo[i]]['x2']) > 0:
-        func_a_lo.append((best_func[func_i_hi[i]]['x2'] - x2[i]) / (best_func[func_i_hi[i]]['x2'] - best_func[func_i_lo[i]]['x2']))
-        func_a_hi.append((x2[i] - best_func[func_i_lo[i]]['x2']) / (best_func[func_i_hi[i]]['x2'] - best_func[func_i_lo[i]]['x2']))
-    else:
-        func_a_lo.append(0.5)
-        func_a_hi.append(0.5)
-
-func_y_array = numpy.array(func_a_lo) * numpy.array(func_y_lo) + numpy.array(func_a_hi) * numpy.array(func_y_hi) # do an interpolation for the functions which are calibrated at each x2 (Maj_source_convol/Maj_beam) parameter grid.
-
-asciitable.write(numpy.column_stack((func_i_lo, func_i_hi, x2, x1, func_y_lo, func_y_hi, func_a_lo, func_a_hi, func_y_array)), 
-                    'datatable_applying_correction_fbias_by_function.txt', Writer=asciitable.FixedWidth, delimiter=" ", 
-                    names=['func_i_lo','func_i_hi','x2','x1','func_y_lo','func_y_hi','func_a_lo','func_a_hi', 'func_y_array'], overwrite=True)
-
-print('Output to "datatable_applying_correction_fbias_by_function.txt"!')
-
-
 
 
 
@@ -312,22 +269,16 @@ print('Output to "datatable_applying_correction_fbias_by_function.txt"!')
 # 
 
 fbias_from_interpolation = fbias_array
-fbias_from_function = func_y_array
 
-asciitable.write(numpy.column_stack((fbias_from_function, fbias_from_interpolation, x2, x1)), 
+asciitable.write(numpy.column_stack((fbias_from_interpolation, x2, x1)), 
                     'datatable_applying_correction_fbias.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
-                    names=['fbias_from_function','fbias_from_interpolation','x2','x1'], overwrite=True)
+                    names=['fbias_from_interpolation','x2','x1'], overwrite=True)
 os.system('sed -i.bak -e "1s/^ /#/" "datatable_applying_correction_fbias.txt"')
 
 print('Output to "datatable_applying_correction_fbias.txt"!')
 
 
 
-# choose which method to use
-if apply_by_method == 'function':
-    fbias_used = fbias_from_function
-else:
-    fbias_used = fbias_from_interpolation
 
 
 
@@ -338,11 +289,11 @@ else:
 # 
 
 S_out_uncorr = data_S_out
-S_out_corr = S_out_uncorr / (1.0 - fbias_used) # (1.0 - fbias_from_function)
+S_out_corr = S_out_uncorr / (1.0 - fbias_from_interpolation)
 
-asciitable.write(numpy.column_stack((S_out_corr, S_out_uncorr, fbias_used, x2, x1)), 
+asciitable.write(numpy.column_stack((S_out_corr, S_out_uncorr, fbias_from_interpolation, x2, x1)), 
                     'datatable_applied_correction_fbias.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
-                    names=['S_out_corr','S_out_uncorr','fbias_used','x2','x1'], overwrite=True)
+                    names=['S_out_corr','S_out_uncorr','fbias_from_interpolation','x2','x1'], overwrite=True)
 os.system('sed -i.bak -e "1s/^ /#/" "datatable_applied_correction_fbias.txt"')
 
 print('Output to "datatable_applied_correction_fbias.txt"!')
