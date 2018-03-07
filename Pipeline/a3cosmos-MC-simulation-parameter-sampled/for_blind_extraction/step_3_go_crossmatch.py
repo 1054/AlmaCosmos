@@ -160,6 +160,9 @@ def read_MC_sim_recovery(alma_image_name, output=None):
             rec_Maj = -99
             rec_Min = -99
             rec_PA = -99
+            rec_Maj_convol = -99
+            rec_Min_convol = -99
+            rec_PA_convol = -99
             rec_S_Code = -99
             # 
             # prepare spurious variables
@@ -172,6 +175,9 @@ def read_MC_sim_recovery(alma_image_name, output=None):
             spurious_Maj = []
             spurious_Min = []
             spurious_PA = []
+            spurious_Maj_convol = []
+            spurious_Min_convol = []
+            spurious_PA_convol = []
             spurious_S_Code = []
             spurious_index = []
             # 
@@ -192,18 +198,18 @@ def read_MC_sim_recovery(alma_image_name, output=None):
                 rec_df = recovered_catalog_table['E_Total_flux'] # Jy
                 rec_fpeak = recovered_catalog_table['Peak_flux'] # Jy/beam
                 rec_dfpeak = recovered_catalog_table['E_Peak_flux'] # Jy/beam
-                rec_Maj_convol = recovered_catalog_table['Maj'] * 3600.0 # arcsec
-                rec_dMaj_convol = recovered_catalog_table['E_Maj'] * 3600.0 # arcsec
-                rec_Min_convol = recovered_catalog_table['Min'] * 3600.0 # arcsec
-                rec_dMin_convol = recovered_catalog_table['E_Min'] * 3600.0 # arcsec
-                rec_PA_convol = recovered_catalog_table['PA']
-                rec_dPA_convol = recovered_catalog_table['E_PA']
                 rec_Maj = recovered_catalog_table['DC_Maj'] * 3600.0 # arcsec
                 rec_dMaj = recovered_catalog_table['E_DC_Maj'] * 3600.0 # arcsec
                 rec_Min = recovered_catalog_table['DC_Min'] * 3600.0 # arcsec
                 rec_dMin = recovered_catalog_table['E_DC_Min'] * 3600.0 # arcsec
                 rec_PA = recovered_catalog_table['DC_PA']
                 rec_dPA = recovered_catalog_table['E_DC_PA']
+                rec_Maj_convol = recovered_catalog_table['Maj'] * 3600.0 # arcsec
+                rec_dMaj_convol = recovered_catalog_table['E_Maj'] * 3600.0 # arcsec
+                rec_Min_convol = recovered_catalog_table['Min'] * 3600.0 # arcsec
+                rec_dMin_convol = recovered_catalog_table['E_Min'] * 3600.0 # arcsec
+                rec_PA_convol = recovered_catalog_table['PA']
+                rec_dPA_convol = recovered_catalog_table['E_PA']
                 rec_S_Code = recovered_catalog_table['S_Code']
                 rec_xydis = numpy.sqrt((rec_x - sim_x)**2 + (rec_y - sim_y)**2)
                 lim_arcsec = 1.5 # arcsec #<TODO># 
@@ -273,9 +279,9 @@ def read_MC_sim_recovery(alma_image_name, output=None):
                     rec_Maj = rec_Maj[rec_index[0]]
                     rec_Min = rec_Min[rec_index[0]]
                     rec_PA = rec_PA[rec_index[0]]
-                    rec_Maj_convol = rec_Maj[rec_index[0]]
-                    rec_Min_convol = rec_Min[rec_index[0]]
-                    rec_PA_convol = rec_PA[rec_index[0]]
+                    rec_Maj_convol = rec_Maj_convol[rec_index[0]]
+                    rec_Min_convol = rec_Min_convol[rec_index[0]]
+                    rec_PA_convol = rec_PA_convol[rec_index[0]]
                     rec_S_Code = rec_S_Code[rec_index[0]]
                     #spurious_index.remove(rec_index[0])
                 #break
