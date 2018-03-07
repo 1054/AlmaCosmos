@@ -5,6 +5,7 @@
 # in each grid cell of a N-parameter space
 # 
 # 20180225 Supercedes 'almacosmos_calc_simu_stats.sm'
+# 20180305 Try x2 = (Maj_out*Min_out)/(Maj_beam*Min_beam), instead of x2 = Maj_out/Maj_beam. 
 # 
 # 
 
@@ -226,9 +227,10 @@ npar = 2
 par1 = S_peak/noise
 par1_str = 'S_{peak}/\\sigma_{rms noise}'
 par1_grid = [2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 8.0, 10., 20., 50., 100, 500, 1000.0]
-par2 = Maj_out_convol/Maj_beam
+#<20180305>#par2 = Maj_out_convol/Maj_beam
+par2 = numpy.sqrt((Maj_out_convol*Min_out_convol)/(Maj_beam*Min_beam))
 par2_str = 'FWHM_{source}/FWHM_{beam}'
-par2_grid = [1.00, 1.25, 1.50, 2.00, 2.50, 3.00, +numpy.inf]
+par2_grid = [1.00, 1.25, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00, +numpy.inf]
 par2_max = 4.0
 # 
 # Prepare output directory name
@@ -297,6 +299,11 @@ all_cell_rel_median = []
 all_cell_rel_scatter = []
 all_cell_rel_scatter_L68 = []
 all_cell_rel_scatter_H68 = []
+all_cell_norm_mean = []
+all_cell_norm_median = []
+all_cell_norm_scatter = []
+all_cell_norm_scatter_L68 = []
+all_cell_norm_scatter_H68 = []
 all_cell_e_S_out_mean = []
 all_cell_e_S_out_median = []
 all_cell_rms_noise_mean = []
@@ -471,6 +478,11 @@ while cell_loop_index < cell_total_number:
         all_cell_rel_scatter.append(grid_cell_struct['(S_in-S_out)/S_in']['scatter'])
         all_cell_rel_scatter_L68.append(grid_cell_struct['(S_in-S_out)/S_in']['scatter_L68'])
         all_cell_rel_scatter_H68.append(grid_cell_struct['(S_in-S_out)/S_in']['scatter_H68'])
+        all_cell_norm_mean.append(grid_cell_struct['(S_in-S_out)/e_S_out']['mean'])
+        all_cell_norm_median.append(grid_cell_struct['(S_in-S_out)/e_S_out']['median'])
+        all_cell_norm_scatter.append(grid_cell_struct['(S_in-S_out)/e_S_out']['scatter'])
+        all_cell_norm_scatter_L68.append(grid_cell_struct['(S_in-S_out)/e_S_out']['scatter_L68'])
+        all_cell_norm_scatter_H68.append(grid_cell_struct['(S_in-S_out)/e_S_out']['scatter_H68'])
         all_cell_e_S_out_mean.append(grid_cell_struct['e_S_out']['mean'])
         all_cell_e_S_out_median.append(grid_cell_struct['e_S_out']['median'])
         all_cell_rms_noise_mean.append(grid_cell_struct['noise']['mean'])
@@ -510,6 +522,11 @@ asciitable.write( numpy.column_stack(
                         all_cell_rel_scatter, 
                         all_cell_rel_scatter_L68, 
                         all_cell_rel_scatter_H68, 
+                        all_cell_norm_mean, 
+                        all_cell_norm_median, 
+                        all_cell_norm_scatter, 
+                        all_cell_norm_scatter_L68, 
+                        all_cell_norm_scatter_H68, 
                         all_cell_e_S_out_mean, 
                         all_cell_e_S_out_median, 
                         all_cell_rms_noise_mean, 
@@ -539,6 +556,11 @@ asciitable.write( numpy.column_stack(
                         'cell_rel_scatter', 
                         'cell_rel_scatter_L68', 
                         'cell_rel_scatter_H68', 
+                        'cell_norm_mean', 
+                        'cell_norm_median', 
+                        'cell_norm_scatter', 
+                        'cell_norm_scatter_L68', 
+                        'cell_norm_scatter_H68', 
                         'cell_e_S_out_mean', 
                         'cell_e_S_out_median', 
                         'cell_rms_noise_mean', 

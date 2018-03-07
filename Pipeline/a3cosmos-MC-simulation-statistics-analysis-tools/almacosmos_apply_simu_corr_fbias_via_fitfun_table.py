@@ -192,7 +192,8 @@ else:
 # prepare x1, x2
 # 
 x1 = data_S_peak/data_noise
-x2 = data_Maj_out_convol/data_Maj_beam
+#<20180305>#x2 = data_Maj_out_convol/data_Maj_beam
+x2 = numpy.sqrt((data_Maj_out_convol*data_Min_out_convol)/(data_Maj_beam*data_Min_beam))
 
 
 
@@ -247,11 +248,11 @@ array_mask = numpy.isnan(array_interpolated)
 
 
 
-asciitable.write(numpy.column_stack((x1, x2, array_extrapolated, array_interpolated, array_mask)), 
-                    'datatable_applying_correction_fbias_via_fitfun_table.txt', Writer=asciitable.FixedWidth, delimiter=" ", 
-                    names=['x1', 'x2', 'array_extrapolated', 'array_interpolated', 'array_mask'], overwrite=True)
-
-print('Output to "datatable_applying_correction_fbias_via_fitfun_table.txt"!')
+#asciitable.write(numpy.column_stack((x1, x2, array_extrapolated, array_interpolated, array_mask)), 
+#                    'datatable_applying_correction_fbias_via_fitfun_table.txt', Writer=asciitable.FixedWidth, delimiter=" ", 
+#                    names=['x1', 'x2', 'array_extrapolated', 'array_interpolated', 'array_mask'], overwrite=True)
+#
+#print('Output to "datatable_applying_correction_fbias_via_fitfun_table.txt"!')
 
 
 
@@ -265,12 +266,12 @@ fbias = copy(array_interpolated)
 fbias[array_mask] = array_extrapolated[array_mask] # or 0.0?
 fbias[data_mask] = numpy.nan
 
-asciitable.write(numpy.column_stack((fbias, x1, x2)), 
-                    'datatable_applying_correction_fbias.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
-                    names=['fbias','x1','x2'], overwrite=True)
-os.system('sed -i.bak -e "1s/^ /#/" "datatable_applying_correction_fbias.txt"')
-
-print('Output to "datatable_applying_correction_fbias.txt"!')
+#asciitable.write(numpy.column_stack((fbias, x1, x2)), 
+#                    'datatable_applying_correction_fbias.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
+#                    names=['fbias','x1','x2'], overwrite=True)
+#os.system('sed -i.bak -e "1s/^ /#/" "datatable_applying_correction_fbias.txt"')
+#
+#print('Output to "datatable_applying_correction_fbias.txt"!')
 
 
 

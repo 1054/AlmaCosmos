@@ -1,7 +1,7 @@
 #!/bin/bash
 # 
 
-margin=(80 60 80 20) # left, bottom, right, top
+margin=(100 70 100 20) # left, bottom, right, top
 
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
@@ -15,13 +15,13 @@ topcat -stilts plot2plane \
                 layer1=mark \
                 shape1=open_circle \
                 shading1=aux \
-                in1='datatable_applying_correction_fbias.txt' \
+                in1='datatable_applied_correction_fbias.txt' \
                 ifmt1=ascii \
                 leglabel1='interp.' \
                 x1='x1' \
                 y1='fbias' \
                 \
-                aux='x2' auxvisible=true auxlabel="Maj_{source}/Maj_{beam}" \
+                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="Maj_{source}/Maj_{beam}" \
                 \
                 layer3=function \
                 fexpr3='0.0' \
@@ -62,7 +62,7 @@ topcat -stilts plot2plane \
                 x2='S_out_uncorr' \
                 y2='S_out_corr' \
                 \
-                aux='x2' auxvisible=true auxlabel="Maj_{source}/Maj_{beam}" auxmap=plasma \
+                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="Maj_{source}/Maj_{beam}" \
                 \
                 layer3=function \
                 fexpr3='(x)' \
@@ -85,7 +85,7 @@ echo "Output to \"Plot_corrected_fbias_vs_uncorrected.pdf\"!"
 
 
 
-margin=(80 60 20 20) # left, bottom, right, top
+margin=(100 70 20 20) # left, bottom, right, top
 
 if [[ -f "simu_data_input.txt" ]]; then
 topcat -stilts plot2plane \
@@ -184,11 +184,11 @@ echo "Output to \"Plot_corrected_fbias_histogram.pdf\"!"
 
 
 
-convert -density 150 "Plot_corrected_fbias.pdf" "Plot_corrected_fbias.png"
+convert -density 240 -geometry x800 "Plot_corrected_fbias.pdf" "Plot_corrected_fbias.png"
 
-convert -density 150 "Plot_corrected_fbias_vs_uncorrected.pdf" "Plot_corrected_fbias_vs_uncorrected.png"
+convert -density 240 -geometry x800 "Plot_corrected_fbias_vs_uncorrected.pdf" "Plot_corrected_fbias_vs_uncorrected.png"
 
-convert -density 150 "Plot_corrected_fbias_histogram.pdf" "Plot_corrected_fbias_histogram.png"
+convert -density 240 -geometry x800 "Plot_corrected_fbias_histogram.pdf" "Plot_corrected_fbias_histogram.png"
 
 
 

@@ -20,7 +20,7 @@ else
     os_system="linux"
 fi
 
-py_prefix=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd -P)"/${os_system}_python${py_version}"
+py_prefix=$(cd $(dirname "${BASH_SOURCE[0]}"); pwd)"/${os_system}_python${py_version}"
 echo "py_prefix=${py_prefix}"
 
 if [[ ! -d "${py_prefix}/lib" ]]; then

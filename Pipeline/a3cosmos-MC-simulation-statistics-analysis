@@ -131,6 +131,18 @@ fi
 
 
 
+# 
+# Before first step, we make some quality check plots
+# 
+if [[ ! -d "Statistics_quick_plots_0" ]]; then
+a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog "simu_data_input.txt" -out "Statistics_quick_plots_0"
+fi
+
+
+
+
+
+
 
 # 
 # The first step is to make bins in the parameter space and compute (S_in-S_out) statistics in each bin.
@@ -193,6 +205,22 @@ cd "sim_diagram_output_no_galfit_flux_error_2"
 # 
 "$ScriptDir/almacosmos_apply_simu_corr_ecorr_via_fitfun_table.py" "../simu_data_input_corrected.txt"
 "$ScriptDir/almacosmos_plot_corrected_ecorr.sh"
+mkdir "Plot_corrected_ecorr__via_fitfun_table"
+mv "Plot_corrected_ecorr"*.* "Plot_corrected_ecorr__via_fitfun_table/"
+mv "datatable_applied_correction_ecorr.txt" "Plot_corrected_ecorr__via_fitfun_table/"
+#mv "datatable_applying_correction_ecorr.txt" "Plot_corrected_ecorr__via_fitfun_table/"
+mv "datatable_applied_correction_ecorr_with_more_columns.txt" "Plot_corrected_ecorr__via_fitfun_table/"
+mv "../simu_data_input_corrected_corrected.txt" "../simu_data_input_corrected_corrected__via_fitfun_table.txt"
+# 
+"$ScriptDir/almacosmos_apply_simu_corr_ecorr_via_spline_table.py" "../simu_data_input_corrected.txt"
+"$ScriptDir/almacosmos_plot_corrected_ecorr.sh"
+mkdir "Plot_corrected_ecorr__via_spline_table"
+mv "Plot_corrected_ecorr"*.* "Plot_corrected_ecorr__via_spline_table/"
+mv "datatable_applied_correction_ecorr.txt" "Plot_corrected_ecorr__via_spline_table/"
+#mv "datatable_applying_correction_ecorr.txt" "Plot_corrected_ecorr__via_spline_table/"
+mv "datatable_applied_correction_ecorr_with_more_columns.txt" "Plot_corrected_ecorr__via_spline_table/"
+mv "../simu_data_input_corrected_corrected.txt" "../simu_data_input_corrected_corrected__via_spline_table.txt"
+# 
 cd ..
 #else
 #echo ""; echo "Found existing \"sim_diagram_output_no_galfit_flux_error_2\"! Skip the second step ecorr correction!"; echo ""; 

@@ -1,0 +1,16 @@
+# 2017-11-08 Modified the source code to allow setting 'ngmax' ### 
+
+vim lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg/bdsf/opts.py
+#--> changed "ini_gaussfit = Enum(" to "ini_gaussfit = String("
+
+vim lib/python2.7/site-packages/bdsf-1.8.12-py2.7-macosx-10.12-x86_64.egg/bdsf/gausfit.py
+#--> added ini_gausfit 'ngmax *'
+
+
+
+
+
+
+
+
+

@@ -698,6 +698,13 @@ fi
 
 
 
+# 
+# convert to PNG images
+# 
+echo ""
+find "$output_dir" -name "Plot_*.pdf" -print0 | xargs -0 -I pdf_name bash -c "image_name=pdf_name; echo \$image_name; convert -format png -density 240 -geometry x800 \$image_name \$(echo \$image_name | sed -e 's/.pdf$/.png/g')"
+
+
 
 
 

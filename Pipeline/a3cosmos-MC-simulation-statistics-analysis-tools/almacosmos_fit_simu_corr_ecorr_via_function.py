@@ -49,7 +49,7 @@ y_err = y_err[nan_filter]
 #x1_grid = numpy.arange(numpy.log10(2.0), numpy.log10(1000.0)+0.05, 0.01); x1_interval = 0.01
 #x2_grid = numpy.arange(1.0, 4.0+0.5, 0.5); x2_interval = 0.5
 x1_grid = numpy.power(10,numpy.arange(numpy.log10(2.5),numpy.log10(5e3),0.05))
-x2_grid = numpy.array([1.00, 1.25, 1.50, 2.00, 2.50, 3.00, +numpy.inf])
+x2_grid = numpy.array([1.00, 1.25, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00, +numpy.inf])
 x1_interval = x1_grid[1:len(x1_grid)] - x1_grid[0:len(x1_grid)-1]
 x2_interval = x2_grid[1:len(x2_grid)] - x2_grid[0:len(x2_grid)-1]
 

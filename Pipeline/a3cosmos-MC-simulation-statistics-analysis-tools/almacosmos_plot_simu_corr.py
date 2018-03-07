@@ -43,7 +43,7 @@ ecorr_err = numpy.sqrt(10.0/cell_size) * ecorr_obs
 #x1_grid = numpy.arange(numpy.log10(2.0), numpy.log10(1000.0)+0.05, 0.01); x1_interval = 0.01
 #x2_grid = numpy.arange(1.0, 4.0+0.5, 0.5); x2_interval = 0.5
 x1_grid = numpy.array([2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 8.0, 10., 20., 50., 100, 500, 1000.0])
-x2_grid = numpy.array([1.00, 1.25, 1.50, 2.00, 2.50, 3.00, +numpy.inf])
+x2_grid = numpy.array([1.00, 1.25, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00, +numpy.inf])
 x1_interval = x1_grid[1:len(x1_grid)] - x1_grid[0:len(x1_grid)-1]
 x2_interval = x2_grid[1:len(x2_grid)] - x2_grid[0:len(x2_grid)-1]
 

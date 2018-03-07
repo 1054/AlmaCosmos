@@ -192,7 +192,8 @@ else:
 # prepare x1, x2
 # 
 x1 = data_S_peak/data_noise
-x2 = data_Maj_out_convol/data_Maj_beam
+#<20180305>#x2 = data_Maj_out_convol/data_Maj_beam
+x2 = numpy.sqrt((data_Maj_out_convol*data_Min_out_convol)/(data_Maj_beam*data_Min_beam))
 
 
 
