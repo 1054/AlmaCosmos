@@ -192,18 +192,12 @@ def read_MC_sim_recovery(alma_image_name, output=None):
                 rec_df = recovered_catalog_table['E_Total_flux'] # Jy
                 rec_fpeak = recovered_catalog_table['Peak_flux'] # Jy/beam
                 rec_dfpeak = recovered_catalog_table['E_Peak_flux'] # Jy/beam
-                rec_Maj_convol = recovered_catalog_table['Maj'] * 3600.0 # arcsec
-                rec_dMaj_convol = recovered_catalog_table['E_Maj'] * 3600.0 # arcsec
-                rec_Min_convol = recovered_catalog_table['Min'] * 3600.0 # arcsec
-                rec_dMin_convol = recovered_catalog_table['E_Min'] * 3600.0 # arcsec
-                rec_PA_convol = recovered_catalog_table['PA']
-                rec_dPA_convol = recovered_catalog_table['E_PA']
-                rec_Maj = recovered_catalog_table['DC_Maj'] * 3600.0 # arcsec
-                rec_dMaj = recovered_catalog_table['E_DC_Maj'] * 3600.0 # arcsec
-                rec_Min = recovered_catalog_table['DC_Min'] * 3600.0 # arcsec
-                rec_dMin = recovered_catalog_table['E_DC_Min'] * 3600.0 # arcsec
-                rec_PA = recovered_catalog_table['DC_PA']
-                rec_dPA = recovered_catalog_table['E_DC_PA']
+                rec_Maj = recovered_catalog_table['Maj'] * 3600.0 # arcsec
+                rec_dMaj = recovered_catalog_table['E_Maj'] * 3600.0 # arcsec
+                rec_Min = recovered_catalog_table['Min'] * 3600.0 # arcsec
+                rec_dMin = recovered_catalog_table['E_Min'] * 3600.0 # arcsec
+                rec_PA = recovered_catalog_table['PA']
+                rec_dPA = recovered_catalog_table['E_PA']
                 rec_S_Code = recovered_catalog_table['S_Code']
                 rec_xydis = numpy.sqrt((rec_x - sim_x)**2 + (rec_y - sim_y)**2)
                 lim_arcsec = 1.5 # arcsec #<TODO># 
@@ -241,9 +235,6 @@ def read_MC_sim_recovery(alma_image_name, output=None):
                     spurious_Maj = rec_Maj[spurious_index]
                     spurious_Min = rec_Min[spurious_index]
                     spurious_PA = rec_PA[spurious_index]
-                    spurious_Maj_convol = rec_Maj_convol[spurious_index]
-                    spurious_Min_convol = rec_Min_convol[spurious_index]
-                    spurious_PA_convol = rec_PA_convol[spurious_index]
                     spurious_S_Code = rec_S_Code[spurious_index]
                 # 
                 # matched
@@ -259,9 +250,6 @@ def read_MC_sim_recovery(alma_image_name, output=None):
                     rec_Maj = -99
                     rec_Min = -99
                     rec_PA = -99
-                    rec_Maj_convol = -99
-                    rec_Min_convol = -99
-                    rec_PA_convol = -99
                     rec_S_Code = -99
                 else:
                     rec_x = rec_x[rec_index[0]]
@@ -273,9 +261,6 @@ def read_MC_sim_recovery(alma_image_name, output=None):
                     rec_Maj = rec_Maj[rec_index[0]]
                     rec_Min = rec_Min[rec_index[0]]
                     rec_PA = rec_PA[rec_index[0]]
-                    rec_Maj_convol = rec_Maj[rec_index[0]]
-                    rec_Min_convol = rec_Min[rec_index[0]]
-                    rec_PA_convol = rec_PA[rec_index[0]]
                     rec_S_Code = rec_S_Code[rec_index[0]]
                     #spurious_index.remove(rec_index[0])
                 #break
@@ -283,19 +268,19 @@ def read_MC_sim_recovery(alma_image_name, output=None):
             # print header
             if not has_print_header:
                 print('# %10s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s'%('sim_id', 'sim_Size', 'sim_SNR_peak', 'sim_rms', 'sim_pixsc', 'sim_f', 'sim_fpeak', 'sim_Maj', 'sim_Min', 'rec_f', 'rec_df', 'rec_fpeak', 'rec_dfpeak'))
-                ofs.write('# %10s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %33s %50s %13s %13s %13s %13s %13s %13s %13s %13s %13s %16s %16s %16s %13s\n'%('sim_id', 'sim_Size', 'sim_SNR_peak', 'sim_rms', 'sim_pixsc', 'sim_beam_maj', 'sim_beam_min', 'sim_beam_pa', 'sim_x', 'sim_y', 'sim_f', 'sim_fpeak', 'sim_Maj', 'sim_Min', 'sim_PA', 'sim_image_name', 'sim_image_dir', 'rec_x', 'rec_y', 'rec_f', 'rec_df', 'rec_fpeak', 'rec_dfpeak', 'rec_Maj', 'rec_Min', 'rec_PA', 'rec_Maj_convol', 'rec_Min_convol', 'rec_PA_convol', 'rec_S_Code'))
+                ofs.write('# %10s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s %33s %50s %13s %13s %13s %13s %13s %13s %13s %13s %13s %13s\n'%('sim_id', 'sim_Size', 'sim_SNR_peak', 'sim_rms', 'sim_pixsc', 'sim_beam_maj', 'sim_beam_min', 'sim_beam_pa', 'sim_x', 'sim_y', 'sim_f', 'sim_fpeak', 'sim_Maj', 'sim_Min', 'sim_PA', 'sim_image_name', 'sim_image_dir', 'rec_x', 'rec_y', 'rec_f', 'rec_df', 'rec_fpeak', 'rec_dfpeak', 'rec_Maj', 'rec_Min', 'rec_PA', 'rec_S_Code'))
                 has_print_header = True
             # 
             # print matched source
             print('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g'%(sim_id, sim_Size, sim_SNR_peak, sim_rms, sim_pixsc, sim_f, sim_fpeak, sim_Maj, sim_Min, rec_f, rec_df, rec_fpeak, rec_dfpeak))
-            ofs.write('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %33s %50s %13g %13g %13g %13g %13g %13g %13g %13g %13g %16g %16g %16g %13s\n'%(sim_id, sim_Size, sim_SNR_peak, sim_rms, sim_pixsc, sim_beam_maj, sim_beam_min, sim_beam_pa, sim_x, sim_y, sim_f, sim_fpeak, sim_Maj, sim_Min, sim_PA, sim_image_name, sim_image_dir, rec_x, rec_y, rec_f, rec_df, rec_fpeak, rec_dfpeak, rec_Maj, rec_Min, rec_PA, rec_Maj_convol, rec_Min_convol, rec_PA_convol, rec_S_Code))
+            ofs.write('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %33s %50s %13g %13g %13g %13g %13g %13g %13g %13g %13g %13s\n'%(sim_id, sim_Size, sim_SNR_peak, sim_rms, sim_pixsc, sim_beam_maj, sim_beam_min, sim_beam_pa, sim_x, sim_y, sim_f, sim_fpeak, sim_Maj, sim_Min, sim_PA, sim_image_name, sim_image_dir, rec_x, rec_y, rec_f, rec_df, rec_fpeak, rec_dfpeak, rec_Maj, rec_Min, rec_PA, rec_S_Code))
             has_print_lines = has_print_lines + 1
             # 
             # print spurious sources
             if len(spurious_index) > 0:
                 for spurious_i in range(spurious_index):
                     print('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g'%(-99, -99, -99, sim_rms, sim_pixsc, -99, -99, -99, -99, spurious_f[spurious_i], spurious_df[spurious_i], spurious_fpeak[spurious_i], spurious_dfpeak[spurious_i]))
-                    ofs.write('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %33s %50s %13g %13g %13g %13g %13g %13g %13g %13g %13g %16g %16g %16g %13s\n'%(-99, -99, -99, sim_rms, sim_pixsc, sim_beam_maj, sim_beam_min, sim_beam_pa, -99, -99, -99, -99, -99, -99, -99, sim_image_name, sim_image_dir, spurious_x[spurious_i], spurious_y[spurious_i], spurious_f[spurious_i], spurious_df[spurious_i], spurious_fpeak[spurious_i], spurious_dfpeak[spurious_i], spurious_Maj[spurious_i], spurious_Min[spurious_i], spurious_PA[spurious_i], spurious_Maj_convol[spurious_i], spurious_Min_convol[spurious_i], spurious_PA_convol[spurious_i], spurious_S_Code[spurious_i]))
+                    ofs.write('%12d %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %13g %33s %50s %13g %13g %13g %13g %13g %13g %13g %13g %13g %13s\n'%(-99, -99, -99, sim_rms, sim_pixsc, sim_beam_maj, sim_beam_min, sim_beam_pa, -99, -99, -99, -99, -99, -99, -99, sim_image_name, sim_image_dir, spurious_x[spurious_i], spurious_y[spurious_i], spurious_f[spurious_i], spurious_df[spurious_i], spurious_fpeak[spurious_i], spurious_dfpeak[spurious_i], spurious_Maj[spurious_i], spurious_Min[spurious_i], spurious_PA[spurious_i], spurious_S_Code[spurious_i]))
                     has_print_lines = has_print_lines + 1  
             # 
             # 

@@ -184,83 +184,84 @@ echo "                $auxlabel\\"                                              
 # plot function
 i=1
 while [[ $(eval "echo \${#almacosmos_cmd_function$i[@]}") -gt 0 ]]; do
-fexprx=$(eval "echo \"\${almacosmos_cmd_function$i[0]}\"")
-colorx="black";         if [[ $(eval "echo \${#almacosmos_cmd_function${i}color[@]}") -gt 0 ]]; then colorx=$(eval "echo \"\${almacosmos_cmd_function${i}color[0]}\""); fi
-thickx="1";             if [[ $(eval "echo \${#almacosmos_cmd_function${i}thick[@]}") -gt 0 ]]; then thickx=$(eval "echo \"\${almacosmos_cmd_function${i}thick[0]}\""); fi
-labelx="function\\ $i"; if [[ $(eval "echo \${#almacosmos_cmd_function${i}label[@]}") -gt 0 ]]; then labelx=$(eval "echo \"\${almacosmos_cmd_function${i}label[0]}\""); fi
-echo "                \\"                                                                 >> "$plot_script_name"
-echo "                layer_function_${i}=function \\"                                    >> "$plot_script_name"
-echo "                fexpr_function_${i}=\"$fexprx\" \\"                                 >> "$plot_script_name"
-echo "                color_function_${i}=$colorx \\"                                     >> "$plot_script_name"
-echo "                thick_function_${i}=$thickx \\"                                     >> "$plot_script_name"
-echo "                antialias_function_${i}=true \\"                                    >> "$plot_script_name"
-echo "                leglabel_function_${i}=\"$labelx\" \\"                              >> "$plot_script_name"
-i=$((i+1))
+    fexprx=$(eval "echo \"\${almacosmos_cmd_function$i[0]}\"")
+    colorx="black";         if [[ $(eval "echo \${#almacosmos_cmd_function${i}color[@]}") -gt 0 ]]; then colorx=$(eval "echo \"\${almacosmos_cmd_function${i}color[0]}\""); fi
+    thickx="1";             if [[ $(eval "echo \${#almacosmos_cmd_function${i}thick[@]}") -gt 0 ]]; then thickx=$(eval "echo \"\${almacosmos_cmd_function${i}thick[0]}\""); fi
+    labelx="function\\ $i"; if [[ $(eval "echo \${#almacosmos_cmd_function${i}label[@]}") -gt 0 ]]; then labelx=$(eval "echo \"\${almacosmos_cmd_function${i}label[0]}\""); elif [[ "$fexprx" == "x" ]]; then labelx="1:1"; fi
+    echo "                \\"                                                                 >> "$plot_script_name"
+    echo "                layer_function_${i}=function \\"                                    >> "$plot_script_name"
+    echo "                fexpr_function_${i}=\"$fexprx\" \\"                                 >> "$plot_script_name"
+    echo "                color_function_${i}=$colorx \\"                                     >> "$plot_script_name"
+    echo "                thick_function_${i}=$thickx \\"                                     >> "$plot_script_name"
+    echo "                antialias_function_${i}=true \\"                                    >> "$plot_script_name"
+    echo "                leglabel_function_${i}=\"$labelx\" \\"                              >> "$plot_script_name"
+    i=$((i+1))
 done
 # 
 # plot data points
 i=1
 while [[ $(eval "echo \${#almacosmos_cmd_x$i[@]}") -gt 0 ]] && [[ $(eval "echo \${#almacosmos_cmd_y$i[@]}") -gt 0 ]]; do
-xx=$(eval "echo \${almacosmos_cmd_x$i[0]}")
-yy=$(eval "echo \${almacosmos_cmd_y$i[0]}")
-echo "x${i} = $xx"
-echo "y${i} = $yy"
-if [[ $(eval "echo \${#almacosmos_cmd_cat$i[@]}") -gt 0 ]]; then 
-    catx=$(eval "echo \${almacosmos_cmd_cat$i[0]}")
-    fmtx="fits"
-    if [[ $(eval "echo \${#almacosmos_cmd_fmt$i[@]}") -gt 0 ]]; then 
-        fmtx=$(eval "echo \${almacosmos_cmd_fmt$i[0]}")
+    xx=$(eval "echo \${almacosmos_cmd_x$i[0]}")
+    yy=$(eval "echo \${almacosmos_cmd_y$i[0]}")
+    echo "x${i} = $xx"
+    echo "y${i} = $yy"
+    if [[ $(eval "echo \${#almacosmos_cmd_cat$i[@]}") -gt 0 ]]; then 
+        catx=$(eval "echo \${almacosmos_cmd_cat$i[0]}")
+        fmtx="fits"
+        if [[ $(eval "echo \${#almacosmos_cmd_fmt$i[@]}") -gt 0 ]]; then 
+            fmtx=$(eval "echo \${almacosmos_cmd_fmt$i[0]}")
+        fi
+    elif [[ $(eval "echo \${#almacosmos_cmd_cat[@]}") -gt 0 ]]; then
+        catx=$(eval "echo \${almacosmos_cmd_cat[0]}")
+        fmtx="fits"
+        if [[ $(eval "echo \${#almacosmos_cmd_fmt[@]}") -gt 0 ]]; then 
+            fmtx=$(eval "echo \${almacosmos_cmd_fmt[0]}")
+        fi
+    else
+        echo "Error! Please input catalog with the \"-cat\" option!"
+        rm "$plot_script_name"
+        exit
     fi
-elif [[ $(eval "echo \${#almacosmos_cmd_cat[@]}") -gt 0 ]]; then
-    catx=$(eval "echo \${almacosmos_cmd_cat[0]}")
-    fmtx="fits"
-    if [[ $(eval "echo \${#almacosmos_cmd_fmt[@]}") -gt 0 ]]; then 
-        fmtx=$(eval "echo \${almacosmos_cmd_fmt[0]}")
+    layerx="mark";          if [[ $(eval "echo \${#almacosmos_cmd_layer$i[@]}")     -gt 0 ]]; then layerx=$(eval "echo \${almacosmos_cmd_layer$i[0]}"); fi
+    shapex="filled_circle"; if [[ $(eval "echo \${#almacosmos_cmd_shape$i[@]}")     -gt 0 ]]; then shapex=$(eval "echo \${almacosmos_cmd_shape$i[0]}"); fi
+    sizex="2";              if [[ $(eval "echo \${#almacosmos_cmd_size$i[@]}")      -gt 0 ]]; then sizex=$(eval "echo \${almacosmos_cmd_size$i[0]}"); fi
+    colorx="#1e90ff";       if [[ $(eval "echo \${#almacosmos_cmd_color$i[@]}")     -gt 0 ]]; then colorx=$(eval "echo \${almacosmos_cmd_color$i[0]}"); elif [[ $i -eq 1 ]]; then colorx="#1e90ff"; elif [[ $i -eq 2 ]]; then colorx="#ff8d1e"; elif [[ $i -eq 3 ]]; then colorx="#f3323d"; elif [[ $i -eq 4 ]]; then colorx="#32f3e8"; fi
+    thickx="1";             if [[ $(eval "echo \${#almacosmos_cmd_thick$i[@]}")     -gt 0 ]]; then thickx=$(eval "echo \${almacosmos_cmd_thick$i[0]}"); fi
+    shadingx="flat";        if [[ $(eval "echo \${#almacosmos_cmd_shading$i[@]}")   -gt 0 ]]; then shadingx=$(eval "echo \${almacosmos_cmd_shading$i[0]}"); fi
+    labelx="dataset\\ $i";  if [[ $(eval "echo \${#almacosmos_cmd_label$i[@]}")     -gt 0 ]]; then labelx=$(eval "echo \"\${almacosmos_cmd_label$i[0]}\""); fi
+    fexprx="";              if [[ $(eval "echo \${#almacosmos_cmd_fexpr$i[@]}")     -gt 0 ]]; then fexprx=$(eval "echo \"\${almacosmos_cmd_fexpr$i[0]}\""); fi
+    if [[ $(eval "echo \${#almacosmos_cmd_aux$i[@]}") -gt 0 ]]; then
+        shadingx="aux aux${i}=\""$(eval "echo \${almacosmos_cmd_aux$i[0]}")"\""
+    else
+        shadingx="$shadingx color${i}=\"$colorx\""
     fi
-else
-    echo "Error! Please input catalog with the \"-cat\" option!"
-    rm "$plot_script_name"
-    exit
-fi
-layerx="mark";          if [[ $(eval "echo \${#almacosmos_cmd_layer$i[@]}")     -gt 0 ]]; then layerx=$(eval "echo \${almacosmos_cmd_layer$i[0]}"); fi
-shapex="filled_circle"; if [[ $(eval "echo \${#almacosmos_cmd_shape$i[@]}")     -gt 0 ]]; then shapex=$(eval "echo \${almacosmos_cmd_shape$i[0]}"); fi
-sizex="2";              if [[ $(eval "echo \${#almacosmos_cmd_size$i[@]}")      -gt 0 ]]; then sizex=$(eval "echo \${almacosmos_cmd_size$i[0]}"); fi
-colorx="#1e90ff";       if [[ $(eval "echo \${#almacosmos_cmd_color$i[@]}")     -gt 0 ]]; then colorx=$(eval "echo \${almacosmos_cmd_color$i[0]}"); fi
-thickx="1";             if [[ $(eval "echo \${#almacosmos_cmd_thick$i[@]}")     -gt 0 ]]; then thickx=$(eval "echo \${almacosmos_cmd_thick$i[0]}"); fi
-shadingx="flat";        if [[ $(eval "echo \${#almacosmos_cmd_shading$i[@]}")   -gt 0 ]]; then shadingx=$(eval "echo \${almacosmos_cmd_shading$i[0]}"); fi
-labelx="dataset\\ $i";  if [[ $(eval "echo \${#almacosmos_cmd_label$i[@]}")     -gt 0 ]]; then labelx=$(eval "echo \"\${almacosmos_cmd_label$i[0]}\""); fi
-fexprx="";              if [[ $(eval "echo \${#almacosmos_cmd_fexpr$i[@]}")     -gt 0 ]]; then fexprx=$(eval "echo \"\${almacosmos_cmd_fexpr$i[0]}\""); fi
-if [[ $(eval "echo \${#almacosmos_cmd_aux$i[@]}") -gt 0 ]]; then
-    shadingx="aux aux${i}=\""$(eval "echo \${almacosmos_cmd_aux$i[0]}")"\""
-else
-    shadingx="$shadingx color${i}=\"$colorx\""
-fi
-if [[ "$layerx" == "function" ]]; then
-echo "                \\"                                                                 >> "$plot_script_name"
-echo "                layer${i}=function \\"                                              >> "$plot_script_name"
-echo "                fexpr${i}=\"$fexprx\" \\"                                           >> "$plot_script_name"
-echo "                color${i}=$colorx \\"                                               >> "$plot_script_name"
-echo "                thick${i}=$thickx \\"                                               >> "$plot_script_name"
-echo "                antialias${i}=true \\"                                              >> "$plot_script_name"
-echo "                leglabel${i}=\"$labelx\" \\"                                        >> "$plot_script_name"
-else
-echo "                \\"                                                                 >> "$plot_script_name"
-echo "                layer${i}=mark \\"                                                  >> "$plot_script_name"
-echo "                shape${i}=$shapex \\"                                               >> "$plot_script_name"
-echo "                size${i}=$sizex \\"                                                 >> "$plot_script_name"
-echo "                shading${i}=$shadingx \\"                                           >> "$plot_script_name"
-echo "                in${i}=$catx \\"                                                    >> "$plot_script_name"
-echo "                ifmt${i}=$fmtx \\"                                                  >> "$plot_script_name"
-echo "                leglabel${i}=\"$labelx\" \\"                                        >> "$plot_script_name"
-echo "                x${i}=\"$xx\" \\"                                                   >> "$plot_script_name"
-echo "                y${i}=\"$yy\" \\"                                                   >> "$plot_script_name"
-fi
-i=$((i+1))
+    if [[ "$layerx" == "function" ]]; then
+    echo "                \\"                                                                 >> "$plot_script_name"
+    echo "                layer${i}=function \\"                                              >> "$plot_script_name"
+    echo "                fexpr${i}=\"$fexprx\" \\"                                           >> "$plot_script_name"
+    echo "                color${i}=$colorx \\"                                               >> "$plot_script_name"
+    echo "                thick${i}=$thickx \\"                                               >> "$plot_script_name"
+    echo "                antialias${i}=true \\"                                              >> "$plot_script_name"
+    echo "                leglabel${i}=\"$labelx\" \\"                                        >> "$plot_script_name"
+    else
+    echo "                \\"                                                                 >> "$plot_script_name"
+    echo "                layer${i}=mark \\"                                                  >> "$plot_script_name"
+    echo "                shape${i}=$shapex \\"                                               >> "$plot_script_name"
+    echo "                size${i}=$sizex \\"                                                 >> "$plot_script_name"
+    echo "                shading${i}=$shadingx \\"                                           >> "$plot_script_name"
+    echo "                in${i}=$catx \\"                                                    >> "$plot_script_name"
+    echo "                ifmt${i}=$fmtx \\"                                                  >> "$plot_script_name"
+    echo "                leglabel${i}=\"$labelx\" \\"                                        >> "$plot_script_name"
+    echo "                x${i}=\"$xx\" \\"                                                   >> "$plot_script_name"
+    echo "                y${i}=\"$yy\" \\"                                                   >> "$plot_script_name"
+    fi
+    i=$((i+1))
 done
 if [[ "$legend" == "true" ]]; then legpos="legpos=0.08,0.94"; else legpos=""; fi; if [[ $(eval "echo \${#almacosmos_cmd_legpos[@]}") -gt 0 ]]; then legpos=$(eval "echo legpos=\${almacosmos_cmd_legpos[0]}")" "; fi
 fontsize="15"; if [[ $(eval "echo \${#almacosmos_cmd_fontsize[@]}") -gt 0 ]]; then fontsize=$(eval "echo legpos=\${almacosmos_cmd_fontsize[0]}"); fi
+legseq=""; if [[ $(eval "echo \${#almacosmos_cmd_legseq[@]}") -gt 0 ]]; then legseq=$(eval "echo legseq=\${almacosmos_cmd_legseq[@]} | tr -s ' ' ','"); fi
 echo "                \\"                                                                           >> "$plot_script_name"
-echo "                legend=$legend $legpos\\"                                                     >> "$plot_script_name"
+echo "                legend=$legend $legpos $legseq \\"                                            >> "$plot_script_name"
 echo "                fontsize=$fontsize \\"                                                        >> "$plot_script_name"
 echo "                texttype=latex \\"                                                            >> "$plot_script_name"
 echo "                omode=out \\"                                                                 >> "$plot_script_name"
