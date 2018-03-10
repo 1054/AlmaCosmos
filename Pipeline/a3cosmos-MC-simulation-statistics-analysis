@@ -23,12 +23,16 @@ fi
 # 
 # Check supermongo and necessary files
 # 
-if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
-    echo "Error! Supermongo was not installed!"
-    exit 1
-fi
-if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
-    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+#if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+#    echo "Error! Supermongo was not installed!"
+#    exit 1
+#fi
+#if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+#    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+#    exit 1
+#fi
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not installed!"
     exit 1
 fi
 if [[ ! -d $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-statistics-analysis-tools ]]; then
