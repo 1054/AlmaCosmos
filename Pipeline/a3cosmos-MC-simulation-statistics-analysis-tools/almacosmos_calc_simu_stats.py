@@ -45,6 +45,17 @@ from CrabGaussian import *
 # 
 # Function
 # 
+def print_to_log_file(input_str, file = file):
+    if sys.version_info[0] <= 2:
+        print >> file, input_str
+    else:
+        print(input_str, file = file)
+
+
+
+# 
+# Function
+# 
 def calc_asymmetric_scatters(input_array, clip_sigma = 5.0, log_file = ''):
     # 3-sigma clipping
     arr = numpy.array(copy(input_array))
@@ -75,9 +86,9 @@ def calc_asymmetric_scatters(input_array, clip_sigma = 5.0, log_file = ''):
     if log_file != '':
         log_file_stream = open(log_file, 'w')
         if(len(arr_clip_args)>0):
-            print('Debug: calc_asymmetric_scatters: clipped %d data out of range %s %s'%( \
-                    arr_clip_count, arr_mean-clip_sigma*arr_sigma, arr_mean+clip_sigma*arr_sigma \
-                ), file = log_file_stream \
+            print_to_log_file('Debug: calc_asymmetric_scatters: clipped %d data out of range %s %s'%(
+                    arr_clip_count, arr_mean-clip_sigma*arr_sigma, arr_mean+clip_sigma*arr_sigma
+                ), file = log_file_stream
             )
     # 
     # now we count lower side
@@ -87,7 +98,7 @@ def calc_asymmetric_scatters(input_array, clip_sigma = 5.0, log_file = ''):
         arr_loop_L68 = arr_middle
         while arr_loop_L68 >= arr_min:
             if log_file != '':
-                print('Debug: calc_asymmetric_scatters: L68: looping %s toward %s, count %s vs %s'%(
+                print_to_log_file('Debug: calc_asymmetric_scatters: L68: looping %s toward %s, count %s vs %s'%(
                         arr_loop_L68, arr_min, len(numpy.argwhere((arr>=arr_loop_L68) & (arr<=arr_middle))), arr_size_L68*0.682689492137086
                     ), file = log_file_stream
                 )
@@ -103,7 +114,7 @@ def calc_asymmetric_scatters(input_array, clip_sigma = 5.0, log_file = ''):
         arr_loop_H68 = arr_middle
         while arr_loop_L68 <= arr_max:
             if log_file != '':
-                print('Debug: calc_asymmetric_scatters: H68: looping %s toward %s, count %s vs %s'%(
+                print_to_log_file('Debug: calc_asymmetric_scatters: H68: looping %s toward %s, count %s vs %s'%(
                         arr_loop_H68, arr_max, len(numpy.argwhere((arr<=arr_loop_H68) & (arr>=arr_middle))), arr_size_H68*0.682689492137086
                     ), file = log_file_stream
                 )
@@ -463,7 +474,8 @@ while cell_loop_index < cell_total_number:
         # dump text file
         j = json.dumps(grid_cell_struct, indent=4)
         f = open(outdir+os.sep+'dump'+os.sep+'dump_data_cell_%d.json'%(cell_loop_index), 'w')
-        print(j,file=f)
+        #print(j,file=f)
+        print_to_log_file(j, file=f)
         f.close()
         # 
         # append to output arrays
