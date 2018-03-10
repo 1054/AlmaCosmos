@@ -32,10 +32,10 @@ fi
 # Then install necessary python packages
 # 
 if [[ ! -d "${py_prefix}/lib/python$py_version/site-packages/pyfits" ]]; then
-    if [[ $(type pip-$py_version 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ $(type pip-$py_version 2>/dev/null | wc -l) -gt 0 ]]; then
         echo "pip-$py_version install --ignore-installed --prefix=\"${py_prefix}\" numpy scipy pyfits pywcs backports.shutil_get_terminal_size"
         pip-$py_version install --ignore-installed --prefix="${py_prefix}" numpy scipy pyfits pywcs backports.shutil_get_terminal_size
-    elif [[ $(type pip$py_version 2>/dev/null | wc -l) -eq 0 ]]; then
+    elif [[ $(type pip$py_version 2>/dev/null | wc -l) -gt 0 ]]; then
         echo "pip$py_version install --ignore-installed --prefix=\"${py_prefix}\" numpy scipy pyfits pywcs backports.shutil_get_terminal_size"
         pip$py_version install --ignore-installed --prefix="${py_prefix}" numpy scipy pyfits pywcs backports.shutil_get_terminal_size
     else
