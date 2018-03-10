@@ -178,8 +178,8 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             echo "Error! CASA was not found!"
             exit 1
         fi
-        if [[ $(find "$script_dir/script" -mindepth 1 -maxdepth 1 -type f -name "*_pipescript.py" | wc -l) -gt 0 ]] || \
-            [[ $(find "$script_dir/script" -mindepth 1 -maxdepth 1 -type f -name "*_piperestorescript.py" | wc -l) -gt 0 ]]; then
+        if [[ $(find . -mindepth 1 -maxdepth 1 -type f -name "*_pipescript.py" | wc -l) -gt 0 ]] || \
+            [[ $(find . -mindepth 1 -maxdepth 1 -type f -name "*_piperestorescript.py" | wc -l) -gt 0 ]]; then
             casa --pipeline -c "execfile('scriptForPI.py')"
         else
             casa -c "execfile('scriptForPI.py')"
