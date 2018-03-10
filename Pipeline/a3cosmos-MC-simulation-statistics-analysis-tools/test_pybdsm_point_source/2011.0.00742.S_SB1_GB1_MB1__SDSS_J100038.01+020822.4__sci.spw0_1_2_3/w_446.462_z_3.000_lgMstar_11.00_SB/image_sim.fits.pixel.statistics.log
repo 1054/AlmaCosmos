@@ -1,0 +1,18 @@
+# 20180122 13h50m00s CET
+almacosmos_get_fits_image_pixel_histogram.py "/isaac/u/dzliu/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/Simulated/2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits"
+Input fits file: /isaac/u/dzliu/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/Simulated/2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits
+
+Min    = -0.00568309911
+Max    = 0.03360614134
+Mean   = -2.616914707e-05
+Median = -0.0002180427982
+Mode   = -0.00238564983
+Sigma  = 0.002088195744
+Inner_mu    = -5.397492693e-05   # FitInnerSigma = 5.0
+Inner_sigma = 0.001937611847   # FitInnerSigma = 5.0
+Fitting_range = -0.005454673294 0.01007828223 (nbins = 86, ndata = 52901)
+Gaussian_A     = 5391.035296
+Gaussian_mu    = -0.0002986278107
+Gaussian_sigma = 0.001737229295
+Saving to /isaac/u/dzliu/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/Simulated/2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits.pixel.histogram.eps
+Done!

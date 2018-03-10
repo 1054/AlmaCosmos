@@ -308,7 +308,7 @@ in2="$OutputDir/cat_sim.fits"
 values1="$cat_rec_RA $cat_rec_Dec $cat_rec_image_file $cat_rec_simu_name"
 values2="$cat_sim_RA $cat_sim_Dec $cat_sim_image_file $cat_sim_simu_name"
 matcher="sky+exact+exact"
-params="-params=1.0"
+params="params=1.0"
 if [[ $crossmatch_by_id -eq 1 ]]; then
 values1="$cat_rec_ID $cat_rec_image_file $cat_rec_simu_name"
 values2="$cat_sim_ID $cat_sim_image_file $cat_sim_simu_name"

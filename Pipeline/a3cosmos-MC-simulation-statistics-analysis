@@ -54,10 +54,11 @@ InputCat="$1"
 # 
 # Set Output dir
 # 
+OutputDir="Statistics"
 if [[ $# -ge 2 ]]; then
-    OutputDir="$2"
-else
-    OutputDir="Statistics"
+    if [[ x"$2" != x"-"* ]]; then
+        OutputDir="$2"
+    fi
 fi
 
 
@@ -122,6 +123,33 @@ do
 done
 if [[ "$ScriptCheck" != "OK" ]]; then
     exit 255
+fi
+
+
+
+
+
+
+
+
+# 
+# Recompute S_peak and Condon1997 errors with careful 2D Gaussian size convolution <20180309>
+# 
+if [[ " $*" == *" -recompute"* ]] || [[ " $*" == *" --recompute"* ]]; then
+    if [[ ! -f "simu_data_input.Condon1997_errors.txt" ]]; then
+        echo "Recomputing S_peak with careful 2D Gaussian size convolution and e_S_out with Condon1997 errors"
+        cp "$ScriptDir/a_dzliu_code_calc_Condon1997_errors_for_simu_data_input.sm" .
+        echo "macro read a_dzliu_code_calc_Condon1997_errors_for_simu_data_input.sm a_dzliu_code_calc_Condon1997_errors" | sm
+        #--> this will output: simu_data_input.Condon1997_errors.txt
+        #                      simu_data_input.Original_errors.txt
+        #                      simu_data_input.txt -- with new S_peak and e_S_out
+        if [[ ! -f "simu_data_input.Original_errors.txt" ]] || [[ ! -f "simu_data_input.Condon1997_errors.txt" ]]; then
+            echo "Error! Failed to run \"a_dzliu_code_calc_Condon1997_errors_for_simu_data_input.sm\"!"
+            exit 255
+        fi
+    else
+        echo "Recomputed S_peak with careful 2D Gaussian size convolution and e_S_out with Condon1997 errors"
+    fi
 fi
 
 

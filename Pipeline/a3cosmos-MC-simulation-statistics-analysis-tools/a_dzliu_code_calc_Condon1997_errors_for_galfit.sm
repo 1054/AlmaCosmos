@@ -1,6 +1,6 @@
 a_dzliu_code_calc_Condon1997_errors
     # 
-    # echo "macro read a_dzliu_code_calc_Condon1997_errors.sm a_dzliu_code_calc_Condon1997_errors" | sm
+    # echo "macro read a_dzliu_code_calc_Condon1997_errors_for_galfit.sm a_dzliu_code_calc_Condon1997_errors" | sm
     # 
     data "concat_sim_data_table_fixed_bug_filtered_outliers.txt"
     read {sim_rms 4 sim_pixsc 5 sim_beam_maj 6 sim_beam_min 7 sim_beam_PA 8 rec_f 20 rec_fpeak 22 rec_Maj 24 rec_Min 25 rec_PA 26}
@@ -62,32 +62,32 @@ calc_Condon1997_errors 00
     set source_peak_err = source_total*0.0 + pixnoise
     set source_major_err = source_total*0.0
     set source_minor_err = source_total*0.0
+    set source_major_err_rel = source_total*0.0
+    set source_minor_err_rel = source_total*0.0
     set source_gaussian_snr = source_total*0.0
+    # 
+    set Condon_h_area = pi/(2*ln(2))*(beam_maj/pixscale)*(beam_min/pixscale) # Condon1997 Eq(41,42)
+    set Condon_s_area = pi/(2*ln(2))*(convol_maj/pixscale)*(convol_min/pixscale) # Condon1997 Eq(41,42)
+    set Condon_h_maj = (1.0+(beam_maj**2)/(convol_maj**2)) # Condon1997 Eq(40,41)
+    set Condon_h_min = (1.0+(beam_min**2)/(convol_min**2)) # Condon1997 Eq(40,41)
+    set Condon_mu = pixnoise
+    set Condon_A = source_peak
+    set Condon_rho = calc_Condon1997_rho(1.5,1.5) # Condon1997 Eq(41)
+    #set Condon_h_e = sqrt(Condon_h_area * Condon_h_maj**(-0.5) * Condon_h_min**(-0.5)) # Condon1997 Eq(40), the effective noise correlation area
+    set source_peak_err = Condon_A * sqrt(2.0) / Condon_rho # Condon1997 Eq(21)
+    set source_major_err_rel = 1.0 * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21), source_major_err = source_major * source_major_err_rel
+    set source_minor_err_rel = 1.0 * sqrt(2.0) / calc_Condon1997_rho(0.5,2.5) # Condon1997 Eq(21), source_minor_err = source_minor * source_minor_err_rel
+    set source_total_err_item_1 = (source_peak_err/source_peak)**2
+    set source_total_err_item_2 = (Condon_h_area/Condon_s_area)*(source_major_err_rel**2)
+    set source_total_err_item_3 = (Condon_h_area/Condon_s_area)*(source_minor_err_rel**2)
+    set source_total_err = source_total * sqrt( source_total_err_item_1 + source_total_err_item_2 + source_total_err_item_3 ) # Condon1997 Eq(42)
+    set source_gaussian_snr = Condon_rho
     # 
     set Condon_i = 0,dimen(source_total)-1
     set Condon_i = Condon_i if(source_maj>0 && source_min>0)
     if(dimen(Condon_i)>0) {
-        set Condon_h_area = pi/(2*ln(2))*(beam_maj/pixscale)*(beam_min/pixscale) # Condon1997 Eq(41,42)
-        set Condon_s_area = pi/(2*ln(2))*(convol_maj[Condon_i]/pixscale)*(convol_min[Condon_i]/pixscale) # Condon1997 Eq(41,42)
-        #set Condon_h_maj = (1.0+(beam_maj*beam_min)/(convol_maj[Condon_i]**2)) # Condon1997 Eq(40,41)
-        #set Condon_h_min = (1.0+(beam_maj*beam_min)/(convol_min[Condon_i]**2)) # Condon1997 Eq(40,41)
-        set Condon_h_maj = (1.0+(beam_maj*beam_maj)/(convol_maj[Condon_i]**2)) # Condon1997 Eq(40,41)
-        set Condon_h_min = (1.0+(beam_min*beam_min)/(convol_min[Condon_i]**2)) # Condon1997 Eq(40,41)
-        set Condon_h_e = sqrt(Condon_h_area * Condon_h_maj**(-0.5) * Condon_h_min**(-0.5)) # Condon1997 Eq(40), the effective noise correlation area
-        set Condon_mu = pixnoise
-        set Condon_A = source_peak[Condon_i]
-        set Condon_rho = calc_Condon1997_rho(1.5,1.5) # Condon1997 Eq(41)
-        set source_peak_err[Condon_i] = Condon_A * sqrt(2.0) / Condon_rho # Condon1997 Eq(21)
-        set source_major_err[Condon_i] = source_maj[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21)
-        set source_minor_err[Condon_i] = source_min[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(0.5,2.5) # Condon1997 Eq(21)
-        set source_total_err_item_1 = (source_peak_err[Condon_i]/source_peak[Condon_i])**2
-        set source_total_err_item_2 = (Condon_h_area/Condon_s_area)*((source_major_err[Condon_i]/source_maj[Condon_i])**2)
-        set source_total_err_item_3 = (Condon_h_area/Condon_s_area)*((source_minor_err[Condon_i]/source_min[Condon_i])**2)
-        set source_total_err[Condon_i] = source_total[Condon_i] * sqrt( source_total_err_item_1 + source_total_err_item_2 + source_total_err_item_3 ) # Condon1997 Eq(42)
-        set source_gaussian_snr[Condon_i] = Condon_rho
-        #set Condon_peak_err = source_peak_err[Condon_i]/source_peak[Condon_i]
-        #set Condon_total_err = source_total_err[Condon_i]/source_total[Condon_i]
-        #print {Condon_total_err Condon_peak_err Condon_A Condon_h_area Condon_s_area source_total_err_item_1 source_total_err_item_2 source_total_err_item_3}
+        set source_major_err[Condon_i] = source_maj[Condon_i] * source_major_err_rel[Condon_i] # Condon1997 Eq(21)
+        set source_minor_err[Condon_i] = source_min[Condon_i] * source_minor_err_rel[Condon_i] # Condon1997 Eq(21)
     }
 
 

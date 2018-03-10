@@ -1,0 +1,7 @@
+# 20180122 13h49m59s CET
+almacosmos_generate_PSF_Gaussian_2D.py "/isaac/u/dzliu/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/Simulated/2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" "/isaac/u/dzliu/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/Simulated/2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.clean-beam.fits"
+WARNING: FITSFixedWarning: 'unitfix' made the change 'Changed units: 'HZ' -> 'Hz''. [astropy.wcs.wcs]
+psf pixscale in arcsec 0.0500 0.0500
+psf major minor theta 0.1295 0.1022 89.33
+psf model model naxis 39 39
+Output to "/isaac/u/dzliu/Work/AlmaCosmos/Photometry/ALMA_full_archive/Simulation_by_Daizhong/Simulated/2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.clean-beam.fits"!

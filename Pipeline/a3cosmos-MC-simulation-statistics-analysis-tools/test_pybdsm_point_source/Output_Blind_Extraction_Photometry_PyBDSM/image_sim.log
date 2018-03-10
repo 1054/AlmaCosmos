@@ -1,0 +1,246 @@
+********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G[1G[0mFitting islands with Gaussians .......... : [===================] 19/19[0m[65G
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.ds9.reg'
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.ds9.reg'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_resid.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_rms.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_mean.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_model.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_island_mask.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_ch0.fits'
+
+
+********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G[1G[0mFitting islands with Gaussians .......... : [===================] 19/19[0m[65G
+total flux 0.0112512440038697, peak flux 0.0068002734342, convolved size 9.20609385419 5.27455561738 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.004660381284563571, peak flux 0.00541346084342, convolved size 5.09024479337 4.9635784238 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.007370995943904862, peak flux 0.0058376120017, convolved size 6.70604653706 5.52600775255 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.013688809136061257, peak flux 0.0065905145356, convolved size 9.1624417375 6.65307204781 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.07996737807462494, peak flux 0.00715936191269, convolved size 23.1302535914 14.1724604044 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.009797024289868466, peak flux 0.00707027498387, convolved size 6.96807917328 5.83622342986 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.016273812490847354, peak flux 0.00815891723326, convolved size 8.34008251234 7.01897247799 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.013595815120033442, peak flux 0.00741652502428, convolved size 8.36711357743 6.4300777798 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.0, peak flux 0.00582160707567, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.02186992172314642, peak flux 0.00583010833645, convolved size 22.6820804413 4.85372117035 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.011339782482181593, peak flux 0.00749920007418, convolved size 7.72621248636 5.74394459779 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.012649435686604904, peak flux 0.00640395273354, convolved size 9.90236424439 5.85424970857 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.0, peak flux 0.00774071738124, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.023650924722499567, peak flux 0.00783195091927, convolved size 15.1803801619 5.83824918755 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.01767792386663917, peak flux 0.00660407226627, convolved size 10.8565486766 7.23627003498 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.0, peak flux 0.00968487739306, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.05087554808596969, peak flux 0.00882740723174, convolved size 27.3177607834 6.19181465497 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.009720399821807472, peak flux 0.00752157012876, convolved size 7.39881695076 5.12625780504 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.016141904397386643, peak flux 0.0085675842422, convolved size 9.04099081328 6.11599985092 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.0, peak flux 0.00610044226339, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.012952871933803756, peak flux 0.0061217826891, convolved size 12.5985204995 4.92896486496 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.016506575427586625, peak flux 0.00769218418526, convolved size 10.9144006895 5.77024853294 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.007050824970194392, peak flux 0.00640069036295, convolved size 6.22129259899 5.19660365689 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.006954750972107436, peak flux 0.00552985625275, convolved size 6.97165640166 5.29442589247 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+total flux 0.0662996345659311, peak flux 0.0328988512047, convolved size 9.60354357569 6.15865671288 [pix], beam 6.097868084906873 4.812924861907535 [pix]
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.ds9.reg'
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.ds9.reg'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_resid.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_rms.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_mean.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_model.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_island_mask.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_ch0.fits'
+
+
+********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G[1G[0mFitting islands with Gaussians .......... : [===================] 19/19[0m[65G
+debug by dzliu: island id 0, total flux 0.0112512440038697, peak flux 0.0068002734342, convolved size 9.20609385419 5.27455561738 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 1, total flux 0.004660381284563571, peak flux 0.00541346084342, convolved size 5.09024479337 4.9635784238 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 1, total flux 0.007370995943904862, peak flux 0.0058376120017, convolved size 6.70604653706 5.52600775255 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 3.88380538914 0.275021145396 [pix]
+debug by dzliu: island id 2, total flux 0.013688809136061257, peak flux 0.0065905145356, convolved size 9.1624417375 6.65307204781 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 7.23454414754 3.94041068119 [pix]
+debug by dzliu: island id 3, total flux 0.07996737807462494, peak flux 0.00715936191269, convolved size 23.1302535914 14.1724604044 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 22.3238131577 13.3103865576 [pix]
+debug by dzliu: island id 4, total flux 0.009797024289868466, peak flux 0.00707027498387, convolved size 6.96807917328 5.83622342986 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 5, total flux 0.016273812490847354, peak flux 0.00815891723326, convolved size 8.34008251234 7.01897247799 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 6.79533588531 3.50686758491 [pix]
+debug by dzliu: island id 6, total flux 0.013595815120033442, peak flux 0.00741652502428, convolved size 8.36711357743 6.4300777798 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 5.73044595197 4.2624216305 [pix]
+debug by dzliu: island id 7, total flux 0.0, peak flux 0.00582160707567, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 8, total flux 0.011339782482181593, peak flux 0.00749920007418, convolved size 7.72621248636 5.74394459779 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 4.86601654212 2.9429408814 [pix]
+debug by dzliu: island id 9, total flux 0.012649435686604904, peak flux 0.00640395273354, convolved size 9.90236424439 5.85424970857 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 8.1490076699 2.36103586748 [pix]
+debug by dzliu: island id 10, total flux 0.0, peak flux 0.00774071738124, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 11, total flux 0.01767792386663917, peak flux 0.00660407226627, convolved size 10.8565486766 7.23627003498 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 9.36612625815 4.70698323723 [pix]
+debug by dzliu: island id 12, total flux 0.0, peak flux 0.00968487739306, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 13, total flux 0.009720399821807472, peak flux 0.00752157012876, convolved size 7.39881695076 5.12625780504 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 4.23229269445 1.66146591776 [pix]
+debug by dzliu: island id 14, total flux 0.016141904397386643, peak flux 0.0085675842422, convolved size 9.04099081328 6.11599985092 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 6.69197756834 3.74354970313 [pix]
+debug by dzliu: island id 15, total flux 0.0, peak flux 0.00610044226339, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 16, total flux 0.016506575427586625, peak flux 0.00769218418526, convolved size 10.9144006895 5.77024853294 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 9.77058447615 0.0 [pix]
+debug by dzliu: island id 17, total flux 0.007050824970194392, peak flux 0.00640069036295, convolved size 6.22129259899 5.19660365689 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 17, total flux 0.006954750972107436, peak flux 0.00552985625275, convolved size 6.97165640166 5.29442589247 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 3.45634660658 2.08335444454 [pix]
+debug by dzliu: island id 18, total flux 0.0662996345659311, peak flux 0.0328988512047, convolved size 9.60354357569 6.15865671288 [pix], beam 6.097868084906873 4.812924861907535 [pix], deconvolved size 7.46139552917 3.75984541798 [pix]
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.ds9.reg'
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.ds9.reg'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_resid.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_rms.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_mean.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_model.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_island_mask.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_ch0.fits'
+
+
+********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G[1G[0mFitting islands with Gaussians .......... : [===================] 19/19[0m[65G
+********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G[1G[0mFitting islands with Gaussians .......... : [===================] 19/19[0m[65G
+********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G[1G[0mFitting islands with Gaussians .......... : [===================] 19/19[0m[65G
+debug by dzliu: island id 0, total flux 0.0112512440038697, peak flux 0.0068002734342, convolved size 9.20609385419 5.27455561738 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 0.0 0.0 [pix], AIPS deconvolved size 7.82789544093 0.0 [pix]
+debug by dzliu: island id 1, total flux 0.004660381284563571, peak flux 0.00541346084342, convolved size 5.09024479337 4.9635784238 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 0.0 0.0 [pix], AIPS deconvolved size 1.4296198856 0.0 [pix]
+debug by dzliu: island id 1, total flux 0.007370995943904862, peak flux 0.0058376120017, convolved size 6.70604653706 5.52600775255 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 3.88380538914 0.275021145396 [pix], AIPS deconvolved size 3.88380538914 0.275021145396 [pix]
+debug by dzliu: island id 2, total flux 0.013688809136061257, peak flux 0.0065905145356, convolved size 9.1624417375 6.65307204781 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 7.23454414754 3.94041068119 [pix], AIPS deconvolved size 7.23454414754 3.94041068119 [pix]
+debug by dzliu: island id 3, total flux 0.07996737807462494, peak flux 0.00715936191269, convolved size 23.1302535914 14.1724604044 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 22.3238131577 13.3103865576 [pix], AIPS deconvolved size 22.3238131577 13.3103865576 [pix]
+debug by dzliu: island id 4, total flux 0.009797024289868466, peak flux 0.00707027498387, convolved size 6.96807917328 5.83622342986 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 0.0 0.0 [pix], AIPS deconvolved size 4.89665724552 0.0 [pix]
+debug by dzliu: island id 5, total flux 0.016273812490847354, peak flux 0.00815891723326, convolved size 8.34008251234 7.01897247799 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 6.79533588531 3.50686758491 [pix], AIPS deconvolved size 6.79533588531 3.50686758491 [pix]
+debug by dzliu: island id 6, total flux 0.013595815120033442, peak flux 0.00741652502428, convolved size 8.36711357743 6.4300777798 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 5.73044595197 4.2624216305 [pix], AIPS deconvolved size 5.73044595197 4.2624216305 [pix]
+debug by dzliu: island id 7, total flux 0.0, peak flux 0.00582160707567, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 0.0 0.0 [pix], AIPS deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 8, total flux 0.011339782482181593, peak flux 0.00749920007418, convolved size 7.72621248636 5.74394459779 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 4.86601654212 2.9429408814 [pix], AIPS deconvolved size 4.86601654212 2.9429408814 [pix]
+debug by dzliu: island id 9, total flux 0.012649435686604904, peak flux 0.00640395273354, convolved size 9.90236424439 5.85424970857 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 8.1490076699 2.36103586748 [pix], AIPS deconvolved size 8.1490076699 2.36103586748 [pix]
+debug by dzliu: island id 10, total flux 0.0, peak flux 0.00774071738124, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 0.0 0.0 [pix], AIPS deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 11, total flux 0.01767792386663917, peak flux 0.00660407226627, convolved size 10.8565486766 7.23627003498 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 9.36612625815 4.70698323723 [pix], AIPS deconvolved size 9.36612625815 4.70698323723 [pix]
+debug by dzliu: island id 12, total flux 0.0, peak flux 0.00968487739306, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 0.0 0.0 [pix], AIPS deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 13, total flux 0.009720399821807472, peak flux 0.00752157012876, convolved size 7.39881695076 5.12625780504 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 4.23229269445 1.66146591776 [pix], AIPS deconvolved size 4.23229269445 1.66146591776 [pix]
+debug by dzliu: island id 14, total flux 0.016141904397386643, peak flux 0.0085675842422, convolved size 9.04099081328 6.11599985092 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 6.69197756834 3.74354970313 [pix], AIPS deconvolved size 6.69197756834 3.74354970313 [pix]
+debug by dzliu: island id 15, total flux 0.0, peak flux 0.00610044226339, convolved size 0.0 0.0 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 0.0 0.0 [pix], AIPS deconvolved size 0.0 0.0 [pix]
+debug by dzliu: island id 16, total flux 0.016506575427586625, peak flux 0.00769218418526, convolved size 10.9144006895 5.77024853294 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 9.77058447615 0.0 [pix], AIPS deconvolved size 9.77058447615 0.0 [pix]
+debug by dzliu: island id 17, total flux 0.007050824970194392, peak flux 0.00640069036295, convolved size 6.22129259899 5.19660365689 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 0.0 0.0 [pix], AIPS deconvolved size 3.90093035869 0.0 [pix]
+debug by dzliu: island id 17, total flux 0.006954750972107436, peak flux 0.00552985625275, convolved size 6.97165640166 5.29442589247 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 3.45634660658 2.08335444454 [pix], AIPS deconvolved size 3.45634660658 2.08335444454 [pix]
+debug by dzliu: island id 18, total flux 0.0662996345659311, peak flux 0.0328988512047, convolved size 9.60354357569 6.15865671288 [pix], beam 6.097868084906873 4.812924861907535 [pix], MIRIAD deconvolved size 7.46139552917 3.75984541798 [pix], AIPS deconvolved size 7.46139552917 3.75984541798 [pix]
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.ds9.reg'
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.ds9.reg'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_resid.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_rms.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_mean.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_model.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_island_mask.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_ch0.fits'
+
+
+********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G********************************************************************************
+Processing "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" and output to "Output_Blind_Extraction_Photometry_PyBDSM/image_sim".
+[1G[0mFitting islands with Gaussians .......... : [|------------------] 0/19[0m[46G[1G[0mFitting islands with Gaussians .......... : [===================] 19/19[0m[65G
+debug by dzliu: island id 0, total flux 0.0112512440038697, peak flux 0.0068002734342, 
+                              convolved size 9.20609385419 5.27455561738 [pix] 8.89545744894 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 0.0 0.0 [pix] 0.0 [deg], 
+                              AIPS deconvolved size 7.82789544093 0.0 [pix] 187.02260139107173 [deg]
+debug by dzliu: island id 1, total flux 0.004660381284563571, peak flux 0.00541346084342, 
+                              convolved size 5.09024479337 4.9635784238 [pix] 48.5937035317 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 0.0 0.0 [pix] 0.0 [deg], 
+                              AIPS deconvolved size 1.4296198856 0.0 [pix] 271.93208134490305 [deg]
+debug by dzliu: island id 1, total flux 0.007370995943904862, peak flux 0.0058376120017, 
+                              convolved size 6.70604653706 5.52600775255 [pix] 57.5066105709 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 3.88380538914 0.275021145396 [pix] 29.0910342719 [deg], 
+                              AIPS deconvolved size 3.88380538914 0.275021145396 [pix] 209.09103427189234 [deg]
+debug by dzliu: island id 2, total flux 0.013688809136061257, peak flux 0.0065905145356, 
+                              convolved size 9.1624417375 6.65307204781 [pix] 123.34071684 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 7.23454414754 3.94041068119 [pix] -46.3186951226 [deg], 
+                              AIPS deconvolved size 7.23454414754 3.94041068119 [pix] 133.68130487737625 [deg]
+debug by dzliu: island id 3, total flux 0.07996737807462494, peak flux 0.00715936191269, 
+                              convolved size 23.1302535914 14.1724604044 [pix] 100.289643905 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 22.3238131577 13.3103865576 [pix] -79.2435586254 [deg], 
+                              AIPS deconvolved size 22.3238131577 13.3103865576 [pix] 100.7564413745662 [deg]
+debug by dzliu: island id 4, total flux 0.009797024289868466, peak flux 0.00707027498387, 
+                              convolved size 6.96807917328 5.83622342986 [pix] 25.0563644518 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 0.0 0.0 [pix] 0.0 [deg], 
+                              AIPS deconvolved size 4.89665724552 0.0 [pix] 192.42242947718566 [deg]
+debug by dzliu: island id 5, total flux 0.016273812490847354, peak flux 0.00815891723326, 
+                              convolved size 8.34008251234 7.01897247799 [pix] 170.068650808 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 6.79533588531 3.50686758491 [pix] -6.15398954851 [deg], 
+                              AIPS deconvolved size 6.79533588531 3.50686758491 [pix] 173.8460104514852 [deg]
+debug by dzliu: island id 6, total flux 0.013595815120033442, peak flux 0.00741652502428, 
+                              convolved size 8.36711357743 6.4300777798 [pix] 88.0631228122 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 5.73044595197 4.2624216305 [pix] 86.8517869038 [deg], 
+                              AIPS deconvolved size 5.73044595197 4.2624216305 [pix] 86.85178690378177 [deg]
+debug by dzliu: island id 7, total flux 0.0, peak flux 0.00582160707567, 
+                              convolved size 0.0 0.0 [pix] 90.0 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 0.0 0.0 [pix] 0.0 [deg], 
+                              AIPS deconvolved size 0.0 0.0 [pix] 0.0 [deg]
+debug by dzliu: island id 8, total flux 0.011339782482181593, peak flux 0.00749920007418, 
+                              convolved size 7.72621248636 5.74394459779 [pix] 77.3341518883 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 4.86601654212 2.9429408814 [pix] 66.1791853589 [deg], 
+                              AIPS deconvolved size 4.86601654212 2.9429408814 [pix] 66.17918535889466 [deg]
+debug by dzliu: island id 9, total flux 0.012649435686604904, peak flux 0.00640395273354, 
+                              convolved size 9.90236424439 5.85424970857 [pix] 125.131009999 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 8.1490076699 2.36103586748 [pix] -48.5530624369 [deg], 
+                              AIPS deconvolved size 8.1490076699 2.36103586748 [pix] 131.44693756306282 [deg]
+debug by dzliu: island id 10, total flux 0.0, peak flux 0.00774071738124, 
+                              convolved size 0.0 0.0 [pix] 90.0 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 0.0 0.0 [pix] 0.0 [deg], 
+                              AIPS deconvolved size 0.0 0.0 [pix] 0.0 [deg]
+debug by dzliu: island id 11, total flux 0.01767792386663917, peak flux 0.00660407226627, 
+                              convolved size 10.8565486766 7.23627003498 [pix] 47.2634812025 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 9.36612625815 4.70698323723 [pix] 41.1232135698 [deg], 
+                              AIPS deconvolved size 9.36612625815 4.70698323723 [pix] 221.1232135697714 [deg]
+debug by dzliu: island id 12, total flux 0.0, peak flux 0.00968487739306, 
+                              convolved size 0.0 0.0 [pix] 90.0 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 0.0 0.0 [pix] 0.0 [deg], 
+                              AIPS deconvolved size 0.0 0.0 [pix] 0.0 [deg]
+debug by dzliu: island id 13, total flux 0.009720399821807472, peak flux 0.00752157012876, 
+                              convolved size 7.39881695076 5.12625780504 [pix] 82.753435764 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 4.23229269445 1.66146591776 [pix] 76.6754657875 [deg], 
+                              AIPS deconvolved size 4.23229269445 1.66146591776 [pix] 76.67546578753898 [deg]
+debug by dzliu: island id 14, total flux 0.016141904397386643, peak flux 0.0085675842422, 
+                              convolved size 9.04099081328 6.11599985092 [pix] 95.3937453742 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 6.69197756834 3.74354970313 [pix] -81.859957355 [deg], 
+                              AIPS deconvolved size 6.69197756834 3.74354970313 [pix] 98.14004264501189 [deg]
+debug by dzliu: island id 15, total flux 0.0, peak flux 0.00610044226339, 
+                              convolved size 0.0 0.0 [pix] 90.0 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 0.0 0.0 [pix] 0.0 [deg], 
+                              AIPS deconvolved size 0.0 0.0 [pix] 0.0 [deg]
+debug by dzliu: island id 16, total flux 0.016506575427586625, peak flux 0.00769218418526, 
+                              convolved size 10.9144006895 5.77024853294 [pix] 167.660175948 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 9.77058447615 0.0 [pix] -10.7292856209 [deg], 
+                              AIPS deconvolved size 9.77058447615 0.0 [pix] 169.27071437914017 [deg]
+debug by dzliu: island id 17, total flux 0.007050824970194392, peak flux 0.00640069036295, 
+                              convolved size 6.22129259899 5.19660365689 [pix] 166.408786904 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 0.0 0.0 [pix] 0.0 [deg], 
+                              AIPS deconvolved size 3.90093035869 0.0 [pix] 173.4625141119385 [deg]
+debug by dzliu: island id 17, total flux 0.006954750972107436, peak flux 0.00552985625275, 
+                              convolved size 6.97165640166 5.29442589247 [pix] 82.8041803273 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 3.45634660658 2.08335444454 [pix] 70.5035008309 [deg], 
+                              AIPS deconvolved size 3.45634660658 2.08335444454 [pix] 70.50350083093059 [deg]
+debug by dzliu: island id 18, total flux 0.0662996345659311, peak flux 0.0328988512047, 
+                              convolved size 9.60354357569 6.15865671288 [pix] 78.7419960001 [deg], beam 6.097868084906873 4.812924861907535 [pix] 89.33065795898 [deg]
+                              MIRIAD deconvolved size 7.46139552917 3.75984541798 [pix] 75.2400856978 [deg], 
+                              AIPS deconvolved size 7.46139552917 3.75984541798 [pix] 75.24008569775273 [deg]
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.ds9.reg'
+--> Wrote FITS file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.fits'
+--> Wrote ds9 region file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.ds9.reg'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_resid.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_rms.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_mean.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_gaus_model.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_island_mask.fits'
+--> Wrote file 'Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_img_ch0.fits'
+
+

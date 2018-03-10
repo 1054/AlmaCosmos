@@ -266,38 +266,41 @@ calc_peak2total
 calc_Condon1997_errors 02
     # Condon 1997 - Errors of Gaussian Fitting - 1997PASP..109..166C.pdf
     # see also '/Users/dzliu/Cloud/Github/AlmaCosmos/Softwares/3rd_pybdsf/PyBDSF/bdsf/functions.py' def get_errors()
+    # 20180309: fixed the bug when maj==0 or min==0
     if(is_vector(maj) && is_vector(min) && is_vector(convol_maj) && is_vector(convol_min) && \
-        is_vector(beam_maj) && is_vector(beam_min) && is_vector(pixscale) && is_vector(pixnoise) && is_vector(f)) {
-        set source_total_err = f*0.0 + pixnoise
-        set source_peak_err = f*0.0 + pixnoise
-        set source_major_err = f*0.0
-        set source_minor_err = f*0.0
-        set source_gaussian_snr = f*0.0
+        is_vector(beam_maj) && is_vector(beam_min) && is_vector(pixscale) && is_vector(pixnoise) && \
+        is_vector(source_peak) && is_vector(source_total)) {
         # 
-        set Condon_i = 0,dimen(f)-1
+        set source_total_err = source_total*0.0 + pixnoise
+        set source_peak_err = source_total*0.0 + pixnoise
+        set source_major_err = source_total*0.0
+        set source_minor_err = source_total*0.0
+        set source_major_err_rel = source_total*0.0
+        set source_minor_err_rel = source_total*0.0
+        set source_gaussian_snr = source_total*0.0
+        # 
+        set Condon_h_area = pi/(2*ln(2))*(beam_maj/pixscale)*(beam_min/pixscale) # Condon1997 Eq(41,42)
+        set Condon_s_area = pi/(2*ln(2))*(convol_maj/pixscale)*(convol_min/pixscale) # Condon1997 Eq(41,42)
+        set Condon_h_maj = (1.0+(beam_maj**2)/(convol_maj**2)) # Condon1997 Eq(40,41)
+        set Condon_h_min = (1.0+(beam_min**2)/(convol_min**2)) # Condon1997 Eq(40,41)
+        set Condon_mu = pixnoise
+        set Condon_A = source_peak
+        set Condon_rho = calc_Condon1997_rho(1.5,1.5) # Condon1997 Eq(41)
+        #set Condon_h_e = sqrt(Condon_h_area * Condon_h_maj**(-0.5) * Condon_h_min**(-0.5)) # Condon1997 Eq(40), the effective noise correlation area
+        set source_peak_err = Condon_A * sqrt(2.0) / Condon_rho # Condon1997 Eq(21)
+        set source_major_err_rel = 1.0 * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21), source_major_err = source_major * source_major_err_rel
+        set source_minor_err_rel = 1.0 * sqrt(2.0) / calc_Condon1997_rho(0.5,2.5) # Condon1997 Eq(21), source_minor_err = source_minor * source_minor_err_rel
+        set source_total_err_item_1 = (source_peak_err/source_peak)**2
+        set source_total_err_item_2 = (Condon_h_area/Condon_s_area)*(source_major_err_rel**2)
+        set source_total_err_item_3 = (Condon_h_area/Condon_s_area)*(source_minor_err_rel**2)
+        set source_total_err = source_total * sqrt( source_total_err_item_1 + source_total_err_item_2 + source_total_err_item_3 ) # Condon1997 Eq(42)
+        set source_gaussian_snr = Condon_rho
+        # 
+        set Condon_i = 0,dimen(source_total)-1
         set Condon_i = Condon_i if(maj>0 && min>0)
         if(dimen(Condon_i)>0) {
-            set Condon_h_area = pi/(2*ln(2))*(beam_maj/pixscale)*(beam_min/pixscale) # Condon1997 Eq(41,42)
-            set Condon_s_area = pi/(2*ln(2))*(convol_maj[Condon_i]/pixscale)*(convol_min[Condon_i]/pixscale) # Condon1997 Eq(41,42)
-            #set Condon_h_maj = (1.0+(beam_maj*beam_min)/(convol_maj[Condon_i]**2)) # Condon1997 Eq(40,41)
-            #set Condon_h_min = (1.0+(beam_maj*beam_min)/(convol_min[Condon_i]**2)) # Condon1997 Eq(40,41)
-            set Condon_h_maj = (1.0+(beam_maj*beam_maj)/(convol_maj[Condon_i]**2)) # Condon1997 Eq(40,41)
-            set Condon_h_min = (1.0+(beam_min*beam_min)/(convol_min[Condon_i]**2)) # Condon1997 Eq(40,41)
-            set Condon_h_e = sqrt(Condon_h_area * Condon_h_maj**(-0.5) * Condon_h_min**(-0.5)) # Condon1997 Eq(40), the effective noise correlation area
-            set Condon_mu = pixnoise
-            set Condon_A = source_peak[Condon_i]
-            set Condon_rho = calc_Condon1997_rho(1.5,1.5) # Condon1997 Eq(41)
-            set source_peak_err[Condon_i] = Condon_A * sqrt(2.0) / Condon_rho # Condon1997 Eq(21)
-            set source_major_err[Condon_i] = maj[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(2.5,0.5) # Condon1997 Eq(21)
-            set source_minor_err[Condon_i] = min[Condon_i] * sqrt(2.0) / calc_Condon1997_rho(0.5,2.5) # Condon1997 Eq(21)
-            set source_total_err_item_1 = (source_peak_err[Condon_i]/source_peak[Condon_i])**2
-            set source_total_err_item_2 = (Condon_h_area/Condon_s_area)*((source_major_err[Condon_i]/maj[Condon_i])**2)
-            set source_total_err_item_3 = (Condon_h_area/Condon_s_area)*((source_minor_err[Condon_i]/min[Condon_i])**2)
-            set source_total_err[Condon_i] = f[Condon_i] * sqrt( source_total_err_item_1 + source_total_err_item_2 + source_total_err_item_3 ) # Condon1997 Eq(42)
-            set source_gaussian_snr[Condon_i] = Condon_rho
-            #set Condon_peak_err = source_peak_err[Condon_i]/source_peak[Condon_i]
-            #set Condon_total_err = source_total_err[Condon_i]/f[Condon_i]
-            #print {Condon_total_err Condon_peak_err Condon_A Condon_h_area Condon_s_area source_total_err_item_1 source_total_err_item_2 source_total_err_item_3}
+            set source_major_err[Condon_i] = maj[Condon_i] * source_major_err_rel[Condon_i] # Condon1997 Eq(21)
+            set source_minor_err[Condon_i] = min[Condon_i] * source_minor_err_rel[Condon_i] # Condon1997 Eq(21)
         }
     }
 
@@ -309,6 +312,7 @@ calc_Condon1997_rho 02
         set $0 = sqrt((Condon_s_area)/(4*Condon_h_area) * Condon_h_maj**($1) * Condon_h_min**($2)) * Condon_A / Condon_mu # Condon1997 Eq(21,41)
         return
     }
+
 
 calc_deconvolved_sizes 06
     # inputs: maj_convol, min_convol, PA_convol, maj_beam, min_beam, PA_beam
@@ -365,16 +369,67 @@ calc_deconvolved_sizes 06
                 }
            }
         }
-        !printf \\"Maj convol, Maj beam == Maj deconv : \\033[0;31m\\t$(calcds_Maj_convol)\\033[0;0m, \\033[0;33m$(calcds_Maj_beam)\\033[0;0m == \\033[0;34m$(calcds_Maj_deconv)\\033[0;0m\\n\\"
-        !printf \\"Min convol, Min beam == Min deconv : \\033[0;31m\\t$(calcds_Min_convol)\\033[0;0m, \\033[0;33m$(calcds_Min_beam)\\033[0;0m == \\033[0;34m$(calcds_Min_deconv)\\033[0;0m\\n\\"
-        !printf \\"PA. convol, PA. beam == PA. deconv : \\033[0;31m\\t$(calcds_PA_convol)\\033[0;0m, \\033[0;33m$(calcds_PA_beam)\\033[0;0m == \\033[0;34m$(calcds_PA_deconv)\\033[0;0m\\n\\"
+        !printf \\"Maj convol, Maj beam => Maj deconv : \\033[0;31m\\t$(calcds_Maj_convol)\\033[0;0m, \\033[0;33m$(calcds_Maj_beam)\\033[0;0m => \\033[0;34m$(calcds_Maj_deconv)\\033[0;0m\\n\\"
+        !printf \\"Min convol, Min beam => Min deconv : \\033[0;31m\\t$(calcds_Min_convol)\\033[0;0m, \\033[0;33m$(calcds_Min_beam)\\033[0;0m => \\033[0;34m$(calcds_Min_deconv)\\033[0;0m\\n\\"
+        !printf \\"PA. convol, PA. beam => PA. deconv : \\033[0;31m\\t$(calcds_PA_convol)\\033[0;0m, \\033[0;33m$(calcds_PA_beam)\\033[0;0m => \\033[0;34m$(calcds_PA_deconv)\\033[0;0m\\n\\"
     }
+
 
 calc_convolved_sizes 06
     # inputs: maj_deconv, min_deconv, PA_deconv, maj_beam, min_beam, PA_beam
-    # based on the ForTran code from eva, see email on 2018-01-09, subject "deconvolution".
-    # <20180118>
-    echo "TODO"
+    # based on the ForTran code from Eva, see email on 2018-01-09, subject "deconvolution".
+    # reverted the process of deconvolution, so that the inputs are intrinsic sizes and outputs are convolved sizes
+    # <20180118><20180226>
+    # 
+    # Assuming beam FWHM: B_maj, B_min, B_PA
+    #     intrinsic FWHM: H_maj, H_min, H_PA
+    #     convolved FWHM: C_maj, C_min, C_PA
+    # We have
+    #     (B_maj**2 + B_min**2) + (H_maj**2 + H_min**2) = (C_maj**2 + C_min**2)   --> verified by '/Users/dzliu/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-calc-Gaussian-convolved-sizes/calc_Gaussian_convolved_sizes_Test_2_PA_diff_90.pro'
+    #                                                                                         and '/Users/dzliu/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-calc-Gaussian-convolved-sizes/calc_Gaussian_convolved_sizes_Test_3_PA_diff_45.pro'
+    # ......
+    # 
+    if($?6) {
+        set calcds_Maj_deconv = ($1)
+        set calcds_Min_deconv = ($2)
+        set calcds_PA_deconv = ($3)
+        set calcds_Maj_beam = ($4)
+        set calcds_Min_beam = ($5)
+        set calcds_PA_beam = ($6)
+        # 
+        set calcds_sigic2 = (((calcds_PA_deconv + 900.0) % 180.0) - ((calcds_PA_beam + 900.0) % 180.0)) * 2.0 / 180.0 * pi
+        # 
+        set calcds_PA_diff = (((calcds_PA_deconv + 900.0) % 180.0) - ((calcds_PA_beam + 900.0) % 180.0))
+        # 
+        set calcds_sconv = (calcds_Maj_deconv**2+calcds_Min_deconv**2) + (calcds_Maj_beam**2+calcds_Min_beam**2)
+        set calcds_sbeam = (calcds_Maj_beam**2+calcds_Min_beam**2)
+        set calcds_dbeam = (calcds_Maj_beam**2-calcds_Min_beam**2)
+        set calcds_dconv_times_dcos = (calcds_Maj_deconv**2-calcds_Min_deconv**2) * cos(calcds_sigic2) + calcds_dbeam
+        set calcds_dconv_times_dsin = tan(calcds_sigic2) * (calcds_dconv_times_dcos-calcds_dbeam)
+        set calcds_PA_diff = atan2(calcds_dconv_times_dsin,calcds_dconv_times_dcos) / 2.0 / pi * 180.0
+        set calcds_dcos = cos(2*calcds_PA_diff/180.0*pi)
+        set calcds_dsin = sin(2*calcds_PA_diff/180.0*pi)
+        set calcds_dconv = calcds_dconv_times_dcos / calcds_dcos
+        #if dcos != 0.0:
+        #    dconv = dconv_times_dcos / dcos
+        #else:
+        #    dconv = dconv_times_dsin / dsin
+        # 
+        set calcds_PA_convol = calcds_PA_diff + ((calcds_PA_beam + 900.0) % 180.0)
+        set calcds_Maj_convol2 = (calcds_sconv + calcds_dconv)/2.0 # dconv = (Maj_convol**2-Min_convol**2), sconv = (Maj_convol**2+Min_convol**2), so ...
+        set calcds_Min_convol2 = (calcds_sconv - calcds_dconv)/2.0 # dconv = (Maj_convol**2-Min_convol**2), sconv = (Maj_convol**2+Min_convol**2), so ...
+        set calcds_Maj_convol = (calcds_Maj_convol2 >= calcds_Min_convol2) ? sqrt(calcds_Maj_convol2) : sqrt(calcds_Min_convol2)
+        set calcds_Min_convol = (calcds_Maj_convol2 >= calcds_Min_convol2) ? sqrt(calcds_Min_convol2) : sqrt(calcds_Maj_convol2)
+        # 
+        !printf \\"Maj deconv, Maj beam => Maj convol : \\033[0;31m\\t$(calcds_Maj_deconv)\\033[0;0m, \\033[0;33m$(calcds_Maj_beam)\\033[0;0m => \\033[0;34m$(calcds_Maj_convol)\\033[0;0m\\n\\"
+        !printf \\"Min deconv, Min beam => Min convol : \\033[0;31m\\t$(calcds_Min_deconv)\\033[0;0m, \\033[0;33m$(calcds_Min_beam)\\033[0;0m => \\033[0;34m$(calcds_Min_convol)\\033[0;0m\\n\\"
+        !printf \\"PA. deconv, PA. beam => PA. convol : \\033[0;31m\\t$(calcds_PA_deconv)\\033[0;0m, \\033[0;33m$(calcds_PA_beam)\\033[0;0m => \\033[0;34m$(calcds_PA_convol)\\033[0;0m\\n\\"
+    }
+
+
+
+
+
 
 
 
@@ -906,11 +961,18 @@ print_result 02
         set source_area_in_beam = source_area_in_arcsec / beam_area # in unit of beamarea
         set convol_area_in_pix = sqrt((beam_area/(pix_scale*pix_scale))**2 + source_area_in_pix**2)
         #set convol_area_in_arcsec = sqrt(beam_area**2 + source_area_in_arcsec**2) #<BUGGY><20171223># convol_area is not the direct square root of the sum of squared two area. 
-        set convol_maj = sqrt(beam_maj**2 + maj**2) # arcsec #<TODO># two 2D Gaussian convolution
-        set convol_min = sqrt(beam_min**2 + min**2) # arcsec #<TODO># two 2D Gaussian convolution
+        #<20180309># --- 2D Gaussian size convolution
+        #<20180309>#set convol_maj = sqrt(beam_maj**2 + maj**2) # arcsec #<TODO># two 2D Gaussian convolution
+        #<20180309>#set convol_min = sqrt(beam_min**2 + min**2) # arcsec #<TODO># two 2D Gaussian convolution
+        calc_convolved_sizes maj min pa beam_maj beam_min beam_pa
+        set convol_maj = calcds_Maj_convol
+        set convol_min = calcds_Min_convol
+        set convol_pa = calcds_PA_convol
+        #<20180309># --- 
         set convol_area_in_arcsec = pi/(4*ln(2)) * convol_maj * convol_min
         set convol_area_in_beam = convol_area_in_arcsec / beam_area
         set source_peak = f / convol_area_in_beam #<BUG><CORRECTED><20171123># dzliu, Yoshinobu, Philipp
+        set source_total = f
         calc_Condon1997_errors 
         #<20171123># See Gaussian convolved sigma here -- http://www.tina-vision.net/docs/memos/2003-003.pdf -- Page 7 Top
         #set f_peak = f / pix_area # now this is the peak pixel flux with unit of Jy/pixel

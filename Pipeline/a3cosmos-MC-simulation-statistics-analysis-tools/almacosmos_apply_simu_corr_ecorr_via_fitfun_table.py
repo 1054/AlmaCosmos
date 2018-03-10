@@ -208,12 +208,14 @@ correction_table = json.load(handle)
 
 # 
 # constrain data range
-param_x1 = [t[0] for t in correction_table['x']]
-param_x2 = [t[1] for t in correction_table['x']]
-param_min_x1 = numpy.min(param_x1)
-param_max_x1 = numpy.max(param_x1)
-param_min_x2 = numpy.min(param_x2)
-param_max_x2 = numpy.max(param_x2)
+param_x1 = numpy.array([t[0] for t in correction_table['x']])
+param_x2 = numpy.array([t[1] for t in correction_table['x']])
+param_y = numpy.array(correction_table['y'])
+param_valid = (~numpy.isnan(param_y))
+param_min_x1 = numpy.nanmin(param_x1[param_valid])
+param_max_x1 = numpy.nanmax(param_x1[param_valid])
+param_min_x2 = numpy.nanmin(param_x2[param_valid])
+param_max_x2 = numpy.nanmax(param_x2[param_valid])
 data_mask = (~numpy.isfinite(x1)) | (~numpy.isfinite(x2))
 x1[data_mask] = param_min_x1
 x2[data_mask] = param_min_x2
@@ -226,10 +228,17 @@ print('data x1 min max: %s %s'%(data_min_x1, data_max_x1))
 print('param x2 min max: %s %s'%(param_min_x2, param_max_x2))
 print('data x2 min max: %s %s'%(data_min_x2, data_max_x2))
 # extrapolate real x2 to nearest param x2
-x2mask = (x2<param_min_x2)
-x2[x2mask] = param_min_x2
-x2mask = (x2>param_max_x2)
-x2[x2mask] = param_max_x2
+x2backup = copy(x2)
+x2mask_lower = (x2<param_min_x2)
+x2[x2mask_lower] = param_min_x2
+x2mask_upper = (x2>param_max_x2)
+x2[x2mask_upper] = param_max_x2
+# extrapolate real x1 to nearest param x1
+x1backup = copy(x1)
+x1mask_lower = (x1<param_min_x1)
+x1[x1mask_lower] = param_min_x1
+x1mask_upper = (x1>param_max_x1)
+x1[x1mask_upper] = param_max_x1
 
 
 
@@ -263,8 +272,15 @@ array_mask = numpy.isnan(array_interpolated)
 # 
 
 ecorr = copy(array_interpolated)
-ecorr[array_mask] = array_extrapolated[array_mask] # or (data_e_S_out/data_noise)?
+ecorr[array_mask] = array_extrapolated[array_mask] # or (data_e_S_out/data_noise)? -- this means the data out of parameter space
+ecorr[x2mask_upper] = ecorr[x2mask_upper] * (x2backup[x2mask_upper]/x2[x2mask_upper]) # -- <TODO><TEST> extrapolating ecorr by x2
+ecorr[x2mask_lower] = ecorr[x2mask_lower] * (x2backup[x2mask_lower]/x2[x2mask_lower]) # -- <TODO><TEST> extrapolating ecorr by x2
 ecorr[data_mask] = numpy.nan
+
+x2[x2mask_upper] = x2backup[x2mask_upper]
+x2[x2mask_lower] = x2backup[x2mask_lower]
+x1[x1mask_upper] = x1backup[x1mask_upper]
+x1[x1mask_lower] = x1backup[x1mask_lower]
 
 #asciitable.write(numpy.column_stack((ecorr, x1, x2)), 
 #                    'datatable_applying_correction_ecorr.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 

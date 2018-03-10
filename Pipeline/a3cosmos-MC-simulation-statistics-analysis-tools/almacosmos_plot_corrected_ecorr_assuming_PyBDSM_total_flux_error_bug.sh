@@ -27,7 +27,7 @@ $(dirname "${BASH_SOURCE[0]}")/almacosmos_plot_corrected_ecorr.sh
 
 
 mkdir "Plot_corrected_ecorr__via_spline_table__assuming_PyBDSM_total_flux_error_bug"
-mv "Plot_corrected_ecorr"*.* "Plot_corrected_ecorr__via_spline_table__assuming_PyBDSM_total_flux_error_bug/"
+mv "Plot_corrected_ecorr"*.* "Plot_uncorrected_ecorr"*.* "Plot_corrected_ecorr__via_spline_table__assuming_PyBDSM_total_flux_error_bug/"
 #mv "datatable_applied_correction_ecorr.txt" "Plot_corrected_ecorr__via_spline_table__assuming_PyBDSM_total_flux_error_bug/"
 #mv "datatable_applying_correction_ecorr.txt" "Plot_corrected_ecorr__via_spline_table__assuming_PyBDSM_total_flux_error_bug/"
 mv "datatable_applied_correction_ecorr_with_more_columns.txt" "Plot_corrected_ecorr__via_spline_table__assuming_PyBDSM_total_flux_error_bug/"

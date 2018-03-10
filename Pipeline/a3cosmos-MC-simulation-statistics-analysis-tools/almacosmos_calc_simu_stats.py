@@ -354,7 +354,8 @@ while cell_loop_index < cell_total_number:
     print('')
     # 
     # compute statistics
-    if len(selected_args) > 5:
+    minimum_number_for_statistics = 25 # 5 before 2018-03-09, however, 5 can lead to overestimating the scatter.
+    if len(selected_args) > minimum_number_for_statistics:
         grid_cell_struct['id'] = cell_loop_index
         grid_cell_struct['size'] = len(selected_args)
         grid_cell_struct['S_in-S_out']['mean'], \
@@ -442,7 +443,7 @@ while cell_loop_index < cell_total_number:
         plot_engine.set_figure_margin(left=0.2)
         plot_engine.plot_xy(S_peak[selected_args]/noise[selected_args], 
                             (S_in[selected_args]-S_out[selected_args])/(noise[selected_args]), 
-                             symsize=0.3, yrange=[-10,1.5], xtitle='$S_{peak} / rms \ noise$', ytitle='$(S_{in}-S_{out}) / rms \ noise$')
+                             symsize=0.3, yrange=[-10,10], xtitle='$S_{peak} / rms \ noise$', ytitle='$(S_{in}-S_{out}) / rms \ noise$')
         plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
                             grid_cell_struct['(S_in-S_out)/noise']['median'], 
                             yerr=[ [ grid_cell_struct['(S_in-S_out)/noise']['scatter_L68'] ], 

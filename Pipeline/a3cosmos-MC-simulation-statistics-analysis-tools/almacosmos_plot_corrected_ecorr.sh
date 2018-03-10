@@ -7,7 +7,7 @@ if [[ ! -f "Plot_corrected_ecorr.png" ]]; then
 topcat -stilts plot2plane \
                 xpix=500 ypix=400 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{peak} / rms \; noise" \
+                xlabel="\Large x1 = S_{peak} / rms \; noise" \
                 ylabel="\Large Scatter \ of \ ((S_{in}-S_{out}) / rms \; noise)" \
                 xlog=true \
                 ylog=true \
@@ -181,6 +181,43 @@ topcat -stilts plot2plane \
                 shading1=aux \
                 in1='datatable_applied_correction_ecorr_with_more_columns.txt' \
                 ifmt1=ascii \
+                icmd1='sort (Maj_out/Maj_beam)' \
+                x1='e_S_out_uncorr' \
+                y1='e_S_out_corr' \
+                \
+                aux='(Maj_out/Maj_beam)' auxvisible=true auxmap=rdbu auxflip=true auxlabel="Maj_{source}/Maj_{beam}" \
+                \
+                layer3=function \
+                fexpr3='(x)' \
+                color3=black \
+                antialias3=true \
+                thick3=1 \
+                \
+                legend=false \
+                seq="3,1" \
+                fontsize=16 \
+                texttype=latex \
+                omode=out \
+                out='Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.pdf'
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+echo "Output to \"Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.pdf\"!"
+convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.png"
+
+
+topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large \sigma_{S_{total,\,C97}}" \
+                ylabel="\Large \sigma_{S_{total,\,corr.}}" \
+                xlog=true \
+                ylog=true \
+                \
+                layer1=mark \
+                shape1=open_circle \
+                shading1=aux \
+                in1='datatable_applied_correction_ecorr_with_more_columns.txt' \
+                ifmt1=ascii \
                 icmd1='sort (Min_out/Maj_beam)' \
                 x1='e_S_out_uncorr' \
                 y1='e_S_out_corr' \
@@ -259,7 +296,7 @@ topcat -stilts plot2plane \
                 x1='x2' \
                 y1='(e_S_out_corr/noise)' \
                 \
-                aux='x1' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x1 = S_{peak}/(rms \ noise)" \
+                aux='x1' auxvisible=true auxfunc=log auxmap=rdbu auxflip=true auxlabel="x1 = S_{peak}/(rms \ noise)" \
                 \
                 layer3=function \
                 fexpr3='sqrt(8*pow(x,2)/(pow((1+(1/pow(x,2))),1.5)*pow((1+(1/pow(x,2))),1.5)) + 8/(pow((1+(1/pow(x,2))),2.5)*pow((1+(1/pow(x,2))),0.5)) + 8/(pow((1+(1/pow(x,2))),0.5)*pow((1+(1/pow(x,2))),2.5)) )' \
@@ -296,7 +333,7 @@ topcat -stilts plot2plane \
                 x1='x2' \
                 y1='(e_S_out_uncorr/noise)' \
                 \
-                aux='x1' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x1 = S_{peak}/(rms \ noise)" \
+                aux='x1' auxvisible=true auxfunc=log auxmap=rdbu auxflip=true auxlabel="x1 = S_{peak}/(rms \ noise)" \
                 \
                 layer3=function \
                 fexpr3='sqrt(8*pow(x,2)/(pow((1+(1/pow(x,2))),1.5)*pow((1+(1/pow(x,2))),1.5)) + 8/(pow((1+(1/pow(x,2))),2.5)*pow((1+(1/pow(x,2))),0.5)) + 8/(pow((1+(1/pow(x,2))),0.5)*pow((1+(1/pow(x,2))),2.5)) )' \
@@ -333,7 +370,7 @@ topcat -stilts plot2plane \
                 x1='x1' \
                 y1='(e_S_out_corr/noise)' \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" \
+                aux='x2' auxvisible=true auxfunc=log auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" \
                 \
                 layer3=function \
                 fexpr3='(1)' \
@@ -370,7 +407,7 @@ topcat -stilts plot2plane \
                 x1='x1' \
                 y1='(e_S_out_uncorr/noise)' \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" \
+                aux='x2' auxvisible=true auxfunc=log auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" \
                 \
                 layer3=function \
                 fexpr3='(1)' \

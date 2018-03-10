@@ -1,0 +1,57 @@
+
+========================================================================
+Fri 09-03-2018 17:22:49:: USERINFO: --> 
+Fri 09-03-2018 17:22:49:: USERINFO: --> *** bdsf_mod_by_dzliu ***
+Fri 09-03-2018 17:22:49:: USERINFO: --> 
+Fri 09-03-2018 17:22:49:: USERINFO: --> Opened '2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits'
+Fri 09-03-2018 17:22:49:: INFO    : Original data shape of 2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits: (1, 1, 294, 294)
+Fri 09-03-2018 17:22:49:: INFO    : Final data shape (npol, nchan, x, y): (1, 1, 294, 294)
+Fri 09-03-2018 17:22:49:: USERINFO: Image size .............................. : (294, 294) pixels
+Fri 09-03-2018 17:22:49:: USERINFO: Number of channels ...................... : 1
+Fri 09-03-2018 17:22:49:: USERINFO: Number of Stokes parameters ............. : 1
+Fri 09-03-2018 17:22:49:: USERINFO: Beam shape (major, minor, pos angle) .... : (8.46926e-05, 6.68462e-05, 89.3) degrees
+Fri 09-03-2018 17:22:49:: INFO    : Equinox of image is 2000.000000.
+Fri 09-03-2018 17:22:49:: USERINFO: Frequency of image ...................... : 671484.407 MHz
+Fri 09-03-2018 17:22:49:: USERINFO: Number of blank pixels .................. : 33535 (38.8%)
+Fri 09-03-2018 17:22:49:: INFO    : Raw mean (Stokes I) =  -0.0262 mJy and raw rms =  2.0882 mJy 
+Fri 09-03-2018 17:22:49:: INFO    : sigma clipped mean (Stokes I) =  -0.4437 mJy and  sigma clipped rms =  1.8767 mJy 
+Fri 09-03-2018 17:22:49:: USERINFO: Flux from sum of (non-blank) pixels ..... : -0.042 Jy
+Fri 09-03-2018 17:22:49:: INFO    : Estimated bmpersrc_th =  640.27
+Fri 09-03-2018 17:22:49:: INFO    : Parameter confused is False
+Fri 09-03-2018 17:22:49:: USERINFO: --> Calculating background rms and mean images
+Fri 09-03-2018 17:22:49:: INFO    : Estimated size of brightest source (pixels) = 5
+Fri 09-03-2018 17:22:49:: INFO    : Maximum extent of largest 10-sigma island using clipped rms (pixels) = 9
+Fri 09-03-2018 17:22:49:: USERINFO: --> Using constant background rms
+Fri 09-03-2018 17:22:49:: USERINFO: --> Using constant background mean
+Fri 09-03-2018 17:22:49:: USERINFO: Value of background rms ................. : 0.00174 Jy/beam
+Fri 09-03-2018 17:22:49:: USERINFO: Value of background mean ................ : 0.0 Jy/beam
+Fri 09-03-2018 17:22:49:: USERINFO: --> Expected 5-sigma-clipped false detection rate > fdr_ratio
+Fri 09-03-2018 17:22:49:: USERINFO: --> Using FDR (False Detection Rate) thresholding
+Fri 09-03-2018 17:22:49:: USERINFO: FDR threshold (replaces thresh_pix) ..... : 2.2322
+Fri 09-03-2018 17:22:49:: USERINFO: Minimum number of pixels per island ..... : 11
+Fri 09-03-2018 17:22:49:: USERINFO: Number of islands found ................. : 19
+Fri 09-03-2018 17:22:49:: USERINFO: Total number of Gaussians fit to image .. : 17
+Fri 09-03-2018 17:22:49:: USERINFO: Total flux density in model ............. : 0.321 Jy
+Fri 09-03-2018 17:22:49:: USERINFO: --> Grouping Gaussians into sources
+Fri 09-03-2018 17:22:49:: USERINFO: Number of sources formed from Gaussians   : 15
+Fri 09-03-2018 17:22:49:: WARNING : All Gaussians were flagged for the following islands:
+                                        Island #7 (x=124, y=27)
+                                        Island #10 (x=125, y=85)
+                                        Island #12 (x=154, y=183)
+                                        Island #15 (x=189, y=226)
+                                    Please check these islands. If they are valid islands and
+                                    should be fit, try adjusting the flagging options (use
+                                    show_fit with "ch0_flagged=True" to see the flagged Gaussians)
+                                    or enabling the wavelet module (with "atrous_do=True").
+                                    To include empty islands in output source catalogs, set
+                                    incl_empty=True in the write_catalog task.
+Fri 09-03-2018 17:22:50:: INFO    : Calculating residual image after subtracting reconstructed gaussians
+Fri 09-03-2018 17:22:50:: INFO    : Statistics of the Gaussian residual image:
+                                            mean: -2.269e-04 (Jy/beam)
+                                        std. dev: 1.794e-03 (Jy/beam)
+                                            skew: 0.431
+                                        kurtosis: 0.699
+Fri 09-03-2018 17:22:50:: INFO    : Writing Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.fits
+Fri 09-03-2018 17:22:50:: INFO    : Writing Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat0.ds9.reg
+Fri 09-03-2018 17:22:50:: INFO    : Writing Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.fits
+Fri 09-03-2018 17:22:50:: INFO    : Writing Output_Blind_Extraction_Photometry_PyBDSM/image_sim/pybdsm_cat.ds9.reg

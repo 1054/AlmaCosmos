@@ -1,0 +1,12 @@
+
+scp aida40110:"/disk1/$USER/Works/AlmaCosmos/Simulations/*_Phys*/20180117/Sim*/2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038*.tar.gz" .
+
+tar -xzf 2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038*.tar.gz "*_z_3.000_lgMstar_11.00_SB/*"
+
+
+source ~/Cloud/Github/AlmaCosmos/Pipeline/SETUP.fish
+source ~/Cloud/Github/AlmaCosmos/Softwares/SETUP.fish
+
+
+AlmaCosmos_Photometry_Blind_Extraction_PyBDSM_def.py "2011.0.00742.S_SB1_GB1_MB1__SDSS_J100038.01+020822.4__sci.spw0_1_2_3/w_446.462_z_3.000_lgMstar_11.00_SB/image_sim.fits" --rms-value 0.001737229295
+

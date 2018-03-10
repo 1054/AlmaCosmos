@@ -1,0 +1,17 @@
+******
+* Selecting w = 446.462 um
+* Selecting z = 3
+* Selecting lgMstar = 11
+* Selecting Type_SED = SB
+* Selected id = 186266
+* Selected z = 2.984468
+* Selected lgMstar = 11
+* Selected lgSFR = 3.30253
+* Selected lgsSFR = 1.30253
+* Selected Type_SED = SB
+* Selected Maj = 0.387542 arcsec
+* Selected Min = 0.150656 arcsec
+* Selected PA = 70.67720882 degree
+******
+* Selected 10 modelled galaxies within the input image area
+******

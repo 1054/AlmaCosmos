@@ -199,15 +199,19 @@ def recognize_RMS_noise(input_str_list):
 
 def recognize_image_file(input_str_list):
     return match_str_list_to_pattern_list( input_str_list, 
-                                           [ '^(image_file|image file|Image|image|sim_data_dir|sim_image_dir)$', 
-                                           ]
+                                           [ '^(image_file|image file)$', 
+                                             '^(Image|sim_data_dir|sim_image_dir)$', 
+                                           ], 
+                                           ignore_case=True
                                          )
 
 
 def recognize_simu_name(input_str_list):
     return match_str_list_to_pattern_list( input_str_list, 
-                                           [ '^(Simu|simu|Sim|sim|sim_image_name|sim_dir_str)$', 
-                                           ]
+                                           [ '^(sim_image_name)$', 
+                                             '^(Simu|simu|Sim|sim|sim_dir_str)$', 
+                                           ], 
+                                           ignore_case=True
                                          )
 
 

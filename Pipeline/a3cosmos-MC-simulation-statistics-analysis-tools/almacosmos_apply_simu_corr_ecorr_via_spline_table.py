@@ -233,6 +233,12 @@ x2mask_lower = (x2<param_min_x2)
 x2[x2mask_lower] = param_min_x2
 x2mask_upper = (x2>param_max_x2)
 x2[x2mask_upper] = param_max_x2
+# extrapolate real x1 to nearest param x1
+x1backup = copy(x1)
+x1mask_lower = (x1<param_min_x1)
+x1[x1mask_lower] = param_min_x1
+x1mask_upper = (x1>param_max_x1)
+x1[x1mask_upper] = param_max_x1
 
 
 
@@ -268,9 +274,13 @@ array_mask = numpy.isnan(array_interpolated)
 ecorr = copy(array_interpolated)
 ecorr[array_mask] = array_extrapolated[array_mask] # or (data_e_S_out/data_noise)? -- this means the data out of parameter space
 ecorr[x2mask_upper] = ecorr[x2mask_upper] * (x2backup[x2mask_upper]/x2[x2mask_upper]) # -- <TODO><TEST> extrapolating ecorr by x2
+ecorr[x2mask_lower] = ecorr[x2mask_lower] * (x2backup[x2mask_lower]/x2[x2mask_lower]) # -- <TODO><TEST> extrapolating ecorr by x2
 ecorr[data_mask] = numpy.nan
 
 x2[x2mask_upper] = x2backup[x2mask_upper]
+x2[x2mask_lower] = x2backup[x2mask_lower]
+x1[x1mask_upper] = x1backup[x1mask_upper]
+x1[x1mask_lower] = x1backup[x1mask_lower]
 
 #asciitable.write(numpy.column_stack((ecorr, x1, x2)), 
 #                    'datatable_applying_correction_ecorr.txt', Writer=asciitable.FixedWidth, delimiter=" ", bookend=True, 
