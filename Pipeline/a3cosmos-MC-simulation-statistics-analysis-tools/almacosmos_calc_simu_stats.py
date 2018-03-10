@@ -75,9 +75,9 @@ def calc_asymmetric_scatters(input_array, clip_sigma = 5.0, log_file = ''):
     if log_file != '':
         log_file_stream = open(log_file, 'w')
         if(len(arr_clip_args)>0):
-            print('Debug: calc_asymmetric_scatters: clipped %d data out of range %s %s'%(
-                    arr_clip_count, arr_mean-clip_sigma*arr_sigma, arr_mean+clip_sigma*arr_sigma
-                ), file = log_file_stream
+            print('Debug: calc_asymmetric_scatters: clipped %d data out of range %s %s'%( \
+                    arr_clip_count, arr_mean-clip_sigma*arr_sigma, arr_mean+clip_sigma*arr_sigma \
+                ), file = log_file_stream \
             )
     # 
     # now we count lower side
