@@ -928,7 +928,7 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
     echo  "   rm galfit.* aaa_* aaa.* *.sky2xy.* *.tmp *.backup 2>/dev/null"                 >> "$SourceDir/$SourceName.run.bash"
     if [[ $UserClean -ge 1 ]]; then
     echo  "   rm prior_id.txt prior_x_y.txt 2>/dev/null"                                     >> "$SourceDir/$SourceName.run.bash"
-    echo  "   rm *.log *.sm .smhist fit_0.* fit_1.* image_*.fits 2>/dev/null"                >> "$SourceDir/$SourceName.run.bash"
+    echo  "   rm *.log *.sm .smhist getpix.radius.* fit_0.* fit_1.* image_*.fits 2>/dev/null" >> "$SourceDir/$SourceName.run.bash"
     echo  "   rm ../*.txt ../*.sm ../.smhist 2>/dev/null"                                    >> "$SourceDir/$SourceName.run.bash"
     fi
     echo  "fi"                                                                               >> "$SourceDir/$SourceName.run.bash"

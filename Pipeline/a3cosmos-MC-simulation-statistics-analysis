@@ -177,7 +177,11 @@ fi
 # For doing this, we use the code "almacosmos_calc_simu_stats.py".
 # 
 if [[ ! -f "sim_diagram_output_no_galfit_flux_error_1/datatable_param_grid_cell_statistics.txt" ]]; then
-"$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input.txt" -out "sim_diagram_output_no_galfit_flux_error_1" | tee "log_calc_simu_stats_1.log"
+    if [[ " $*" == *" -phys"* ]] || [[ " $*" == *" --phys"* ]]; then
+        "$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input.txt" -out "sim_diagram_output_no_galfit_flux_error_1" -phys | tee "log_calc_simu_stats_1.log"
+    else
+        "$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input.txt" -out "sim_diagram_output_no_galfit_flux_error_1" | tee "log_calc_simu_stats_1.log"
+    fi
 fi
 cd "sim_diagram_output_no_galfit_flux_error_1"
 # 
@@ -217,7 +221,11 @@ a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog "simu_data_input_cor
 # Repeat for ecorr
 # 
 if [[ ! -f "sim_diagram_output_no_galfit_flux_error_2/datatable_param_grid_cell_statistics.txt" ]]; then
-"$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input_corrected.txt" -out "sim_diagram_output_no_galfit_flux_error_2" | tee "log_calc_simu_stats_2.log"
+    if [[ " $*" == *" -phys"* ]] || [[ " $*" == *" --phys"* ]]; then
+        "$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input_corrected.txt" -out "sim_diagram_output_no_galfit_flux_error_2" -phys | tee "log_calc_simu_stats_2.log"
+    else
+        "$ScriptDir/almacosmos_calc_simu_stats.py" "simu_data_input_corrected.txt" -out "sim_diagram_output_no_galfit_flux_error_2" | tee "log_calc_simu_stats_2.log"
+    fi
 fi
 cd "sim_diagram_output_no_galfit_flux_error_2"
 # 

@@ -160,6 +160,7 @@ def calc_asymmetric_scatters(input_array, clip_sigma = 5.0, log_file = ''):
 # 
 Input_MC_cat_file = ''
 Output_dir = ''
+Simulation_Phys = False # whether this is a physically motivated simulation with real luminosity function source distribution
 iarg = 1 # skip sys.argv[0] which is the program itself
 while iarg < len(sys.argv):
     if sys.argv[iarg].lower().startswith('-'):
@@ -167,6 +168,8 @@ while iarg < len(sys.argv):
             if iarg+1 < len(sys.argv):
                 iarg = iarg+1
                 Output_dir = sys.argv[iarg]
+        elif sys.argv[iarg].lower() == '-phys':
+            Simulation_Phys = True
     else:
         if Input_MC_cat_file == '':
             Input_MC_cat_file = sys.argv[iarg]
@@ -227,6 +230,8 @@ npar = 2
 par1 = S_peak/noise
 par1_str = 'S_{peak}/\\sigma_{rms noise}'
 par1_grid = [2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 8.0, 10., 20., 50., 100, 500, 1000.0]
+if Simulation_Phys:
+    par1_grid = [2.5, 5.0, 10., 100, 1000.0]
 #<20180305>#par2 = Maj_out_convol/Maj_beam
 par2 = numpy.sqrt((Maj_out_convol*Min_out_convol)/(Maj_beam*Min_beam))
 par2_str = 'FWHM_{source}/FWHM_{beam}'
