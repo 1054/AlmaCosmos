@@ -27,17 +27,21 @@ if [[ ! -d "${py_prefix}/lib" ]]; then
     mkdir -p "${py_prefix}/lib"
 fi
 
-if [[ $(type pip-$py_version 2>/dev/null | wc -l) -eq 0 ]]; then
-    echo "Error! pip-$py_version was not found!"
-    exit
-fi
 
 #
 # Then install necessary python packages
 # 
 if [[ ! -d "${py_prefix}/lib/python$py_version/site-packages/pyfits" ]]; then
-echo "pip-$py_version install --ignore-installed --prefix=\"${py_prefix}\" numpy scipy pyfits pywcs backports.shutil_get_terminal_size"
-pip-$py_version install --ignore-installed --prefix="${py_prefix}" numpy scipy pyfits pywcs backports.shutil_get_terminal_size
+    if [[ $(type pip-$py_version 2>/dev/null | wc -l) -eq 0 ]]; then
+        echo "pip-$py_version install --ignore-installed --prefix=\"${py_prefix}\" numpy scipy pyfits pywcs backports.shutil_get_terminal_size"
+        pip-$py_version install --ignore-installed --prefix="${py_prefix}" numpy scipy pyfits pywcs backports.shutil_get_terminal_size
+    elif [[ $(type pip$py_version 2>/dev/null | wc -l) -eq 0 ]]; then
+        echo "pip$py_version install --ignore-installed --prefix=\"${py_prefix}\" numpy scipy pyfits pywcs backports.shutil_get_terminal_size"
+        pip$py_version install --ignore-installed --prefix="${py_prefix}" numpy scipy pyfits pywcs backports.shutil_get_terminal_size
+    else
+        echo "Error! pip-$py_version or pip$py_version was not found!"
+        exit
+    fi
 fi
 
 # 
