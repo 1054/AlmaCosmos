@@ -122,7 +122,8 @@ if [[ 1 == 1 ]]; then
         # 
         otool -L "bdsf/_cbdsm.so"
     else
-        python$py_version setup.py build_ext --inplace --include-dirs="/usr/include" --library-dirs="/usr/lib/gcc:/usr/lib" install --prefix="${py_prefix}" --install-dir="${py_prefix}/lib/python$py_version/site-packages"
+        export PYTHONPATH="${py_prefix}/lib/python$py_version/site-packages:${py_prefix}/lib64/python$py_version/site-packages"
+        python$py_version setup.py build_ext --inplace --include-dirs="/usr/include" --library-dirs="/usr/lib/gcc:/usr/lib" install --prefix="${py_prefix}"
     fi
     cd "../"
 fi
