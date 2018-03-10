@@ -203,6 +203,18 @@ calc_fluxconv 00
         !gethead "image_sci.fits" "BUNIT" > "image_sci_fluxunit.txt"
         if(is_vector(fluxunit)) {unset fluxunit}
         data "image_sci_fluxunit.txt" read {fluxunit 1.s}
+        if(!is_vector(fluxunit)) {
+            #<20180310># add a check for the TELESCOP
+            !gethead "image_sci.fits" "TELESCOP" > "image_sci_telescop.txt"
+            if(is_vector(telescop)) {unset telescop}
+            data "image_sci_telescop.txt" read {telescop 1.s}
+            if(is_vector(telescop)) {
+                if(telescop=='ALMA') {
+                    set fluxunit = 'Jy/beam'
+                    !echo "Jy/beam" > "image_sci_fluxunit.txt"
+                }
+            }
+        }
         if(is_vector(fluxunit)) {
             if(is_file("image_sci_fluxunit.warning.txt")) {!rm "image_sci_fluxunit.warning.txt"}
             if(fluxunit=='Jy/beam' || fluxunit=='JY/BEAM') {
