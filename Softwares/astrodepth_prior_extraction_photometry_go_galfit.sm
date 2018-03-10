@@ -203,6 +203,18 @@ calc_fluxconv 00
         !gethead "image_sci.fits" "BUNIT" > "image_sci_fluxunit.txt"
         if(is_vector(fluxunit)) {unset fluxunit}
         data "image_sci_fluxunit.txt" read {fluxunit 1.s}
+        if(!is_vector(fluxunit)) {
+            #<20180310># add a check for the TELESCOP
+            !gethead "image_sci.fits" "TELESCOP" > "image_sci_telescop.txt"
+            if(is_vector(telescop)) {unset telescop}
+            data "image_sci_telescop.txt" read {telescop 1.s}
+            if(is_vector(telescop)) {
+                if(telescop=='ALMA') {
+                    set fluxunit = 'Jy/beam'
+                    !echo "Jy/beam" > "image_sci_fluxunit.txt"
+                }
+            }
+        }
         if(is_vector(fluxunit)) {
             if(is_file("image_sci_fluxunit.warning.txt")) {!rm "image_sci_fluxunit.warning.txt"}
             if(fluxunit=='Jy/beam' || fluxunit=='JY/BEAM') {
@@ -979,13 +991,13 @@ print_result 02
         #set f_peak = f_peak / (pixscale**2) * beamarea
         #set f_peak_err = ResultFluxErr
         #set f_err = ResultFluxErr * sqrt(pi/(4*ln(2))*maj_pix*min_pix)
-        set f_peak = ResultFluxPeak # original pixel unit
+        set f_peak = ResultFluxPeak # original pixel unit, measured from source model image
         set f_resabs = ResultFluxResAbs # original pixel unit
         set f_reschisq = ResultFluxResChisq
         set f_redchisq = ResultFluxRedChisq
         set n_aperpix = ResultFluxNumPixel
         set n_freepar = ResultNumbFreeParam
-        set f_origin = ResultFluxOrigin
+        set f_origin = ResultFluxOrigin # the pixel value at the fitted position
         # 
         #<above><added><20170606><dzliu>#
         # 
@@ -1014,8 +1026,8 @@ print_result 02
         # 
         # 
         #<below><added><20170923><dzliu>#
-        print $1.result.source_err.txt '%25g %25g %25g %25g %25g %25g %25g %25g %25g %15.0f %15s\n' \
-            {f source_total_err source_peak source_peak_err maj source_major_err min source_minor_err source_gaussian_snr cat_index cat_id}
+        print $1.result.source_err.txt '%25g %25g %25g %25g %25g %25g %25g %25g %25g %25g %25g %15.0f %15s\n' \
+            {source_total source_total_err source_peak source_peak_err source_gaussian_snr maj source_major_err source_major_err_rel min source_minor_err source_minor_err_rel cat_index cat_id}
         #<above><added><20170923><dzliu>#
         # 
         # 
