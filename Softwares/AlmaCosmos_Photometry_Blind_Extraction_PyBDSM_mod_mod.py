@@ -56,13 +56,11 @@ if platform.system() == 'Darwin':
     CDLL(os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_pybdsf'+os.sep+'mac_python2.7'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.13-py2.7-macosx-10.12-x86_64.egg'+os.sep+'bdsf'+os.sep+'_cbdsm.so')
     # 
 else:
-    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
-    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages')
-    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux_mod'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
-    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux_mod'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages')
-    #sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux_mod'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.12-py2.7-linux-x86_64.egg')
-    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_linux_mod'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.13-py2.7-linux-x86_64.egg')
-#print sys.path
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_pybdsf'+os.sep+'linux_python2.7'+os.sep+'lib'+os.sep+'python2.7'+os.sep+'site-packages')
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_pybdsf'+os.sep+'linux_python2.7'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages')
+    sys.path.insert(1,os.path.abspath(os.path.dirname(sys.argv[0]))+os.sep+'3rd_pybdsf'+os.sep+'linux_python2.7'+os.sep+'lib64'+os.sep+'python2.7'+os.sep+'site-packages'+os.sep+'bdsf-1.8.13-py2.7-linux-x86_64.mod.by.dzliu.egg')
+    print(sys.path)
+
 
 
 #print('echo $DYLD_LIBRARY_PATH')

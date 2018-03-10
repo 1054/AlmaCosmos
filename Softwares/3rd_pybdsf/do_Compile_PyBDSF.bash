@@ -131,7 +131,11 @@ fi
 # 
 # Then, we still need to copy some library files manually
 # 
-py_outdir=$(ls -1d "${py_prefix}/lib/python$py_version/site-packages/bdsf-"*".egg" | head -n 1)
+if [[ $(uname) == "Darwin" ]]; then
+    py_outdir=$(ls -1d "${py_prefix}/lib/python$py_version/site-packages/bdsf-"*".egg" | head -n 1)
+else
+    py_outdir=$(ls -1d "${py_prefix}/lib64/python$py_version/site-packages/bdsf-"*".egg" | head -n 1)
+fi
 echo cp -i PyBDSF/bdsf/*.so                      "${py_outdir}/bdsf/"
 echo cp -i PyBDSF/bdsf/nat/*.so                  "${py_outdir}/bdsf/nat/"
 cp -i PyBDSF/bdsf/*.so                           "${py_outdir}/bdsf/"
