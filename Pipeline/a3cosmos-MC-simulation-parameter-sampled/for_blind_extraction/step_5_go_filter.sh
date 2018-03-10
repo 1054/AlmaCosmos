@@ -24,7 +24,8 @@ topcat -stilts tpipe in="concat_sim_rec_data_table.fits" \
 # 
 # Then select only matches
 # 
-a3cosmos-MC-simulation-catalog-reformat "concat_sim_rec_data_table_filtered_outliers.fits"
+$(dirname $(dirname $(dirname $(dirname "${BASH_SOURCE[0]}"))))/Softwares/a3cosmos-MC-simulation-catalog-reformat \
+        "concat_sim_rec_data_table_filtered_outliers.fits"
 #--> output concat_sim_data_table_fixed_bug_filtered_outliers_all_entries.fits
 #       and concat_sim_data_table_fixed_bug_filtered_outliers_only_matches.fits
 #       and concat_sim_data_table_fixed_bug_filtered_outliers_only_matches.txt
