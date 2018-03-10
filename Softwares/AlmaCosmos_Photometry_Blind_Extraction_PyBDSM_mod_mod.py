@@ -335,7 +335,7 @@ for i in range(len(input_fits_files)):
     sys.stdout = sys_stdout
     # 
     # in default 'bdsf' will create a '*.pybdsf.log' at the input fits file directory
-    os.system('mv "%s" "%s"'%(input_fits_file+'.pybdsf.log', output_log.replace('.log','.pybdsf.log')))
+    os.system('mv "%s" "%s"'%(os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log')))
 
 
 
