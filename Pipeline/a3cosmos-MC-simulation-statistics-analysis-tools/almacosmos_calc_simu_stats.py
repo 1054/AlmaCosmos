@@ -47,9 +47,9 @@ from CrabGaussian import *
 # 
 def print_to_log_file(input_str, file = file):
     if sys.version_info[0] <= 2:
-        print >> file, input_str
+        exec('print >> file, input_str', locals())
     else:
-        print(input_str, file = file)
+        exec('print(input_str, file = file)', locals())
 
 
 
