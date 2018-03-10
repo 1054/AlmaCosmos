@@ -66,6 +66,7 @@ UserCutBuffer=20
 UserFitWithGalfit30=0
 UserFitWithGalfit255=0
 UserFitSkyBackground=0
+UserClean=0
 InputCat=()
 InputSci=()
 InputPsf=()
@@ -114,6 +115,7 @@ while [[ "$#" -gt 0 ]]; do
                          "-box") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="box-size";;
                     "-box-size") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="box-size";;
                          "-yes") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="yes";;
+                       "-clean") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="clean";;
                     "-galfit30") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="galfit30";;
                    "-galfit255") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="galfit255";;
                      "-fit-sky") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="fit-sky";;
@@ -146,7 +148,8 @@ while [[ "$#" -gt 0 ]]; do
                "do-not-fit-sky")                         UserFitSkyBackground=-1;; #<20170919># added to allow to not fit sky background, which is important for IRAC images. 
         "galfit-prior-peak-snr") if [[ $# -gt 0 ]]; then InputGalfitPriorPeakSNR+=("$1"); fi;; #<20170923># allow to set the peak snr threshold for selecting galfit prior
        "galfit-prior-total-snr") if [[ $# -gt 0 ]]; then InputGalfitPriorTotalSNR+=("$1"); fi;; #<20170923># allow to set the total snr threshold for selecting galfit prior
-            "yes")                                       UserYes=1;;
+                          "yes")                         UserYes=1;;
+                        "clean")                         UserClean=$((UserClean+1));;
     esac
     #
     if [[ $# -gt 0 ]]; then shift; fi
@@ -923,7 +926,11 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
     echo  "if [[ -d \"$SourceDir/$SourceName/\" ]]; then"                                    >> "$SourceDir/$SourceName.run.bash"
     echo  "   cd \"$SourceDir/$SourceName/\""                                                >> "$SourceDir/$SourceName.run.bash"
     echo  "   rm galfit.* aaa_* aaa.* *.sky2xy.* *.tmp *.backup 2>/dev/null"                 >> "$SourceDir/$SourceName.run.bash"
-    echo  "   #rm prior_id.txt prior_x_y.txt 2>/dev/null"                                    >> "$SourceDir/$SourceName.run.bash"
+    if [[ $UserClean -ge 1 ]]; then
+    echo  "   rm prior_id.txt prior_x_y.txt 2>/dev/null"                                     >> "$SourceDir/$SourceName.run.bash"
+    echo  "   rm *.log *.sm .smhist fit_0.* fit_1.* image_*.fits 2>/dev/null"                >> "$SourceDir/$SourceName.run.bash"
+    echo  "   rm ../*.txt ../*.sm ../.smhist 2>/dev/null"                                    >> "$SourceDir/$SourceName.run.bash"
+    fi
     echo  "fi"                                                                               >> "$SourceDir/$SourceName.run.bash"
     echo  ""                                                                                 >> "$SourceDir/$SourceName.run.bash"
     echo  ""                                                                                 >> "$SourceDir/$SourceName.run.bash"
