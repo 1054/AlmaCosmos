@@ -34,7 +34,6 @@ if [[ ! -f "$Script_Dir/Pipeline/SETUP.bash" ]]; then
 fi
 
 source "$Script_Dir/Softwares/SETUP.bash"
-
 source "$Script_Dir/Pipeline/SETUP.bash"
 
 if [[ $(type pip 2>/dev/null | wc -l) -eq 0 ]]; then
@@ -90,6 +89,10 @@ echo "v20180102_mod20180219" >> "Input_Data_Version.txt"
 # 
 # download alma project list
 # 
+if [[ ! -f "list_of_projects.txt" ]]; then
+    almacosmos_gdownload.py 'A3COSMOS/Simulations/Monte_Carlo_Simulation_Physically_Motivated/20180311/list_of_projects.txt'
+fi
+# 
 # list_projects.txt copied from 
 # '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_file_list_sorted_excluded_very_high-res_selected_unique_Mem_ous_id.txt'
 # and 
@@ -128,6 +131,7 @@ if [[ $(hostname) == "aida"* ]]; then
         
         # get FitsName without path and suffix
         FitsName=$(basename "${FitsNames[i]}" | sed -e 's/\.cont.I.image.fits//g')
+        echo "$FitsName"
         
         # copy fits images
         ls "/disk1/$USER/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/residual_images_020118/$FitsName.cont.I.residual.fits"
