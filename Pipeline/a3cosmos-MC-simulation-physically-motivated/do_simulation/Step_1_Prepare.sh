@@ -140,7 +140,7 @@ if [[ $(hostname) == "aida"* ]]; then
         ls "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.image.fits.pixel.statistics.txt"
         ls "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.clean-beam.fits"
         
-        break
+        if [[ $? -ne 0 ]]; then break; fi
         
         ln -s "/disk1/$USER/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/residual_images_020118/$FitsName.cont.I.residual.fits"
         ln -s "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.image.fits"
