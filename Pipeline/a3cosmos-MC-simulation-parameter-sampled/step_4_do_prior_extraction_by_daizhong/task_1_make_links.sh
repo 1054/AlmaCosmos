@@ -193,7 +193,7 @@ EOF
     
     # 
     # now finish the preparation
-    date "%Y-%m-%d %H:%M:%S %Z" > "do_prior_fitting.sh.ok"
+    date +"%Y-%m-%d %H:%M:%S %Z" > "do_prior_fitting.sh.ok"
     
     # 
     # cd back
