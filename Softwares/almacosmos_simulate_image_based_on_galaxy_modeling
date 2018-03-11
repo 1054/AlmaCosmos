@@ -246,7 +246,7 @@ if [[ ${#Obs_rms_image[@]} -gt 0 ]]; then
     getpix "$Sim_gal_dir/image_rms.fits" $image_CENTER1 $image_CENTER2 >> "$Sim_gal_dir/image_sci_pixnoise.txt"
 elif [[ ${#Obs_rms_noise[@]} -gt 0 ]]; then 
     echo "# pixnoise_Jy_per_beam" > "$Sim_gal_dir/image_sci_pixnoise.txt"
-    echo "${Obs_rms_noise[0]}" > "$Sim_gal_dir/image_sci_pixnoise.txt"
+    echo "${Obs_rms_noise[0]}" >> "$Sim_gal_dir/image_sci_pixnoise.txt"
     CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" > "$Sim_gal_dir/image_tmp.log"
     CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "${Obs_rms_noise[0]}" "$Sim_gal_dir/image_rms.fits" > "$Sim_gal_dir/image_rms.log"
     rm "$Sim_gal_dir/image_tmp.fits"
@@ -258,7 +258,7 @@ fi
 
 # get pixscale
 if [[ -f "$Sim_gal_dir/image_sci_pixscale.txt" ]]; then rm "$Sim_gal_dir/image_sci_pixscale.txt"; fi
-echo "# pixscale_arcsec_per_pixel" > "$Sim_gal_dir/image_sci_pixnoise.txt"
+echo "# pixscale_arcsec_per_pixel" > "$Sim_gal_dir/image_sci_pixscale.txt"
 pixscale "$Sim_gal_dir/image_sci.fits" >> "$Sim_gal_dir/image_sci_pixscale.txt"
 image_pixscale=$(cat "$Sim_gal_dir/image_sci_pixscale.txt" | grep -v "^#" | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 1)
 
