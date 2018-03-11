@@ -60,15 +60,17 @@ pwd > "Input_Work_Dir.txt"
 
 bash -c "cd $Script_Dir; pwd" > "Input_Script_Dir.txt"
 
-if [[ -d "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
-    echo "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
-elif [[ -d "$HOME/Works/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
-    echo "$HOME/Works/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
-elif [[ -d "$HOME/Work/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
-    echo "$HOME/Work/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
-elif [[ -d "$HOME/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
-    echo "$HOME/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
-else
+if [[ -f "Input_Galaxy_Modeling_Dir.txt" ]]; then rm "Input_Galaxy_Modeling_Dir.txt"; fi
+if [[ $(hostname) == "isaac"* ]]; then
+    if [[ -d "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
+        echo "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
+    fi
+elif [[ $(hostname) == "aida"* ]]; then
+    if [[ -d "$HOME/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
+        echo "$HOME/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
+    fi
+fi
+if [[ ! -f "Input_Galaxy_Modeling_Dir.txt" ]]; then 
     echo "Error! \"Cosmological_Galaxy_Modelling_for_COSMOS\" was not found! Please contact liudz1054@gmail.com!"
     exit
 fi
