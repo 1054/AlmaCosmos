@@ -21,6 +21,9 @@ run_map_maker 05
     if(!is_file("galaxy_model_dirpath.txt")) {print 'Error! \"galaxy_model_dirpath.txt\" was not found under current directory!\n' {} return}
     if(!is_file("image_center_radec.txt")) {print 'Error! \"image_center_radec.txt\" was not found under current directory!\n' {} return}#
     # 
+    # Load macro
+    load astroGalfit.sm
+    # 
     # Read image center radec
     echo "Reading \"image_center_radec.txt\""
     verbose 0
@@ -220,7 +223,6 @@ run_map_maker 05
         {    id      ra     dec    px    py  flux  z lgMstar lgSFR Type_SED Maj Min Maj_pix Min_pix PA}
     # 
     # prepare galfit input file
-    load astroGalfit.sm
     verbose 0
     initGalfitParam px py 0 0 0
     verbose 1

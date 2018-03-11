@@ -47,6 +47,11 @@ if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
     exit 1
 fi
 
+if [[ $(echo "load astroGalfit.sm calc_2D_Gaussian_convolved_sizes" | sm 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! \"Supermongo\" does not have \"astroGalfit.sm\" macro in the Supermongo \"macro\" directory!"
+    exit 1
+fi
+
 
 # 
 # Read input arguments
