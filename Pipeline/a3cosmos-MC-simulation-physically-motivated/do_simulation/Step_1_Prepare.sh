@@ -118,6 +118,7 @@ echo "Prepared \"$(pwd)/Input_*.txt\"!"
 if [[ $(hostname) == "aida"* ]]; then
     
     IFS=$'\n' read -d '' -r -a FitsNames < "list_of_projects.txt"
+    echo "Read "${#FitsNames[@]}" ALMA projects/pointings from \"list_of_projects.txt\""
     
     mkdir "Input_images"
     cd "Input_images"
