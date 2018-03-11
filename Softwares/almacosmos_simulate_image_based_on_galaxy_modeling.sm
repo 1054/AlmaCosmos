@@ -50,7 +50,7 @@ run_map_maker 05
     data "result_simu_galaxies_radec.txt"
     read {gal_ra 2 gal_dec 3}
     data "result_simu_galaxies_Morph.txt"
-    read {gal_Maj 5 gal_Min 6 gal_PA 7 gal_IA 8 gal_Maj_kpc 9 gal_Hei_kpc 10 gal_kpc2arcsec 11 gal_lgMstar 12 gal_lgSFR 13 gal_Type_SED 14}
+    read {gal_Maj 5 gal_Min 6 gal_PA 7 gal_IA 8 gal_Maj_kpc 9 gal_Hei_kpc 10 gal_kpc2arcsec 11 gal_lgMstar 12 gal_lgSFR 13 gal_Type_SED 14.s}
     # 
     # cd back
     VisitDirPathVector PWD_dirpath
