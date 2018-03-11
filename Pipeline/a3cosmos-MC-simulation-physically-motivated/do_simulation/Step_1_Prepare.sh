@@ -81,8 +81,10 @@ echo "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnell
 #Data_Version="v20170604"
 #Data_Version="v20180102"
 #echo "$Data_Version" > "Input_Data_Version.txt"
-echo "v20180102" > "Input_Data_Version.txt"
-echo "v20180102_mod20180219" >> "Input_Data_Version.txt"
+echo "20180102" > "Input_Data_Version.txt"
+echo "20180102_mod20180219" >> "Input_Data_Version.txt"
+
+echo "20180102" >> "Input_Phot_Version.txt"
 
 
 
