@@ -1,4 +1,4 @@
-run_map_maker 04
+run_map_maker 05
     # 
     # Aim:
     #   Simulate a map based on Full Galaxy Modelling Simulation (FGMOD)
@@ -8,6 +8,7 @@ run_map_maker 04
     #   $2: z
     #   $3: lgMstar
     #   $4: Type_SED: 'MS' or 'SB'
+    #   $5: SNR_Peak_Thresh: optional, we do the simulation only when the selected source has a peak SNR larger than this threshold.
     # 
     # Usage:
     #   source ~/Cloud/Github/DeepFields.SuperDeblending/Softwares/SETUP
@@ -40,10 +41,16 @@ run_map_maker 04
     VisitDirPathVector MOD_dirpath
     # 
     # read 
-    load rfile.sm
-    rfile "result_simu_galaxies_z_Mstar_SFR.txt"
-    rfile "result_simu_galaxies_radec.txt"
-    rfile "result_simu_galaxies_Morph.txt"
+    #load rfile.sm
+    #rfile "result_simu_galaxies_z_Mstar_SFR.txt"
+    #rfile "result_simu_galaxies_radec.txt"
+    #rfile "result_simu_galaxies_Morph.txt"
+    data "result_simu_galaxies_z_Mstar_SFR.txt"
+    read {gal_id 1 gal_ra 2 gal_dec 3 gal_z 4 gal_zLo 5 gal_zHi 6 gal_lgsSFR 10} # gal_lgMstar 7 gal_lgSFR 8 gal_lgLIR 9 gal_Umean 11 gal_Age 12 gal_EBV 13 gal_qIR 14 gal_Type_SED 15
+    data "result_simu_galaxies_radec.txt"
+    read {gal_ra 2 gal_dec 3}
+    data "result_simu_galaxies_Morph.txt"
+    read {gal_Maj 5 gal_Min 6 gal_PA 7 gal_IA 8 gal_Maj_kpc 9 gal_Hei_kpc 10 gal_kpc2arcsec 11 gal_lgMstar 12 gal_lgSFR 13 gal_Type_SED 14}
     # 
     # cd back
     VisitDirPathVector PWD_dirpath
@@ -151,7 +158,33 @@ run_map_maker 04
     # 
     verbose 1
     # 
-    # print 
+    # check whether the selected galaxy is too faint, if user has input the 5-th argument, SNR_Peak_Thresh
+    if($?5) {
+        foreach var {id ra dec px py flux z lgMstar lgSFR Type_SED Maj Min PA} {
+            set $var = out_$var if(out_id==gal_id[sel_index])
+        }
+        if(is_file("image_sci_beamsize.txt") && is_file("image_sci_pixnoise.txt")) {
+            data "image_sci_pixnoise.txt"
+            read {pixnoise 1}
+            set pixnoise = pixnoise * 1e3 # make it mJy
+            data "image_sci_beamsize.txt"
+            read {beam_maj 1 beam_min 2 beam_pa 3}
+            calc_2D_Gaussian_convolved_sizes Maj Min PA beam_maj beam_min beam_pa
+            set fpeak = flux / ((calcds_Maj_convol*calcds_Min_convol)/(beam_maj*beam_min))
+            !echo '**' "Selected  Total_Flux = "$(flux)" mJy" >> "galaxy_model_selected_parameter.txt"
+            !echo '**' "Selected  Peak_Flux = "$(fpeak)" mJy" >> "galaxy_model_selected_parameter.txt"
+            !echo '**' "Selected  SNR_Peak_Flux = "$(fpeak/pixnoise) >> "galaxy_model_selected_parameter.txt"
+            !echo '******' >> "galaxy_model_selected_parameter.txt"
+            !cat "galaxy_model_selected_parameter.txt" | grep "^** "
+            !tail -n 1 "galaxy_model_selected_parameter.txt"
+            if(fpeak/pixnoise<$5) {
+                !touch "too_faint"
+                return
+            }
+        }
+    }
+    # 
+    # print all galaxies in the field of view
     foreach var {id ra dec px py flux z lgMstar lgSFR Type_SED Maj Min PA} {
         set $var = out_$var
     }
@@ -168,16 +201,18 @@ run_map_maker 04
     # 
     # 
     # prepare image and psf info
-    data "image_sci_pixscale.txt" read {pix_scale 1}
-    data "image_psf_stats.txt" read {psf_peak 5 psf_total 6}
+    data "image_sci_pixscale.txt" read {pixscale 1}
+    data "image_sci_fluxconv.txt" read {fluxconv 1} # here fluxconv = 1.0/(beamarea/(pixscale*pixscale))
+    #<before-20180311># data "image_psf_stats.txt" read {psf_peak 5 psf_total 6}
+    #<before-20180311># set fluxconv = 1.0/(psf_total/psf_peak)
     # 
     # convert flux to mag
-    set mag = -2.5*lg(flux/1e3*psf_total/psf_peak)
+    set mag = -2.5*lg(flux/1e3/fluxconv)
     echo "Converted flux to mag"
     # 
     # convert Maj Min to pix
-    set Maj_pix = Maj/pix_scale
-    set Min_pix = Min/pix_scale
+    set Maj_pix = Maj/pixscale
+    set Min_pix = Min/pixscale
     # 
     # print 
     print "galaxy_model_id_ra_dec_flux.txt" \
@@ -192,7 +227,7 @@ run_map_maker 04
     set Mags = mag
     set Note = id
     set Type = (px>=0) ? 'gaussian' : 'gaussian'
-    set Rads = px*0.0 + Maj/pix_scale
+    set Rads = px*0.0 + Maj/pixscale
     set Elli = px*0.0 + Min/Maj
     set Roti = px*0.0 + PA/pi*180.0
     set ParamFitPosX = px*0.0 + 0

@@ -60,6 +60,8 @@ fi
 Obs_res_image=() # "../Source_Extraction_by_Daizhong_Liu/Read_Residual_Images_of_Prior_Extraction_with_Master_Catalog_v20170609/2011.0.00097.S_SB1_GB1_MB5_COSMOS_field10_sci.spw0_1_2_3.cont.I.image.residual.fits"
 Obs_sci_image=() # "../ALMA_Calibrated_Images_by_Magnelli/v20170604/fits/2011.0.00097.S_SB1_GB1_MB5_COSMOS_field10_sci.spw0_1_2_3.cont.I.image.fits"
 Obs_psf_image=() # "../ALMA_Calibrated_Images_by_Magnelli/v20170604/fits/2011.0.00097.S_SB1_GB1_MB5_COSMOS_field10_sci.spw0_1_2_3.cont.I.clean-beam.fits"
+Obs_rms_image=() # 
+Obs_rms_noise=() # 
 Sim_gal_model=() # "Cosmological_Galaxy_Modelling_for_COSMOS/result_simu_galaxies_flux_at_1250.txt"
 Sim_gal_image=() # "coadded_image_at_1250.fits"
 Sim_gal_id=() # model galaxy id
@@ -67,6 +69,7 @@ Sim_gal_w=() # model galaxy wavelength in um
 Sim_gal_z=() # model galaxy z
 Sim_gal_lgMstar=() # model galaxy z
 Sim_gal_Type_SED=() # model galaxy Type_SED
+Sim_gal_SNR_Peak_Thresh=() # the threshold on SNR_Peak, we do the simulation only if the source has enough SNR_Peak (=Peak_flux/RMS_noise) <TODO><20180311>
 
 while [[ $# -gt 0 ]]; do
     #echo $1
@@ -77,6 +80,7 @@ while [[ $# -gt 0 ]]; do
                "-sci") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="image-sci";;
                "-psf") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="image-psf";;
                "-rms") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="image-rms";;
+         "-rms-noise") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="rms-noise";; # a single value instead of an image
                "-gal") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galaxy-model";;
                "-fgm") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galaxy-model";;
       "-galaxy-model") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galaxy-model";;
@@ -94,6 +98,7 @@ while [[ $# -gt 0 ]]; do
           "-type-sed") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galaxy-type-sed";;
    "-galaxy-type-sed") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galaxy-type-sed";;
        "-galaxy-type") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galaxy-type-sed";;
+  "-snr-peak-thresh"*) CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="snr-peak-thresh";;
                "-out") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-name";;
             "-output") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-name";;
     esac
@@ -103,12 +108,14 @@ while [[ $# -gt 0 ]]; do
                     "image-sci") if [[ $# -gt 0 ]]; then Obs_sci_image+=("$1"); fi;;
                     "image-psf") if [[ $# -gt 0 ]]; then Obs_psf_image+=("$1"); fi;;
                     "image-rms") if [[ $# -gt 0 ]]; then Obs_rms_image+=("$1"); fi;;
+                    "rms-noise") if [[ $# -gt 0 ]]; then Obs_rms_noise+=("$1"); fi;;
                  "galaxy-model") if [[ $# -gt 0 ]]; then Sim_gal_model+=("$1"); fi;;
                     "galaxy-id") if [[ $# -gt 0 ]]; then Sim_gal_id+=("$1"); fi;;
                      "galaxy-w") if [[ $# -gt 0 ]]; then Sim_gal_w+=("$1"); fi;;
                      "galaxy-z") if [[ $# -gt 0 ]]; then Sim_gal_z+=("$1"); fi;;
                "galaxy-lgmstar") if [[ $# -gt 0 ]]; then Sim_gal_lgMstar+=("$1"); fi;;
               "galaxy-type-sed") if [[ $# -gt 0 ]]; then Sim_gal_Type_SED+=("$1"); fi;;
+              "snr-peak-thresh") if [[ $# -gt 0 ]]; then Sim_gal_SNR_Peak_Thresh+=("$1"); fi;;
                   "output-name") if [[ $# -gt 0 ]]; then Sim_gal_image+=("$1"); fi;;
     esac
     
@@ -221,19 +228,74 @@ fi
 
 
 # 
-# Copy images, make empty rms image (1.0)
+# Copy images
 # 
 cp "$Obs_sci_image" "$Sim_gal_dir/image_sci.fits"
 cp "$Obs_res_image" "$Sim_gal_dir/image_res.fits"
-cp "$Obs_psf_image" "$Sim_gal_dir/image_psf.fits"
-echo CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" ">" "$Sim_gal_dir/image_tmp.log"
-     CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" > "$Sim_gal_dir/image_tmp.log"
-echo CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "1.0" "$Sim_gal_dir/image_rms.fits" ">" "$Sim_gal_dir/image_rms.log"
-     CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "1.0" "$Sim_gal_dir/image_rms.fits" > "$Sim_gal_dir/image_rms.log"
-echo CrabPhotImageStatistics "$Sim_gal_dir/image_psf.fits" ">" "$Sim_gal_dir/image_psf_stats.txt"
-     CrabPhotImageStatistics "$Sim_gal_dir/image_psf.fits" > "$Sim_gal_dir/image_psf_stats.txt"
+cp "$Obs_psf_image" "$Sim_gal_dir/image_psf.fits"   
+
+# make rms images
+if [[ -f "$Sim_gal_dir/image_sci_pixnoise.txt" ]]; then rm "$Sim_gal_dir/image_sci_pixnoise.txt"; fi
+if [[ ${#Obs_rms_image[@]} -gt 0 ]]; then 
+    cp "${Obs_rms_image[0]}" "$Sim_gal_dir/image_rms.fits"
+    image_NAXIS1=$(gethead "$Sim_gal_dir/image_rms.fits" NAXIS1)
+    image_NAXIS2=$(gethead "$Sim_gal_dir/image_rms.fits" NAXIS2)
+    image_CENTER1=$(awk "BEGIN {printf \"%d\",($image_NAXIS1+1)/2.0;}")
+    image_CENTER2=$(awk "BEGIN {printf \"%d\",($image_NAXIS2+1)/2.0;}")
+    getpix "$Sim_gal_dir/image_rms.fits" $image_CENTER1 $image_CENTER2 > "$Sim_gal_dir/image_sci_pixnoise.txt"
+elif [[ ${#Obs_rms_noise[@]} -gt 0 ]]; then 
+    echo "${Obs_rms_noise[0]}" > "$Sim_gal_dir/image_sci_pixnoise.txt"
+    echo CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" ">" "$Sim_gal_dir/image_tmp.log"
+         CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" > "$Sim_gal_dir/image_tmp.log"
+    echo CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "${Obs_rms_noise[0]}" "$Sim_gal_dir/image_rms.fits" ">" "$Sim_gal_dir/image_rms.log"
+         CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "${Obs_rms_noise[0]}" "$Sim_gal_dir/image_rms.fits" > "$Sim_gal_dir/image_rms.log"
+    rm "image_tmp.fits"
+else
+    echo CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" ">" "$Sim_gal_dir/image_tmp.log"
+         CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" > "$Sim_gal_dir/image_tmp.log"
+    echo CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "1.0" "$Sim_gal_dir/image_rms.fits" ">" "$Sim_gal_dir/image_rms.log"
+         CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "1.0" "$Sim_gal_dir/image_rms.fits" > "$Sim_gal_dir/image_rms.log"
+    rm "image_tmp.fits"
+fi
+
+# get pixscale
+if [[ -f "$Sim_gal_dir/image_sci_pixscale.txt" ]]; then rm "$Sim_gal_dir/image_sci_pixscale.txt"; fi
 echo pixscale "$Sim_gal_dir/image_sci.fits" ">" "$Sim_gal_dir/image_sci_pixscale.txt"
      pixscale "$Sim_gal_dir/image_sci.fits" > "$Sim_gal_dir/image_sci_pixscale.txt"
+image_pixscale=$(cat "$Sim_gal_dir/image_sci_pixscale.txt" | grep -v "^#" | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 1)
+
+# determine beamarea and fluxconv
+if [[ -f "$Sim_gal_dir/image_sci_beamsize.txt" ]]; then rm "$Sim_gal_dir/image_sci_beamsize.txt"; fi
+if [[ -f "$Sim_gal_dir/image_sci_beamarea.txt" ]]; then rm "$Sim_gal_dir/image_sci_beamarea.txt"; fi
+if [[ -f "$Sim_gal_dir/image_sci_fluxconv.txt" ]]; then rm "$Sim_gal_dir/image_sci_fluxconv.txt"; fi
+image_BMAJ=$(gethead "$Sim_gal_dir/image_sci.fits" BMAJ)
+image_BMIN=$(gethead "$Sim_gal_dir/image_sci.fits" BMIN)
+image_BPA=$(gethead "$Sim_gal_dir/image_sci.fits" BPA)
+if [[ x"$image_BMAJ" != x ]] && [[ x"$image_BMAJ" != x ]] && [[ x"$image_BMAJ" != x ]]; then
+    printf "# %s %s %s\n" "beam_maj" \
+                          "beam_min" \
+                          "beam_pa" \
+                          >> "$Sim_gal_dir/image_sci_beamsize.txt"
+    printf "%s %s %s\n" $(awk "BEGIN {printf \"%.10f\",($image_BMAJ*3600.0);}") \
+                        $(awk "BEGIN {printf \"%.10f\",($image_BMIN*3600.0);}") \
+                        $(awk "BEGIN {printf \"%.10f\",($image_BPA);}") \
+                        >> "$Sim_gal_dir/image_sci_beamsize.txt"
+    printf "# %s %s\n" "beam_area_square_arcsec" \
+                       "beam_area_square_pixel" \
+                       > "$Sim_gal_dir/image_sci_beamarea.txt"
+    printf "%s %s\n" $(awk "BEGIN {printf \"%.15f\",(3.1415926/(4*log(2))*$image_BMAJ*3600.0*$image_BMIN*3600.0);}") \
+                     $(awk "BEGIN {printf \"%.15f\",(3.1415926/(4*log(2))*$image_BMAJ*3600.0*$image_BMIN*3600.0/($image_pixscale*$image_pixscale));}") \
+                     >> "$Sim_gal_dir/image_sci_beamarea.txt"
+    printf "# %s\n" "flux_conv_from_Jy_per_beam_to_Jy" \
+                    > "$Sim_gal_dir/image_sci_fluxconv.txt"
+    printf "%s\n" $(awk "BEGIN {printf \"%.15f\",(1.0/(3.1415926/(4*log(2))*$image_BMAJ*3600.0*$image_BMIN*3600.0/($image_pixscale*$image_pixscale)));}") \
+                  >> "$Sim_gal_dir/image_sci_fluxconv.txt"
+fi
+
+# determine psf peak/total (obsolete)
+if [[ -f "$Sim_gal_dir/image_psf_stats.txt" ]]; then rm "$Sim_gal_dir/image_psf_stats.txt"; fi
+echo CrabPhotImageStatistics "$Sim_gal_dir/image_psf.fits" ">" "$Sim_gal_dir/image_psf_stats.txt"
+     CrabPhotImageStatistics "$Sim_gal_dir/image_psf.fits" > "$Sim_gal_dir/image_psf_stats.txt"
 
 
 # 
@@ -264,24 +326,48 @@ Sim_gal_pwd=$(pwd)
 perl -MCwd -e 'print Cwd::abs_path shift' "$Sim_gal_model" | tr -s '/' '\n' | sed -e 's%^$%/%g' > "$Sim_gal_dir/galaxy_model_dirpath.txt" # id ra dec flux
 cd "$Sim_gal_dir"
 cp "$Sim_gal_script" .
+if [[ ${#Sim_gal_SNR_Peak_Thresh[@]} -gt 0 ]]; then
+echo "macro read almacosmos_simulate_image_based_on_galaxy_modeling.sm run_map_maker ${Sim_gal_w[0]} ${Sim_gal_z[0]} ${Sim_gal_lgMstar[0]} '${Sim_gal_Type_SED[0]}' ${Sim_gal_SNR_Peak_Thresh[0]}"
+echo "macro read almacosmos_simulate_image_based_on_galaxy_modeling.sm run_map_maker ${Sim_gal_w[0]} ${Sim_gal_z[0]} ${Sim_gal_lgMstar[0]} '${Sim_gal_Type_SED[0]}' ${Sim_gal_SNR_Peak_Thresh[0]}" | sm | tee run_map_maker.log
+else
 echo "macro read almacosmos_simulate_image_based_on_galaxy_modeling.sm run_map_maker ${Sim_gal_w[0]} ${Sim_gal_z[0]} ${Sim_gal_lgMstar[0]} '${Sim_gal_Type_SED[0]}'"
 echo "macro read almacosmos_simulate_image_based_on_galaxy_modeling.sm run_map_maker ${Sim_gal_w[0]} ${Sim_gal_z[0]} ${Sim_gal_lgMstar[0]} '${Sim_gal_Type_SED[0]}'" | sm | tee run_map_maker.log
+fi
 
+
+# 
+# Check the produced source model
+# 
+if [[ ! -f "image_mod.fits" ]]; then
+    echo "No \"image_mod.fits\" was produced! Probably because you have set the SNR_Peak_Thresh."
+    if [[ -f "image_sim.fits" ]]; then
+        rm "image_sim.fits"
+    fi
+    exit
+fi
 
 # 
 # Coadding model
 # 
 echo "Coadding model"
-echo CrabFitsImageArithmetic "image_res.fits" "adds" "image_mod.fits" "image_sim_nonan.fits" ">" "image_sim_nonan.log"
-     CrabFitsImageArithmetic "image_res.fits" "adds" "image_mod.fits" "image_sim_nonan.fits"  >  "image_sim_nonan.log"
-echo CrabFitsImageArithmetic "image_sci.fits" "times" "0" "image_sci_maskzero.fits" ">" "image_sci_maskzero.log"
-     CrabFitsImageArithmetic "image_sci.fits" "times" "0" "image_sci_maskzero.fits"  >  "image_sci_maskzero.log"
-echo CrabFitsImageArithmetic "image_sci_maskzero.fits" "adds" "1" "image_sci_mask.fits" ">" "image_sci_mask.log"
-     CrabFitsImageArithmetic "image_sci_maskzero.fits" "adds" "1" "image_sci_mask.fits"  >  "image_sci_mask.log"
-echo CrabFitsImageArithmetic "image_sim_nonan.fits" "times" "image_sci_mask.fits" "image_sim.fits" ">" "image_sim.log"
-     CrabFitsImageArithmetic "image_sim_nonan.fits" "times" "image_sci_mask.fits" "image_sim.fits"  >  "image_sim.log"
-#rm image_sci_maskzero.fits image_sim_nonan.fits
+#<before-20180311># echo CrabFitsImageArithmetic "image_res.fits" "adds" "image_mod.fits" "image_sim_nonan.fits" ">" "image_sim_nonan.log"
+#<before-20180311>#      CrabFitsImageArithmetic "image_res.fits" "adds" "image_mod.fits" "image_sim_nonan.fits"  >  "image_sim_nonan.log"
+#<before-20180311># echo CrabFitsImageArithmetic "image_sci.fits" "times" "0" "image_sci_maskzero.fits" ">" "image_sci_maskzero.log"
+#<before-20180311>#      CrabFitsImageArithmetic "image_sci.fits" "times" "0" "image_sci_maskzero.fits"  >  "image_sci_maskzero.log"
+#<before-20180311># echo CrabFitsImageArithmetic "image_sci_maskzero.fits" "adds" "1" "image_sci_mask.fits" ">" "image_sci_mask.log"
+#<before-20180311>#      CrabFitsImageArithmetic "image_sci_maskzero.fits" "adds" "1" "image_sci_mask.fits"  >  "image_sci_mask.log"
+#<before-20180311># echo CrabFitsImageArithmetic "image_sim_nonan.fits" "times" "image_sci_mask.fits" "image_sim.fits" ">" "image_sim.log"
+#<before-20180311>#      CrabFitsImageArithmetic "image_sim_nonan.fits" "times" "image_sci_mask.fits" "image_sim.fits"  >  "image_sim.log"
+#<before-20180311># #rm image_sci_maskzero.fits image_sim_nonan.fits
+echo CrabFitsImageArithmetic "image_res.fits" "adds" "image_mod.fits" "image_sim.fits" ">" "image_sim.log"
+     CrabFitsImageArithmetic "image_res.fits" "adds" "image_mod.fits" "image_sim.fits"  >  "image_sim.log"
 
+# copy rms file (so that my prior fitting code does not need to recompute it)
+if [[ ${#Obs_rms_noise[@]} -gt 0 ]]; then
+    echo "Gaussian_sigma = ${Obs_rms_noise[0]}" > "image_sim.fits.pixel.statistics.txt"
+fi
+
+# run ds9 to check
 echo "Please run ds9 to check: "
 echo "cd \"$Sim_gal_dir\""
 echo "ds9 -title \"sim\" -tile mode column -lock frame image -lock scale yes -lock colorbar yes \"image_sci.fits\" \"image_res.fits\" \"image_mod.fits\" \"image_sim.fits\" &"
