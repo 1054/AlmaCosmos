@@ -36,7 +36,7 @@ mkdir -p "/disk1/$USER/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modellin
 
 rsync -avz -r --stats --progress -e "ssh -A -t gate.rzg.mpg.de ssh" \
         --include '**/*' \
-        "isaac1.bc.rzg.mpg.de:/u/$USER/Work/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS/" \
+        "isaac1.bc.rzg.mpg.de:/u/$USER/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS/" \
         "/disk1/$USER/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS/"
 
 
