@@ -35,8 +35,8 @@ echo "SLURM_SUBMIT_DIR: "$SLURM_SUBMIT_DIR
 # 
 # check host and other dependencies
 # 
-if [[ $(uname -a) != "Linux isaac"* ]] && [[ " $@ " != *" test "* ]]; then
-    echo "This code can only be ran on ISAAC machine!"
+if [[ $(hostname) != "isaac"* ]] && [[ $(hostname) != "aida"* ]] && [[ " $@ " != *" test "* ]]; then
+    echo "This code can only be ran on ISAAC or AIDA machine!"
     exit 1
 fi
 
@@ -44,22 +44,22 @@ if [[ x"$SLURM_SUBMIT_DIR" == x"" ]]; then
     SLURM_SUBMIT_DIR="."
 fi
 
-if [[ ! -f "$SLURM_SUBMIT_DIR/list_projects.txt" ]] || \
+if [[ ! -f "$SLURM_SUBMIT_DIR/list_of_projects.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Work_Dir.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Data_Version.txt" ]] || \
     [[ ! -f "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt" ]]; then
-    echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_Prepare.sh\" and prepare the \"Input*.txt\" and \"list_projects.txt\" files first!"
+    echo "Error! Please run \"a_dzliu_code_for_Simulation_on_ISAAC_Step_1_Prepare.sh\" and prepare the \"Input*.txt\" and \"list_of_projects.txt\" files first!"
     exit 1
 fi
 
 Work_Dir="$SLURM_SUBMIT_DIR"
 
-Script_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt")
+Script_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Script_Dir.txt" | grep -v "^#" | head -n 1)
 
-Phot_Version=$(cat "$SLURM_SUBMIT_DIR/Input_Phot_Version.txt")
+Phot_Version=$(cat "$SLURM_SUBMIT_DIR/Input_Phot_Version.txt" | grep -v "^#" | head -n 1)
 
-Data_Version=$(cat "$SLURM_SUBMIT_DIR/Input_Data_Version.txt")
+Data_Version=$(cat "$SLURM_SUBMIT_DIR/Input_Data_Version.txt" | grep -v "^#" | head -n 1)
 
 Input_Galaxy_Modeling_Dir=$(cat "$SLURM_SUBMIT_DIR/Input_Galaxy_Modeling_Dir.txt")
 
@@ -105,10 +105,10 @@ fi
 # 
 # prepare physical parameter grid
 # 
-Input_z=("1.000" "2.000" "3.000" "4.000" "5.000" "6.000")
-Input_lgMstar=("09.00" "09.50" "10.00" "10.50" "11.00" "11.50" "12.00")
-Input_Type_SED=("MS" "SB")
-IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
+Input_z=($(seq 1.0 0.25 6.0 | awk '{printf "%0.3f\n",$1}')) # N=21
+Input_lgMstar=($(seq 9.0 0.25 12.0 | awk '{printf "%0.3f\n",$1}')) # N=13
+Input_Type_SED=("MS" "SB") # N=2
+IFS=$'\n' read -d '' -r -a FitsNames < "list_of_projects.txt"
 
 if [[ " $@ " == *" test "* ]]; then
     Input_z=("1.000")

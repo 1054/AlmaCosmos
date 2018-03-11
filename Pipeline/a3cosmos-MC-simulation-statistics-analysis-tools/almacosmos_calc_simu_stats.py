@@ -45,11 +45,17 @@ from CrabGaussian import *
 # 
 # Function
 # 
-def print_to_log_file(input_str, file = file):
-    if sys.version_info[0] <= 2:
-        exec('print >> file, input_str', locals())
+def print_to_log_file(input_str, file = None):
+    if file:
+        if sys.version_info[0] <= 2:
+            exec('print >> file, input_str', locals())
+        else:
+            exec('print(input_str, file = file)', locals())
     else:
-        exec('print(input_str, file = file)', locals())
+        if sys.version_info[0] <= 2:
+            exec('print input_str', locals())
+        else:
+            exec('print(input_str)', locals())
 
 
 
@@ -383,7 +389,7 @@ while cell_loop_index < cell_total_number:
         grid_cell_struct['(S_in-S_out)/noise']['median'], \
         grid_cell_struct['(S_in-S_out)/noise']['scatter'], \
         grid_cell_struct['(S_in-S_out)/noise']['scatter_L68'], \
-        grid_cell_struct['(S_in-S_out)/noise']['scatter_H68'] = calc_asymmetric_scatters((S_in[selected_args]-S_out[selected_args])/noise[selected_args], log_file = outdir+os.sep+'dump'+os.sep+'log_calc_asymmetric_noi_scatter_cell_%d.txt'%(cell_loop_index))
+        grid_cell_struct['(S_in-S_out)/noise']['scatter_H68'] = calc_asymmetric_scatters((S_in[selected_args]-S_out[selected_args])/noise[selected_args], clip_sigma=2.0, log_file = outdir+os.sep+'dump'+os.sep+'log_calc_asymmetric_noi_scatter_cell_%d.txt'%(cell_loop_index))
         grid_cell_struct['(S_in-S_out)/S_in']['mean'], \
         grid_cell_struct['(S_in-S_out)/S_in']['median'], \
         grid_cell_struct['(S_in-S_out)/S_in']['scatter'], \

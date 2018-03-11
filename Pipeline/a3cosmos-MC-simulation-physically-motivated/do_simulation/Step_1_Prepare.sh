@@ -1,6 +1,8 @@
 #!/bin/bash
 # 
 
+set -e
+
 # 
 # This script will download list_of_project.txt
 # from "Google Drive"
@@ -101,6 +103,46 @@ echo "v20180102_mod20180219" >> "Input_Data_Version.txt"
 
 echo "Prepared \"$(pwd)/list_projects.txt\"!"
 echo "Prepared \"$(pwd)/Input_*.txt\"!"
+
+
+
+
+# 
+# 
+# 
+if [[ $(hostname) == "aida"* ]]; then
+    
+    IFS=$'\n' read -d '' -r -a FitsNames < "list_of_projects.txt"
+    
+    mkdir "Input_images"
+    cd "Input_images"
+    
+    for (( i=0; i<${#FitsNames[@]}; i++ )); do
+        
+        # check FitsName not empty
+        if [[ x"${FitsNames[i]}" == x"" ]]; then
+            continue
+        fi
+        
+        # get FitsName without path and suffix
+        FitsName=$(basename "${FitsNames[i]}" | sed -e 's/\.cont.I.image.fits//g')
+        
+        # copy fits images
+        ls "/disk1/$USER/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/residual_images_020118/$FitsName.cont.I.residual.fits"
+        ls "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.image.fits"
+        ls "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.image.fits.pixel.statistics.txt"
+        ls "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.clean-beam.fits"
+        
+        ln -s "/disk1/$USER/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/residual_images_020118/$FitsName.cont.I.residual.fits"
+        ln -s "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.image.fits"
+        ln -s "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.image.fits.pixel.statistics.txt"
+        ln -s "/disk1/$USER/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180102/fits/$FitsName.cont.I.clean-beam.fits"
+        
+    done
+    
+    cd ".."
+fi
+
 
 
 
