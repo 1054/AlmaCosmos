@@ -62,12 +62,12 @@ bash -c "cd $Script_Dir; pwd" > "Input_Script_Dir.txt"
 
 if [[ -f "Input_Galaxy_Modeling_Dir.txt" ]]; then rm "Input_Galaxy_Modeling_Dir.txt"; fi
 if [[ $(hostname) == "isaac"* ]]; then
-    if [[ -d "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
-        echo "$HOME/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
+    if [[ -d "/u/$USER/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
+        echo "/u/$USER/Work/AlmaCosmos/Simulation/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
     fi
 elif [[ $(hostname) == "aida"* ]]; then
-    if [[ -d "$HOME/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
-        echo "$HOME/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
+    if [[ -d "/disk1/$USER/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" ]]; then
+        echo "/disk1/$USER/Works/AlmaCosmos/Simulations/Cosmological_Galaxy_Modelling_for_COSMOS" > "Input_Galaxy_Modeling_Dir.txt"
     fi
 fi
 if [[ ! -f "Input_Galaxy_Modeling_Dir.txt" ]]; then 
