@@ -245,12 +245,12 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                             -rms-noise $rmsnoise -snr-peak-threshold 3.0 \
                             -out "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}"
                         
-                        if [[ ! -d "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName" ]]; then
+                        if [[ ! -d "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName.cont.I.image" ]]; then
                             echo "Error! Failed to run \"almacosmos_simulate_image_based_on_galaxy_modeling\" and create \"Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\" directory!"
                             exit 1
                         fi
                         
-                        cd "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName/"
+                        cd "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName.cont.I.image/"
                         cp galaxy_model_*.txt ../
                         if [[ -f "image_sim.fits" ]]; then cp "image_sim.fits" ../; elif [[ -f "too_faint" ]]; then cp "too_faint" ../; fi
                         cd "../../../../"
@@ -263,8 +263,8 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                         
                         # clean
                         if [[ " $@ " != *" test "* ]]; then
-                            rm -rf "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName."*
-                            rm -rf "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName"
+                            rm -rf "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName.cont.I.image."*
+                            rm -rf "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/$FitsName.cont.I.image"
                         fi
                         
                     else
