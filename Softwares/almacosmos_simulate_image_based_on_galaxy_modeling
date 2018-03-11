@@ -242,26 +242,24 @@ if [[ ${#Obs_rms_image[@]} -gt 0 ]]; then
     image_NAXIS2=$(gethead "$Sim_gal_dir/image_rms.fits" NAXIS2)
     image_CENTER1=$(awk "BEGIN {printf \"%d\",($image_NAXIS1+1)/2.0;}")
     image_CENTER2=$(awk "BEGIN {printf \"%d\",($image_NAXIS2+1)/2.0;}")
-    getpix "$Sim_gal_dir/image_rms.fits" $image_CENTER1 $image_CENTER2 > "$Sim_gal_dir/image_sci_pixnoise.txt"
+    echo "# pixnoise_Jy_per_beam" > "$Sim_gal_dir/image_sci_pixnoise.txt"
+    getpix "$Sim_gal_dir/image_rms.fits" $image_CENTER1 $image_CENTER2 >> "$Sim_gal_dir/image_sci_pixnoise.txt"
 elif [[ ${#Obs_rms_noise[@]} -gt 0 ]]; then 
+    echo "# pixnoise_Jy_per_beam" > "$Sim_gal_dir/image_sci_pixnoise.txt"
     echo "${Obs_rms_noise[0]}" > "$Sim_gal_dir/image_sci_pixnoise.txt"
-    echo CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" ">" "$Sim_gal_dir/image_tmp.log"
-         CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" > "$Sim_gal_dir/image_tmp.log"
-    echo CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "${Obs_rms_noise[0]}" "$Sim_gal_dir/image_rms.fits" ">" "$Sim_gal_dir/image_rms.log"
-         CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "${Obs_rms_noise[0]}" "$Sim_gal_dir/image_rms.fits" > "$Sim_gal_dir/image_rms.log"
-    rm "image_tmp.fits"
+    CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" > "$Sim_gal_dir/image_tmp.log"
+    CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "${Obs_rms_noise[0]}" "$Sim_gal_dir/image_rms.fits" > "$Sim_gal_dir/image_rms.log"
+    rm "$Sim_gal_dir/image_tmp.fits"
 else
-    echo CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" ">" "$Sim_gal_dir/image_tmp.log"
-         CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" > "$Sim_gal_dir/image_tmp.log"
-    echo CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "1.0" "$Sim_gal_dir/image_rms.fits" ">" "$Sim_gal_dir/image_rms.log"
-         CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "1.0" "$Sim_gal_dir/image_rms.fits" > "$Sim_gal_dir/image_rms.log"
-    rm "image_tmp.fits"
+    CrabFitsImageArithmetic "$Sim_gal_dir/image_res.fits" "times" "0.0" "$Sim_gal_dir/image_tmp.fits" > "$Sim_gal_dir/image_tmp.log"
+    CrabFitsImageArithmetic "$Sim_gal_dir/image_tmp.fits" "adds" "1.0" "$Sim_gal_dir/image_rms.fits" > "$Sim_gal_dir/image_rms.log"
+    rm "$Sim_gal_dir/image_tmp.fits"
 fi
 
 # get pixscale
 if [[ -f "$Sim_gal_dir/image_sci_pixscale.txt" ]]; then rm "$Sim_gal_dir/image_sci_pixscale.txt"; fi
-echo pixscale "$Sim_gal_dir/image_sci.fits" ">" "$Sim_gal_dir/image_sci_pixscale.txt"
-     pixscale "$Sim_gal_dir/image_sci.fits" > "$Sim_gal_dir/image_sci_pixscale.txt"
+echo "# pixscale_arcsec_per_pixel" > "$Sim_gal_dir/image_sci_pixnoise.txt"
+pixscale "$Sim_gal_dir/image_sci.fits" >> "$Sim_gal_dir/image_sci_pixscale.txt"
 image_pixscale=$(cat "$Sim_gal_dir/image_sci_pixscale.txt" | grep -v "^#" | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 1)
 
 # determine beamarea and fluxconv
@@ -272,9 +270,9 @@ image_BMAJ=$(gethead "$Sim_gal_dir/image_sci.fits" BMAJ)
 image_BMIN=$(gethead "$Sim_gal_dir/image_sci.fits" BMIN)
 image_BPA=$(gethead "$Sim_gal_dir/image_sci.fits" BPA)
 if [[ x"$image_BMAJ" != x ]] && [[ x"$image_BMAJ" != x ]] && [[ x"$image_BMAJ" != x ]]; then
-    printf "# %s %s %s\n" "beam_maj" \
-                          "beam_min" \
-                          "beam_pa" \
+    printf "# %s %s %s\n" "beam_maj_arcsec" \
+                          "beam_min_arcsec" \
+                          "beam_pa_degree" \
                           >> "$Sim_gal_dir/image_sci_beamsize.txt"
     printf "%s %s %s\n" $(awk "BEGIN {printf \"%.10f\",($image_BMAJ*3600.0);}") \
                         $(awk "BEGIN {printf \"%.10f\",($image_BMIN*3600.0);}") \

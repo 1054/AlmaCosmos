@@ -163,7 +163,7 @@ run_map_maker 05
         foreach var {id ra dec px py flux z lgMstar lgSFR Type_SED Maj Min PA} {
             set $var = out_$var if(out_id==gal_id[sel_index])
         }
-        if(is_file("image_sci_beamsize.txt") && is_file("image_sci_pixnoise.txt")) {
+        #if(is_file("image_sci_beamsize.txt") && is_file("image_sci_pixnoise.txt")) {
             data "image_sci_pixnoise.txt"
             read {pixnoise 1}
             set pixnoise = pixnoise * 1e3 # make it mJy
@@ -181,7 +181,7 @@ run_map_maker 05
                 !touch "too_faint"
                 return
             }
-        }
+        #}
     }
     # 
     # print all galaxies in the field of view
