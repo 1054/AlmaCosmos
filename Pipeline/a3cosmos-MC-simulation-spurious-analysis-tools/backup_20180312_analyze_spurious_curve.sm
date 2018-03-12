@@ -8,12 +8,12 @@ analyze_spurious_curve
     load rfile.sm
     
     # Read real prior extraction photometry results
-    if(is_file("datatable_original_image_fitting.SNR_total.txt")) {
-        data "datatable_original_image_fitting.SNR_total.txt"
+    if(is_file("datatable_original_image_fitting.SNR_peak.txt")) {
+        data "datatable_original_image_fitting.SNR_peak.txt"
         read {snr_fit_2 1.f}
         set snr_fit_2 = lg(snr_fit_2)
     } else {
-        echo "Error! \"datatable_original_image_fitting.SNR_total.txt\" was not found!"
+        echo "Error! \"datatable_original_image_fitting.SNR_peak.txt\" was not found!"
     }
     
     if(is_file("datatable_original_image_fitting.pb_corr.txt")) {
@@ -24,12 +24,12 @@ analyze_spurious_curve
     }
     
     
-    if(is_file("datatable_inverted_image_fitting.SNR_total.txt")) {
-        data "datatable_inverted_image_fitting.SNR_total.txt"
+    if(is_file("datatable_inverted_image_fitting.SNR_peak.txt")) {
+        data "datatable_inverted_image_fitting.SNR_peak.txt"
         read {snr_fit_n2 1.f}
         set snr_fit_n2 = lg(snr_fit_n2)
     } else {
-        echo "Error! \"datatable_inverted_image_fitting.SNR_total.txt\" was not found!"
+        echo "Error! \"datatable_inverted_image_fitting.SNR_peak.txt\" was not found!"
     }
     
     if(is_file("datatable_inverted_image_fitting.pb_corr.txt")) {
@@ -110,11 +110,11 @@ analyze_spurious_curve
     
     set snr_value_differential = 10**snr_value_differential
     set snr_value_cumulative = 10**snr_value_cumulative
-    print "datatable_spurious_fraction_with_SNR_total_differential.txt" '%25g %25g %30g %30g\n' {snr_value_differential fake_rate_differential true_count_differential spurious_count_differential}
-    print "datatable_spurious_fraction_with_SNR_total_cumulative.txt" '%25g %25g %30g %30g\n' {snr_value_cumulative fake_rate_cumulative true_count_cumulative spurious_count_cumulative}
+    print "datatable_spurious_fraction_differential.txt" '%25g %25g %30g %30g\n' {snr_value_differential fake_rate_differential true_count_differential spurious_count_differential}
+    print "datatable_spurious_fraction_cumulative.txt" '%25g %25g %30g %30g\n' {snr_value_cumulative fake_rate_cumulative true_count_cumulative spurious_count_cumulative}
     
-    if(!is_file("fit_spurious_curve_with_SNR_total.py")) {
-        echo "Error! \"fit_spurious_curve_with_SNR_total.py\" was not found!"
+    if(!is_file("fit_spurious_curve.py")) {
+        echo "Error! \"fit_spurious_curve.py\" was not found!"
         return
     }
     
@@ -134,22 +134,22 @@ analyze_spurious_curve
 
 plot_spurious_curve
     # 
-    data "datatable_spurious_fraction_with_SNR_total_cumulative.txt"
+    data "datatable_spurious_fraction_cumulative.txt"
     read {snr_value_cumulative 1.f fake_rate_cumulative 2.f}
     set snr_value_cumulative = lg(snr_value_cumulative)
     # 
-    data "datatable_spurious_fraction_with_SNR_total_differential.txt"
+    data "datatable_spurious_fraction_differential.txt"
     read {snr_value_differential 1.f fake_rate_differential 2.f}
     set snr_value_differential = lg(snr_value_differential)
     # 
-    crabPlotOpenPS "Plot_spurious_fraction_with_SNR_total.eps"
+    crabPlotOpenPS "Plot_spurious_fraction.eps"
     crabPlotDefaultPenForBox
     location 6500 31000 14500 28000
     limits $(lg(1)) $(lg(60)) -0.1 1.1
     ticksize -1 5 0 0
     box
     crabPlotDefaultPenForTitle
-    xlabel "S/N_{total}"
+    xlabel "S_{peak} / rms noise"
     ylabel "Spurious Fraction"
     crabPlotDefaultPenForConnect
     # 
@@ -160,16 +160,16 @@ plot_spurious_curve
     ctype royalblue
     lweight 3.5 expand 1.5 ptype 15 0
     points snr_value_cumulative fake_rate_cumulative
-    #ctype red
-    #lweight 3.5 expand 1.9 ptype 4 3
-    #points snr_value_differential (1.0-fake_rate_differential)
-    #ctype red
-    #lweight 3.5 expand 1.5 ptype 4 0
-    #points snr_value_cumulative (1.0-fake_rate_cumulative)
+    ctype red
+    lweight 3.5 expand 1.9 ptype 4 3
+    points snr_value_differential (1.0-fake_rate_differential)
+    ctype red
+    lweight 3.5 expand 1.5 ptype 4 0
+    points snr_value_cumulative (1.0-fake_rate_cumulative)
     # 
     # spline or read from the output fit file with the Python code
-    if(is_file("function_spurious_fraction_with_SNR_total_cumulative.xyfit.txt")) {
-        data "function_spurious_fraction_with_SNR_total_cumulative.xyfit.txt"
+    if(is_file("function_spurious_fraction_cumulative.xyfit.txt")) {
+        data "function_spurious_fraction_cumulative.xyfit.txt"
         lines 3 0
         read {snr_spline 1.f spline_rate 2.f}
         set snr_spline = lg(snr_spline)
@@ -181,15 +181,15 @@ plot_spurious_curve
         ctype royalblue ltype 1
         connect snr_spline spline_rate
         # 
-        #set real_rate_cumulative = (1.0-fake_rate_cumulative)
-        #spline snr_value_cumulative real_rate_cumulative snr_spline spline_rate
-        #ctype red ltype 1
-        #connect snr_spline spline_rate
+        set real_rate_cumulative = (1.0-fake_rate_cumulative)
+        spline snr_value_cumulative real_rate_cumulative snr_spline spline_rate
+        ctype red ltype 1
+        connect snr_spline spline_rate
     }
     # 
     # spline or read from the output fit file with the Python code
-    if(is_file("function_spurious_fraction_with_SNR_total_differential.xyfit.txt")) {
-        data "function_spurious_fraction_with_SNR_total_differential.xyfit.txt"
+    if(is_file("function_spurious_fraction_differential.xyfit.txt")) {
+        data "function_spurious_fraction_differential.xyfit.txt"
         lines 3 0
         read {snr_spline 1.f spline_rate 2.f}
         set snr_spline = lg(snr_spline)
@@ -202,10 +202,10 @@ plot_spurious_curve
         ctype royalblue ltype 0
         connect snr_spline spline_rate
         # 
-        #set real_rate_differential = (1.0-fake_rate_differential)
-        #spline snr_value_differential real_rate_differential snr_spline spline_rate
-        #ctype red ltype 0
-        #connect snr_spline spline_rate
+        set real_rate_differential = (1.0-fake_rate_differential)
+        spline snr_value_differential real_rate_differential snr_spline spline_rate
+        ctype red ltype 0
+        connect snr_spline spline_rate
     }
     # 
     # plot
@@ -215,8 +215,8 @@ plot_spurious_curve
     set _crabPlot_legend_pt = 2.5
     set _crabPlot_legend_ps = 0.90
     set _crabPlot_legend_dy = 0.08
-    #ctype red       ptype 4 0  crabPlotLegendWithSymbol "Recovered (cumulative)"
-    #ctype red       ptype 4 3  crabPlotLegendWithSymbol "Recovered (differential)"
+    ctype red       ptype 4 0  crabPlotLegendWithSymbol "Recovered (cumulative)"
+    ctype red       ptype 4 3  crabPlotLegendWithSymbol "Recovered (differential)"
     ctype royalblue ptype 15 3 crabPlotLegendWithSymbol "Spurious (differential)"
     ctype royalblue ptype 15 0 crabPlotLegendWithSymbol "Spurious (cumulative)"
     
@@ -238,21 +238,21 @@ plot_spurious_curve
 
 calc_spurious
     # 
-    if(!is_file("function_spurious_fraction_with_SNR_total_cumulative.txt")) {
-        echo "Warning! \"function_spurious_fraction_with_SNR_total_cumulative.txt\" was not found!"
+    if(!is_file("function_spurious_fraction_cumulative.txt")) {
+        echo "Warning! \"function_spurious_fraction_cumulative.txt\" was not found!"
     }
-    if(!is_file("function_spurious_fraction_with_SNR_total_cumulative.xyfit.txt")) {
-        echo "Warning! \"function_spurious_fraction_with_SNR_total_cumulative.xyfit.txt\" was not found!"
+    if(!is_file("function_spurious_fraction_cumulative.xyfit.txt")) {
+        echo "Warning! \"function_spurious_fraction_cumulative.xyfit.txt\" was not found!"
     }
-    if(is_file("function_spurious_fraction_with_SNR_total_cumulative.xyfit.txt")) {
+    if(is_file("function_spurious_fraction_cumulative.xyfit.txt")) {
         set input_comp = 0.10 # spurious fraction 10%
-        data "function_spurious_fraction_with_SNR_total_cumulative.xyfit.txt"
+        data "function_spurious_fraction_cumulative.xyfit.txt"
         lines 3 0
         read {x_fit 1 y_fit 2}
         interp2 y_fit x_fit input_comp output_snr
         echo "For spurious <= 10%, SNR >= "$(output_snr)
     } else {
-        data "datatable_spurious_fraction_with_SNR_total_cumulative.txt"
+        data "datatable_spurious_fraction_cumulative.txt"
         read {list_snr 1 list_spur 2}
         set input_snr = 5.6,6.0,0.01
         echo "#interp2"

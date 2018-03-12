@@ -160,12 +160,12 @@ plot_spurious_curve
     ctype royalblue
     lweight 3.5 expand 1.5 ptype 15 0
     points snr_value_cumulative fake_rate_cumulative
-    #ctype red
-    #lweight 3.5 expand 1.9 ptype 4 3
-    #points snr_value_differential (1.0-fake_rate_differential)
-    #ctype red
-    #lweight 3.5 expand 1.5 ptype 4 0
-    #points snr_value_cumulative (1.0-fake_rate_cumulative)
+    ctype red
+    lweight 3.5 expand 1.9 ptype 4 3
+    points snr_value_differential (1.0-fake_rate_differential)
+    ctype red
+    lweight 3.5 expand 1.5 ptype 4 0
+    points snr_value_cumulative (1.0-fake_rate_cumulative)
     # 
     # spline or read from the output fit file with the Python code
     if(is_file("function_spurious_fraction_with_SNR_total_cumulative.xyfit.txt")) {
@@ -181,10 +181,10 @@ plot_spurious_curve
         ctype royalblue ltype 1
         connect snr_spline spline_rate
         # 
-        #set real_rate_cumulative = (1.0-fake_rate_cumulative)
-        #spline snr_value_cumulative real_rate_cumulative snr_spline spline_rate
-        #ctype red ltype 1
-        #connect snr_spline spline_rate
+        set real_rate_cumulative = (1.0-fake_rate_cumulative)
+        spline snr_value_cumulative real_rate_cumulative snr_spline spline_rate
+        ctype red ltype 1
+        connect snr_spline spline_rate
     }
     # 
     # spline or read from the output fit file with the Python code
@@ -202,10 +202,10 @@ plot_spurious_curve
         ctype royalblue ltype 0
         connect snr_spline spline_rate
         # 
-        #set real_rate_differential = (1.0-fake_rate_differential)
-        #spline snr_value_differential real_rate_differential snr_spline spline_rate
-        #ctype red ltype 0
-        #connect snr_spline spline_rate
+        set real_rate_differential = (1.0-fake_rate_differential)
+        spline snr_value_differential real_rate_differential snr_spline spline_rate
+        ctype red ltype 0
+        connect snr_spline spline_rate
     }
     # 
     # plot
@@ -215,8 +215,8 @@ plot_spurious_curve
     set _crabPlot_legend_pt = 2.5
     set _crabPlot_legend_ps = 0.90
     set _crabPlot_legend_dy = 0.08
-    #ctype red       ptype 4 0  crabPlotLegendWithSymbol "Recovered (cumulative)"
-    #ctype red       ptype 4 3  crabPlotLegendWithSymbol "Recovered (differential)"
+    ctype red       ptype 4 0  crabPlotLegendWithSymbol "Recovered (cumulative)"
+    ctype red       ptype 4 3  crabPlotLegendWithSymbol "Recovered (differential)"
     ctype royalblue ptype 15 3 crabPlotLegendWithSymbol "Spurious (differential)"
     ctype royalblue ptype 15 0 crabPlotLegendWithSymbol "Spurious (cumulative)"
     
