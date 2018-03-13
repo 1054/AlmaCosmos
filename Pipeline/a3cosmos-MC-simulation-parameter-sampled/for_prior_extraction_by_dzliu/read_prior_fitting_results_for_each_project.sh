@@ -5,7 +5,7 @@ rm Read_Results_all_final_fit_2.result.all.txt
 
 find "." -name "fit_2.result.all.txt" -print0 | \
 while IFS='' read -r -d $'\0' line; do 
-Image=$(basename $(dirname $(dirname $(dirname "$line"))))
+Image=$(basename $(pwd)) # $(basename $(dirname $(dirname $(dirname $(dirname "$line")))))
 Simu=$(basename $(dirname $(dirname "$line")))
 Dir=$(dirname "$line")
 hdr_prepend=$(printf "# %50s   %60s \n" "Image" "Simu")
