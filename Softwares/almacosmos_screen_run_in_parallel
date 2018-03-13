@@ -45,14 +45,14 @@ start_number=1
 if [[ $# -ge 4 ]]; then
     start_number=$4
 fi
-istart=$((start_number-1))
+istart=$start_number
 
 # read in end number
 end_number=${#my_program_list[@]}
 if [[ $# -ge 5 ]]; then
     end_number=$5
 fi
-iend=$((end_number-1))
+iend=$end_number
 
 # read in step number
 step_number=1
@@ -63,7 +63,7 @@ istep=$step_number
 
 # loop each line of my_program_list
 for (( i=$istart; i<=$iend; i+=$istep )); do
-    RunCommand="${my_program_list[i]}"
+    RunCommand="${my_program_list[$((i-1))]}"
     echo "Current computer \"$(hostname)\""
     echo "Current directory \"$(pwd)\""
     echo -ne "Counting screen task "$(screen -ls | grep "almacosmos_screen_" | wc -l)"\033[0K\r"
