@@ -1,14 +1,25 @@
 #!/bin/bash
 # 
 
+if [[ "${BASH_SOURCE[0]}" == *"Phys"*"prior" ]]; then
+    Data_type="PHYS-GALFIT"
+elif [[ "${BASH_SOURCE[0]}" == *"Phys"*"blind" ]]; then
+    Data_type="PHYS-PYBDSM"
+elif [[ "${BASH_SOURCE[0]}" == *"Param"*"prior" ]]; then
+    Data_type="FULL-GALFIT"
+elif [[ "${BASH_SOURCE[0]}" == *"Param"*"blind" ]]; then
+    Data_type="FULL-PYBDSM"
+fi
+
+
 margin=(100 70 100 20) # left, bottom, right, top
 
-if [[ ! -f "Plot_corrected_ecorr.png" ]]; then
+#if [[ ! -f "Plot_corrected_ecorr.png" ]]; then
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large x1 = S_{peak} / rms \; noise" \
-                ylabel="\Large Scatter \ of \ ((S_{in}-S_{out}) / rms \; noise)" \
+                ylabel="\Large Scatter \ of \ ((S_{sim.}-S_{rec.}) / rms \; noise)" \
                 xlog=true \
                 ylog=true \
                 xmin=1 xmax=1000 ymin=1 ymax=1000 \
@@ -40,7 +51,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr.pdf\"!"
 convert -density 240 -geometry x800 "Plot_corrected_ecorr.pdf" "Plot_corrected_ecorr.png"
-fi
+#fi
 
 
 if [[ ! -f 'datatable_applied_correction_ecorr_with_more_columns.txt' ]]; then

@@ -1,23 +1,34 @@
 #!/bin/bash
 # 
 
+if [[ "${BASH_SOURCE[0]}" == *"Phys"*"prior" ]]; then
+    Data_type="PHYS-GALFIT"
+elif [[ "${BASH_SOURCE[0]}" == *"Phys"*"blind" ]]; then
+    Data_type="PHYS-PYBDSM"
+elif [[ "${BASH_SOURCE[0]}" == *"Param"*"prior" ]]; then
+    Data_type="FULL-GALFIT"
+elif [[ "${BASH_SOURCE[0]}" == *"Param"*"blind" ]]; then
+    Data_type="FULL-PYBDSM"
+fi
+
+
 margin=(100 70 100 20) # left, bottom, right, top
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{peak} / rms\;noise" \
-                ylabel="\Large Median \ of \ ((S_{in}-S_{out})/S_{in})" \
+                ylabel="\Large Median \ of \ ((S_{sim.}-S_{rec.})/S_{sim.})" \
                 xlog=true \
                 ylog=false \
-                xmin=1 xmax=500 ymin=-2 ymax=2 \
+                xmin=1 xmax=500 ymin=-1.5 ymax=1.5 \
                 \
                 layer1=mark \
                 shape1=open_circle \
                 shading1=aux \
                 in1='datatable_applied_correction_fbias.txt' \
                 ifmt1=ascii \
-                leglabel1='interp.' \
+                leglabel1="$Data_type" \
                 x1='x1' \
                 y1='fbias' \
                 \
