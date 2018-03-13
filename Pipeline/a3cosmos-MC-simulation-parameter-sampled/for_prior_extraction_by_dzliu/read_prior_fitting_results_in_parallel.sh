@@ -9,7 +9,7 @@ fi
 cd /disk1/ALMA_COSMOS/A3COSMOS/simulations/output_GALFIT_dzliu
 
 if [[ ! -f list_of_commands_for_reading_prior_fitting_results.txt ]]; then
-find . -type d -mindepth 1 -maxdepth 1 -name "*_SB*_GB*_MB*" -print0 | 
+find . -mindepth 1 -maxdepth 1 -type d -name "*_SB*_GB*_MB*" -print0 | 
 while IFS= read -r -d $'\0' line; do
 echo "cd $line; $(dirname ${BASH_SOURCE[0]})/read_prior_fitting_results_for_each_project.sh" >> list_of_commands_for_reading_prior_fitting_results.txt
 done
