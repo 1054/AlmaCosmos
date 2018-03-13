@@ -16,7 +16,7 @@ done
 fi
 
 if [[ $(type almacosmos_cmd_run_in_parallel 2>/dev/null | wc -l) -eq 0 ]]; then
-    source $(dirname $(dirname $(dirname "${BASH_SOURCE[0]}")))/Softwares/SETUP.bash
+    source $(dirname $(dirname $(dirname (dirname "${BASH_SOURCE[0]}"))))/Softwares/SETUP.bash
 fi
 
 echo "Then, please run: "
