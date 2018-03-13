@@ -61,18 +61,21 @@ if [[ $# -ge 6 ]]; then
 fi
 istep=$step_number
 
+# random uid
+RandomUid=$RANDOM
+
 # loop each line of my_program_list
 for (( i=$istart; i<=$iend; i+=$istep )); do
     RunCommand="${my_program_list[$((i-1))]}"
     echo "Current computer \"$(hostname)\""
     echo "Current directory \"$(pwd)\""
-    echo -ne "Counting screen task "$(screen -ls | grep "almacosmos_screen_" | wc -l)"\033[0K\r"
-    while [[ $limit_simultaneous_processes -le $(screen -ls | grep "almacosmos_screen_" | wc -l) ]]; do
+    echo -ne "Counting screen task "$(screen -ls | grep "almacosmos_${RandomUid}_screen_" | wc -l)"\033[0K\r"
+    while [[ $limit_simultaneous_processes -le $(screen -ls | grep "almacosmos_${RandomUid}_screen_" | wc -l) ]]; do
         sleep $sleep_time_per_loop
-        echo -ne "Counting screen task "$(screen -ls | grep "almacosmos_screen_" | wc -l)", current time "$(date +"%Y-%m-%d %H:%M:%S %Z")"\033[0K\r"
+        echo -ne "Counting screen task "$(screen -ls | grep "almacosmos_${RandomUid}_screen_" | wc -l)", current time "$(date +"%Y-%m-%d %H:%M:%S %Z")"\033[0K\r"
     done
     echo ""
-    RunScreen="almacosmos_screen_$(date +%Y%m%d_%Hh%Mm%Ss%N)_$i"
+    RunScreen="almacosmos_${RandomUid}_screen_$(date +%Y%m%d_%Hh%Mm%Ss%N)_$i"
     echo "Adding screen task \"$RunScreen\" with command \"$RunCommand 2>&1 | tee log_$RunScreen.txt\""
     screen -d -S "$RunScreen" -m bash -c "$RunCommand 2>&1 | tee log_$RunScreen.txt"
     echo "Current time "$(date +"%Y-%m-%d %H:%M:%S %Z")", sleeping for 3s"
