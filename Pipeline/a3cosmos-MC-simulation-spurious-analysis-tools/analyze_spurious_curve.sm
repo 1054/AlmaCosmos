@@ -213,7 +213,7 @@ plot_spurious_curve
     set _crabPlot_legend_px = 0.63
     set _crabPlot_legend_py = 0.63
     set _crabPlot_legend_pt = 2.5
-    set _crabPlot_legend_ps = 0.90
+    set _crabPlot_legend_ps = 0.99
     set _crabPlot_legend_dy = 0.08
     #ctype red       ptype 4 0  crabPlotLegendWithSymbol "Recovered (cumulative)"
     #ctype red       ptype 4 3  crabPlotLegendWithSymbol "Recovered (differential)"
@@ -229,7 +229,7 @@ plot_spurious_curve
     
     
     crabPlotClosePS
-    !rm "Plot_spurious_fraction.{pdfmarks,pdfconverts,eps}"
+    !rm "Plot_spurious_fraction"*".{pdfmarks,pdfconverts,eps}"
     !open "Plot_spurious_fraction.pdf"
 
 
@@ -254,7 +254,7 @@ calc_spurious
     } else {
         data "datatable_spurious_fraction_cumulative.txt"
         read {list_snr 1 list_spur 2}
-        set input_snr = 5.6,6.0,0.01
+        set input_snr = 3.0,6.0,0.01
         echo "#interp2"
         interp2 list_snr list_spur input_snr output_spur
         do i=0,dimen(output_spur)-1 {

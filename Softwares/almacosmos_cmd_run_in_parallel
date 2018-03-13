@@ -5,6 +5,7 @@
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
     echo "    ./almacosmos_cmd_run_in_parallel \"my_program_list.txt\" 15"
+    echo "    ./almacosmos_cmd_run_in_parallel \"my_program_list.txt\" 15 [start_number [end_number]]"
     echo "    # The first input is a text file containing the list of commands you would like to run"
     echo "    # The second input is the number of simultaneous processes. Default is 10."
     echo "    # The third input is the sleep time per loop. Default is 30 seconds."
@@ -39,8 +40,29 @@ if [[ $# -ge 3 ]]; then
     sleep_time_per_loop=$3
 fi
 
+# read in start number
+start_number=1
+if [[ $# -ge 4 ]]; then
+    start_number=$4
+fi
+istart=$((start_number-1))
+
+# read in end number
+end_number=${#my_program_list[@]}
+if [[ $# -ge 5 ]]; then
+    end_number=$5
+fi
+iend=$((end_number-1))
+
+# read in step number
+step_number=1
+if [[ $# -ge 6 ]]; then
+    step_number=$6
+fi
+istep=$step_number
+
 # loop each line of my_program_list
-for (( i=0; i<${#my_program_list[@]}; i++ )); do
+for (( i=$istart; i<=$iend; i+=$istep )); do
     # 
     # get my_program_name
     my_program_name=$(echo "${my_program_list[i]}" | perl -p -e 's/\s*([^\s]+)\s+(.*)/\1/g')
@@ -71,12 +93,13 @@ for (( i=0; i<${#my_program_list[@]}; i++ )); do
         
         #ps aux | grep "$my_program_name" | grep -v "grep"
         check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_name" | wc -l | sed -e 's/^ *//g')
-        echo "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)"
+        echo -ne "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)\033[0K\r"
         while [[ $check_simultaneous_processes -ge $limit_simultaneous_processes ]]; do
             sleep $sleep_time_per_loop
             check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_name" | wc -l | sed -e 's/^ *//g')
-            echo "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)"
+            echo -ne "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)\033[0K\r"
         done
+        echo ""
         
         sleep 0.5
     fi

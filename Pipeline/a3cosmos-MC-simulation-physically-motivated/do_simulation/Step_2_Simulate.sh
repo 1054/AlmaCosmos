@@ -231,7 +231,8 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
             for i_lgMstar in "${Input_lgMstar[@]}"; do
                 for i_Type_SED in "${Input_Type_SED[@]}"; do
                     
-                    if [[ ! -f "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/image_sim.fits" ]]; then
+                    if [[ ! -f "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/image_sim.fits" ]] && \
+                        [[ ! -f "Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/too_faint" ]]; then
                         
                         echo "almacosmos_simulate_image_based_on_galaxy_modeling \\"
                         echo "    -w \"$i_w\" -z \"${i_z}\" -lgMstar \"${i_lgMstar}\" -Type-SED \"${i_Type_SED}\""
