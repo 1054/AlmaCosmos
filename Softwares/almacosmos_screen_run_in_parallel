@@ -69,7 +69,7 @@ for (( i=$istart; i<=$iend; i+=$istep )); do
     echo -ne "Counting screen task "$(screen -ls | grep "almacosmos_screen_" | wc -l)"\033[0K\r"
     while [[ $limit_simultaneous_processes -le $(screen -ls | grep "almacosmos_screen_" | wc -l) ]]; do
         sleep $sleep_time_per_loop
-        echo -ne "Counting screen task "$(screen -ls | grep "almacosmos_screen_" | wc -l)"\033[0K\r"
+        echo -ne "Counting screen task "$(screen -ls | grep "almacosmos_screen_" | wc -l)", current time "$(date +"%Y-%m-%d %H:%M:%S %Z")"\033[0K\r"
     done
     echo ""
     RunScreen="almacosmos_screen_$(date +%Y%m%d_%Hh%Mm%Ss%N)_$i"
