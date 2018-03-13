@@ -2,7 +2,9 @@
 # 
 
 if [[ -f Read_Results_all_final_fit_2.result.all.txt ]]; then
-    rm Read_Results_all_final_fit_2.result.all.txt
+    echo "Found existing \"Read_Results_all_final_fit_2.result.all.txt\"!"
+    exit
+    #rm Read_Results_all_final_fit_2.result.all.txt
 fi
 
 find "Output_Photometry" -name "fit_2.result.all.txt" -print0 | \

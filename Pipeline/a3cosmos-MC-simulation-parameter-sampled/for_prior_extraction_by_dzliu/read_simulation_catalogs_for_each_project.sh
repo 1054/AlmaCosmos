@@ -2,7 +2,9 @@
 # 
 
 if [[ -f concat_simulation_catalogs.txt ]]; then
-    rm concat_simulation_catalogs.txt
+    echo "Found existing \"concat_simulation_catalogs.txt\"!"
+    exit
+    #rm concat_simulation_catalogs.txt
 fi
 
 find "Input_Catalogs" -name "Size*_SN*_number*_catalog.txt" -print0 | \
