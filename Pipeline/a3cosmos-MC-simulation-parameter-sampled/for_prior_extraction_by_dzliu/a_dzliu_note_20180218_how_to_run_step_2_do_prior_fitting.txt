@@ -1,0 +1,13 @@
+
+cd 2011.0.00097.S_SB1_GB1_MB10_COSMOS6_field2
+
+chmod +x *.sh
+
+./do_prior_fitting.sh
+
+cd ../
+
+
+
+./do_prior_fitting_all.sh
+

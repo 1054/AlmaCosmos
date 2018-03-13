@@ -1,0 +1,6 @@
+
+~/git_go_update_almacosmos
+
+~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-parameter-sampled/step_4_do_prior_extraction_by_daizhong/task_1_make_links.sh
+
+
