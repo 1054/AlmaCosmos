@@ -1,7 +1,9 @@
 #!/bin/bash
 # 
 
-rm Read_Results_all_final_fit_2.result.all.txt
+if [[ -f Read_Results_all_final_fit_2.result.all.txt ]]; then
+    rm Read_Results_all_final_fit_2.result.all.txt
+fi
 
 find "." -name "fit_2.result.all.txt" -print0 | \
 while IFS='' read -r -d $'\0' line; do 

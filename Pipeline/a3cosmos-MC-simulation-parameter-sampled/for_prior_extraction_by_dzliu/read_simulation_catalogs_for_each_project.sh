@@ -1,7 +1,9 @@
 #!/bin/bash
 # 
 
-rm concat_simulation_catalogs.txt
+if [[ -f concat_simulation_catalogs.txt ]]; then
+    rm concat_simulation_catalogs.txt
+fi
 
 find "." -name "Size*_SN*_number*_catalog.txt" -print0 | \
 while IFS='' read -r -d $'\0' line; do 
