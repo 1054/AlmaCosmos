@@ -79,6 +79,7 @@ for (( i=$istart; i<=$iend; i+=$istep )); do
     echo "Adding screen task \"$RunScreen\" with command \"$RunCommand 2>&1 | tee log_$RunScreen.txt\""
     screen -d -S "$RunScreen" -m bash -c "$RunCommand 2>&1 | tee log_$RunScreen.txt"
     echo "Current time "$(date +"%Y-%m-%d %H:%M:%S %Z")", sleeping for 3s"
+    echo ""
     sleep 3
 done
 
