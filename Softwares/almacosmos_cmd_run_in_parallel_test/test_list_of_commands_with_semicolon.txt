@@ -1,0 +1,9 @@
+sleep 1.0; mkdir 1; cd 1; pwd; sleep 60
+sleep 1.0; mkdir 2; cd 2; pwd; sleep 60
+sleep 1.0; mkdir 3; cd 3; pwd; sleep 60
+sleep 1.0; mkdir 4; cd 4; pwd; sleep 60
+sleep 1.0; mkdir 5; cd 5; pwd; sleep 60
+sleep 1.0; mkdir 6; cd 6; pwd; sleep 60
+sleep 1.0; mkdir 7; cd 7; pwd; sleep 60
+sleep 1.0; mkdir 8; cd 8; pwd; sleep 60
+sleep 1.0; mkdir 9; cd 9; pwd; sleep 60
