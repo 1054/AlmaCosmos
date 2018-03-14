@@ -120,11 +120,11 @@ for (( i=$istart; i<=$iend; i+=$istep )); do
         
         #ps aux | grep "$my_program_name" | grep -v "grep"
         check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_identifier" | wc -l | sed -e 's/^ *//g')
-        echo -ne "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)\033[0K\r"
+        echo -ne "Checking current simultaneous processes of \"$my_program_identifier\" ($check_simultaneous_processes)\033[0K\r"
         while [[ $check_simultaneous_processes -ge $limit_simultaneous_processes ]]; do
             sleep $sleep_time_per_loop
             check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_identifier" | wc -l | sed -e 's/^ *//g')
-            echo -ne "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)\033[0K\r"
+            echo -ne "Checking current simultaneous processes of \"$my_program_identifier\" ($check_simultaneous_processes)\033[0K\r"
         done
         echo ""
         
