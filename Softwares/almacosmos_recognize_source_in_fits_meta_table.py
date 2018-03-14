@@ -39,6 +39,7 @@ from pprint import pprint
 from astropy.coordinates import FK5, SkyCoord
 from astropy.time import Time
 from astropy import units as u
+from astropy.table import Column, Table
 
 
 
@@ -82,8 +83,29 @@ DEC = float(sys.argv[2])
 
 # 
 # Read second argument -- FITS_META_TABLE
-FITS_META_TABLE = asciitable.read(sys.argv[len(sys.argv)-1]) # header_start=0, data_start=2
+#<20180314>#if sys.argv[len(sys.argv)-1].lower().endswith('.fits'):
+#<20180314>#    FITS_META_TABLE_HDU = fits.open(sys.argv[len(sys.argv)-1])
+#<20180314>#    i = 0
+#<20180314>#    while i < len(FITS_META_TABLE_HDU) and type(FITS_META_TABLE_HDU[i]) != fits.hdu.table.BinTableHDU:
+#<20180314>#        i = i+1
+#<20180314>#    if i < len(FITS_META_TABLE_HDU):
+#<20180314>#        FITS_META_TABLE = Table(FITS_META_TABLE_HDU[i].data)
+#<20180314>#        FITS_META_TABLE_COLNAMES = FITS_META_TABLE_HDU[i].columns.names
+#<20180314>#    else:
+#<20180314>#        print("Error! Could not find fits.hdu.table.BinTableHDU in the input fits file \"%s\"!"%(sys.argv[len(sys.argv)-1]))
+#<20180314>#        sys.exit()
+#<20180314>#else:
+#<20180314>#    FITS_META_TABLE = asciitable.read(sys.argv[len(sys.argv)-1]) # header_start=0, data_start=2
+#<20180314>#    FITS_META_TABLE_COLNAMES = FITS_META_TABLE.colnames
+sys.path.append(os.path.dirname(os.path.abspath(__file__)+os.sep+'lib_python_dzliu'+os.sep+'crabtable'))
+from CrabTable import CrabTable
+FITS_META_TABLE_STRUCT = CrabTable(sys.argv[len(sys.argv)-1])
+FITS_META_TABLE = FITS_META_TABLE_STRUCT.TableData
+FITS_META_TABLE_COLNAMES = FITS_META_TABLE_STRUCT.TableHeaders
 #print(FITS_META_TABLE)
+#print(type(FITS_META_TABLE))
+#print(FITS_META_TABLE.dtype.descr)
+#print(FITS_META_TABLE_COLNAMES)
 
 
 
@@ -118,13 +140,30 @@ FITS_META_TABLE['offset_Dec'] = dist_dec
 SELECTED_META_TABLE = FITS_META_TABLE[dist_mask]
 print('#-------------------------------------------------------------------------------')
 print('# Input RA Dec: %0.10f %0.10f'%(RA, DEC))
+print('# Found %d ALMA images'%(len(SELECTED_META_TABLE)))
+print('# ')
 #for i in dist_iarg:
 #    print('%s %10.4f\n'%(FITS_META_TABLE['image_file'][i], float(FITS_META_TABLE['wavelength'][i])))
-asciitable.write(SELECTED_META_TABLE['image_file','offset_RA','offset_Dec','wavelength'], sys.stdout, Writer=asciitable.FixedWidthNoHeader, 
-                 delimiter='   ', delimiter_pad=None, bookend=False, 
-                 formats={'image_file':'%-s', 'offset_RA':'%-8.3f', 'offset_Dec':'%-8.3f'}, 
-                 )
-print('')
+#<20180314>#asciitable.write(SELECTED_META_TABLE['image_file','offset_RA','offset_Dec','wavelength'], sys.stdout, Writer=asciitable.FixedWidthNoHeader, 
+#<20180314>#                 delimiter='   ', delimiter_pad=None, bookend=False, 
+#<20180314>#                 formats={'image_file':'%-s', 'offset_RA':'%-8.3f', 'offset_Dec':'%-8.3f'}, 
+#<20180314>#                 )
+#asciitable.write(SELECTED_META_TABLE['image_file','offset_RA','offset_Dec','wavelength'], sys.stdout, Writer=asciitable.FixedWidthTwoLine, 
+#                 delimiter='|', delimiter_pad=' ', bookend=True, 
+#                 formats={'image_file':'%s', 'offset_RA':'%-8.3f', 'offset_Dec':'%-8.3f'}, 
+#                 )
+if len(SELECTED_META_TABLE) > 0:
+    print_max_len_image_file = len(max(SELECTED_META_TABLE['image_file'], key=len))
+    for i in range(len(SELECTED_META_TABLE)):
+        print_headers = []
+        print_values = []
+        for print_col in ['image_file','offset_RA','offset_Dec','wavelength']:
+            print_values.append(SELECTED_META_TABLE[i][print_col])
+            print_headers.append(print_col)
+        if i == 0:
+            exec('print("# %%-%ds %%-8s %%-8s %%-10s"%%(tuple(print_headers)))'%(print_max_len_image_file), locals())
+        exec('print("%%-%ds %%-8.3f %%-8.3f %%-10.3f"%%(tuple(print_values)))'%(print_max_len_image_file+2), locals())
+    print('')
 
 #for i in range(len(dist_mask)):
 #    if dist_mask[i] == True:

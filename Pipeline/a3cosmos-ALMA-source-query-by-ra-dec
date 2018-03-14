@@ -28,7 +28,7 @@ if [[ $(type almacosmos_recognize_source_in_fits_meta_table.py 2>/dev/null | wc 
         exit 1
     fi
 fi
-FitsMetaTable=$(dirname $(dirname "${BASH_SOURCE[0]}"))/Data/fits_meta_table_v20180102.txt
+FitsMetaTable=$(dirname $(dirname "${BASH_SOURCE[0]}"))/Data/fits_meta_table_for_dataset_v20180102_with_pbeam.fits # fits_meta_table_v20180102.txt
 if [[ ! -f "$FitsMetaTable" ]]; then
     echo "Error! \"$FitsMetaTable\" was not found! Please make sure you have downloaded this code from \"https://github.com/1054/AlmaCosmos.git\" completely!"
     exit 1

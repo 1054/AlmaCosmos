@@ -31,6 +31,7 @@ import numpy
 import astropy
 from astropy import units
 from astropy.io import fits
+from astropy.table import Column, Table
 import astropy.io.ascii as asciitable
 
 
@@ -54,8 +55,10 @@ class CrabTable(object):
         self.DataTableStruct = []
         self.DataTableIndex = []
         self.TableData = []
-        self.TableHeaders = []
-        self.TableColumns = []
+        self.TableHeaders = [] # <TODO> also include meta info?
+        self.TableColumns = [] # astropy Column type
+        self.TableColNames = [] # string type
+        self.TableColUnits = [] # string type
         self.TableIndex = 0
         self.World = {}
         self.World['verbose'] = verbose
@@ -73,6 +76,8 @@ class CrabTable(object):
         self.TableData = []
         self.TableHeaders = []
         self.TableColumns = []
+        self.TableColNames = []
+        self.TableColUnits = []
         self.TableIndex = 0
     # 
     def load(self, data_table, fits_extension=0, fix_string_columns=0): 
@@ -106,15 +111,17 @@ class CrabTable(object):
                 # 
                 if len(self.DataTableIndex)>0:
                     self.TableIndex = fits_extension
-                    self.TableData = self.DataTableStruct[self.DataTableIndex[self.TableIndex]].data
-                    self.TableColumns = self.DataTableStruct[self.DataTableIndex[self.TableIndex]].columns # dtype TableColumns
-                    self.TableHeaders = self.TableColumns.names
+                    self.TableData = Table(self.DataTableStruct[self.DataTableIndex[self.TableIndex]].data) # dtype astropy.io.fits.fitsrec.FITS_rec
+                    self.TableColumns = self.DataTableStruct[self.DataTableIndex[self.TableIndex]].columns # dtype astropy.io.fits.column.ColDefs
+                    self.TableHeaders = self.TableColumns.names # string
+                    self.TableColNames = self.TableColumns.names # string
+                    self.TableColUnits = ['']*len(self.TableColNames) # string
                     # deal with data units
                     #DataTable.DataTableStruct[1].header['TUNIT455']
                     # deal with string column dtype, make sure string column have string width at least 100 chars.
                     if fix_string_columns > 0:
-                        for i in range(len(self.TableHeaders)):
-                            if self.TableData[self.TableHeaders[i]].dtype.char == 'S':
+                        for i in range(len(self.TableColNames)):
+                            if self.TableData[self.TableColNames[i]].dtype.char == 'S':
                                 #print((self.TableData.dtype))
                                 dt = self.TableData.dtype
                                 ds = dt.descr
@@ -150,15 +157,22 @@ class CrabTable(object):
                 self.DataTableStruct = asciitable.read(self.DataTableFile)
                 self.TableIndex = 0
                 self.TableData = self.DataTableStruct
-                self.TableColumns = self.DataTableStruct.columns # dtype TableColumns
-                self.TableHeaders = self.DataTableStruct.colnames
+                self.TableColumns = self.DataTableStruct.columns # dtype astropy.table.table.Table
+                self.TableHeaders = self.DataTableStruct.colnames # string
+                self.TableColNames = self.DataTableStruct.colnames # string
+                self.TableColUnits = ['']*len(self.TableColNames) # string
+                # check colnames, if failed to get the right colnames, it means the ASCII table contains units line
+                #<TODO><20180314># if self.TableColNames[0] == 'col0':
+                #<TODO><20180314>#     with open(sys.argv[len(sys.argv)-1], 'r') as temporary_lines:
+                #<TODO><20180314>#         self.TableColNames = numpy.genfromtxt(islice(temporary_lines, 1, 1))
+                #<TODO><20180314>#         self.TableColUnits = numpy.genfromtxt(islice(temporary_lines, 2, 1))
                 self.TableData.meta.clear() #<20180309>#
                 # deal with string column dtype
                 if fix_string_columns > 0:
-                    for i in range(len(self.TableHeaders)):
-                        if self.TableData[self.TableHeaders[i]].dtype.char == 'S' or self.TableData[self.TableHeaders[i]].dtype is numpy.string_:
-                            TempArray = numpy.array(self.TableData[self.TableHeaders[i]], dtype=object)
-                            self.TableData[self.TableHeaders[i]] = TempArray
+                    for i in range(len(self.TableColNames)):
+                        if self.TableData[self.TableColNames[i]].dtype.char == 'S' or self.TableData[self.TableColNames[i]].dtype is numpy.string_:
+                            TempArray = numpy.array(self.TableData[self.TableColNames[i]], dtype=object)
+                            self.TableData[self.TableColNames[i]] = TempArray
         else:
             print('Error! The input data table is an empty string!')
     # 

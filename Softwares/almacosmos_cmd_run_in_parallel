@@ -75,7 +75,34 @@ for (( i=$istart; i<=$iend; i+=$istep )); do
     if [[ x"$my_program_name" != x ]]; then
         
         if [[ "$my_program_name" != "/"* ]]; then
+            # if the called process is not an absolute path, then we use current directory path to idenfity simultaneous processes
+            # for example, 
+            # run a list of command like: 
+            # --------------
+            # ./process_1.sh
+            # ./process_2.sh
+            # ./process_3.sh
+            # ./process_4.sh
+            # --------------
+            # under a path e.g. /my/path/
+            # all these processes will be identified as simultaneous processes
+            # so that we can limit the number of running simultaneous processes
             my_program_name="$my_program_dir/$my_program_name"
+            my_program_identifier="$my_program_dir/" # this is used to idenfity simultaneous processes
+        else
+            # otherwise we use the program name to idenfity simultaneous processes
+            # for example, 
+            # run a list of command like:
+            # -------------------------------------------
+            # /cloud/my_tool -parameter1 -input1 -output1
+            # /cloud/my_tool -parameter2 -input2 -output2
+            # /cloud/my_tool -parameter3 -input3 -output3
+            # /cloud/my_tool -parameter4 -input4 -output4
+            # -------------------------------------------
+            # under a path e.g. /my/path/
+            # all the "my_tool" processes will be identified as simultaneous processes
+            # so that we can limit the number of running simultaneous processes
+            my_program_identifier="$my_program_name"
         fi
         
         # print the command line
@@ -92,11 +119,11 @@ for (( i=$istart; i<=$iend; i+=$istep )); do
         $my_program_name "${my_program_args[@]}" > "log_of_parallel_process_$(($i+1)).txt" 2>&1 &
         
         #ps aux | grep "$my_program_name" | grep -v "grep"
-        check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_name" | wc -l | sed -e 's/^ *//g')
+        check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_identifier" | wc -l | sed -e 's/^ *//g')
         echo -ne "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)\033[0K\r"
         while [[ $check_simultaneous_processes -ge $limit_simultaneous_processes ]]; do
             sleep $sleep_time_per_loop
-            check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_name" | wc -l | sed -e 's/^ *//g')
+            check_simultaneous_processes=$(ps aux | grep -v "grep" | grep "^$USER " | grep "$my_program_identifier" | wc -l | sed -e 's/^ *//g')
             echo -ne "Checking current simultaneous processes of $my_program_name ($check_simultaneous_processes)\033[0K\r"
         done
         echo ""
