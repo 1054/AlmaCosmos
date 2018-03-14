@@ -1,0 +1,33 @@
+~/git_go_update_almacosmos
+
+cd /disk1/ALMA_COSMOS/A3COSMOS/simulations/
+
+~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-parameter-sampled/for_blind_extraction_by_dzliu/step_3_go_crossmatch.py 1
+~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-parameter-sampled/for_blind_extraction_by_dzliu/step_3_go_crossmatch.py 8
+#~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-parameter-sampled/for_blind_extraction_by_dzliu/step_3_go_crossmatch_in_parallel.sh
+
+
+
+
+
+
+
+
+
+
+source ~/Softwares/Topcat/bin_setup.bash
+
+rm concat_sim_rec_data_table.fits
+
+~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-parameter-sampled/for_blind_extraction/step_4_go_concatenate.sh
+
+~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-parameter-sampled/for_blind_extraction/step_5_go_filter.sh
+
+
+source ~/Cloud/Github/AlmaCosmos/Softwares/SETUP.bash
+source ~/Cloud/Github/AlmaCosmos/Pipeline/SETUP.bash
+a3cosmos-MC-simulation-statistics-analysis
+a3cosmos-MC-simulation-statistics-analysis concat_sim_rec_data_table_filtered_outliers_only_matches_SNR_GE_2.txt
+
+
+

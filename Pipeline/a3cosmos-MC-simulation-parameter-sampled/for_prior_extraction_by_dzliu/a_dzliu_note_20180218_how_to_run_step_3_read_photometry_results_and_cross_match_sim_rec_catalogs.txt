@@ -1,0 +1,24 @@
+cd to one project
+try to run 
+
+    ./read_prior_fitting_results_for_each_project.sh
+    ./read_simulation_catalogs_for_each_project.sh
+
+
+
+if OK, then cd back and run
+
+    ./read_prior_fitting_results_in_parallel.sh
+    ./read_simulation_catalogs_in_parallel.sh
+
+
+
+
+then, concatenate all sim and rec catalogs
+    
+    ./step_4_concat_all_sim_rec_catalogs.sh
+
+
+
+
+

@@ -11,8 +11,8 @@ if [[ $(hostname) != "aida42198" ]]; then
 fi
 
 
-if [[ $(dirname $(pwd)) != "statistics_GALFIT" ]]; then
-    echo "Error! Current directory name is not \"statistics_GALFIT\"!"
+if [[ $(dirname $(pwd)) != "statistics_GALFIT_dzliu" ]]; then
+    echo "Error! Current directory name is not \"statistics_GALFIT_dzliu\"!"
     exit 255
 fi
 

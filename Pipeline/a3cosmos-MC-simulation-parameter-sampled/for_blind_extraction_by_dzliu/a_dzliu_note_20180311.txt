@@ -1,0 +1,9 @@
+
+
+source ~/Cloud/Github/AlmaCosmos/Softwares/SETUP.bash
+source ~/Cloud/Github/AlmaCosmos/Pipeline/SETUP.bash
+
+almacosmos_cmd_run_in_parallel list_for_pyBDSM_go_3.txt 1 60
+almacosmos_cmd_run_in_parallel list_for_pyBDSM_go_23.txt 1 30
+
+
