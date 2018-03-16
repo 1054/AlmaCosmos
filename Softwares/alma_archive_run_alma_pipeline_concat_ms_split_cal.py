@@ -23,7 +23,7 @@ try:
     concat(vis=uid_dirs,
            concatvis=concatvis, 
            freqtol='20MHz')
-execpt:
+except:
     concat(vis=uid_dirs,
            concatvis=concatvis)
 
