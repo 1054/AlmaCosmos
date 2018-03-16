@@ -30,10 +30,16 @@ fi
 
 
 
+#input_cat=$(echo "$1" | sed -e 's/\.fits$//g')
+#topcat -stilts tpipe \
+#        in="${input_cat}.fits" \
+#        cmd="select \"(beam_maj > 0.1) && (Galfit_chi_square < 100)\"" \
+#        out="${input_cat}_without_very_high_res_projects.fits"
+
 input_cat=$(echo "$1" | sed -e 's/\.fits$//g')
 topcat -stilts tpipe \
         in="${input_cat}.fits" \
-        cmd="select \"(beam_maj > 0.1) && (Galfit_chi_square < 100)\"" \
+        cmd="select \"(beam_maj > 0.1)\"" \
         out="${input_cat}_without_very_high_res_projects.fits"
 
 

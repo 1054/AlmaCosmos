@@ -19,8 +19,14 @@ if len(uid_dirs) == 0:
 
 
 concatvis = 'calibrated.ms'
-concat(vis=uid_dirs,
-       concatvis=concatvis)
+try:
+    concat(vis=uid_dirs,
+           concatvis=concatvis, 
+           freqtol='20MHz')
+execpt:
+    concat(vis=uid_dirs,
+           concatvis=concatvis)
+
 
 #sourcevis = 'calibrated_final.ms'
 #split(vis=concatvis,
