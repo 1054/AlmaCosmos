@@ -230,8 +230,12 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                     
                     # Check output directory, delete failed runs
                     do_Photometry=0
-                    if [[ -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" ]]; then
-                        if [[ ! -f "../../Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/too_faint" ]]; then
+                    if [[ ! -f "../../Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/too_faint" ]]; then
+                        if [[ ! -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" ]]; then
+                            # do photometry if target directory does not exist
+                            do_Photometry=1
+                        else
+                            # do photometry if target directory exists but is incomplete
                             if [[ ! -f "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/List_of_Input_Sci_Images.txt" ]]; then
                                 echo ""
                                 echo "rm -rf \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\""
@@ -267,7 +271,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                     fi
                     
                     # Run a3cosmos-prior-extraction-photometry
-                    if [[ ! -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" ]] || [[ $do_Photometry -eq 1 ]]; then
+                    if [[ $do_Photometry -eq 1 ]]; then
                         # 
                         echo "a3cosmos-prior-extraction-photometry \\"
                         echo "    -out \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\" \\"
