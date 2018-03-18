@@ -231,36 +231,38 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                     # Check output directory, delete failed runs
                     do_Photometry=0
                     if [[ -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" ]]; then
-                        if [[ ! -f "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/List_of_Input_Sci_Images.txt" ]]; then
-                            echo ""
-                            echo "rm -rf \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\""
-                            echo ""
-                            rm -rf "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}"
-                            echo ""
-                            echo "rm -rf \"Read_Results_of_w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\" 2>/dev/null"
-                            echo ""
-                            rm -rf "Read_Results_of_w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" 2>/dev/null
-                            sleep 5
-                                    do_Photometry=1
-                        else
-                            IFS=$'\n' read -d '' -r -a List_images < "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/List_of_Input_Sci_Images.txt"
-                            for (( i3=0; i3<${#List_images[@]}; i3++ )); do
-                                Image_name=$(basename "${List_images[i3]}" | sed -e 's/.fits$//g')
-                                if [[ ! -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}" ]]; then
-                                    # if a sub sim image dir does not exist, then do it. 
-                                    do_Photometry=1
-                                    break
-                                elif [[ $(find "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}" -name "*lock*" | wc -l) -gt 0 ]]; then
-                                    # if there are any locked processes (which are probably unfinished!), redo the photometry for this sub sim image. 
-                                    echo ""
-                                    echo "rm -rf \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}/\"*"
-                                    echo ""
-                                    rm -rf "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}/"*
-                                    sleep 5
-                                    do_Photometry=1
-                                    break
-                                fi
-                            done
+                        if [[ ! -f "../../Simulated/$FitsName/w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/too_faint" ]]; then
+                            if [[ ! -f "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/List_of_Input_Sci_Images.txt" ]]; then
+                                echo ""
+                                echo "rm -rf \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\""
+                                echo ""
+                                rm -rf "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}"
+                                echo ""
+                                echo "rm -rf \"Read_Results_of_w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\" 2>/dev/null"
+                                echo ""
+                                rm -rf "Read_Results_of_w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}" 2>/dev/null
+                                sleep 5
+                                do_Photometry=1
+                            else
+                                IFS=$'\n' read -d '' -r -a List_images < "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/List_of_Input_Sci_Images.txt"
+                                for (( i3=0; i3<${#List_images[@]}; i3++ )); do
+                                    Image_name=$(basename "${List_images[i3]}" | sed -e 's/.fits$//g')
+                                    if [[ ! -d "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}" ]]; then
+                                        # if a sub sim image dir does not exist, then do it. 
+                                        do_Photometry=1
+                                        break
+                                    elif [[ $(find "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}" -name "*lock*" | wc -l) -gt 0 ]]; then
+                                        # if there are any locked processes (which are probably unfinished!), redo the photometry for this sub sim image. 
+                                        echo ""
+                                        echo "rm -rf \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}/\"*"
+                                        echo ""
+                                        rm -rf "w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}/astrodepth_prior_extraction_photometry/${Image_name}/"*
+                                        sleep 5
+                                        do_Photometry=1
+                                        break
+                                    fi
+                                done
+                            fi
                         fi
                     fi
                     
