@@ -1,13 +1,13 @@
 #!/bin/bash
 # 
 
-if [[ "${BASH_SOURCE[0]}" == *"Phys"*"prior" ]]; then
+if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     Data_type="PHYS-GALFIT"
-elif [[ "${BASH_SOURCE[0]}" == *"Phys"*"blind" ]]; then
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]]; then
     Data_type="PHYS-PYBDSM"
-elif [[ "${BASH_SOURCE[0]}" == *"Param"*"prior" ]]; then
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
     Data_type="FULL-GALFIT"
-elif [[ "${BASH_SOURCE[0]}" == *"Param"*"blind" ]]; then
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSM"* ]]; then
     Data_type="FULL-PYBDSM"
 fi
 
@@ -18,7 +18,7 @@ topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{peak} / rms\;noise" \
-                ylabel="\Large Median \ of \ ((S_{sim.}-S_{rec.})/S_{sim.})" \
+                ylabel="Median \ of \ ((S_{sim.}-S_{rec.})/S_{sim.})" \
                 xlog=true \
                 ylog=false \
                 xmin=1 xmax=500 ymin=-1.5 ymax=1.5 \
@@ -32,7 +32,7 @@ topcat -stilts plot2plane \
                 x1='x1' \
                 y1='fbias' \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="Maj_{source}/Maj_{beam}" \
+                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
                 fexpr3='0.0' \
@@ -41,7 +41,7 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 leglabel3='Y=0' \
                 \
-                legpos=0.08,0.94 \
+                legpos=0.05,0.94 \
                 seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
@@ -73,7 +73,7 @@ topcat -stilts plot2plane \
                 x2='S_out_uncorr' \
                 y2='S_out_corr' \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="Maj_{source}/Maj_{beam}" \
+                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
                 fexpr3='(x)' \

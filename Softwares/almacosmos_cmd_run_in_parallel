@@ -5,7 +5,7 @@
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
     echo "    ./almacosmos_cmd_run_in_parallel \"my_program_list.txt\" 15"
-    echo "    ./almacosmos_cmd_run_in_parallel \"my_program_list.txt\" 15 [start_number [end_number [step_number]]]"
+    echo "    ./almacosmos_cmd_run_in_parallel \"my_program_list.txt\" 15 [sleep_time [start_number [end_number [step_number]]]]"
     echo "    # The first input is a text file containing the list of commands you would like to run"
     echo "    # The second input is the number of simultaneous processes. Default is 10."
     echo "    # The third input is the sleep time per loop. Default is 30 seconds."

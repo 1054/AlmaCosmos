@@ -305,13 +305,14 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                         #ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep"
                         #ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l
                         check_simultaneous_processes=$(ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l)
-                        echo "Checking current simultaneous processes of a3cosmos-prior-extraction-photometry $FitsName ($check_simultaneous_processes)"
+                        echo -ne "Checking current simultaneous processes of a3cosmos-prior-extraction-photometry $FitsName ($check_simultaneous_processes)\033[0K\r"
                         limit_simultaneous_processes=15 # 20171106 20
                         while [[ $check_simultaneous_processes -ge $limit_simultaneous_processes ]]; do
                             sleep 30
                             check_simultaneous_processes=$(ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l)
-                            echo "Checking current simultaneous processes of a3cosmos-prior-extraction-photometry $FitsName ($check_simultaneous_processes)"
+                            echo -ne "Checking current simultaneous processes of a3cosmos-prior-extraction-photometry $FitsName ($check_simultaneous_processes)\033[0K\r"
                         done
+                        echo ""
                     else
                         echo "Seems no need to re-run the photometry for \"w_${i_w}_z_${i_z}_lgMstar_${i_lgMstar}_${i_Type_SED}\"."
                     fi
