@@ -306,7 +306,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
                         #ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l
                         check_simultaneous_processes=$(ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l)
                         echo -ne "Checking current simultaneous processes of a3cosmos-prior-extraction-photometry $FitsName ($check_simultaneous_processes)\033[0K\r"
-                        limit_simultaneous_processes=15 # 20171106 20
+                        limit_simultaneous_processes=8 # 20180321 # 15 # 20171106 20
                         while [[ $check_simultaneous_processes -ge $limit_simultaneous_processes ]]; do
                             sleep 30
                             check_simultaneous_processes=$(ps aux | grep "a3cosmos-prior-extraction-photometry" | grep -v "grep" | wc -l)
