@@ -5,6 +5,7 @@
 # Last update: 2017-11-08
 #              2017-12-07 updated mac pybdsf to 1.8.13, no major updates in this version. 
 #              2018-01-21 updated linux pybdsf (modified version) to 1.8.13. 
+#              2018-03-28 added option "thresh = 'hard'" to let PyBDSM always use sigma-clipping instead of its "FDR"
 # 
 
 import os, sys, re
@@ -291,7 +292,7 @@ for i in range(len(input_fits_files)):
     # process fits image
     if input_rms_value > 0.0:
         # fix input rms value
-        fit_result = process_image(input_fits_file, thresh_isl = input_thresh_rms, thresh_pix = input_thresh_pix, \
+        fit_result = process_image(input_fits_file, thresh = 'hard', thresh_isl = input_thresh_rms, thresh_pix = input_thresh_pix, \
                                         group_by_isl = input_group_by_isl, \
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
                                         rms_map = False, rms_value = input_rms_value, mean_map = 'zero', \
@@ -300,7 +301,7 @@ for i in range(len(input_fits_files)):
                                         verbose_fitting = input_verbose_fitting) # <20171105> allow input rms value
     else:
         # let PyBDSM to determine rms value, which might be not uniform.
-        fit_result = process_image(input_fits_file, thresh_isl = input_thresh_rms, thresh_pix = input_thresh_pix, \
+        fit_result = process_image(input_fits_file, thresh = 'hard', thresh_isl = input_thresh_rms, thresh_pix = input_thresh_pix, \
                                         group_by_isl = input_group_by_isl, \
                                         ini_gausfit = input_ini_gausfit, peak_fit = input_peak_fit, \
                                         mean_map = 'zero', \

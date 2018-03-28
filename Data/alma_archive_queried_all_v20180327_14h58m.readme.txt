@@ -1,0 +1,22 @@
+Searched
+
+http://almascience.nrao.edu/aq/
+
+Position
+RA Dec
+150.1191666667 2.2058333333, 2
+
+
+
+Export Table
+Save as CSV
+
+
+
+Topcat
+topcat -f CSV "alma_archive_queried_all_v20180327_14h58m.csv"
+addcol Release_date_Mjd "isoToMjd($13)"
+
+
+
+
