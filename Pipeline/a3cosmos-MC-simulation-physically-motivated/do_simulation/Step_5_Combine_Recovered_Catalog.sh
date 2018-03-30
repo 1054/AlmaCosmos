@@ -2,8 +2,19 @@
 # 
 
 # 
+# OutputDir
+# 
+OutputDir="Output_catalogs"
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir "$OutputDir"
+fi
+
+
+# 
 # Backup
 # 
+CurrentDir=$(pwd)
+cd "$OutputDir"
 if [[ -f "Output_Prior_Simulation_Catalog.txt" ]]; then
     mv "Output_Prior_Simulation_Catalog.txt" "Output_Prior_Simulation_Catalog.txt.backup"
 fi
@@ -16,11 +27,34 @@ fi
 if [[ -f "Output_Prior_Getpix_000.txt" ]]; then
     mv "Output_Prior_Getpix_000.txt" "Output_Prior_Getpix_000.txt.backup"
 fi
-
+cd "$CurrentDir"
 
 
 # 
-# Read Recovered catalog
+# Check files
+# 
+if [[ ! -f "list_of_projects.txt" ]] || \
+    [[ ! -f "Input_Work_Dir.txt" ]] || \
+    [[ ! -f "Input_Script_Dir.txt" ]] || \
+    [[ ! -f "Input_Data_Version.txt" ]] || \
+    [[ ! -f "Input_Galaxy_Modeling_Dir.txt" ]]; then
+    echo "Error! Please run \"Step_1_Prepare.sh\" and prepare the \"Input*.txt\" and \"list_of_projects.txt\" files first!"
+    exit 1
+fi
+
+
+# 
+# Prepare relative output path
+# 
+if [[ "$OutputDir" == "/"* ]] || [[ "$OutputDir" == "~"* ]]; then
+    OutputPath="$OutputDir"
+else
+    OutputPath="../../$OutputDir" # beacuse we will cd into two levels ("Recovered/$FitsName/")
+fi
+
+
+# 
+# Read Recovered catalog by looping all projects
 # 
 IFS=$'\n' read -d '' -r -a FitsNames < "list_of_projects.txt"
 
@@ -105,7 +139,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
     # find
     IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.all.txt"))
-    echo "${#ResultFiles[@]}"
+    echo "Reading ${#ResultFiles[@]} \"fit_2.result.all.txt\" files"
     
     # loop
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
@@ -113,15 +147,15 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
         #echo "$TempImage $TempSimu (main_result)"
-        if [[ ! -f "../../Output_Prior_Galfit_Gaussian_main_result.txt" ]]; then
-            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "../../Output_Prior_Galfit_Gaussian_main_result.txt"
+        if [[ ! -f "$OutputPath/Output_Prior_Galfit_Gaussian_main_result.txt" ]]; then
+            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "$OutputPath/Output_Prior_Galfit_Gaussian_main_result.txt"
         fi
-        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "../../Output_Prior_Galfit_Gaussian_main_result.txt"
+        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "$OutputPath/Output_Prior_Galfit_Gaussian_main_result.txt"
     done
     
     # find
     IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.source_err.txt"))
-    echo "${#ResultFiles[@]}"
+    echo "Reading ${#ResultFiles[@]} \"fit_2.result.source_err.txt\" files"
     
     # loop
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
@@ -129,17 +163,17 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
         #echo "$TempImage $TempSimu (Condon_errors)"
-        if [[ ! -f "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt" ]]; then
-            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt"
+        if [[ ! -f "$OutputPath/Output_Prior_Galfit_Gaussian_Condon_errors.txt" ]]; then
+            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "$OutputPath/Output_Prior_Galfit_Gaussian_Condon_errors.txt"
         fi
-        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "../../Output_Prior_Galfit_Gaussian_Condon_errors.txt"
+        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "$OutputPath/Output_Prior_Galfit_Gaussian_Condon_errors.txt"
     done
     
     
     
     # find
     IFS=$'\n' ResultFiles=($(find . -name "getpix.txt"))
-    echo "${#ResultFiles[@]}"
+    echo "Reading ${#ResultFiles[@]} \"getpix.txt\" files"
     
     # loop
     for (( k=0; k<${#ResultFiles[@]}; k++ )); do
@@ -147,10 +181,10 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
         TempImage="$FitsName"
         #echo "$TempImage $TempSimu (Condon_errors)"
-        if [[ ! -f "../../Output_Prior_Getpix_000.txt" ]]; then
-            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "../../Output_Prior_Getpix_000.txt"
+        if [[ ! -f "$OutputPath/Output_Prior_Getpix_000.txt" ]]; then
+            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "$OutputPath/Output_Prior_Getpix_000.txt"
         fi
-        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "../../Output_Prior_Getpix_000.txt"
+        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "$OutputPath/Output_Prior_Getpix_000.txt"
     done
     
     
