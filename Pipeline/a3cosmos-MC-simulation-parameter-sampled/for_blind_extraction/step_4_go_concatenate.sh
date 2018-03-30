@@ -26,7 +26,7 @@ if [[ ! -f "concat_sim_rec_data_table.fits" ]]; then
     if [[ ! -f "concat_sim_rec_data_table.txt" ]]; then
         head -n 1 $(ls -1 output_*.txt | head -n 1) > "concat_sim_rec_data_table.txt"
         cat output_*.txt | grep -v "^#" >> "concat_sim_rec_data_table.txt"
-        tar -czf output_txt.tar.gz --remove-files output_*.txt done_output_*
+        tar -czf output_txt.tar.gz # --remove-files output_*.txt done_output_*
     fi
     # 
     # Now convert flux units and save as a topcat fits format data tbale

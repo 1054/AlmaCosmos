@@ -22,7 +22,7 @@ fi
 # 
 # Read Recovered catalog
 # 
-IFS=$'\n' read -d '' -r -a FitsNames < "list_projects.txt"
+IFS=$'\n' read -d '' -r -a FitsNames < "list_of_projects.txt"
 
 
 for (( i=0; i<${#FitsNames[@]}; i++ )); do
@@ -34,6 +34,24 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     
     # get FitsName without path and suffix
     FitsName=$(basename "${FitsNames[i]}" | sed -e 's/\.cont.I.image.fits//g')
+    
+    # if the user has input FitsName, then only run for what user has input
+    if [[ $# -gt 0 ]]; then
+        CheckOK=0
+        for (( j = 1; j <= $#; j++ )); do
+            # if the user input FitsName contains "*", then do a regex-like search with the command "grep"
+            if [[ "${!j}" == *"*"* ]]; then
+                if echo "$FitsName" | grep -q "${!j}"; then CheckOK=1; break; fi
+            else
+                if [[ "${!j}" == "$FitsName" ]]; then CheckOK=1; break; fi
+            fi
+        done
+        if [[ $CheckOK -eq 0 ]]; then
+            continue
+        fi
+    fi
+    
+    # print progress
     echo "${FitsNames[i]} ($((i+1))/${#FitsNames[@]})"
     
     # check non-COSMOS fields

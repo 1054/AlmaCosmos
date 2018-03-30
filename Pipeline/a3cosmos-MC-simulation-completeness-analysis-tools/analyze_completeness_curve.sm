@@ -148,7 +148,7 @@ plot_completeness_curve
     crabPlotOpenPS "Plot_MC_sim_completeness.eps"
     crabPlotDefaultPenForBox
     location 6500 31000 14500 28000
-    limits $(lg(1)) $(lg(1000)) -0.1 1.1
+    limits $(lg(1)) $(lg(200)) -0.1 1.1
     ticksize -1 10 0 0
     box
     crabPlotDefaultPenForTitle
