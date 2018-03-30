@@ -66,7 +66,7 @@ topcat -stilts tmatchn \
             ocmd="addcol ID \"id_fit_2_str\"" \
             ocmd="addcol RA \"ra_fit_2\"" \
             ocmd="addcol Dec \"dec_fit_2\"" \
-            ocmd="addcol Total_flux -units \"mJy\" \"source_total * 1e3\"" \
+            ocmd="addcol Total_flux -units \"mJy\" \"f * 1e3\"" \
             ocmd="addcol E_Total_flux -units \"mJy\" \"source_total_err * 1e3\"" \
             ocmd="addcol Galfit_flux -units \"mJy\" \"f_fit_2\"" \
             ocmd="addcol E_Galfit_flux -units \"mJy\" \"df_fit_2\"" \
