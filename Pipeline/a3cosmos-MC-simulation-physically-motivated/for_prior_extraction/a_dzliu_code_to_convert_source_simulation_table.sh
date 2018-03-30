@@ -116,4 +116,13 @@ echo "Output to \"$OutputDir/Output_Prior_Simulation_Catalog.fits\"!"
 ## 
 #echo "Output to \"Output_Prior_Simulation_Catalog_SNR_GE_3.fits\"!"
 
+if [[ -f "Output_Prior_Galfit_Gaussian_Catalog.fits" ]]; then
+      rm "Output_Prior_Simulation_Catalog_tmp1.fits"
+      gzip "Output_Prior_Simulation_Catalog.txt"
+      gzip "Output_Prior_Simulation_Catalog.fits"
+fi
+
+
+
+
 

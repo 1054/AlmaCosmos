@@ -72,6 +72,7 @@ topcat -stilts plot2plane \
                 ifmt2=ascii \
                 x2='S_out_uncorr' \
                 y2='S_out_corr' \
+                leglabel2="$Data_type" \
                 \
                 aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
                 \
@@ -82,8 +83,8 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 leglabel3='1:1' \
                 \
-                legend=false \
-                seq="3,2" \
+                legend=true \
+                legpos=0.08,0.94 \
                 fontsize=16 \
                 texttype=latex \
                 aspect=1.0 \
@@ -93,6 +94,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 
 echo "Output to \"Plot_corrected_fbias_vs_uncorrected.pdf\"!"
+#exit
 
 
 

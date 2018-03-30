@@ -161,6 +161,7 @@ topcat -stilts plot2plane \
                 icmd1='sort x2' \
                 x1='e_S_out_uncorr' \
                 y1='e_S_out_corr' \
+                leglabel1="$Data_type" \
                 \
                 aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
                 \
@@ -169,9 +170,10 @@ topcat -stilts plot2plane \
                 color3=black \
                 antialias3=true \
                 thick3=1 \
+                leglabel3="1:1" \
                 \
-                legend=false \
-                seq="3,1" \
+                legend=true \
+                legpos=0.08,0.94 \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -180,6 +182,8 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_vs_uncorrected_ecorr.pdf\"!"
 convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr.png"
+#exit
+
 
 
 topcat -stilts plot2plane \

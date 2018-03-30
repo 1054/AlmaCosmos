@@ -15,6 +15,10 @@ if [[ $# -eq 0 ]]; then
     echo "    A catalog which contains \"S_in\", \"S_out\", \"flag_matched\", \"flag_nonmatched_missed\" columns"
     echo "Output: "
     echo "    A directory named \"Statistics/\""
+    echo "Options: "
+    echo "    -recompute # this will recompute Condon1997 errors"
+    echo "    -fbias-via-fitfun # this will use fitfun to correct fbias instead of spline"
+    echo "    -phys # this will use less parameter grid points"
     echo ""
     exit
 fi
@@ -207,7 +211,11 @@ cd "sim_diagram_output_no_galfit_flux_error_1"
 # 
 # After fitted the flux bias correction functions, we apply the correction to the input data "simu_data_input.txt"
 # 
+if [[ " $*" == *" -fbias-via-fitfun"* ]] || [[ " $*" == *" --fbias-via-fitfun"* ]]; then
+"$ScriptDir/almacosmos_apply_simu_corr_fbias_via_fitfun_table.py" "../simu_data_input.txt"
+else
 "$ScriptDir/almacosmos_apply_simu_corr_fbias_via_spline_table.py" "../simu_data_input.txt"
+fi
 "$ScriptDir/almacosmos_plot_corrected_fbias.sh"
 cd ..
 #else

@@ -126,4 +126,17 @@ echo "Output to \"Output_Prior_Galfit_Gaussian_Catalog.fits\"!"
 ## 
 #echo "Output to \"Output_Prior_Galfit_Gaussian_Catalog_SNR_GE_3.fits\"!"
 
+if [[ -f "Output_Prior_Galfit_Gaussian_Catalog.fits" ]]; then
+      rm "Output_Prior_Galfit_Gaussian_Condon_errors.id.txt"
+      rm "Output_Prior_Galfit_Gaussian_main_result.id.txt"
+      gzip "Output_Prior_Getpix_000.txt"
+      gzip "Output_Prior_Galfit_Gaussian_Condon_errors.txt"
+      gzip "Output_Prior_Galfit_Gaussian_main_result.txt"
+      gzip "Output_Prior_Galfit_Gaussian_Catalog.fits"
+fi
+
+
+
+
+
 
