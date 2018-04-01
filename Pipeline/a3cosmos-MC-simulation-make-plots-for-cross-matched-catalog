@@ -8,6 +8,7 @@ function usage() {
     echo "Usage: "
     echo "    a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog \"datatable_CrossMatched_by_ID/datatable_CrossMatched_only_matches.txt\""
     echo "    a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog \"datatable_CrossMatched_by_ID/datatable_CrossMatched_only_matches.txt\" -out \"Statistics_quick_plots\""
+    echo "    a3cosmos-MC-simulation-make-plots-for-cross-matched-catalog \"datatable_CrossMatched_by_ID/datatable_CrossMatched_only_matches.txt\" -out \"Statistics_quick_plots\" -flux -S_in_vs_S_out"
     echo ""
     exit
 }
@@ -87,11 +88,13 @@ function almacosmos_cmd_has_opt() {
     local i=1
     if [[ $# -ge 1 ]]; then
         if [[ ${#almacosmos_cmd_misc_opts[@]} -eq 0 ]]; then
+            # if user has not given any option, then plot all
             echo 1; return
         else
             for (( i=0; i<${#almacosmos_cmd_misc_opts[@]}; i++ )); do
                 #echo "almacosmos_cmd_has_opt: checking $1 (vs "$(echo "${almacosmos_cmd_misc_opts[i]}" | sed -e 's/^--//g' | sed -e 's/^-//g' | tr '[:upper:]' '[:lower:]')")"
-                if [[ $(echo "${almacosmos_cmd_misc_opts[i]}" | sed -e 's/^--//g' | sed -e 's/^-//g' | tr '[:upper:]' '[:lower:]') == "$1" ]]; then
+                if [[ $(echo "${almacosmos_cmd_misc_opts[i]}" | sed -e 's/^--//g' | sed -e 's/^-//g' | tr '[:upper:]' '[:lower:]') == "$1" ]] || \
+                    [[ $(echo "${almacosmos_cmd_misc_opts[i]}" | sed -e 's/^--//g' | sed -e 's/^-//g') == "$1" ]]; then
                     echo 1; return
                 fi
             done
@@ -113,6 +116,21 @@ if [[ ! -d "$output_dir" ]]; then
 fi
 
 
+
+
+
+leglabel_1="flux comparison"
+if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
+    leglabel_1="PHYS \ sim., \ GALFIT"
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]]; then
+    leglabel_1="PHYS \ sim., \ PYBDSM"
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
+    leglabel_1="FULL \ sim., \ GALFIT"
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSM"* ]]; then
+    leglabel_1="FULL \ sim., \ PYBDSM"
+fi
+
+
 # 
 # Run topcat
 # 
@@ -123,14 +141,14 @@ fi
 # 
 # plot scatter flux-flux comparison, with data points colored by cat_2 SNR ftotal
 # 
-if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
+if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]] || [[ $(almacosmos_cmd_has_opt "s_in_vs_s_out") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\,sim.}" \
-                ylabel="\Large S_{total,\,rec.}" \
+                xlabel="\Large S_{sim.}" \
+                ylabel="\Large S_{rec.}" \
                 xlog=true \
                 ylog=true \
                 \
@@ -138,7 +156,7 @@ topcat -stilts plot2plane \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
-                leglabel_1="flux comparison" \
+                leglabel_1="$leglabel_1" \
                 in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
                 icmd_1="select (S_out/e_S_out>0.1)" \
                 x_1="S_in" \
@@ -154,8 +172,9 @@ topcat -stilts plot2plane \
                 thick_3=1 \
                 leglabel_3='1:1' \
                 \
-                seq='_3,_1' \
-                legend=false \
+                seq='_1,_3' \
+                legend=true \
+                legpos=0.02,0.98 \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -165,14 +184,14 @@ fi
 # 
 # plot scatter flux-flux comparison, with data points colored by cat_2 SNR peak
 # 
-if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
+if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]] || [[ $(almacosmos_cmd_has_opt "s_in_vs_s_out_colored_by_s_peak") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\,sim.}" \
-                ylabel="\Large S_{total,\,rec.}" \
+                xlabel="\Large S_{sim.}" \
+                ylabel="\Large S_{rec.}" \
                 xlog=true \
                 ylog=true \
                 \
@@ -180,7 +199,7 @@ topcat -stilts plot2plane \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
-                leglabel_1="flux comparison" \
+                leglabel_1="$leglabel_1" \
                 in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
                 icmd_1="select (S_out/e_S_out>0.1)" \
                 icmd_1="sort (S_peak/noise)" \
@@ -197,8 +216,9 @@ topcat -stilts plot2plane \
                 thick_3=1 \
                 leglabel_3='1:1' \
                 \
-                seq='_3,_1' \
-                legend=false \
+                seq='_1,_3' \
+                legend=true \
+                legpos=0.02,0.98 \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -212,7 +232,7 @@ if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
 margin=(100 70 20 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
                 ylabel="\Large N" \
@@ -247,17 +267,17 @@ fi
 # 
 # plot (S_in-S_out)/e_S_out histogram (S/N>10)
 # 
-if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
+if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]] || [[ $(almacosmos_cmd_has_opt "S_in_S_out_e_S_out_colored_by_SNR_peak") -eq 1 ]]; then
 margin=(100 70 20 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
                 ylabel="\Large N" \
                 xlog=false \
                 ylog=true \
-                xmin=-5 xmax=5 ymin=1e-3 ymax=2e1\
+                xmin=-5 xmax=5 ymin=5e-3 ymax=5e1 \
                 \
                 layer_1=histogram \
                 normalise_1=maximum \
@@ -302,6 +322,8 @@ topcat -stilts plot2plane \
                 seq='_4,_3,_2,_1' \
                 legend=true \
                 legpos='0.02,0.98' \
+                legborder=false \
+                legopaque=false \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -315,10 +337,10 @@ if [[ $(almacosmos_cmd_has_opt "flux2") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,sim.}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
@@ -357,10 +379,10 @@ if [[ $(almacosmos_cmd_has_opt "flux31") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,sim.}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
@@ -393,27 +415,28 @@ fi
 # 
 # plot scatter (S_in-S_out)/S_in vs S_in/noise
 # 
-if [[ $(almacosmos_cmd_has_opt "flux3") -eq 1 ]]; then
+if [[ $(almacosmos_cmd_has_opt "flux3") -eq 1 ]] || [[ $(almacosmos_cmd_has_opt "flux2") -eq "Plot_scatter_rel_S_diff_vs_S_out_peak_colored_by_source_size" ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,sim.}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
-                auxvisible=true auxlabel="Maj_{convol,\,rec.}/Maj_{beam}" \
-                auxmap=rdbu auxflip=true auxfunc=log \
+                auxvisible=true auxlabel="sqrt(Area_{source}/Area_{beam})" \
+                auxmap=rdbu auxflip=true auxmin=1.0 auxmax=5.0 \
                 \
                 layer_1=Mark \
                 leglabel_1="flux comparison" \
                 in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
                 icmd_1="select (S_out/e_S_out>0.1)" \
+                icmd_1="sort (sqrt(Maj_out*Min_out/(Maj_beam*Min_beam)+1))" \
                 x_1="S_peak/noise" \
                 y_1="(S_in-S_out)/S_in" \
-                aux="(Maj_out/Maj_beam)" \
+                aux="sqrt(Maj_out*Min_out/(Maj_beam*Min_beam)+1)" \
                 shading_1=aux \
                 size_1=2 \
                 \
@@ -439,10 +462,10 @@ if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\,sim.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,sim.}" \
+                xlabel="\Large S_{sim.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
@@ -481,10 +504,10 @@ if [[ $(almacosmos_cmd_has_opt "flux") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\,rec.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/S_{total,\,rec.}" \
+                xlabel="\Large S_{rec.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/S_{rec.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
@@ -527,10 +550,10 @@ if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\,sim.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/\sigma_{S_{total,\,sim.}}" \
+                xlabel="\Large S_{sim.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{sim.}}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-5 ymax=5 \
                 \
@@ -569,10 +592,10 @@ if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\,rec.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/\sigma_{S_{total,\,rec.}}" \
+                xlabel="\Large S_{rec.}/\sigma_{rms\ noise}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-5 ymax=5 \
                 \
@@ -617,10 +640,10 @@ if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/\sigma_{S_{total,\,rec.}}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-5 ymax=5 \
                 \
@@ -660,10 +683,10 @@ if [[ $(almacosmos_cmd_has_opt "histogram") -eq 1 ]]; then
 margin=(100 70 100 20) # left, bottom, right, top
 echo ""
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
-                ylabel="\Large (S_{total,\,sim.}-S_{total,\,rec.})/\sigma_{S_{total,\,rec.}}" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-5 ymax=5 \
                 \
@@ -704,6 +727,8 @@ fi
 echo ""
 find "$output_dir" -name "Plot_*.pdf" -print0 | xargs -0 -I pdf_name bash -c "image_name=pdf_name; echo \$image_name; convert -format png -density 240 -geometry x800 \$image_name \$(echo \$image_name | sed -e 's/.pdf$/.png/g')"
 
+echo ""
+echo "Output to \"$(pwd)/$output_dir/\"!"
 
 
 

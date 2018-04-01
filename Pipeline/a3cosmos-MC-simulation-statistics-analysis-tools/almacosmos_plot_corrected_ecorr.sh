@@ -70,10 +70,10 @@ fi
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{out} / \sigma_{S_{total,\,C97}}" \
-                ylabel="\Large S_{out} / \sigma_{S_{total,\,corr.}}" \
+                xlabel="\Large S_{rec.} / \sigma_{S_{rec.,\,Condon1997}}" \
+                ylabel="\Large S_{rec.} / \sigma_{S_{rec.,\,corr.}}" \
                 xlog=true \
                 ylog=true \
                 xmin=1 xmax=1000 ymin=1 ymax=1000 \
@@ -108,10 +108,10 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_SNR.pdf" "Plot_correct
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{out} / \sigma_{S_{total,\,C97}}" \
-                ylabel="\Large (S/N_{out,\,corr.}) / (S/N_{out,\,uncorr.})" \
+                xlabel="\Large S_{rec.} / \sigma_{S_{rec.,\,Condon1997}}" \
+                ylabel="\Large (S/N_{rec.,\,corr.}) / (S/N_{rec.,\,uncorr.})" \
                 xlog=true \
                 ylog=true \
                 xmin=1 xmax=1000 ymin=0.01 ymax=50 \
@@ -146,10 +146,10 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_SNR_ratio.pdf" "Plot_c
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large \sigma_{S_{total,\,C97}}" \
-                ylabel="\Large \sigma_{S_{total,\,corr.}}" \
+                xlabel="\Large \sigma_{S_{rec.,\,Condon1997}}" \
+                ylabel="\Large \sigma_{S_{rec.,\,corr.}}" \
                 xlog=true \
                 ylog=true \
                 \
@@ -174,6 +174,7 @@ topcat -stilts plot2plane \
                 \
                 legend=true \
                 legpos=0.08,0.94 \
+                seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -187,10 +188,10 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr.p
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large \sigma_{S_{total,\,C97}}" \
-                ylabel="\Large \sigma_{S_{total,\,corr.}}" \
+                xlabel="\Large \sigma_{S_{rec.,\,Condon1997}}" \
+                ylabel="\Large \sigma_{S_{rec.,\,corr.}}" \
                 xlog=true \
                 ylog=true \
                 \
@@ -224,10 +225,10 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr_c
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large \sigma_{S_{total,\,C97}}" \
-                ylabel="\Large \sigma_{S_{total,\,corr.}}" \
+                xlabel="\Large \sigma_{S_{rec.,\,Condon1997}}" \
+                ylabel="\Large \sigma_{S_{rec.,\,corr.}}" \
                 xlog=true \
                 ylog=true \
                 \
@@ -261,10 +262,10 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr_c
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large \sigma_{S_{total,\,C97}}" \
-                ylabel="\Large \sigma_{S_{total,\,corr.}}" \
+                xlabel="\Large \sigma_{S_{rec.,\,Condon1997}}" \
+                ylabel="\Large \sigma_{S_{rec.,\,corr.}}" \
                 xlog=true \
                 ylog=true \
                 \
@@ -298,10 +299,10 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr_c
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large x2 = sqrt(Area_{source}/Area_{beam})" \
-                ylabel="\Large (\sigma_{S_{total,\,corr.}}) / (rms \ noise)" \
+                ylabel="\Large (\sigma_{S_{rec.,\,corr.}}) / (rms \ noise)" \
                 xlog=true \
                 ylog=true \
                 \
@@ -335,10 +336,10 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_x2_colored_by_x1.pd
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large x2 = sqrt(Area_{source}/Area_{beam})" \
-                ylabel="\Large (\sigma_{S_{total,\,C97}}) / (rms \ noise)" \
+                ylabel="\Large (\sigma_{S_{rec.,\,Condon1997}}) / (rms \ noise)" \
                 xlog=true \
                 ylog=true \
                 \
@@ -372,10 +373,10 @@ convert -density 240 -geometry x800 "Plot_uncorrected_ecorr_vs_x2_colored_by_x1.
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large x1 = S_{peak}/(rms \ noise)" \
-                ylabel="\Large (\sigma_{S_{total,\,corr.}}) / (rms \ noise)" \
+                ylabel="\Large (\sigma_{S_{rec.,\,corr.}}) / (rms \ noise)" \
                 xlog=true \
                 ylog=true \
                 \
@@ -409,10 +410,10 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_x1_colored_by_x2.pd
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large x1 = S_{peak}/(rms \ noise)" \
-                ylabel="\Large (\sigma_{S_{total,\,C97}}) / (rms \ noise)" \
+                ylabel="\Large (\sigma_{S_{Condon1997}}) / (rms \ noise)" \
                 xlog=true \
                 ylog=true \
                 \
@@ -482,7 +483,7 @@ margin=(100 70 20 20) # left, bottom, right, top
 
 if [[ -f "simu_data_input.txt" ]]; then
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S/N_{total}" \
                 ylabel="\Large N" \
@@ -545,9 +546,9 @@ topcat -stilts tmatchn \
                 out='datatable_applied_correction_ecorr_with_S_in.txt'
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large (S_{total,\,sim.}-S_{total,\,rec.}^{corr.})/\sigma_{S_{total,\,rec.}^{corr.}}" \
+                xlabel="\Large (S_{sim.}-S_{rec.,\,corr.})/\sigma_{S_{rec.,\,corr.}}" \
                 ylabel="\Large N" \
                 xlog=false xmin=-5 xmax=5 \
                 ylog=true ymin=0.1 ymax=8 \
@@ -605,7 +606,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 else
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S/N_{total}" \
                 ylabel="\Large N" \

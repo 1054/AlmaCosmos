@@ -87,6 +87,7 @@ else
     InputFmt="ascii"
 fi
 if [[ ! -f "$OutputDir/simu_data_input.txt" ]]; then
+    if [[ " $*" == *" -phys"* ]] || [[ " $*" == *" --phys"* ]]; then
     topcat -stilts tpipe \
                 in="$InputCat" \
                 ifmt="$InputFmt" \
@@ -94,6 +95,15 @@ if [[ ! -f "$OutputDir/simu_data_input.txt" ]]; then
                 cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam image_file_STR simu_name_STR\"" \
                 ofmt=ascii \
                 out="$OutputDir/simu_data_input.txt"
+    else
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt="$InputFmt" \
+                cmd="select \"S_peak/noise>=3.0\"" \
+                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam image_file_STR simu_name_STR\"" \
+                ofmt=ascii \
+                out="$OutputDir/simu_data_input.txt"
+    fi
 fi
 if [[ ! -f "$OutputDir/simu_data_input.txt" ]]; then
     echo "Error! Failed to output \"$OutputDir/simu_data_input.txt\"!"

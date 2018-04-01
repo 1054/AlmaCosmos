@@ -3,12 +3,16 @@
 
 if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     Data_type="PHYS-GALFIT"
+    SNR_peak="3.77"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]]; then
     Data_type="PHYS-PYBDSM"
+    SNR_peak="5.35"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
     Data_type="FULL-GALFIT"
+    SNR_peak="3.77"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSM"* ]]; then
     Data_type="FULL-PYBDSM"
+    SNR_peak="5.35"
 fi
 
 
@@ -18,31 +22,42 @@ topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{peak} / rms\;noise" \
-                ylabel="Median \ of \ ((S_{sim.}-S_{rec.})/S_{sim.})" \
+                ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true \
                 ylog=false \
-                xmin=1 xmax=500 ymin=-1.5 ymax=1.5 \
+                xmin=1 xmax=500 ymin=-1.25 ymax=1.25 \
                 \
                 layer1=mark \
-                shape1=open_circle \
+                shape1=filled_circle \
+                size1=1 \
                 shading1=aux \
                 in1='datatable_applied_correction_fbias.txt' \
                 ifmt1=ascii \
+                icmd1="sort x2" \
                 leglabel1="$Data_type" \
                 x1='x1' \
                 y1='fbias' \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=4.0 \
                 \
                 layer3=function \
                 fexpr3='0.0' \
                 color3=black \
                 antialias3=true \
                 thick3=1 \
-                leglabel3='Y=0' \
+                leglabel3='\footnotesize Y=0' \
                 \
-                legpos=0.05,0.94 \
-                seq="3,1" \
+                layer2=function \
+                axis2=Vertical \
+                dash2="dash" \
+                fexpr2="$SNR_peak" \
+                color2=black \
+                antialias2=true \
+                thick2=1 \
+                leglabel2="\footnotesize S/N_{peak}=$SNR_peak" \
+                \
+                legpos=0.04,0.98 \
+                seq="1,2,3" \
                 fontsize=16 \
                 texttype=latex \
                 aspect=1.0 \
@@ -56,35 +71,36 @@ echo "Output to \"Plot_corrected_fbias.pdf\"!"
 
 
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{total,\;uncorr.}" \
-                ylabel="\Large S_{total,\;corr.}" \
+                xlabel="\Large S_{rec.,\;uncorr.}" \
+                ylabel="\Large S_{rec.,\;corr.}" \
                 xlog=true \
                 ylog=true \
                 \
-                layer2=mark \
-                shape2=filled_circle \
-                size2=1 \
-                shading2=aux \
-                in2='datatable_applied_correction_fbias.txt' \
-                icmd2="sort x2" \
-                ifmt2=ascii \
-                x2='S_out_uncorr' \
-                y2='S_out_corr' \
-                leglabel2="$Data_type" \
+                layer1=mark \
+                shape1=filled_circle \
+                size1=1 \
+                shading1=aux \
+                in1='datatable_applied_correction_fbias.txt' \
+                icmd1="sort x2" \
+                ifmt1=ascii \
+                x1='S_out_uncorr' \
+                y1='S_out_corr' \
+                leglabel1="$Data_type" \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=4.0 \
                 \
                 layer3=function \
                 fexpr3='(x)' \
                 color3=black \
                 antialias3=true \
                 thick3=1 \
-                leglabel3='1:1' \
+                leglabel3='\footnotesize 1:1' \
                 \
                 legend=true \
-                legpos=0.08,0.94 \
+                legpos=0.04,0.98 \
+                seq="1,3" \
                 fontsize=16 \
                 texttype=latex \
                 aspect=1.0 \
@@ -102,7 +118,7 @@ margin=(100 70 20 20) # left, bottom, right, top
 
 if [[ -f "simu_data_input.txt" ]]; then
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{total}" \
                 ylabel="\Large N" \
@@ -153,7 +169,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 else
 topcat -stilts plot2plane \
-                xpix=500 ypix=400 \
+                xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
                 xlabel="\Large S_{total}" \
                 ylabel="\Large N" \

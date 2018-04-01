@@ -112,6 +112,20 @@ topcat -stilts tpipe \
 
 
 
+topcat -stilts tpipe \
+        in="datatable_CrossMatched/datatable_CrossMatched_filtered.fits" \
+        cmd="replacecol S_in -units \"mJy\" \"(S_in*1e3)\"" \
+        cmd="replacecol e_S_out -units \"mJy\" \"(e_S_out*1e3)\"" \
+        cmd="replacecol S_out -units \"mJy\" \"(S_out*1e3)\"" \
+        cmd="replacecol S_peak -units \"mJy/beam\" \"(S_peak*1e3)\"" \
+        cmd="replacecol S_res -units \"mJy\" \"(S_res*1e3)\"" \
+        cmd="replacecol noise -units \"mJy/beam\" \"(noise*1e3)\"" \
+        cmd="replacecol simu_name_STR \"(simu_name_STR+\\\"_model\\\")\"" \
+        cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam image_file_STR simu_name_STR\"" \
+        out="datatable_CrossMatched/datatable_CrossMatched_filtered_mJy.fits"
+
+
+
 
 #a3cosmos-MC-simulation-statistics-analysis datatable_CrossMatched/datatable_CrossMatched_filtered.fits
 
