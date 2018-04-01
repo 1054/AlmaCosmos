@@ -34,12 +34,14 @@ sleep 2
 for (( i = 0; i < ${#list_of_projects[@]}; i++ )); do
     echo ""
     echo "${list_of_projects[i]}"
-    if [[ -f "../statistics_PyBDSM_dzliu/output_sim_data_table_${list_of_projects[i]}.txt" ]] && |
+    if [[ -f "../statistics_PyBDSM_dzliu/output_sim_data_table_${list_of_projects[i]}.txt" ]] && \
         [[ -f "../statistics_PyBDSM_dzliu/done_output_sim_data_table_${list_of_projects[i]}" ]]; then
         if [[ $(cat | wc -l) -gt 3000 ]]; then
             # seems OK, pack up this data dir
             echo "tar -czf --remove-files \"${list_of_projects[i]}.tar.gz\" \"${list_of_projects[i]}\""
-            #tar -czf --remove-files "${list_of_projects[i]}.tar.gz" "${list_of_projects[i]}"
+            if [[ " $* " == *" go "* ]]; then
+                tar -czf --remove-files "${list_of_projects[i]}.tar.gz" "${list_of_projects[i]}"
+            fi
         fi
     fi
 done
