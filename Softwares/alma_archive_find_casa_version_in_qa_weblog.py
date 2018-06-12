@@ -68,6 +68,6 @@ for weblog_item in weblog_obj.getmembers():
         if casa_version != '':
             break
 
-print(casa_version)
+print('CASA version %s'%(casa_version))
 
 
