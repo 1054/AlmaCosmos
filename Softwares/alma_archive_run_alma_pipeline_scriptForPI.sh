@@ -189,7 +189,7 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
                 if [[ -d "../qa" ]] || [[ -L "../qa" ]]; then
                     list_of_found_files=($(find -L "../qa" -name "*.tgz"))
                     if [[ ${#list_of_found_files[@]} -gt 0 ]]; then
-                        $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py ${list_of_found_files[0]} > ../README_CASA_VERSION
+                        $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py "${list_of_found_files[0]}" > "../README_CASA_VERSION"
                         source "$casa_setup_script_path" "../README_CASA_VERSION"
                     else
                         echo "Error! Could not find \"$script_dir/qa/*.tgz\"!"
