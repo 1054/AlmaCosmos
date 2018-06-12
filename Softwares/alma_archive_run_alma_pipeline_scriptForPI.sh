@@ -109,7 +109,16 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             fi
             # if "calibrated" dir exists, but no "calibrated*.ms", then check if "uid___*.ms.split.cal" dirs exist or not
             list_of_ms_split_cal_dirs=($(find "$script_dir/calibrated/" -mindepth 1 -maxdepth 1 -type d -name "uid___*.ms.split.cal"))
-            if [[ ${#list_of_ms_split_cal_dirs[@]} -gt 0 ]]; then
+            if [[ ${#list_of_ms_split_cal_dirs[@]} -eq 0 ]]; then
+                # 20180612 for CASA 5, ALMA Cycle 5 and later, file names are changed
+                list_of_ms_split_cal_dirs=($(find "$script_dir/calibrated/" -mindepth 1 -maxdepth 1 -type d -name "uid___*.ms"))
+            fi
+            if [[ ${#list_of_ms_split_cal_dirs[@]} -eq 1 ]]; then
+                echo "Found \"$script_dir/calibrated\" and one \"uid___*.ms.split.cal\" data therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will make a link."
+                echo bash -c "cd \"$script_dir/calibrated\"; ln -fsT \"${list_of_ms_split_cal_dirs[0]}\" \"calibrated.ms\""
+                bash -c "cd \"$script_dir/calibrated\"; ln -fsT \"${list_of_ms_split_cal_dirs[0]}\" \"calibrated.ms\""
+                continue
+            elif [[ ${#list_of_ms_split_cal_dirs[@]} -gt 1 ]]; then
                 echo "Found \"$script_dir/calibrated\" and \"uid___*.ms.split.cal\" therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will try to concatenate them."
                 # check README file which contains CASA version and source CASA version
                 list_of_readme_files=($(find -L "${script_dir}" -name "README"))
@@ -153,14 +162,14 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
                 # if not, then detele the whole "calibrated" directory
                 echo "Found \"$script_dir/calibrated\" but no \"calibrated_final.ms\", \"calibrated.ms\" or \"uid___*.ms.split.cal\"! Will delete this \"calibrated\" directory!"
                 echo "rm -r \"$script_dir/calibrated\""
-                #rm -r "$script_dir/calibrated"
+                #rm -r "$script_dir/calibrated" #<TODO><dry-run>#
             fi
         fi
         # 
         # if the above code has not yet been continued, it means the "calibrated" data directory is invalid, so we have to re-run the pipeline (scriptForPI.py)
         if [[ -d "$script_dir/calibrated" ]] || [[ -L "$script_dir/calibrated" ]]; then
             echo "rm -r \"$script_dir/calibrated\""
-            #rm -r "$script_dir/calibrated"
+            #rm -r "$script_dir/calibrated" #<TODO><dry-run>#
         fi
         # 
         # check directories
