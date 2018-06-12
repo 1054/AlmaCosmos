@@ -186,13 +186,16 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
                 source "$casa_setup_script_path" "../README_CASA_VERSION"
             else
                 # if no REAME file then read "qa/*.tgz"
-                if [[ -d "$script_dir/qa" ]] || [[ -L "$script_dir/qa" ]]; then
-                    list_of_found_files=($(find -L ../qa -name "*.tgz"))
+                if [[ -d "../qa" ]] || [[ -L "../qa" ]]; then
+                    list_of_found_files=($(find -L "../qa" -name "*.tgz"))
                     if [[ ${#list_of_found_files[@]} -gt 0 ]]; then
                         $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py ${list_of_found_files[0]} > ../README_CASA_VERSION
+                    else
+                        echo "Error! Could not find \"$script_dir/qa/*.tgz\"!"
+                        exit 1
                     fi
                 else
-                    echo "Error! Could not find either README or README_CASA_VERSION or qa/*.tgz!"
+                    echo "Error! Could not find either \"$script_dir/README\" or \"$script_dir/README_CASA_VERSION\" files or \"$script_dir/qa\" folder!"
                     exit 1
                 fi
             fi
