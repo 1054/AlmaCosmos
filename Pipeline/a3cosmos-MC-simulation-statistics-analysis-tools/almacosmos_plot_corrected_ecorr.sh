@@ -3,7 +3,7 @@
 
 if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     Data_type="PHYS-GALFIT"
-elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]]; then
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]] || [[ $(pwd) == *"Aravena"* ]]; then
     Data_type="PHYS-PYBDSM"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
     Data_type="FULL-GALFIT"
@@ -14,15 +14,14 @@ fi
 
 margin=(100 70 100 20) # left, bottom, right, top
 
-#if [[ ! -f "Plot_corrected_ecorr.png" ]]; then
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large x1 = S_{peak} / rms \; noise" \
-                ylabel="Scatter \ of \ ((S_{sim.}-S_{rec.}) / rms \; noise)" \
+                xlabel="\Large S/N_{peak}" \
+                ylabel="\Large \sigma_{S_{rec.,\,corr.}} / rms\,noise" \
                 xlog=true \
                 ylog=true \
-                xmin=0.5 xmax=200 ymin=0.5 ymax=200 \
+                xmin=1 xmax=500 ymin=0.5 ymax=200 \
                 \
                 layer1=mark \
                 shape1=open_circle \
@@ -34,27 +33,47 @@ topcat -stilts plot2plane \
                 x1='x1' \
                 y1='ecorr' \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
+                aux='x2' auxvisible=false auxmap=rainbow2 auxflip=true auxfunc=log auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
-                fexpr3='1' \
-                color3=black \
+                fexpr3='sqrt(1.*8/(pow((1+1/1.),1.5)*pow((1+1/1.),1.5)) + 8/(pow((1+1/1.),2.5)*pow((1+1/1.),0.5)) + 8/(pow((1+1/1.),0.5)*pow((1+1/1.),2.5)))' \
+                color3=blue \
                 antialias3=true \
-                thick3=1 \
-                leglabel3="Y=1" \
+                thick3=2 \
+                leglabel3="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
+                \
+                layer4=function \
+                fexpr4='sqrt(4.*8/(pow((1+1/4.),1.5)*pow((1+1/4.),1.5)) + 8/(pow((1+1/4.),2.5)*pow((1+1/4.),0.5)) + 8/(pow((1+1/4.),0.5)*pow((1+1/4.),2.5)))' \
+                color4='#47FEE3' \
+                antialias4=true \
+                thick4=2 \
+                leglabel4="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
+                \
+                layer5=function \
+                fexpr5='sqrt(25.*8/(pow((1+1/25.),1.5)*pow((1+1/25.),1.5)) + 8/(pow((1+1/25.),2.5)*pow((1+1/25.),0.5)) + 8/(pow((1+1/25.),0.5)*pow((1+1/25.),2.5)))' \
+                color5=red \
+                antialias5=true \
+                thick5=2 \
+                leglabel5="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
                 \
                 legend=true \
-                legpos=0.05,0.94 \
-                seq="3,1" \
+                legborder=false \
+                legopaque=false \
+                legpos=0.04,0.98 \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
                 out='Plot_corrected_ecorr.pdf'
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+                # 
+                # 2018-05-31 removed the color bar because this figure will be shown with another figure sharing the color bar
+                #aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large \Theta_{beam}" auxmin=1.0 auxmax=5.0 \
+                # 
 echo "Output to \"Plot_corrected_ecorr.pdf\"!"
 convert -density 240 -geometry x800 "Plot_corrected_ecorr.pdf" "Plot_corrected_ecorr.png"
-#fi
+#exit
+
 
 
 if [[ ! -f 'datatable_applied_correction_ecorr_with_more_columns.txt' ]]; then
@@ -87,7 +106,7 @@ topcat -stilts plot2plane \
                 x1='S_out/e_S_out_uncorr' \
                 y1='S_out/e_S_out_corr' \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large \Theta_{beam}" auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
                 fexpr3='(x)' \
@@ -96,7 +115,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -125,7 +143,7 @@ topcat -stilts plot2plane \
                 x1='S_out/e_S_out_uncorr' \
                 y1='(S_out/e_S_out_corr)/(S_out/e_S_out_uncorr)' \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large \Theta_{beam}" auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
                 fexpr3='(1)' \
@@ -134,7 +152,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -163,7 +180,7 @@ topcat -stilts plot2plane \
                 y1='e_S_out_corr' \
                 leglabel1="$Data_type" \
                 \
-                aux='x2' auxvisible=true auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large \Theta_{beam}" auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
                 fexpr3='(x)' \
@@ -173,8 +190,9 @@ topcat -stilts plot2plane \
                 leglabel3="1:1" \
                 \
                 legend=true \
-                legpos=0.08,0.94 \
-                seq="3,1" \
+                legborder=false \
+                legopaque=false \
+                legpos=0.04,0.98 \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -204,7 +222,7 @@ topcat -stilts plot2plane \
                 x1='e_S_out_uncorr' \
                 y1='e_S_out_corr' \
                 \
-                aux='(Maj_out/Maj_beam)' auxvisible=true auxmap=rdbu auxflip=true auxlabel="Maj_{source}/Maj_{beam}" \
+                aux='(Maj_out/Maj_beam)' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="Maj_{source}/Maj_{beam}" \
                 \
                 layer3=function \
                 fexpr3='(x)' \
@@ -213,7 +231,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -241,7 +258,7 @@ topcat -stilts plot2plane \
                 x1='e_S_out_uncorr' \
                 y1='e_S_out_corr' \
                 \
-                aux='(Min_out/Maj_beam)' auxvisible=true auxmap=rdbu auxflip=true auxlabel="Min_{source}/Maj_{beam}" \
+                aux='(Min_out/Maj_beam)' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="Min_{source}/Maj_{beam}" \
                 \
                 layer3=function \
                 fexpr3='(x)' \
@@ -250,7 +267,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -278,7 +294,7 @@ topcat -stilts plot2plane \
                 x1='e_S_out_uncorr' \
                 y1='e_S_out_corr' \
                 \
-                aux='(S_peak/noise)' auxvisible=true auxmap=rdbu auxflip=true auxfunc=log auxlabel="x1 = S_{peak}/{noise}" \
+                aux='(S_peak/noise)' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="x1 = S_{peak}/{noise}" \
                 \
                 layer3=function \
                 fexpr3='(x)' \
@@ -287,7 +303,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -301,7 +316,7 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr_c
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large x2 = sqrt(Area_{source}/Area_{beam})" \
+                xlabel="\Large \Theta_{beam}" \
                 ylabel="\Large (\sigma_{S_{rec.,\,corr.}}) / (rms \ noise)" \
                 xlog=true \
                 ylog=true \
@@ -315,7 +330,7 @@ topcat -stilts plot2plane \
                 x1='x2' \
                 y1='(e_S_out_corr/noise)' \
                 \
-                aux='x1' auxvisible=true auxfunc=log auxmap=rdbu auxflip=true auxlabel="x1 = S_{peak}/(rms \ noise)" \
+                aux='x1' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large S/N_{peak}" \
                 \
                 layer3=function \
                 fexpr3='sqrt(8*pow(x,2)/(pow((1+(1/pow(x,2))),1.5)*pow((1+(1/pow(x,2))),1.5)) + 8/(pow((1+(1/pow(x,2))),2.5)*pow((1+(1/pow(x,2))),0.5)) + 8/(pow((1+(1/pow(x,2))),0.5)*pow((1+(1/pow(x,2))),2.5)) )' \
@@ -324,7 +339,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="1,3" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -338,7 +352,7 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_x2_colored_by_x1.pd
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large x2 = sqrt(Area_{source}/Area_{beam})" \
+                xlabel="\Large \Theta_{beam}" \
                 ylabel="\Large (\sigma_{S_{rec.,\,Condon1997}}) / (rms \ noise)" \
                 xlog=true \
                 ylog=true \
@@ -352,7 +366,7 @@ topcat -stilts plot2plane \
                 x1='x2' \
                 y1='(e_S_out_uncorr/noise)' \
                 \
-                aux='x1' auxvisible=true auxfunc=log auxmap=rdbu auxflip=true auxlabel="x1 = S_{peak}/(rms \ noise)" \
+                aux='x1' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large S/N_{peak}" \
                 \
                 layer3=function \
                 fexpr3='sqrt(8*pow(x,2)/(pow((1+(1/pow(x,2))),1.5)*pow((1+(1/pow(x,2))),1.5)) + 8/(pow((1+(1/pow(x,2))),2.5)*pow((1+(1/pow(x,2))),0.5)) + 8/(pow((1+(1/pow(x,2))),0.5)*pow((1+(1/pow(x,2))),2.5)) )' \
@@ -361,7 +375,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="1,3" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -375,7 +388,7 @@ convert -density 240 -geometry x800 "Plot_uncorrected_ecorr_vs_x2_colored_by_x1.
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large x1 = S_{peak}/(rms \ noise)" \
+                xlabel="\Large S/N_{peak}" \
                 ylabel="\Large (\sigma_{S_{rec.,\,corr.}}) / (rms \ noise)" \
                 xlog=true \
                 ylog=true \
@@ -389,7 +402,7 @@ topcat -stilts plot2plane \
                 x1='x1' \
                 y1='(e_S_out_corr/noise)' \
                 \
-                aux='x2' auxvisible=true auxfunc=log auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large \Theta_{beam}" auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
                 fexpr3='(1)' \
@@ -398,7 +411,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -412,7 +424,7 @@ convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_x1_colored_by_x2.pd
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large x1 = S_{peak}/(rms \ noise)" \
+                xlabel="\Large S/N_{peak}" \
                 ylabel="\Large (\sigma_{S_{Condon1997}}) / (rms \ noise)" \
                 xlog=true \
                 ylog=true \
@@ -426,7 +438,7 @@ topcat -stilts plot2plane \
                 x1='x1' \
                 y1='(e_S_out_uncorr/noise)' \
                 \
-                aux='x2' auxvisible=true auxfunc=log auxmap=rdbu auxflip=true auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=5.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large \Theta_{beam}" auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
                 fexpr3='(1)' \
@@ -435,7 +447,6 @@ topcat -stilts plot2plane \
                 thick3=1 \
                 \
                 legend=false \
-                seq="3,1" \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \

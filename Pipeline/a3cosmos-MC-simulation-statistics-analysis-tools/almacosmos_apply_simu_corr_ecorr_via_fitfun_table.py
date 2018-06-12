@@ -249,8 +249,12 @@ x_arr = numpy.array(correction_table['x'])
 y_arr = numpy.array(correction_table['y'])
 nan_mask = (~numpy.isnan(y_arr)); x_arr = x_arr[nan_mask]; y_arr = y_arr[nan_mask]
 array_extrapolated = interpolate.griddata(x_arr, y_arr, (x1,x2), method='nearest')
-array_interpolated = interpolate.griddata(x_arr, y_arr, (x1,x2), method='linear')
-array_mask = numpy.isnan(array_interpolated)
+try:
+    array_interpolated = interpolate.griddata(x_arr, y_arr, (x1,x2), method='linear')
+    array_mask = numpy.isnan(array_interpolated)
+except:
+    array_interpolated = array_extrapolated
+    array_mask = numpy.isnan(array_interpolated)
 #array_interpolated[array_mask] = array_extrapolated[array_mask]
 #array_interpolated = array_interpolated.reshape(x1_mesh.shape)
 #array_mask = array_mask.reshape(x1_mesh.shape)

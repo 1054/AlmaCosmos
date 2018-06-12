@@ -1,0 +1,740 @@
+SIMPLE  =                    T / Standard FITS format                           BITPIX  =                    8 / Character data                                 NAXIS   =                    1 / Text string                                    NAXIS1  =                34529 / Number of characters                           VOTMETA =                    T / Table metadata in VOTable format               EXTEND  =                    T / There are standard extensions                  COMMENT                                                                         COMMENT The data in this primary HDU consists of bytes which                    COMMENT comprise a VOTABLE document.                                            COMMENT The VOTable describes the metadata of the table contained               COMMENT in the following BINTABLE extension.                                    COMMENT Such a BINTABLE extension can be used on its own as a perfectly         COMMENT good table, but the information from this HDU may provide some          COMMENT useful additional metadata.                                             COMMENT There is one following BINTABLE.                                        NTABLE  =                    1 / Number of following BINTABLE HDUs              END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <?xml version='1.0'?>
+<VOTABLE version="1.3"
+ xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+<!--
+ !  VOTable written by STIL version 3.2-2 (uk.ac.starlink.votable.VOTableWriter)
+ !  at 2018-06-11T16:21:24
+ !-->
+<RESOURCE>
+<!-- Describes BINTABLE extensions in the following HDU.-->
+<TABLE name="Joined" nrows="1">
+<PARAM arraysize="19" datatype="char" name="DATE-HDU" value="2018-06-03T18:42:12">
+<DESCRIPTION>Date of HDU creation (UTC)</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="5" datatype="char" name="STILVERS" value="3.2-2">
+<DESCRIPTION>Version of STIL software</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="42" datatype="char" name="STILCLAS" value="uk.ac.starlink.votable.FitsPlusTableWriter">
+<DESCRIPTION>Author class in STIL so</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="19" datatype="char" name="DATE-HDU" value="2017-09-01T09:15:40">
+<DESCRIPTION>Date of HDU creation (UTC)</DESCRIPTION>
+</PARAM>
+<PARAM datatype="double" name="STILVERS" value="3.2">
+<DESCRIPTION>Version of STIL software</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="42" datatype="char" name="STILCLAS" value="uk.ac.starlink.votable.FitsPlusTableWriter">
+<DESCRIPTION>Author class in STIL so</DESCRIPTION>
+</PARAM>
+<FIELD datatype="int" name="ID_prior">
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="double" name="RA_prior"/>
+<FIELD datatype="double" name="Dec_prior"/>
+<FIELD datatype="double" name="Total_flux_pbcor_prior"/>
+<FIELD datatype="double" name="E_Total_flux_pbcor_prior"/>
+<FIELD datatype="double" name="E_Total_flux_sim_pbcor_prior"/>
+<FIELD datatype="double" name="Pbcor_prior"/>
+<FIELD datatype="double" name="Pb_corr_pb_image_prior"/>
+<FIELD datatype="float" name="Pb_corr_equation_prior"/>
+<FIELD datatype="double" name="Maj_prior" unit="arcsec">
+<DESCRIPTION>Deconvolved (intrinsic) source Gaussian FWHM size</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Min_prior" unit="arcsec">
+<DESCRIPTION>Deconvolved (intrinsic) source Gaussian FWHM size</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="PA_prior" unit="degree">
+<DESCRIPTION>deconvolved (intrinsic) source Gaussian position angle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="x1_prior">
+<DESCRIPTION>SNR_peak = Peak_flux/rms_noise, see Eq. 1 in the paper.</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="x2_prior"/>
+<FIELD arraysize="86" datatype="char" name="Image_file_prior">
+<DESCRIPTION>data image file name</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="94" datatype="char" name="Image_cutout_prior">
+<DESCRIPTION>data image cutout rectangle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="Obs_wavelength_prior" unit="um"/>
+<FIELD datatype="double" name="Primary_beam_prior" unit="arcsec">
+<DESCRIPTION>ALMA 12m antenna primary beam FWHM, 1.13*w/D/pi*180*3600</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="RMS_noise_prior" unit="mJy/beam">
+<DESCRIPTION>RMS noise in the image</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Maj_beam_prior" unit="arcsec">
+<DESCRIPTION>Gaussian FWHM size of the beam.</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Min_beam_prior" unit="arcsec">
+<DESCRIPTION>Gaussian FWHM size of the beam.</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="PA_beam_prior" unit="degree">
+<DESCRIPTION>Gaussian position angle of the beam.</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Galfit_reduced_chi_square_prior">
+<DESCRIPTION>Galfit reduced chi square</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="Flag_size_lower_boundary_prior">
+<DESCRIPTION>Flag for galfit fitted size hitting the lower boundary</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="Flag_size_upper_boundary_prior">
+<DESCRIPTION>Flag for galfit fitted size hitting the upper boundary</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="Flag_size_initial_guess_prior">
+<DESCRIPTION>Flag for galfit fitted size keeping the same as initial guess</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="Flag_zero_galfit_flux_error_prior">
+<DESCRIPTION>Flag for zero galfit output flux error</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="Flag_zero_galfit_size_error_prior">
+<DESCRIPTION>Flag for zero galfit output size error</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="RA_pybdsm" unit="deg"/>
+<FIELD datatype="double" name="DEC_pybdsm" unit="deg"/>
+<FIELD datatype="double" name="Total_flux_pbcor_pybdsm"/>
+<FIELD datatype="double" name="E_Total_flux_pbcor_pybdsm"/>
+<FIELD datatype="double" name="E_Total_flux_sim_pbcor_pybdsm"/>
+<FIELD datatype="double" name="Pbcor_pybdsm"/>
+<FIELD datatype="double" name="x1_pybdsm">
+<DESCRIPTION>SNR_peak = Peak_flux/rms_noise, see Eq. 1 in the paper.</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="x2_pybdsm"/>
+<FIELD datatype="double" name="Maj_pybdsm" unit="arcsec">
+<DESCRIPTION>deconvolved (intrinsic) source Gaussian FWHM size</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Min_pybdsm" unit="arcsec">
+<DESCRIPTION>deconvolved (intrinsic) source Gaussian FWHM size</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="PA_pybdsm" unit="degree">
+<DESCRIPTION>deconvolved (intrinsic) source Gaussian position angle</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="86" datatype="char" name="Image_file_pybdsm">
+<DESCRIPTION>data image file name</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="Obs_wavelength_pybdsm" unit="um">
+<DESCRIPTION>ALMA obs sky wavelength</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Primary_beam_pybdsm" unit="arcsec">
+<DESCRIPTION>ALMA 12m antenna primary beam FWHM, 1.13*w/D/pi*180*3600</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="rms_noise_pybdsm" unit="mJy/beam"/>
+<FIELD datatype="double" name="Maj_beam_pybdsm" unit="arcsec">
+<DESCRIPTION>beam Gaussian FWHM size</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Min_beam_pybdsm" unit="arcsec">
+<DESCRIPTION>beam Gaussian FWHM size</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="PA_beam_pybdsm" unit="degree">
+<DESCRIPTION>beam Gaussian position angle</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="1" datatype="char" name="Flag_multi_pybdsm">
+<DESCRIPTION>flag for multi-Gaussian fitting</DESCRIPTION>
+</FIELD>
+<FIELD datatype="boolean" name="Flag_matched"/>
+<FIELD datatype="boolean" name="Flag_only_prior"/>
+<FIELD datatype="boolean" name="Flag_only_pybdsm"/>
+<FIELD datatype="double" name="x1">
+<DESCRIPTION>SNR_peak = Peak_flux/RMS_noise</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="x2">
+<DESCRIPTION>Theta_beam = sqrt((Maj_convol*Min_convl)/(Maj_beam*Min_beam))</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="68" datatype="char" name="IMAGE_ALMA" unit="um"/>
+<FIELD datatype="float" name="WAVELENGTH_ALMA" unit="um"/>
+<FIELD datatype="double" name="FLUX_ALMA" unit="mJy"/>
+<FIELD datatype="double" name="FLUXERR_ALMA" unit="mJy"/>
+<FIELD datatype="int" name="ID_Master">
+<DESCRIPTION>COSMOS master catalog ID</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="double" name="RA_Master"/>
+<FIELD datatype="double" name="Dec_Master"/>
+<FIELD datatype="short" name="Origin_Master">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="Duplication_Master">
+<DESCRIPTION>Duplications in the original catalogs.</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="int" name="ID_Origin_Master">
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="short" name="Flag_Laigle_FLAG_PETER_Master">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="Flag_Laigle_TYPE_Master">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="Flag_Muzzin_star_Master">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="Flag_Muzzin_contamination_Master">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="Flag_Capak_FLAG_Master">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="Flag_Davidzon_col12_Master">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="Flag_Outlier_Master">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="ZPDF_Laigle_Master"/>
+<FIELD datatype="int" name="ID_Laigle_Master">
+<DESCRIPTION>(Origin==1 ? ID_Origin : -99)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="long" name="NUMBER_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+<VALUES null='-9223372036854775808'/>
+</FIELD>
+<FIELD datatype="float" name="ZPDF_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ZPDF_L68_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ZPDF_H68_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ZMINCHI2_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="CHI2_BEST_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="ZP_2_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="CHI2_2_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="CLASS_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="double" name="MASS_MED_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="MASS_MED_MIN68_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="MASS_MED_MAX68_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="MASS_BEST_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SFR_MED_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SFR_MED_MIN68_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SFR_MED_MAX68_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SFR_BEST_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SSFR_MED_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SSFR_MED_MIN68_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SSFR_MED_MAX68_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SSFR_BEST_Master">
+<DESCRIPTION>From Laigle+2016</DESCRIPTION>
+</FIELD>
+<FIELD datatype="long" name="ID_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+<VALUES null='-9223372036854775808'/>
+</FIELD>
+<FIELD datatype="double" name="RA_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="Dec_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ZPHOT_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ZML_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ZML_L68_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ZML_H68_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ZBEST_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="CHI2_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="logMASS_MED_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="logMASS_L68_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="logMASS_H68_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="logSFR_MED_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="logSFR_L68_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="logSFR_H68_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="AGE_MED_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="AGE_L68_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="AGE_H68_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="logSSFR_MED_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="z_min_IRAC1_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="z_max_IRAC1_Davidzon2017_Master">
+<DESCRIPTION>From Davidzon+2017</DESCRIPTION>
+</FIELD>
+<FIELD datatype="int" name="GroupID_Davidzon2017_Master">
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="int" name="GroupSize_Davidzon2017_Master">
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="double" name="Separation_Davidzon2017_Master" ucd="pos.angDistance" unit="arcsec"/>
+<FIELD datatype="double" name="ALPHA_J2000_Laigle" unit="deg"/>
+<FIELD datatype="double" name="DELTA_J2000_Laigle" unit="deg"/>
+<FIELD datatype="long" name="NUMBER_Laigle">
+<VALUES null='-9223372036854775808'/>
+</FIELD>
+<FIELD datatype="short" name="FLAG_HJMCC_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="FLAG_PETER_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="FLAG_COSMOS_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="FLAG_DEEP_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="FLAG_SHALLOW_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="Ks_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="Ks_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="Ks_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Ks_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Ks_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Ks_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Y_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="Y_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="Y_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Y_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Y_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Y_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="H_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="H_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="H_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="H_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="H_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="H_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="J_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="J_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="J_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="J_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="J_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="J_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="B_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="B_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="B_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="B_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="B_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="B_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="V_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="V_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="V_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="V_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="V_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="V_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="ip_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="ip_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="ip_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="ip_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="ip_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="ip_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="r_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="r_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="r_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="r_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="r_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="r_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="u_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="u_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="u_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="u_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="u_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="u_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="zp_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="zp_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="zp_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="zp_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="zp_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="zp_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="zpp_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="zpp_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="zpp_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="zpp_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="zpp_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="zpp_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA484_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA484_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA484_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA484_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA484_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA484_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA527_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA527_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA527_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA527_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA527_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA527_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA624_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA624_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA624_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA624_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA624_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA624_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA679_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA679_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA679_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA679_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA679_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA679_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA738_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA738_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA738_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA738_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA738_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA738_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA767_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA767_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IA767_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA767_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA767_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IA767_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB427_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB427_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB427_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB427_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB427_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB427_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB464_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB464_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB464_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB464_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB464_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB464_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB505_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB505_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB505_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB505_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB505_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB505_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB574_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB574_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB574_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB574_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB574_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB574_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB709_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB709_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB709_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB709_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB709_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB709_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB827_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB827_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="IB827_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB827_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB827_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="IB827_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="NB711_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="NB711_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="NB711_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="NB711_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="NB711_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="NB711_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="NB816_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="NB816_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="NB816_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="NB816_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="NB816_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="NB816_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="SPLASH_1_FLUX_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="SPLASH_1_FLUX_ERR_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="SPLASH_1_MAG_Laigle" unit="mag"/>
+<FIELD datatype="float" name="SPLASH_1_MAGERR_Laigle" unit="mag"/>
+<FIELD datatype="float" name="SPLASH_2_FLUX_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="SPLASH_2_FLUX_ERR_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="SPLASH_2_MAG_Laigle" unit="mag"/>
+<FIELD datatype="float" name="SPLASH_2_MAGERR_Laigle" unit="mag"/>
+<FIELD datatype="float" name="SPLASH_3_FLUX_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="SPLASH_3_FLUX_ERR_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="SPLASH_3_MAG_Laigle" unit="mag"/>
+<FIELD datatype="float" name="SPLASH_3_MAGERR_Laigle" unit="mag"/>
+<FIELD datatype="float" name="SPLASH_4_FLUX_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="SPLASH_4_FLUX_ERR_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="SPLASH_4_MAG_Laigle" unit="mag"/>
+<FIELD datatype="float" name="SPLASH_4_MAGERR_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Hw_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="Hw_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="Hw_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Hw_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Hw_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Hw_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Ksw_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="Ksw_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="Ksw_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Ksw_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Ksw_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="Ksw_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="yHSC_FLUX_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="yHSC_FLUXERR_APER3_Laigle" unit="uJy"/>
+<FIELD datatype="float" name="yHSC_MAG_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="yHSC_MAGERR_APER3_Laigle" unit="mag"/>
+<FIELD datatype="float" name="yHSC_MAG_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="float" name="yHSC_MAGERR_AUTO_Laigle" unit="mag"/>
+<FIELD datatype="short" name="FLAG_XRAYBLEND_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="double" name="OFFSET_Laigle"/>
+<FIELD datatype="float" name="PHOTOZ_Laigle"/>
+<FIELD datatype="short" name="TYPE_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="ZPDF_Laigle"/>
+<FIELD datatype="float" name="ZPDF_L68_Laigle"/>
+<FIELD datatype="float" name="ZPDF_H68_Laigle"/>
+<FIELD datatype="float" name="ZMINCHI2_Laigle"/>
+<FIELD datatype="double" name="CHI2_BEST_Laigle"/>
+<FIELD datatype="float" name="ZP_2_Laigle"/>
+<FIELD datatype="double" name="CHI2_2_Laigle"/>
+<FIELD datatype="short" name="NBFILT_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="ZQ_Laigle"/>
+<FIELD datatype="double" name="CHIQ_Laigle"/>
+<FIELD datatype="short" name="MODQ_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="MODS_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="double" name="CHIS_Laigle"/>
+<FIELD datatype="short" name="MODEL_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="double" name="AGE_Laigle"/>
+<FIELD datatype="float" name="EXTINCTION_Laigle"/>
+<FIELD datatype="float" name="MNUV_Laigle"/>
+<FIELD datatype="float" name="MU_Laigle"/>
+<FIELD datatype="float" name="MB_Laigle"/>
+<FIELD datatype="float" name="MV_Laigle"/>
+<FIELD datatype="float" name="MR_Laigle"/>
+<FIELD datatype="float" name="MI_Laigle"/>
+<FIELD datatype="float" name="MZ_Laigle"/>
+<FIELD datatype="float" name="MY_Laigle"/>
+<FIELD datatype="float" name="MJ_Laigle"/>
+<FIELD datatype="float" name="MH_Laigle"/>
+<FIELD datatype="float" name="MK_Laigle"/>
+<FIELD datatype="double" name="MNUV_MR_Laigle"/>
+<FIELD datatype="short" name="CLASS_Laigle">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="double" name="MASS_MED_Laigle"/>
+<FIELD datatype="double" name="MASS_MED_MIN68_Laigle"/>
+<FIELD datatype="double" name="MASS_MED_MAX68_Laigle"/>
+<FIELD datatype="double" name="MASS_BEST_Laigle"/>
+<FIELD datatype="double" name="SFR_MED_Laigle"/>
+<FIELD datatype="double" name="SFR_MED_MIN68_Laigle"/>
+<FIELD datatype="double" name="SFR_MED_MAX68_Laigle"/>
+<FIELD datatype="double" name="SFR_BEST_Laigle"/>
+<FIELD datatype="double" name="SSFR_MED_Laigle"/>
+<FIELD datatype="double" name="SSFR_MED_MIN68_Laigle"/>
+<FIELD datatype="double" name="SSFR_MED_MAX68_Laigle"/>
+<FIELD datatype="double" name="SSFR_BEST_Laigle"/>
+<FIELD datatype="double" name="L_NU_Laigle"/>
+<FIELD datatype="double" name="L_R_Laigle"/>
+<FIELD datatype="double" name="L_K_Laigle"/>
+<FIELD datatype="long" name="ID_Davidzon">
+<VALUES null='-9223372036854775808'/>
+</FIELD>
+<FIELD datatype="double" name="RA_J2000_Davidzon"/>
+<FIELD datatype="double" name="Dec_J2000_Davidzon"/>
+<FIELD datatype="double" name="ZPHOT_Davidzon"/>
+<FIELD datatype="double" name="ZML_Davidzon"/>
+<FIELD datatype="double" name="ZML_L68_Davidzon"/>
+<FIELD datatype="double" name="ZML_H68_Davidzon"/>
+<FIELD datatype="double" name="ZBEST_Davidzon"/>
+<FIELD datatype="double" name="CHI2_Davidzon"/>
+<FIELD datatype="long" name="MODEL_Davidzon">
+<VALUES null='-9223372036854775808'/>
+</FIELD>
+<FIELD datatype="double" name="EBV_Davidzon"/>
+<FIELD datatype="double" name="ZBEST_SEC_Davidzon"/>
+<FIELD datatype="long" name="NBFILT_Davidzon">
+<VALUES null='-9223372036854775808'/>
+</FIELD>
+<FIELD datatype="double" name="NUVr_MED_Davidzon"/>
+<FIELD datatype="double" name="NUVr_L68_Davidzon"/>
+<FIELD datatype="double" name="NUVr_H68_Davidzon"/>
+<FIELD datatype="double" name="rK_MED_Davidzon"/>
+<FIELD datatype="double" name="rK_L68_Davidzon"/>
+<FIELD datatype="double" name="rK_H68_Davidzon"/>
+<FIELD datatype="long" name="type_Davidzon">
+<VALUES null='-9223372036854775808'/>
+</FIELD>
+<FIELD datatype="long" name="deep_Davidzon">
+<VALUES null='-9223372036854775808'/>
+</FIELD>
+<FIELD datatype="double" name="logMASS_MED_Davidzon"/>
+<FIELD datatype="double" name="logMASS_L68_Davidzon"/>
+<FIELD datatype="double" name="logMASS_H68_Davidzon"/>
+<FIELD datatype="double" name="logSFR_MED_Davidzon"/>
+<FIELD datatype="double" name="logSFR_L68_Davidzon"/>
+<FIELD datatype="double" name="logSFR_H68_Davidzon"/>
+<FIELD datatype="double" name="AGE_MED_Davidzon"/>
+<FIELD datatype="double" name="AGE_L68_Davidzon"/>
+<FIELD datatype="double" name="AGE_H68_Davidzon"/>
+<FIELD datatype="double" name="logSSFR_MED_Davidzon"/>
+<FIELD datatype="double" name="z_min_IRAC1_Davidzon"/>
+<FIELD datatype="double" name="z_max_IRAC1_Davidzon"/>
+<FIELD datatype="int" name="_id_Jin">
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="double" name="_ra_Jin"/>
+<FIELD datatype="double" name="_de_Jin"/>
+<FIELD datatype="float" name="zp_X_Jin"/>
+<FIELD datatype="float" name="MassX_Jin"/>
+<FIELD datatype="float" name="spezX_Jin"/>
+<FIELD datatype="double" name="f24_Jin" unit="mJy">
+<DESCRIPTION>(f24*1.7)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="df24_Jin" unit="mJy">
+<DESCRIPTION>(df24*1.7)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="f_20cm_VLA_Jin" unit="mJy"/>
+<FIELD datatype="double" name="df_20cm_VLA_Jin" unit="mJy"/>
+<FIELD datatype="double" name="f100_Jin"/>
+<FIELD datatype="double" name="df100_Jin"/>
+<FIELD datatype="double" name="f160_Jin"/>
+<FIELD datatype="double" name="df160_Jin"/>
+<FIELD datatype="double" name="f_irac1_Jin" unit="mJy"/>
+<FIELD datatype="double" name="df_irac1_Jin" unit="mJy"/>
+<FIELD datatype="double" name="f_irac2_Jin" unit="mJy"/>
+<FIELD datatype="double" name="df_irac2_Jin" unit="mJy"/>
+<FIELD datatype="double" name="f_irac3_Jin" unit="mJy"/>
+<FIELD datatype="double" name="df_irac3_Jin" unit="mJy"/>
+<FIELD datatype="double" name="f_irac4_Jin" unit="mJy"/>
+<FIELD datatype="double" name="df_irac4_Jin" unit="mJy"/>
+<FIELD datatype="double" name="f_K_Jin"/>
+<FIELD datatype="double" name="df_K_Jin"/>
+<FIELD datatype="double" name="f250_Jin"/>
+<FIELD datatype="double" name="df250_Jin"/>
+<FIELD datatype="double" name="f350_Jin"/>
+<FIELD datatype="double" name="df350_Jin"/>
+<FIELD datatype="double" name="f500_Jin"/>
+<FIELD datatype="double" name="df500_Jin"/>
+<FIELD datatype="double" name="f850_Jin"/>
+<FIELD datatype="double" name="df850_Jin"/>
+<FIELD datatype="double" name="f1100_Jin"/>
+<FIELD datatype="double" name="df1100_Jin"/>
+<FIELD datatype="float" name="f1200_Jin"/>
+<FIELD datatype="double" name="df1200_Jin"/>
+<FIELD datatype="double" name="f_10cm_VLA_Jin" unit="mJy">
+<DESCRIPTION>(f3ghz_org)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="df_10cm_VLA_Jin" unit="mJy">
+<DESCRIPTION>(df3ghz_org)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="SN_IR_Jin"/>
+<FIELD datatype="short" name="goodArea_Jin">
+<DESCRIPTION>(1)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="double" name="xmeAGN_Jin">
+<DESCRIPTION>(toDouble(xmeAGN_0))</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="xfAGN_Jin">
+<DESCRIPTION>(toDouble(xfAGN_0))</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="xeAGN_Jin">
+<DESCRIPTION>(toDouble(xeAGN_0))</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="xmeSFR_Jin"/>
+<FIELD datatype="double" name="xfSFR_Jin"/>
+<FIELD datatype="double" name="xeSFR_Jin"/>
+<FIELD datatype="double" name="xfTOT_Jin"/>
+<FIELD datatype="double" name="xeTOT_Jin"/>
+<FIELD datatype="float" name="xf_zz_Jin"/>
+<FIELD datatype="double" name="xe_zz_Jin">
+<DESCRIPTION>(toDouble(xe_zz))</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="14" datatype="char" name="Instr_Salvato">
+<DESCRIPTION>(Instr=="VIMOS_LEGA-"?"VIMOS_LEGA-C":Instr)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="z_spec_Salvato">
+<DESCRIPTION>($5==-91?-99:$5)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="Q_f_Salvato">
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD arraysize="9" datatype="char" name="ID_Salvato">
+<DESCRIPTION>("L_" + toString(NUMBER)) (null_ID?"-99":ID) (null_$9? "-99":ID)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="ALPHA_J2000_Salvato" unit="deg">
+<DESCRIPTION>(null_ALPHA_J2000?-99:ALPHA_J2000) (null_$10?-99:$10)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="DELTA_J2000_Salvato" unit="deg">
+<DESCRIPTION>(null_$11?-99:$11) (null_$11?-99:$11)</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="38" datatype="char" name="Contact_Salvato">
+<DESCRIPTION>("Guenther Hasinger &lt;hasinger@hawaii.edu&gt;")</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="z_spec_dzliu"/>
+<FIELD arraysize="7" datatype="char" name="ref_z_spec_dzliu"/>
+<FIELD datatype="float" name="z_phot_dzliu"/>
+<FIELD arraysize="6" datatype="char" name="ref_z_phot_dzliu"/>
+<!-- Dummy VOTable - no DATA element -->
+</TABLE>
+</RESOURCE>
+</VOTABLE>
+                               XTENSION= 'BINTABLE'           / binary table extension                         BITPIX  =                    8 / 8-bit bytes                                    NAXIS   =                    2 / 2-dimensional table                            NAXIS1  =                 2825 / width of table in bytes                        NAXIS2  =                    1 / number of rows in table                        PCOUNT  =                    0 / size of special data area                      GCOUNT  =                    1 / one data group                                 TFIELDS =                  450 / number of columns                              EXTNAME = 'Joined  '           / table name                                     TTYPE1  = 'ID_prior'           / label for column 1                             TFORM1  = 'J       '           / format for column 1                            TNULL1  =          -2147483648 / blank value for column 1                       TTYPE2  = 'RA_prior'           / label for column 2                             TFORM2  = 'D       '           / format for column 2                            TTYPE3  = 'Dec_prior'          / label for column 3                             TFORM3  = 'D       '           / format for column 3                            TTYPE4  = 'Total_flux_pbcor_prior' / label for column 4                         TFORM4  = 'D       '           / format for column 4                            TTYPE5  = 'E_Total_flux_pbcor_prior' / label for column 5                       TFORM5  = 'D       '           / format for column 5                            TTYPE6  = 'E_Total_flux_sim_pbcor_prior' / label for column 6                   TFORM6  = 'D       '           / format for column 6                            TTYPE7  = 'Pbcor_prior'        / label for column 7                             TFORM7  = 'D       '           / format for column 7                            TTYPE8  = 'Pb_corr_pb_image_prior' / label for column 8                         TFORM8  = 'D       '           / format for column 8                            TTYPE9  = 'Pb_corr_equation_prior' / label for column 9                         TFORM9  = 'E       '           / format for column 9                            TTYPE10 = 'Maj_prior'          / label for column 10                            TFORM10 = 'D       '           / format for column 10                           TUNIT10 = 'arcsec  '           / units for column 10                            TCOMM10 = 'Deconvolved (intrinsic) source Gaussian FWHM size'                   TTYPE11 = 'Min_prior'          / label for column 11                            TFORM11 = 'D       '           / format for column 11                           TUNIT11 = 'arcsec  '           / units for column 11                            TCOMM11 = 'Deconvolved (intrinsic) source Gaussian FWHM size'                   TTYPE12 = 'PA_prior'           / label for column 12                            TFORM12 = 'D       '           / format for column 12                           TUNIT12 = 'degree  '           / units for column 12                            TCOMM12 = 'deconvolved (intrinsic) source Gaussian position angle'              TTYPE13 = 'x1_prior'           / label for column 13                            TFORM13 = 'D       '           / format for column 13                           TCOMM13 = 'SNR_peak = Peak_flux/rms_noise, see Eq. 1 in the paper.'             TTYPE14 = 'x2_prior'           / label for column 14                            TFORM14 = 'D       '           / format for column 14                           TTYPE15 = 'Image_file_prior'   / label for column 15                            TFORM15 = '86A     '           / format for column 15                           TCOMM15 = 'data image file name'                                                TTYPE16 = 'Image_cutout_prior' / label for column 16                            TFORM16 = '94A     '           / format for column 16                           TCOMM16 = 'data image cutout rectangle'                                         TTYPE17 = 'Obs_wavelength_prior' / label for column 17                          TFORM17 = 'E       '           / format for column 17                           TUNIT17 = 'um      '           / units for column 17                            TTYPE18 = 'Primary_beam_prior' / label for column 18                            TFORM18 = 'D       '           / format for column 18                           TUNIT18 = 'arcsec  '           / units for column 18                            TCOMM18 = 'ALMA 12m antenna primary beam FWHM, 1.13*w/D/pi*180*3600'            TTYPE19 = 'RMS_noise_prior'    / label for column 19                            TFORM19 = 'D       '           / format for column 19                           TUNIT19 = 'mJy/beam'           / units for column 19                            TCOMM19 = 'RMS noise in the image'                                              TTYPE20 = 'Maj_beam_prior'     / label for column 20                            TFORM20 = 'D       '           / format for column 20                           TUNIT20 = 'arcsec  '           / units for column 20                            TCOMM20 = 'Gaussian FWHM size of the beam.'                                     TTYPE21 = 'Min_beam_prior'     / label for column 21                            TFORM21 = 'D       '           / format for column 21                           TUNIT21 = 'arcsec  '           / units for column 21                            TCOMM21 = 'Gaussian FWHM size of the beam.'                                     TTYPE22 = 'PA_beam_prior'      / label for column 22                            TFORM22 = 'D       '           / format for column 22                           TUNIT22 = 'degree  '           / units for column 22                            TCOMM22 = 'Gaussian position angle of the beam.'                                TTYPE23 = 'Galfit_reduced_chi_square_prior' / label for column 23               TFORM23 = 'D       '           / format for column 23                           TCOMM23 = 'Galfit reduced chi square'                                           TTYPE24 = 'Flag_size_lower_boundary_prior' / label for column 24                TFORM24 = 'L       '           / format for column 24                           TCOMM24 = 'Flag for galfit fitted size hitting the lower boundary'              TTYPE25 = 'Flag_size_upper_boundary_prior' / label for column 25                TFORM25 = 'L       '           / format for column 25                           TCOMM25 = 'Flag for galfit fitted size hitting the upper boundary'              TTYPE26 = 'Flag_size_initial_guess_prior' / label for column 26                 TFORM26 = 'L       '           / format for column 26                           TCOMM26 = 'Flag for galfit fitted size keeping the same as initial guess'       TTYPE27 = 'Flag_zero_galfit_flux_error_prior' / label for column 27             TFORM27 = 'L       '           / format for column 27                           TCOMM27 = 'Flag for zero galfit output flux error'                              TTYPE28 = 'Flag_zero_galfit_size_error_prior' / label for column 28             TFORM28 = 'L       '           / format for column 28                           TCOMM28 = 'Flag for zero galfit output size error'                              TTYPE29 = 'RA_pybdsm'          / label for column 29                            TFORM29 = 'D       '           / format for column 29                           TUNIT29 = 'deg     '           / units for column 29                            TTYPE30 = 'DEC_pybdsm'         / label for column 30                            TFORM30 = 'D       '           / format for column 30                           TUNIT30 = 'deg     '           / units for column 30                            TTYPE31 = 'Total_flux_pbcor_pybdsm' / label for column 31                       TFORM31 = 'D       '           / format for column 31                           TTYPE32 = 'E_Total_flux_pbcor_pybdsm' / label for column 32                     TFORM32 = 'D       '           / format for column 32                           TTYPE33 = 'E_Total_flux_sim_pbcor_pybdsm' / label for column 33                 TFORM33 = 'D       '           / format for column 33                           TTYPE34 = 'Pbcor_pybdsm'       / label for column 34                            TFORM34 = 'D       '           / format for column 34                           TTYPE35 = 'x1_pybdsm'          / label for column 35                            TFORM35 = 'D       '           / format for column 35                           TCOMM35 = 'SNR_peak = Peak_flux/rms_noise, see Eq. 1 in the paper.'             TTYPE36 = 'x2_pybdsm'          / label for column 36                            TFORM36 = 'D       '           / format for column 36                           TTYPE37 = 'Maj_pybdsm'         / label for column 37                            TFORM37 = 'D       '           / format for column 37                           TUNIT37 = 'arcsec  '           / units for column 37                            TCOMM37 = 'deconvolved (intrinsic) source Gaussian FWHM size'                   TTYPE38 = 'Min_pybdsm'         / label for column 38                            TFORM38 = 'D       '           / format for column 38                           TUNIT38 = 'arcsec  '           / units for column 38                            TCOMM38 = 'deconvolved (intrinsic) source Gaussian FWHM size'                   TTYPE39 = 'PA_pybdsm'          / label for column 39                            TFORM39 = 'D       '           / format for column 39                           TUNIT39 = 'degree  '           / units for column 39                            TCOMM39 = 'deconvolved (intrinsic) source Gaussian position angle'              TTYPE40 = 'Image_file_pybdsm'  / label for column 40                            TFORM40 = '86A     '           / format for column 40                           TCOMM40 = 'data image file name'                                                TTYPE41 = 'Obs_wavelength_pybdsm' / label for column 41                         TFORM41 = 'E       '           / format for column 41                           TUNIT41 = 'um      '           / units for column 41                            TCOMM41 = 'ALMA obs sky wavelength'                                             TTYPE42 = 'Primary_beam_pybdsm' / label for column 42                           TFORM42 = 'D       '           / format for column 42                           TUNIT42 = 'arcsec  '           / units for column 42                            TCOMM42 = 'ALMA 12m antenna primary beam FWHM, 1.13*w/D/pi*180*3600'            TTYPE43 = 'rms_noise_pybdsm'   / label for column 43                            TFORM43 = 'D       '           / format for column 43                           TUNIT43 = 'mJy/beam'           / units for column 43                            TTYPE44 = 'Maj_beam_pybdsm'    / label for column 44                            TFORM44 = 'D       '           / format for column 44                           TUNIT44 = 'arcsec  '           / units for column 44                            TCOMM44 = 'beam Gaussian FWHM size'                                             TTYPE45 = 'Min_beam_pybdsm'    / label for column 45                            TFORM45 = 'D       '           / format for column 45                           TUNIT45 = 'arcsec  '           / units for column 45                            TCOMM45 = 'beam Gaussian FWHM size'                                             TTYPE46 = 'PA_beam_pybdsm'     / label for column 46                            TFORM46 = 'D       '           / format for column 46                           TUNIT46 = 'degree  '           / units for column 46                            TCOMM46 = 'beam Gaussian position angle'                                        TTYPE47 = 'Flag_multi_pybdsm'  / label for column 47                            TFORM47 = 'A       '           / format for column 47                           TCOMM47 = 'flag for multi-Gaussian fitting'                                     TTYPE48 = 'Flag_matched'       / label for column 48                            TFORM48 = 'L       '           / format for column 48                           TTYPE49 = 'Flag_only_prior'    / label for column 49                            TFORM49 = 'L       '           / format for column 49                           TTYPE50 = 'Flag_only_pybdsm'   / label for column 50                            TFORM50 = 'L       '           / format for column 50                           TTYPE51 = 'x1      '           / label for column 51                            TFORM51 = 'D       '           / format for column 51                           TCOMM51 = 'SNR_peak = Peak_flux/RMS_noise'                                      TTYPE52 = 'x2      '           / label for column 52                            TFORM52 = 'D       '           / format for column 52                           TCOMM52 = 'Theta_beam = sqrt((Maj_convol*Min_convl)/(Maj_beam*Min_beam))'       TTYPE53 = 'IMAGE_ALMA'         / label for column 53                            TFORM53 = '68A     '           / format for column 53                           TUNIT53 = 'um      '           / units for column 53                            TTYPE54 = 'WAVELENGTH_ALMA'    / label for column 54                            TFORM54 = 'E       '           / format for column 54                           TUNIT54 = 'um      '           / units for column 54                            TTYPE55 = 'FLUX_ALMA'          / label for column 55                            TFORM55 = 'D       '           / format for column 55                           TUNIT55 = 'mJy     '           / units for column 55                            TTYPE56 = 'FLUXERR_ALMA'       / label for column 56                            TFORM56 = 'D       '           / format for column 56                           TUNIT56 = 'mJy     '           / units for column 56                            TTYPE57 = 'ID_Master'          / label for column 57                            TFORM57 = 'J       '           / format for column 57                           TNULL57 =          -2147483648 / blank value for column 57                      TCOMM57 = 'COSMOS master catalog ID'                                            TTYPE58 = 'RA_Master'          / label for column 58                            TFORM58 = 'D       '           / format for column 58                           TTYPE59 = 'Dec_Master'         / label for column 59                            TFORM59 = 'D       '           / format for column 59                           TTYPE60 = 'Origin_Master'      / label for column 60                            TFORM60 = 'I       '           / format for column 60                           TNULL60 =               -32768 / blank value for column 60                      TTYPE61 = 'Duplication_Master' / label for column 61                            TFORM61 = 'I       '           / format for column 61                           TNULL61 =               -32768 / blank value for column 61                      TCOMM61 = 'Duplications in the original catalogs.'                              TTYPE62 = 'ID_Origin_Master'   / label for column 62                            TFORM62 = 'J       '           / format for column 62                           TNULL62 =          -2147483648 / blank value for column 62                      TTYPE63 = 'Flag_Laigle_FLAG_PETER_Master' / label for column 63                 TFORM63 = 'I       '           / format for column 63                           TNULL63 =               -32768 / blank value for column 63                      TTYPE64 = 'Flag_Laigle_TYPE_Master' / label for column 64                       TFORM64 = 'I       '           / format for column 64                           TNULL64 =               -32768 / blank value for column 64                      TTYPE65 = 'Flag_Muzzin_star_Master' / label for column 65                       TFORM65 = 'I       '           / format for column 65                           TNULL65 =               -32768 / blank value for column 65                      TTYPE66 = 'Flag_Muzzin_contamination_Master' / label for column 66              TFORM66 = 'I       '           / format for column 66                           TNULL66 =               -32768 / blank value for column 66                      TTYPE67 = 'Flag_Capak_FLAG_Master' / label for column 67                        TFORM67 = 'I       '           / format for column 67                           TNULL67 =               -32768 / blank value for column 67                      TTYPE68 = 'Flag_Davidzon_col12_Master' / label for column 68                    TFORM68 = 'I       '           / format for column 68                           TNULL68 =               -32768 / blank value for column 68                      TTYPE69 = 'Flag_Outlier_Master' / label for column 69                           TFORM69 = 'I       '           / format for column 69                           TNULL69 =               -32768 / blank value for column 69                      TTYPE70 = 'ZPDF_Laigle_Master' / label for column 70                            TFORM70 = 'E       '           / format for column 70                           TTYPE71 = 'ID_Laigle_Master'   / label for column 71                            TFORM71 = 'J       '           / format for column 71                           TNULL71 =          -2147483648 / blank value for column 71                      TCOMM71 = '(Origin==1 ? ID_Origin : -99)'                                       TTYPE72 = 'NUMBER_Master'      / label for column 72                            TFORM72 = 'K       '           / format for column 72                           TNULL72 = -9223372036854775808 / blank value for column 72                      TCOMM72 = 'From Laigle+2016'                                                    TTYPE73 = 'ZPDF_Master'        / label for column 73                            TFORM73 = 'E       '           / format for column 73                           TCOMM73 = 'From Laigle+2016'                                                    TTYPE74 = 'ZPDF_L68_Master'    / label for column 74                            TFORM74 = 'E       '           / format for column 74                           TCOMM74 = 'From Laigle+2016'                                                    TTYPE75 = 'ZPDF_H68_Master'    / label for column 75                            TFORM75 = 'E       '           / format for column 75                           TCOMM75 = 'From Laigle+2016'                                                    TTYPE76 = 'ZMINCHI2_Master'    / label for column 76                            TFORM76 = 'E       '           / format for column 76                           TCOMM76 = 'From Laigle+2016'                                                    TTYPE77 = 'CHI2_BEST_Master'   / label for column 77                            TFORM77 = 'D       '           / format for column 77                           TCOMM77 = 'From Laigle+2016'                                                    TTYPE78 = 'ZP_2_Master'        / label for column 78                            TFORM78 = 'E       '           / format for column 78                           TCOMM78 = 'From Laigle+2016'                                                    TTYPE79 = 'CHI2_2_Master'      / label for column 79                            TFORM79 = 'D       '           / format for column 79                           TCOMM79 = 'From Laigle+2016'                                                    TTYPE80 = 'CLASS_Master'       / label for column 80                            TFORM80 = 'I       '           / format for column 80                           TNULL80 =               -32768 / blank value for column 80                      TCOMM80 = 'From Laigle+2016'                                                    TTYPE81 = 'MASS_MED_Master'    / label for column 81                            TFORM81 = 'D       '           / format for column 81                           TCOMM81 = 'From Laigle+2016'                                                    TTYPE82 = 'MASS_MED_MIN68_Master' / label for column 82                         TFORM82 = 'D       '           / format for column 82                           TCOMM82 = 'From Laigle+2016'                                                    TTYPE83 = 'MASS_MED_MAX68_Master' / label for column 83                         TFORM83 = 'D       '           / format for column 83                           TCOMM83 = 'From Laigle+2016'                                                    TTYPE84 = 'MASS_BEST_Master'   / label for column 84                            TFORM84 = 'D       '           / format for column 84                           TCOMM84 = 'From Laigle+2016'                                                    TTYPE85 = 'SFR_MED_Master'     / label for column 85                            TFORM85 = 'D       '           / format for column 85                           TCOMM85 = 'From Laigle+2016'                                                    TTYPE86 = 'SFR_MED_MIN68_Master' / label for column 86                          TFORM86 = 'D       '           / format for column 86                           TCOMM86 = 'From Laigle+2016'                                                    TTYPE87 = 'SFR_MED_MAX68_Master' / label for column 87                          TFORM87 = 'D       '           / format for column 87                           TCOMM87 = 'From Laigle+2016'                                                    TTYPE88 = 'SFR_BEST_Master'    / label for column 88                            TFORM88 = 'D       '           / format for column 88                           TCOMM88 = 'From Laigle+2016'                                                    TTYPE89 = 'SSFR_MED_Master'    / label for column 89                            TFORM89 = 'D       '           / format for column 89                           TCOMM89 = 'From Laigle+2016'                                                    TTYPE90 = 'SSFR_MED_MIN68_Master' / label for column 90                         TFORM90 = 'D       '           / format for column 90                           TCOMM90 = 'From Laigle+2016'                                                    TTYPE91 = 'SSFR_MED_MAX68_Master' / label for column 91                         TFORM91 = 'D       '           / format for column 91                           TCOMM91 = 'From Laigle+2016'                                                    TTYPE92 = 'SSFR_BEST_Master'   / label for column 92                            TFORM92 = 'D       '           / format for column 92                           TCOMM92 = 'From Laigle+2016'                                                    TTYPE93 = 'ID_Davidzon2017_Master' / label for column 93                        TFORM93 = 'K       '           / format for column 93                           TNULL93 = -9223372036854775808 / blank value for column 93                      TCOMM93 = 'From Davidzon+2017'                                                  TTYPE94 = 'RA_Davidzon2017_Master' / label for column 94                        TFORM94 = 'D       '           / format for column 94                           TCOMM94 = 'From Davidzon+2017'                                                  TTYPE95 = 'Dec_Davidzon2017_Master' / label for column 95                       TFORM95 = 'D       '           / format for column 95                           TCOMM95 = 'From Davidzon+2017'                                                  TTYPE96 = 'ZPHOT_Davidzon2017_Master' / label for column 96                     TFORM96 = 'D       '           / format for column 96                           TCOMM96 = 'From Davidzon+2017'                                                  TTYPE97 = 'ZML_Davidzon2017_Master' / label for column 97                       TFORM97 = 'D       '           / format for column 97                           TCOMM97 = 'From Davidzon+2017'                                                  TTYPE98 = 'ZML_L68_Davidzon2017_Master' / label for column 98                   TFORM98 = 'D       '           / format for column 98                           TCOMM98 = 'From Davidzon+2017'                                                  TTYPE99 = 'ZML_H68_Davidzon2017_Master' / label for column 99                   TFORM99 = 'D       '           / format for column 99                           TCOMM99 = 'From Davidzon+2017'                                                  TTYPE100= 'ZBEST_Davidzon2017_Master' / label for column 100                    TFORM100= 'D       '           / format for column 100                          TCOMM100= 'From Davidzon+2017'                                                  TTYPE101= 'CHI2_Davidzon2017_Master' / label for column 101                     TFORM101= 'D       '           / format for column 101                          TCOMM101= 'From Davidzon+2017'                                                  TTYPE102= 'logMASS_MED_Davidzon2017_Master' / label for column 102              TFORM102= 'D       '           / format for column 102                          TCOMM102= 'From Davidzon+2017'                                                  TTYPE103= 'logMASS_L68_Davidzon2017_Master' / label for column 103              TFORM103= 'D       '           / format for column 103                          TCOMM103= 'From Davidzon+2017'                                                  TTYPE104= 'logMASS_H68_Davidzon2017_Master' / label for column 104              TFORM104= 'D       '           / format for column 104                          TCOMM104= 'From Davidzon+2017'                                                  TTYPE105= 'logSFR_MED_Davidzon2017_Master' / label for column 105               TFORM105= 'D       '           / format for column 105                          TCOMM105= 'From Davidzon+2017'                                                  TTYPE106= 'logSFR_L68_Davidzon2017_Master' / label for column 106               TFORM106= 'D       '           / format for column 106                          TCOMM106= 'From Davidzon+2017'                                                  TTYPE107= 'logSFR_H68_Davidzon2017_Master' / label for column 107               TFORM107= 'D       '           / format for column 107                          TCOMM107= 'From Davidzon+2017'                                                  TTYPE108= 'AGE_MED_Davidzon2017_Master' / label for column 108                  TFORM108= 'D       '           / format for column 108                          TCOMM108= 'From Davidzon+2017'                                                  TTYPE109= 'AGE_L68_Davidzon2017_Master' / label for column 109                  TFORM109= 'D       '           / format for column 109                          TCOMM109= 'From Davidzon+2017'                                                  TTYPE110= 'AGE_H68_Davidzon2017_Master' / label for column 110                  TFORM110= 'D       '           / format for column 110                          TCOMM110= 'From Davidzon+2017'                                                  TTYPE111= 'logSSFR_MED_Davidzon2017_Master' / label for column 111              TFORM111= 'D       '           / format for column 111                          TCOMM111= 'From Davidzon+2017'                                                  TTYPE112= 'z_min_IRAC1_Davidzon2017_Master' / label for column 112              TFORM112= 'D       '           / format for column 112                          TCOMM112= 'From Davidzon+2017'                                                  TTYPE113= 'z_max_IRAC1_Davidzon2017_Master' / label for column 113              TFORM113= 'D       '           / format for column 113                          TCOMM113= 'From Davidzon+2017'                                                  TTYPE114= 'GroupID_Davidzon2017_Master' / label for column 114                  TFORM114= 'J       '           / format for column 114                          TNULL114=          -2147483648 / blank value for column 114                     TTYPE115= 'GroupSize_Davidzon2017_Master' / label for column 115                TFORM115= 'J       '           / format for column 115                          TNULL115=          -2147483648 / blank value for column 115                     TTYPE116= 'Separation_Davidzon2017_Master' / label for column 116               TFORM116= 'D       '           / format for column 116                          TUNIT116= 'arcsec  '           / units for column 116                           TUCD116 = 'pos.angDistance'                                                     TTYPE117= 'ALPHA_J2000_Laigle' / label for column 117                           TFORM117= 'D       '           / format for column 117                          TUNIT117= 'deg     '           / units for column 117                           TTYPE118= 'DELTA_J2000_Laigle' / label for column 118                           TFORM118= 'D       '           / format for column 118                          TUNIT118= 'deg     '           / units for column 118                           TTYPE119= 'NUMBER_Laigle'      / label for column 119                           TFORM119= 'K       '           / format for column 119                          TNULL119= -9223372036854775808 / blank value for column 119                     TTYPE120= 'FLAG_HJMCC_Laigle'  / label for column 120                           TFORM120= 'I       '           / format for column 120                          TNULL120=               -32768 / blank value for column 120                     TTYPE121= 'FLAG_PETER_Laigle'  / label for column 121                           TFORM121= 'I       '           / format for column 121                          TNULL121=               -32768 / blank value for column 121                     TTYPE122= 'FLAG_COSMOS_Laigle' / label for column 122                           TFORM122= 'I       '           / format for column 122                          TNULL122=               -32768 / blank value for column 122                     TTYPE123= 'FLAG_DEEP_Laigle'   / label for column 123                           TFORM123= 'I       '           / format for column 123                          TNULL123=               -32768 / blank value for column 123                     TTYPE124= 'FLAG_SHALLOW_Laigle' / label for column 124                          TFORM124= 'I       '           / format for column 124                          TNULL124=               -32768 / blank value for column 124                     TTYPE125= 'Ks_FLUX_APER3_Laigle' / label for column 125                         TFORM125= 'E       '           / format for column 125                          TUNIT125= 'uJy     '           / units for column 125                           TTYPE126= 'Ks_FLUXERR_APER3_Laigle' / label for column 126                      TFORM126= 'E       '           / format for column 126                          TUNIT126= 'uJy     '           / units for column 126                           TTYPE127= 'Ks_MAG_APER3_Laigle' / label for column 127                          TFORM127= 'E       '           / format for column 127                          TUNIT127= 'mag     '           / units for column 127                           TTYPE128= 'Ks_MAGERR_APER3_Laigle' / label for column 128                       TFORM128= 'E       '           / format for column 128                          TUNIT128= 'mag     '           / units for column 128                           TTYPE129= 'Ks_MAG_AUTO_Laigle' / label for column 129                           TFORM129= 'E       '           / format for column 129                          TUNIT129= 'mag     '           / units for column 129                           TTYPE130= 'Ks_MAGERR_AUTO_Laigle' / label for column 130                        TFORM130= 'E       '           / format for column 130                          TUNIT130= 'mag     '           / units for column 130                           TTYPE131= 'Y_FLUX_APER3_Laigle' / label for column 131                          TFORM131= 'E       '           / format for column 131                          TUNIT131= 'uJy     '           / units for column 131                           TTYPE132= 'Y_FLUXERR_APER3_Laigle' / label for column 132                       TFORM132= 'E       '           / format for column 132                          TUNIT132= 'uJy     '           / units for column 132                           TTYPE133= 'Y_MAG_APER3_Laigle' / label for column 133                           TFORM133= 'E       '           / format for column 133                          TUNIT133= 'mag     '           / units for column 133                           TTYPE134= 'Y_MAGERR_APER3_Laigle' / label for column 134                        TFORM134= 'E       '           / format for column 134                          TUNIT134= 'mag     '           / units for column 134                           TTYPE135= 'Y_MAG_AUTO_Laigle'  / label for column 135                           TFORM135= 'E       '           / format for column 135                          TUNIT135= 'mag     '           / units for column 135                           TTYPE136= 'Y_MAGERR_AUTO_Laigle' / label for column 136                         TFORM136= 'E       '           / format for column 136                          TUNIT136= 'mag     '           / units for column 136                           TTYPE137= 'H_FLUX_APER3_Laigle' / label for column 137                          TFORM137= 'E       '           / format for column 137                          TUNIT137= 'uJy     '           / units for column 137                           TTYPE138= 'H_FLUXERR_APER3_Laigle' / label for column 138                       TFORM138= 'E       '           / format for column 138                          TUNIT138= 'uJy     '           / units for column 138                           TTYPE139= 'H_MAG_APER3_Laigle' / label for column 139                           TFORM139= 'E       '           / format for column 139                          TUNIT139= 'mag     '           / units for column 139                           TTYPE140= 'H_MAGERR_APER3_Laigle' / label for column 140                        TFORM140= 'E       '           / format for column 140                          TUNIT140= 'mag     '           / units for column 140                           TTYPE141= 'H_MAG_AUTO_Laigle'  / label for column 141                           TFORM141= 'E       '           / format for column 141                          TUNIT141= 'mag     '           / units for column 141                           TTYPE142= 'H_MAGERR_AUTO_Laigle' / label for column 142                         TFORM142= 'E       '           / format for column 142                          TUNIT142= 'mag     '           / units for column 142                           TTYPE143= 'J_FLUX_APER3_Laigle' / label for column 143                          TFORM143= 'E       '           / format for column 143                          TUNIT143= 'uJy     '           / units for column 143                           TTYPE144= 'J_FLUXERR_APER3_Laigle' / label for column 144                       TFORM144= 'E       '           / format for column 144                          TUNIT144= 'uJy     '           / units for column 144                           TTYPE145= 'J_MAG_APER3_Laigle' / label for column 145                           TFORM145= 'E       '           / format for column 145                          TUNIT145= 'mag     '           / units for column 145                           TTYPE146= 'J_MAGERR_APER3_Laigle' / label for column 146                        TFORM146= 'E       '           / format for column 146                          TUNIT146= 'mag     '           / units for column 146                           TTYPE147= 'J_MAG_AUTO_Laigle'  / label for column 147                           TFORM147= 'E       '           / format for column 147                          TUNIT147= 'mag     '           / units for column 147                           TTYPE148= 'J_MAGERR_AUTO_Laigle' / label for column 148                         TFORM148= 'E       '           / format for column 148                          TUNIT148= 'mag     '           / units for column 148                           TTYPE149= 'B_FLUX_APER3_Laigle' / label for column 149                          TFORM149= 'E       '           / format for column 149                          TUNIT149= 'uJy     '           / units for column 149                           TTYPE150= 'B_FLUXERR_APER3_Laigle' / label for column 150                       TFORM150= 'E       '           / format for column 150                          TUNIT150= 'uJy     '           / units for column 150                           TTYPE151= 'B_MAG_APER3_Laigle' / label for column 151                           TFORM151= 'E       '           / format for column 151                          TUNIT151= 'mag     '           / units for column 151                           TTYPE152= 'B_MAGERR_APER3_Laigle' / label for column 152                        TFORM152= 'E       '           / format for column 152                          TUNIT152= 'mag     '           / units for column 152                           TTYPE153= 'B_MAG_AUTO_Laigle'  / label for column 153                           TFORM153= 'E       '           / format for column 153                          TUNIT153= 'mag     '           / units for column 153                           TTYPE154= 'B_MAGERR_AUTO_Laigle' / label for column 154                         TFORM154= 'E       '           / format for column 154                          TUNIT154= 'mag     '           / units for column 154                           TTYPE155= 'V_FLUX_APER3_Laigle' / label for column 155                          TFORM155= 'E       '           / format for column 155                          TUNIT155= 'uJy     '           / units for column 155                           TTYPE156= 'V_FLUXERR_APER3_Laigle' / label for column 156                       TFORM156= 'E       '           / format for column 156                          TUNIT156= 'uJy     '           / units for column 156                           TTYPE157= 'V_MAG_APER3_Laigle' / label for column 157                           TFORM157= 'E       '           / format for column 157                          TUNIT157= 'mag     '           / units for column 157                           TTYPE158= 'V_MAGERR_APER3_Laigle' / label for column 158                        TFORM158= 'E       '           / format for column 158                          TUNIT158= 'mag     '           / units for column 158                           TTYPE159= 'V_MAG_AUTO_Laigle'  / label for column 159                           TFORM159= 'E       '           / format for column 159                          TUNIT159= 'mag     '           / units for column 159                           TTYPE160= 'V_MAGERR_AUTO_Laigle' / label for column 160                         TFORM160= 'E       '           / format for column 160                          TUNIT160= 'mag     '           / units for column 160                           TTYPE161= 'ip_FLUX_APER3_Laigle' / label for column 161                         TFORM161= 'E       '           / format for column 161                          TUNIT161= 'uJy     '           / units for column 161                           TTYPE162= 'ip_FLUXERR_APER3_Laigle' / label for column 162                      TFORM162= 'E       '           / format for column 162                          TUNIT162= 'uJy     '           / units for column 162                           TTYPE163= 'ip_MAG_APER3_Laigle' / label for column 163                          TFORM163= 'E       '           / format for column 163                          TUNIT163= 'mag     '           / units for column 163                           TTYPE164= 'ip_MAGERR_APER3_Laigle' / label for column 164                       TFORM164= 'E       '           / format for column 164                          TUNIT164= 'mag     '           / units for column 164                           TTYPE165= 'ip_MAG_AUTO_Laigle' / label for column 165                           TFORM165= 'E       '           / format for column 165                          TUNIT165= 'mag     '           / units for column 165                           TTYPE166= 'ip_MAGERR_AUTO_Laigle' / label for column 166                        TFORM166= 'E       '           / format for column 166                          TUNIT166= 'mag     '           / units for column 166                           TTYPE167= 'r_FLUX_APER3_Laigle' / label for column 167                          TFORM167= 'E       '           / format for column 167                          TUNIT167= 'uJy     '           / units for column 167                           TTYPE168= 'r_FLUXERR_APER3_Laigle' / label for column 168                       TFORM168= 'E       '           / format for column 168                          TUNIT168= 'uJy     '           / units for column 168                           TTYPE169= 'r_MAG_APER3_Laigle' / label for column 169                           TFORM169= 'E       '           / format for column 169                          TUNIT169= 'mag     '           / units for column 169                           TTYPE170= 'r_MAGERR_APER3_Laigle' / label for column 170                        TFORM170= 'E       '           / format for column 170                          TUNIT170= 'mag     '           / units for column 170                           TTYPE171= 'r_MAG_AUTO_Laigle'  / label for column 171                           TFORM171= 'E       '           / format for column 171                          TUNIT171= 'mag     '           / units for column 171                           TTYPE172= 'r_MAGERR_AUTO_Laigle' / label for column 172                         TFORM172= 'E       '           / format for column 172                          TUNIT172= 'mag     '           / units for column 172                           TTYPE173= 'u_FLUX_APER3_Laigle' / label for column 173                          TFORM173= 'E       '           / format for column 173                          TUNIT173= 'uJy     '           / units for column 173                           TTYPE174= 'u_FLUXERR_APER3_Laigle' / label for column 174                       TFORM174= 'E       '           / format for column 174                          TUNIT174= 'uJy     '           / units for column 174                           TTYPE175= 'u_MAG_APER3_Laigle' / label for column 175                           TFORM175= 'E       '           / format for column 175                          TUNIT175= 'mag     '           / units for column 175                           TTYPE176= 'u_MAGERR_APER3_Laigle' / label for column 176                        TFORM176= 'E       '           / format for column 176                          TUNIT176= 'mag     '           / units for column 176                           TTYPE177= 'u_MAG_AUTO_Laigle'  / label for column 177                           TFORM177= 'E       '           / format for column 177                          TUNIT177= 'mag     '           / units for column 177                           TTYPE178= 'u_MAGERR_AUTO_Laigle' / label for column 178                         TFORM178= 'E       '           / format for column 178                          TUNIT178= 'mag     '           / units for column 178                           TTYPE179= 'zp_FLUX_APER3_Laigle' / label for column 179                         TFORM179= 'E       '           / format for column 179                          TUNIT179= 'uJy     '           / units for column 179                           TTYPE180= 'zp_FLUXERR_APER3_Laigle' / label for column 180                      TFORM180= 'E       '           / format for column 180                          TUNIT180= 'uJy     '           / units for column 180                           TTYPE181= 'zp_MAG_APER3_Laigle' / label for column 181                          TFORM181= 'E       '           / format for column 181                          TUNIT181= 'mag     '           / units for column 181                           TTYPE182= 'zp_MAGERR_APER3_Laigle' / label for column 182                       TFORM182= 'E       '           / format for column 182                          TUNIT182= 'mag     '           / units for column 182                           TTYPE183= 'zp_MAG_AUTO_Laigle' / label for column 183                           TFORM183= 'E       '           / format for column 183                          TUNIT183= 'mag     '           / units for column 183                           TTYPE184= 'zp_MAGERR_AUTO_Laigle' / label for column 184                        TFORM184= 'E       '           / format for column 184                          TUNIT184= 'mag     '           / units for column 184                           TTYPE185= 'zpp_FLUX_APER3_Laigle' / label for column 185                        TFORM185= 'E       '           / format for column 185                          TUNIT185= 'uJy     '           / units for column 185                           TTYPE186= 'zpp_FLUXERR_APER3_Laigle' / label for column 186                     TFORM186= 'E       '           / format for column 186                          TUNIT186= 'uJy     '           / units for column 186                           TTYPE187= 'zpp_MAG_APER3_Laigle' / label for column 187                         TFORM187= 'E       '           / format for column 187                          TUNIT187= 'mag     '           / units for column 187                           TTYPE188= 'zpp_MAGERR_APER3_Laigle' / label for column 188                      TFORM188= 'E       '           / format for column 188                          TUNIT188= 'mag     '           / units for column 188                           TTYPE189= 'zpp_MAG_AUTO_Laigle' / label for column 189                          TFORM189= 'E       '           / format for column 189                          TUNIT189= 'mag     '           / units for column 189                           TTYPE190= 'zpp_MAGERR_AUTO_Laigle' / label for column 190                       TFORM190= 'E       '           / format for column 190                          TUNIT190= 'mag     '           / units for column 190                           TTYPE191= 'IA484_FLUX_APER3_Laigle' / label for column 191                      TFORM191= 'E       '           / format for column 191                          TUNIT191= 'uJy     '           / units for column 191                           TTYPE192= 'IA484_FLUXERR_APER3_Laigle' / label for column 192                   TFORM192= 'E       '           / format for column 192                          TUNIT192= 'uJy     '           / units for column 192                           TTYPE193= 'IA484_MAG_APER3_Laigle' / label for column 193                       TFORM193= 'E       '           / format for column 193                          TUNIT193= 'mag     '           / units for column 193                           TTYPE194= 'IA484_MAGERR_APER3_Laigle' / label for column 194                    TFORM194= 'E       '           / format for column 194                          TUNIT194= 'mag     '           / units for column 194                           TTYPE195= 'IA484_MAG_AUTO_Laigle' / label for column 195                        TFORM195= 'E       '           / format for column 195                          TUNIT195= 'mag     '           / units for column 195                           TTYPE196= 'IA484_MAGERR_AUTO_Laigle' / label for column 196                     TFORM196= 'E       '           / format for column 196                          TUNIT196= 'mag     '           / units for column 196                           TTYPE197= 'IA527_FLUX_APER3_Laigle' / label for column 197                      TFORM197= 'E       '           / format for column 197                          TUNIT197= 'uJy     '           / units for column 197                           TTYPE198= 'IA527_FLUXERR_APER3_Laigle' / label for column 198                   TFORM198= 'E       '           / format for column 198                          TUNIT198= 'uJy     '           / units for column 198                           TTYPE199= 'IA527_MAG_APER3_Laigle' / label for column 199                       TFORM199= 'E       '           / format for column 199                          TUNIT199= 'mag     '           / units for column 199                           TTYPE200= 'IA527_MAGERR_APER3_Laigle' / label for column 200                    TFORM200= 'E       '           / format for column 200                          TUNIT200= 'mag     '           / units for column 200                           TTYPE201= 'IA527_MAG_AUTO_Laigle' / label for column 201                        TFORM201= 'E       '           / format for column 201                          TUNIT201= 'mag     '           / units for column 201                           TTYPE202= 'IA527_MAGERR_AUTO_Laigle' / label for column 202                     TFORM202= 'E       '           / format for column 202                          TUNIT202= 'mag     '           / units for column 202                           TTYPE203= 'IA624_FLUX_APER3_Laigle' / label for column 203                      TFORM203= 'E       '           / format for column 203                          TUNIT203= 'uJy     '           / units for column 203                           TTYPE204= 'IA624_FLUXERR_APER3_Laigle' / label for column 204                   TFORM204= 'E       '           / format for column 204                          TUNIT204= 'uJy     '           / units for column 204                           TTYPE205= 'IA624_MAG_APER3_Laigle' / label for column 205                       TFORM205= 'E       '           / format for column 205                          TUNIT205= 'mag     '           / units for column 205                           TTYPE206= 'IA624_MAGERR_APER3_Laigle' / label for column 206                    TFORM206= 'E       '           / format for column 206                          TUNIT206= 'mag     '           / units for column 206                           TTYPE207= 'IA624_MAG_AUTO_Laigle' / label for column 207                        TFORM207= 'E       '           / format for column 207                          TUNIT207= 'mag     '           / units for column 207                           TTYPE208= 'IA624_MAGERR_AUTO_Laigle' / label for column 208                     TFORM208= 'E       '           / format for column 208                          TUNIT208= 'mag     '           / units for column 208                           TTYPE209= 'IA679_FLUX_APER3_Laigle' / label for column 209                      TFORM209= 'E       '           / format for column 209                          TUNIT209= 'uJy     '           / units for column 209                           TTYPE210= 'IA679_FLUXERR_APER3_Laigle' / label for column 210                   TFORM210= 'E       '           / format for column 210                          TUNIT210= 'uJy     '           / units for column 210                           TTYPE211= 'IA679_MAG_APER3_Laigle' / label for column 211                       TFORM211= 'E       '           / format for column 211                          TUNIT211= 'mag     '           / units for column 211                           TTYPE212= 'IA679_MAGERR_APER3_Laigle' / label for column 212                    TFORM212= 'E       '           / format for column 212                          TUNIT212= 'mag     '           / units for column 212                           TTYPE213= 'IA679_MAG_AUTO_Laigle' / label for column 213                        TFORM213= 'E       '           / format for column 213                          TUNIT213= 'mag     '           / units for column 213                           TTYPE214= 'IA679_MAGERR_AUTO_Laigle' / label for column 214                     TFORM214= 'E       '           / format for column 214                          TUNIT214= 'mag     '           / units for column 214                           TTYPE215= 'IA738_FLUX_APER3_Laigle' / label for column 215                      TFORM215= 'E       '           / format for column 215                          TUNIT215= 'uJy     '           / units for column 215                           TTYPE216= 'IA738_FLUXERR_APER3_Laigle' / label for column 216                   TFORM216= 'E       '           / format for column 216                          TUNIT216= 'uJy     '           / units for column 216                           TTYPE217= 'IA738_MAG_APER3_Laigle' / label for column 217                       TFORM217= 'E       '           / format for column 217                          TUNIT217= 'mag     '           / units for column 217                           TTYPE218= 'IA738_MAGERR_APER3_Laigle' / label for column 218                    TFORM218= 'E       '           / format for column 218                          TUNIT218= 'mag     '           / units for column 218                           TTYPE219= 'IA738_MAG_AUTO_Laigle' / label for column 219                        TFORM219= 'E       '           / format for column 219                          TUNIT219= 'mag     '           / units for column 219                           TTYPE220= 'IA738_MAGERR_AUTO_Laigle' / label for column 220                     TFORM220= 'E       '           / format for column 220                          TUNIT220= 'mag     '           / units for column 220                           TTYPE221= 'IA767_FLUX_APER3_Laigle' / label for column 221                      TFORM221= 'E       '           / format for column 221                          TUNIT221= 'uJy     '           / units for column 221                           TTYPE222= 'IA767_FLUXERR_APER3_Laigle' / label for column 222                   TFORM222= 'E       '           / format for column 222                          TUNIT222= 'uJy     '           / units for column 222                           TTYPE223= 'IA767_MAG_APER3_Laigle' / label for column 223                       TFORM223= 'E       '           / format for column 223                          TUNIT223= 'mag     '           / units for column 223                           TTYPE224= 'IA767_MAGERR_APER3_Laigle' / label for column 224                    TFORM224= 'E       '           / format for column 224                          TUNIT224= 'mag     '           / units for column 224                           TTYPE225= 'IA767_MAG_AUTO_Laigle' / label for column 225                        TFORM225= 'E       '           / format for column 225                          TUNIT225= 'mag     '           / units for column 225                           TTYPE226= 'IA767_MAGERR_AUTO_Laigle' / label for column 226                     TFORM226= 'E       '           / format for column 226                          TUNIT226= 'mag     '           / units for column 226                           TTYPE227= 'IB427_FLUX_APER3_Laigle' / label for column 227                      TFORM227= 'E       '           / format for column 227                          TUNIT227= 'uJy     '           / units for column 227                           TTYPE228= 'IB427_FLUXERR_APER3_Laigle' / label for column 228                   TFORM228= 'E       '           / format for column 228                          TUNIT228= 'uJy     '           / units for column 228                           TTYPE229= 'IB427_MAG_APER3_Laigle' / label for column 229                       TFORM229= 'E       '           / format for column 229                          TUNIT229= 'mag     '           / units for column 229                           TTYPE230= 'IB427_MAGERR_APER3_Laigle' / label for column 230                    TFORM230= 'E       '           / format for column 230                          TUNIT230= 'mag     '           / units for column 230                           TTYPE231= 'IB427_MAG_AUTO_Laigle' / label for column 231                        TFORM231= 'E       '           / format for column 231                          TUNIT231= 'mag     '           / units for column 231                           TTYPE232= 'IB427_MAGERR_AUTO_Laigle' / label for column 232                     TFORM232= 'E       '           / format for column 232                          TUNIT232= 'mag     '           / units for column 232                           TTYPE233= 'IB464_FLUX_APER3_Laigle' / label for column 233                      TFORM233= 'E       '           / format for column 233                          TUNIT233= 'uJy     '           / units for column 233                           TTYPE234= 'IB464_FLUXERR_APER3_Laigle' / label for column 234                   TFORM234= 'E       '           / format for column 234                          TUNIT234= 'uJy     '           / units for column 234                           TTYPE235= 'IB464_MAG_APER3_Laigle' / label for column 235                       TFORM235= 'E       '           / format for column 235                          TUNIT235= 'mag     '           / units for column 235                           TTYPE236= 'IB464_MAGERR_APER3_Laigle' / label for column 236                    TFORM236= 'E       '           / format for column 236                          TUNIT236= 'mag     '           / units for column 236                           TTYPE237= 'IB464_MAG_AUTO_Laigle' / label for column 237                        TFORM237= 'E       '           / format for column 237                          TUNIT237= 'mag     '           / units for column 237                           TTYPE238= 'IB464_MAGERR_AUTO_Laigle' / label for column 238                     TFORM238= 'E       '           / format for column 238                          TUNIT238= 'mag     '           / units for column 238                           TTYPE239= 'IB505_FLUX_APER3_Laigle' / label for column 239                      TFORM239= 'E       '           / format for column 239                          TUNIT239= 'uJy     '           / units for column 239                           TTYPE240= 'IB505_FLUXERR_APER3_Laigle' / label for column 240                   TFORM240= 'E       '           / format for column 240                          TUNIT240= 'uJy     '           / units for column 240                           TTYPE241= 'IB505_MAG_APER3_Laigle' / label for column 241                       TFORM241= 'E       '           / format for column 241                          TUNIT241= 'mag     '           / units for column 241                           TTYPE242= 'IB505_MAGERR_APER3_Laigle' / label for column 242                    TFORM242= 'E       '           / format for column 242                          TUNIT242= 'mag     '           / units for column 242                           TTYPE243= 'IB505_MAG_AUTO_Laigle' / label for column 243                        TFORM243= 'E       '           / format for column 243                          TUNIT243= 'mag     '           / units for column 243                           TTYPE244= 'IB505_MAGERR_AUTO_Laigle' / label for column 244                     TFORM244= 'E       '           / format for column 244                          TUNIT244= 'mag     '           / units for column 244                           TTYPE245= 'IB574_FLUX_APER3_Laigle' / label for column 245                      TFORM245= 'E       '           / format for column 245                          TUNIT245= 'uJy     '           / units for column 245                           TTYPE246= 'IB574_FLUXERR_APER3_Laigle' / label for column 246                   TFORM246= 'E       '           / format for column 246                          TUNIT246= 'uJy     '           / units for column 246                           TTYPE247= 'IB574_MAG_APER3_Laigle' / label for column 247                       TFORM247= 'E       '           / format for column 247                          TUNIT247= 'mag     '           / units for column 247                           TTYPE248= 'IB574_MAGERR_APER3_Laigle' / label for column 248                    TFORM248= 'E       '           / format for column 248                          TUNIT248= 'mag     '           / units for column 248                           TTYPE249= 'IB574_MAG_AUTO_Laigle' / label for column 249                        TFORM249= 'E       '           / format for column 249                          TUNIT249= 'mag     '           / units for column 249                           TTYPE250= 'IB574_MAGERR_AUTO_Laigle' / label for column 250                     TFORM250= 'E       '           / format for column 250                          TUNIT250= 'mag     '           / units for column 250                           TTYPE251= 'IB709_FLUX_APER3_Laigle' / label for column 251                      TFORM251= 'E       '           / format for column 251                          TUNIT251= 'uJy     '           / units for column 251                           TTYPE252= 'IB709_FLUXERR_APER3_Laigle' / label for column 252                   TFORM252= 'E       '           / format for column 252                          TUNIT252= 'uJy     '           / units for column 252                           TTYPE253= 'IB709_MAG_APER3_Laigle' / label for column 253                       TFORM253= 'E       '           / format for column 253                          TUNIT253= 'mag     '           / units for column 253                           TTYPE254= 'IB709_MAGERR_APER3_Laigle' / label for column 254                    TFORM254= 'E       '           / format for column 254                          TUNIT254= 'mag     '           / units for column 254                           TTYPE255= 'IB709_MAG_AUTO_Laigle' / label for column 255                        TFORM255= 'E       '           / format for column 255                          TUNIT255= 'mag     '           / units for column 255                           TTYPE256= 'IB709_MAGERR_AUTO_Laigle' / label for column 256                     TFORM256= 'E       '           / format for column 256                          TUNIT256= 'mag     '           / units for column 256                           TTYPE257= 'IB827_FLUX_APER3_Laigle' / label for column 257                      TFORM257= 'E       '           / format for column 257                          TUNIT257= 'uJy     '           / units for column 257                           TTYPE258= 'IB827_FLUXERR_APER3_Laigle' / label for column 258                   TFORM258= 'E       '           / format for column 258                          TUNIT258= 'uJy     '           / units for column 258                           TTYPE259= 'IB827_MAG_APER3_Laigle' / label for column 259                       TFORM259= 'E       '           / format for column 259                          TUNIT259= 'mag     '           / units for column 259                           TTYPE260= 'IB827_MAGERR_APER3_Laigle' / label for column 260                    TFORM260= 'E       '           / format for column 260                          TUNIT260= 'mag     '           / units for column 260                           TTYPE261= 'IB827_MAG_AUTO_Laigle' / label for column 261                        TFORM261= 'E       '           / format for column 261                          TUNIT261= 'mag     '           / units for column 261                           TTYPE262= 'IB827_MAGERR_AUTO_Laigle' / label for column 262                     TFORM262= 'E       '           / format for column 262                          TUNIT262= 'mag     '           / units for column 262                           TTYPE263= 'NB711_FLUX_APER3_Laigle' / label for column 263                      TFORM263= 'E       '           / format for column 263                          TUNIT263= 'uJy     '           / units for column 263                           TTYPE264= 'NB711_FLUXERR_APER3_Laigle' / label for column 264                   TFORM264= 'E       '           / format for column 264                          TUNIT264= 'uJy     '           / units for column 264                           TTYPE265= 'NB711_MAG_APER3_Laigle' / label for column 265                       TFORM265= 'E       '           / format for column 265                          TUNIT265= 'mag     '           / units for column 265                           TTYPE266= 'NB711_MAGERR_APER3_Laigle' / label for column 266                    TFORM266= 'E       '           / format for column 266                          TUNIT266= 'mag     '           / units for column 266                           TTYPE267= 'NB711_MAG_AUTO_Laigle' / label for column 267                        TFORM267= 'E       '           / format for column 267                          TUNIT267= 'mag     '           / units for column 267                           TTYPE268= 'NB711_MAGERR_AUTO_Laigle' / label for column 268                     TFORM268= 'E       '           / format for column 268                          TUNIT268= 'mag     '           / units for column 268                           TTYPE269= 'NB816_FLUX_APER3_Laigle' / label for column 269                      TFORM269= 'E       '           / format for column 269                          TUNIT269= 'uJy     '           / units for column 269                           TTYPE270= 'NB816_FLUXERR_APER3_Laigle' / label for column 270                   TFORM270= 'E       '           / format for column 270                          TUNIT270= 'uJy     '           / units for column 270                           TTYPE271= 'NB816_MAG_APER3_Laigle' / label for column 271                       TFORM271= 'E       '           / format for column 271                          TUNIT271= 'mag     '           / units for column 271                           TTYPE272= 'NB816_MAGERR_APER3_Laigle' / label for column 272                    TFORM272= 'E       '           / format for column 272                          TUNIT272= 'mag     '           / units for column 272                           TTYPE273= 'NB816_MAG_AUTO_Laigle' / label for column 273                        TFORM273= 'E       '           / format for column 273                          TUNIT273= 'mag     '           / units for column 273                           TTYPE274= 'NB816_MAGERR_AUTO_Laigle' / label for column 274                     TFORM274= 'E       '           / format for column 274                          TUNIT274= 'mag     '           / units for column 274                           TTYPE275= 'SPLASH_1_FLUX_Laigle' / label for column 275                         TFORM275= 'E       '           / format for column 275                          TUNIT275= 'uJy     '           / units for column 275                           TTYPE276= 'SPLASH_1_FLUX_ERR_Laigle' / label for column 276                     TFORM276= 'E       '           / format for column 276                          TUNIT276= 'uJy     '           / units for column 276                           TTYPE277= 'SPLASH_1_MAG_Laigle' / label for column 277                          TFORM277= 'E       '           / format for column 277                          TUNIT277= 'mag     '           / units for column 277                           TTYPE278= 'SPLASH_1_MAGERR_Laigle' / label for column 278                       TFORM278= 'E       '           / format for column 278                          TUNIT278= 'mag     '           / units for column 278                           TTYPE279= 'SPLASH_2_FLUX_Laigle' / label for column 279                         TFORM279= 'E       '           / format for column 279                          TUNIT279= 'uJy     '           / units for column 279                           TTYPE280= 'SPLASH_2_FLUX_ERR_Laigle' / label for column 280                     TFORM280= 'E       '           / format for column 280                          TUNIT280= 'uJy     '           / units for column 280                           TTYPE281= 'SPLASH_2_MAG_Laigle' / label for column 281                          TFORM281= 'E       '           / format for column 281                          TUNIT281= 'mag     '           / units for column 281                           TTYPE282= 'SPLASH_2_MAGERR_Laigle' / label for column 282                       TFORM282= 'E       '           / format for column 282                          TUNIT282= 'mag     '           / units for column 282                           TTYPE283= 'SPLASH_3_FLUX_Laigle' / label for column 283                         TFORM283= 'E       '           / format for column 283                          TUNIT283= 'uJy     '           / units for column 283                           TTYPE284= 'SPLASH_3_FLUX_ERR_Laigle' / label for column 284                     TFORM284= 'E       '           / format for column 284                          TUNIT284= 'uJy     '           / units for column 284                           TTYPE285= 'SPLASH_3_MAG_Laigle' / label for column 285                          TFORM285= 'E       '           / format for column 285                          TUNIT285= 'mag     '           / units for column 285                           TTYPE286= 'SPLASH_3_MAGERR_Laigle' / label for column 286                       TFORM286= 'E       '           / format for column 286                          TUNIT286= 'mag     '           / units for column 286                           TTYPE287= 'SPLASH_4_FLUX_Laigle' / label for column 287                         TFORM287= 'E       '           / format for column 287                          TUNIT287= 'uJy     '           / units for column 287                           TTYPE288= 'SPLASH_4_FLUX_ERR_Laigle' / label for column 288                     TFORM288= 'E       '           / format for column 288                          TUNIT288= 'uJy     '           / units for column 288                           TTYPE289= 'SPLASH_4_MAG_Laigle' / label for column 289                          TFORM289= 'E       '           / format for column 289                          TUNIT289= 'mag     '           / units for column 289                           TTYPE290= 'SPLASH_4_MAGERR_Laigle' / label for column 290                       TFORM290= 'E       '           / format for column 290                          TUNIT290= 'mag     '           / units for column 290                           TTYPE291= 'Hw_FLUX_APER3_Laigle' / label for column 291                         TFORM291= 'E       '           / format for column 291                          TUNIT291= 'uJy     '           / units for column 291                           TTYPE292= 'Hw_FLUXERR_APER3_Laigle' / label for column 292                      TFORM292= 'E       '           / format for column 292                          TUNIT292= 'uJy     '           / units for column 292                           TTYPE293= 'Hw_MAG_APER3_Laigle' / label for column 293                          TFORM293= 'E       '           / format for column 293                          TUNIT293= 'mag     '           / units for column 293                           TTYPE294= 'Hw_MAGERR_APER3_Laigle' / label for column 294                       TFORM294= 'E       '           / format for column 294                          TUNIT294= 'mag     '           / units for column 294                           TTYPE295= 'Hw_MAG_AUTO_Laigle' / label for column 295                           TFORM295= 'E       '           / format for column 295                          TUNIT295= 'mag     '           / units for column 295                           TTYPE296= 'Hw_MAGERR_AUTO_Laigle' / label for column 296                        TFORM296= 'E       '           / format for column 296                          TUNIT296= 'mag     '           / units for column 296                           TTYPE297= 'Ksw_FLUX_APER3_Laigle' / label for column 297                        TFORM297= 'E       '           / format for column 297                          TUNIT297= 'uJy     '           / units for column 297                           TTYPE298= 'Ksw_FLUXERR_APER3_Laigle' / label for column 298                     TFORM298= 'E       '           / format for column 298                          TUNIT298= 'uJy     '           / units for column 298                           TTYPE299= 'Ksw_MAG_APER3_Laigle' / label for column 299                         TFORM299= 'E       '           / format for column 299                          TUNIT299= 'mag     '           / units for column 299                           TTYPE300= 'Ksw_MAGERR_APER3_Laigle' / label for column 300                      TFORM300= 'E       '           / format for column 300                          TUNIT300= 'mag     '           / units for column 300                           TTYPE301= 'Ksw_MAG_AUTO_Laigle' / label for column 301                          TFORM301= 'E       '           / format for column 301                          TUNIT301= 'mag     '           / units for column 301                           TTYPE302= 'Ksw_MAGERR_AUTO_Laigle' / label for column 302                       TFORM302= 'E       '           / format for column 302                          TUNIT302= 'mag     '           / units for column 302                           TTYPE303= 'yHSC_FLUX_APER3_Laigle' / label for column 303                       TFORM303= 'E       '           / format for column 303                          TUNIT303= 'uJy     '           / units for column 303                           TTYPE304= 'yHSC_FLUXERR_APER3_Laigle' / label for column 304                    TFORM304= 'E       '           / format for column 304                          TUNIT304= 'uJy     '           / units for column 304                           TTYPE305= 'yHSC_MAG_APER3_Laigle' / label for column 305                        TFORM305= 'E       '           / format for column 305                          TUNIT305= 'mag     '           / units for column 305                           TTYPE306= 'yHSC_MAGERR_APER3_Laigle' / label for column 306                     TFORM306= 'E       '           / format for column 306                          TUNIT306= 'mag     '           / units for column 306                           TTYPE307= 'yHSC_MAG_AUTO_Laigle' / label for column 307                         TFORM307= 'E       '           / format for column 307                          TUNIT307= 'mag     '           / units for column 307                           TTYPE308= 'yHSC_MAGERR_AUTO_Laigle' / label for column 308                      TFORM308= 'E       '           / format for column 308                          TUNIT308= 'mag     '           / units for column 308                           TTYPE309= 'FLAG_XRAYBLEND_Laigle' / label for column 309                        TFORM309= 'I       '           / format for column 309                          TNULL309=               -32768 / blank value for column 309                     TTYPE310= 'OFFSET_Laigle'      / label for column 310                           TFORM310= 'D       '           / format for column 310                          TTYPE311= 'PHOTOZ_Laigle'      / label for column 311                           TFORM311= 'E       '           / format for column 311                          TTYPE312= 'TYPE_Laigle'        / label for column 312                           TFORM312= 'I       '           / format for column 312                          TNULL312=               -32768 / blank value for column 312                     TTYPE313= 'ZPDF_Laigle'        / label for column 313                           TFORM313= 'E       '           / format for column 313                          TTYPE314= 'ZPDF_L68_Laigle'    / label for column 314                           TFORM314= 'E       '           / format for column 314                          TTYPE315= 'ZPDF_H68_Laigle'    / label for column 315                           TFORM315= 'E       '           / format for column 315                          TTYPE316= 'ZMINCHI2_Laigle'    / label for column 316                           TFORM316= 'E       '           / format for column 316                          TTYPE317= 'CHI2_BEST_Laigle'   / label for column 317                           TFORM317= 'D       '           / format for column 317                          TTYPE318= 'ZP_2_Laigle'        / label for column 318                           TFORM318= 'E       '           / format for column 318                          TTYPE319= 'CHI2_2_Laigle'      / label for column 319                           TFORM319= 'D       '           / format for column 319                          TTYPE320= 'NBFILT_Laigle'      / label for column 320                           TFORM320= 'I       '           / format for column 320                          TNULL320=               -32768 / blank value for column 320                     TTYPE321= 'ZQ_Laigle'          / label for column 321                           TFORM321= 'E       '           / format for column 321                          TTYPE322= 'CHIQ_Laigle'        / label for column 322                           TFORM322= 'D       '           / format for column 322                          TTYPE323= 'MODQ_Laigle'        / label for column 323                           TFORM323= 'I       '           / format for column 323                          TNULL323=               -32768 / blank value for column 323                     TTYPE324= 'MODS_Laigle'        / label for column 324                           TFORM324= 'I       '           / format for column 324                          TNULL324=               -32768 / blank value for column 324                     TTYPE325= 'CHIS_Laigle'        / label for column 325                           TFORM325= 'D       '           / format for column 325                          TTYPE326= 'MODEL_Laigle'       / label for column 326                           TFORM326= 'I       '           / format for column 326                          TNULL326=               -32768 / blank value for column 326                     TTYPE327= 'AGE_Laigle'         / label for column 327                           TFORM327= 'D       '           / format for column 327                          TTYPE328= 'EXTINCTION_Laigle'  / label for column 328                           TFORM328= 'E       '           / format for column 328                          TTYPE329= 'MNUV_Laigle'        / label for column 329                           TFORM329= 'E       '           / format for column 329                          TTYPE330= 'MU_Laigle'          / label for column 330                           TFORM330= 'E       '           / format for column 330                          TTYPE331= 'MB_Laigle'          / label for column 331                           TFORM331= 'E       '           / format for column 331                          TTYPE332= 'MV_Laigle'          / label for column 332                           TFORM332= 'E       '           / format for column 332                          TTYPE333= 'MR_Laigle'          / label for column 333                           TFORM333= 'E       '           / format for column 333                          TTYPE334= 'MI_Laigle'          / label for column 334                           TFORM334= 'E       '           / format for column 334                          TTYPE335= 'MZ_Laigle'          / label for column 335                           TFORM335= 'E       '           / format for column 335                          TTYPE336= 'MY_Laigle'          / label for column 336                           TFORM336= 'E       '           / format for column 336                          TTYPE337= 'MJ_Laigle'          / label for column 337                           TFORM337= 'E       '           / format for column 337                          TTYPE338= 'MH_Laigle'          / label for column 338                           TFORM338= 'E       '           / format for column 338                          TTYPE339= 'MK_Laigle'          / label for column 339                           TFORM339= 'E       '           / format for column 339                          TTYPE340= 'MNUV_MR_Laigle'     / label for column 340                           TFORM340= 'D       '           / format for column 340                          TTYPE341= 'CLASS_Laigle'       / label for column 341                           TFORM341= 'I       '           / format for column 341                          TNULL341=               -32768 / blank value for column 341                     TTYPE342= 'MASS_MED_Laigle'    / label for column 342                           TFORM342= 'D       '           / format for column 342                          TTYPE343= 'MASS_MED_MIN68_Laigle' / label for column 343                        TFORM343= 'D       '           / format for column 343                          TTYPE344= 'MASS_MED_MAX68_Laigle' / label for column 344                        TFORM344= 'D       '           / format for column 344                          TTYPE345= 'MASS_BEST_Laigle'   / label for column 345                           TFORM345= 'D       '           / format for column 345                          TTYPE346= 'SFR_MED_Laigle'     / label for column 346                           TFORM346= 'D       '           / format for column 346                          TTYPE347= 'SFR_MED_MIN68_Laigle' / label for column 347                         TFORM347= 'D       '           / format for column 347                          TTYPE348= 'SFR_MED_MAX68_Laigle' / label for column 348                         TFORM348= 'D       '           / format for column 348                          TTYPE349= 'SFR_BEST_Laigle'    / label for column 349                           TFORM349= 'D       '           / format for column 349                          TTYPE350= 'SSFR_MED_Laigle'    / label for column 350                           TFORM350= 'D       '           / format for column 350                          TTYPE351= 'SSFR_MED_MIN68_Laigle' / label for column 351                        TFORM351= 'D       '           / format for column 351                          TTYPE352= 'SSFR_MED_MAX68_Laigle' / label for column 352                        TFORM352= 'D       '           / format for column 352                          TTYPE353= 'SSFR_BEST_Laigle'   / label for column 353                           TFORM353= 'D       '           / format for column 353                          TTYPE354= 'L_NU_Laigle'        / label for column 354                           TFORM354= 'D       '           / format for column 354                          TTYPE355= 'L_R_Laigle'         / label for column 355                           TFORM355= 'D       '           / format for column 355                          TTYPE356= 'L_K_Laigle'         / label for column 356                           TFORM356= 'D       '           / format for column 356                          TTYPE357= 'ID_Davidzon'        / label for column 357                           TFORM357= 'K       '           / format for column 357                          TNULL357= -9223372036854775808 / blank value for column 357                     TTYPE358= 'RA_J2000_Davidzon'  / label for column 358                           TFORM358= 'D       '           / format for column 358                          TTYPE359= 'Dec_J2000_Davidzon' / label for column 359                           TFORM359= 'D       '           / format for column 359                          TTYPE360= 'ZPHOT_Davidzon'     / label for column 360                           TFORM360= 'D       '           / format for column 360                          TTYPE361= 'ZML_Davidzon'       / label for column 361                           TFORM361= 'D       '           / format for column 361                          TTYPE362= 'ZML_L68_Davidzon'   / label for column 362                           TFORM362= 'D       '           / format for column 362                          TTYPE363= 'ZML_H68_Davidzon'   / label for column 363                           TFORM363= 'D       '           / format for column 363                          TTYPE364= 'ZBEST_Davidzon'     / label for column 364                           TFORM364= 'D       '           / format for column 364                          TTYPE365= 'CHI2_Davidzon'      / label for column 365                           TFORM365= 'D       '           / format for column 365                          TTYPE366= 'MODEL_Davidzon'     / label for column 366                           TFORM366= 'K       '           / format for column 366                          TNULL366= -9223372036854775808 / blank value for column 366                     TTYPE367= 'EBV_Davidzon'       / label for column 367                           TFORM367= 'D       '           / format for column 367                          TTYPE368= 'ZBEST_SEC_Davidzon' / label for column 368                           TFORM368= 'D       '           / format for column 368                          TTYPE369= 'NBFILT_Davidzon'    / label for column 369                           TFORM369= 'K       '           / format for column 369                          TNULL369= -9223372036854775808 / blank value for column 369                     TTYPE370= 'NUVr_MED_Davidzon'  / label for column 370                           TFORM370= 'D       '           / format for column 370                          TTYPE371= 'NUVr_L68_Davidzon'  / label for column 371                           TFORM371= 'D       '           / format for column 371                          TTYPE372= 'NUVr_H68_Davidzon'  / label for column 372                           TFORM372= 'D       '           / format for column 372                          TTYPE373= 'rK_MED_Davidzon'    / label for column 373                           TFORM373= 'D       '           / format for column 373                          TTYPE374= 'rK_L68_Davidzon'    / label for column 374                           TFORM374= 'D       '           / format for column 374                          TTYPE375= 'rK_H68_Davidzon'    / label for column 375                           TFORM375= 'D       '           / format for column 375                          TTYPE376= 'type_Davidzon'      / label for column 376                           TFORM376= 'K       '           / format for column 376                          TNULL376= -9223372036854775808 / blank value for column 376                     TTYPE377= 'deep_Davidzon'      / label for column 377                           TFORM377= 'K       '           / format for column 377                          TNULL377= -9223372036854775808 / blank value for column 377                     TTYPE378= 'logMASS_MED_Davidzon' / label for column 378                         TFORM378= 'D       '           / format for column 378                          TTYPE379= 'logMASS_L68_Davidzon' / label for column 379                         TFORM379= 'D       '           / format for column 379                          TTYPE380= 'logMASS_H68_Davidzon' / label for column 380                         TFORM380= 'D       '           / format for column 380                          TTYPE381= 'logSFR_MED_Davidzon' / label for column 381                          TFORM381= 'D       '           / format for column 381                          TTYPE382= 'logSFR_L68_Davidzon' / label for column 382                          TFORM382= 'D       '           / format for column 382                          TTYPE383= 'logSFR_H68_Davidzon' / label for column 383                          TFORM383= 'D       '           / format for column 383                          TTYPE384= 'AGE_MED_Davidzon'   / label for column 384                           TFORM384= 'D       '           / format for column 384                          TTYPE385= 'AGE_L68_Davidzon'   / label for column 385                           TFORM385= 'D       '           / format for column 385                          TTYPE386= 'AGE_H68_Davidzon'   / label for column 386                           TFORM386= 'D       '           / format for column 386                          TTYPE387= 'logSSFR_MED_Davidzon' / label for column 387                         TFORM387= 'D       '           / format for column 387                          TTYPE388= 'z_min_IRAC1_Davidzon' / label for column 388                         TFORM388= 'D       '           / format for column 388                          TTYPE389= 'z_max_IRAC1_Davidzon' / label for column 389                         TFORM389= 'D       '           / format for column 389                          TTYPE390= '_id_Jin '           / label for column 390                           TFORM390= 'J       '           / format for column 390                          TNULL390=          -2147483648 / blank value for column 390                     TTYPE391= '_ra_Jin '           / label for column 391                           TFORM391= 'D       '           / format for column 391                          TTYPE392= '_de_Jin '           / label for column 392                           TFORM392= 'D       '           / format for column 392                          TTYPE393= 'zp_X_Jin'           / label for column 393                           TFORM393= 'E       '           / format for column 393                          TTYPE394= 'MassX_Jin'          / label for column 394                           TFORM394= 'E       '           / format for column 394                          TTYPE395= 'spezX_Jin'          / label for column 395                           TFORM395= 'E       '           / format for column 395                          TTYPE396= 'f24_Jin '           / label for column 396                           TFORM396= 'D       '           / format for column 396                          TUNIT396= 'mJy     '           / units for column 396                           TCOMM396= '(f24*1.7)'                                                           TTYPE397= 'df24_Jin'           / label for column 397                           TFORM397= 'D       '           / format for column 397                          TUNIT397= 'mJy     '           / units for column 397                           TCOMM397= '(df24*1.7)'                                                          TTYPE398= 'f_20cm_VLA_Jin'     / label for column 398                           TFORM398= 'D       '           / format for column 398                          TUNIT398= 'mJy     '           / units for column 398                           TTYPE399= 'df_20cm_VLA_Jin'    / label for column 399                           TFORM399= 'D       '           / format for column 399                          TUNIT399= 'mJy     '           / units for column 399                           TTYPE400= 'f100_Jin'           / label for column 400                           TFORM400= 'D       '           / format for column 400                          TTYPE401= 'df100_Jin'          / label for column 401                           TFORM401= 'D       '           / format for column 401                          TTYPE402= 'f160_Jin'           / label for column 402                           TFORM402= 'D       '           / format for column 402                          TTYPE403= 'df160_Jin'          / label for column 403                           TFORM403= 'D       '           / format for column 403                          TTYPE404= 'f_irac1_Jin'        / label for column 404                           TFORM404= 'D       '           / format for column 404                          TUNIT404= 'mJy     '           / units for column 404                           TTYPE405= 'df_irac1_Jin'       / label for column 405                           TFORM405= 'D       '           / format for column 405                          TUNIT405= 'mJy     '           / units for column 405                           TTYPE406= 'f_irac2_Jin'        / label for column 406                           TFORM406= 'D       '           / format for column 406                          TUNIT406= 'mJy     '           / units for column 406                           TTYPE407= 'df_irac2_Jin'       / label for column 407                           TFORM407= 'D       '           / format for column 407                          TUNIT407= 'mJy     '           / units for column 407                           TTYPE408= 'f_irac3_Jin'        / label for column 408                           TFORM408= 'D       '           / format for column 408                          TUNIT408= 'mJy     '           / units for column 408                           TTYPE409= 'df_irac3_Jin'       / label for column 409                           TFORM409= 'D       '           / format for column 409                          TUNIT409= 'mJy     '           / units for column 409                           TTYPE410= 'f_irac4_Jin'        / label for column 410                           TFORM410= 'D       '           / format for column 410                          TUNIT410= 'mJy     '           / units for column 410                           TTYPE411= 'df_irac4_Jin'       / label for column 411                           TFORM411= 'D       '           / format for column 411                          TUNIT411= 'mJy     '           / units for column 411                           TTYPE412= 'f_K_Jin '           / label for column 412                           TFORM412= 'D       '           / format for column 412                          TTYPE413= 'df_K_Jin'           / label for column 413                           TFORM413= 'D       '           / format for column 413                          TTYPE414= 'f250_Jin'           / label for column 414                           TFORM414= 'D       '           / format for column 414                          TTYPE415= 'df250_Jin'          / label for column 415                           TFORM415= 'D       '           / format for column 415                          TTYPE416= 'f350_Jin'           / label for column 416                           TFORM416= 'D       '           / format for column 416                          TTYPE417= 'df350_Jin'          / label for column 417                           TFORM417= 'D       '           / format for column 417                          TTYPE418= 'f500_Jin'           / label for column 418                           TFORM418= 'D       '           / format for column 418                          TTYPE419= 'df500_Jin'          / label for column 419                           TFORM419= 'D       '           / format for column 419                          TTYPE420= 'f850_Jin'           / label for column 420                           TFORM420= 'D       '           / format for column 420                          TTYPE421= 'df850_Jin'          / label for column 421                           TFORM421= 'D       '           / format for column 421                          TTYPE422= 'f1100_Jin'          / label for column 422                           TFORM422= 'D       '           / format for column 422                          TTYPE423= 'df1100_Jin'         / label for column 423                           TFORM423= 'D       '           / format for column 423                          TTYPE424= 'f1200_Jin'          / label for column 424                           TFORM424= 'E       '           / format for column 424                          TTYPE425= 'df1200_Jin'         / label for column 425                           TFORM425= 'D       '           / format for column 425                          TTYPE426= 'f_10cm_VLA_Jin'     / label for column 426                           TFORM426= 'D       '           / format for column 426                          TUNIT426= 'mJy     '           / units for column 426                           TCOMM426= '(f3ghz_org)'                                                         TTYPE427= 'df_10cm_VLA_Jin'    / label for column 427                           TFORM427= 'D       '           / format for column 427                          TUNIT427= 'mJy     '           / units for column 427                           TCOMM427= '(df3ghz_org)'                                                        TTYPE428= 'SN_IR_Jin'          / label for column 428                           TFORM428= 'D       '           / format for column 428                          TTYPE429= 'goodArea_Jin'       / label for column 429                           TFORM429= 'I       '           / format for column 429                          TNULL429=               -32768 / blank value for column 429                     TCOMM429= '(1)     '                                                            TTYPE430= 'xmeAGN_Jin'         / label for column 430                           TFORM430= 'D       '           / format for column 430                          TCOMM430= '(toDouble(xmeAGN_0))'                                                TTYPE431= 'xfAGN_Jin'          / label for column 431                           TFORM431= 'D       '           / format for column 431                          TCOMM431= '(toDouble(xfAGN_0))'                                                 TTYPE432= 'xeAGN_Jin'          / label for column 432                           TFORM432= 'D       '           / format for column 432                          TCOMM432= '(toDouble(xeAGN_0))'                                                 TTYPE433= 'xmeSFR_Jin'         / label for column 433                           TFORM433= 'D       '           / format for column 433                          TTYPE434= 'xfSFR_Jin'          / label for column 434                           TFORM434= 'D       '           / format for column 434                          TTYPE435= 'xeSFR_Jin'          / label for column 435                           TFORM435= 'D       '           / format for column 435                          TTYPE436= 'xfTOT_Jin'          / label for column 436                           TFORM436= 'D       '           / format for column 436                          TTYPE437= 'xeTOT_Jin'          / label for column 437                           TFORM437= 'D       '           / format for column 437                          TTYPE438= 'xf_zz_Jin'          / label for column 438                           TFORM438= 'E       '           / format for column 438                          TTYPE439= 'xe_zz_Jin'          / label for column 439                           TFORM439= 'D       '           / format for column 439                          TCOMM439= '(toDouble(xe_zz))'                                                   TTYPE440= 'Instr_Salvato'      / label for column 440                           TFORM440= '14A     '           / format for column 440                          TCOMM440= '(Instr=="VIMOS_LEGA-"?"VIMOS_LEGA-C":Instr)'                         TTYPE441= 'z_spec_Salvato'     / label for column 441                           TFORM441= 'D       '           / format for column 441                          TCOMM441= '($5==-91?-99:$5)'                                                    TTYPE442= 'Q_f_Salvato'        / label for column 442                           TFORM442= 'I       '           / format for column 442                          TNULL442=               -32768 / blank value for column 442                     TTYPE443= 'ID_Salvato'         / label for column 443                           TFORM443= '9A      '           / format for column 443                          TCOMM443= '("L_" + toString(NUMBER)) (null_ID?"-99":ID) (null_$9? "-99":ID)'    TTYPE444= 'ALPHA_J2000_Salvato' / label for column 444                          TFORM444= 'D       '           / format for column 444                          TUNIT444= 'deg     '           / units for column 444                           TCOMM444= '(null_ALPHA_J2000?-99:ALPHA_J2000) (null_$10?-99:$10)'               TTYPE445= 'DELTA_J2000_Salvato' / label for column 445                          TFORM445= 'D       '           / format for column 445                          TUNIT445= 'deg     '           / units for column 445                           TCOMM445= '(null_$11?-99:$11) (null_$11?-99:$11)'                               TTYPE446= 'Contact_Salvato'    / label for column 446                           TFORM446= '38A     '           / format for column 446                          TCOMM446= '("Guenther Hasinger <hasinger@hawaii.edu>")'                         TTYPE447= 'z_spec_dzliu'       / label for column 447                           TFORM447= 'D       '           / format for column 447                          TTYPE448= 'ref_z_spec_dzliu'   / label for column 448                           TFORM448= '7A      '           / format for column 448                          TTYPE449= 'z_phot_dzliu'       / label for column 449                           TFORM449= 'E       '           / format for column 449                          TTYPE450= 'ref_z_phot_dzliu'   / label for column 450                           TFORM450= '6A      '           / format for column 450                          DATE-HDU= '2018-06-11T16:21:24' / Date of HDU creation (UTC)                    STILVERS= '3.2-2   '           / Version of STIL software                       STILCLAS= 'uk.ac.starlink.votable.FitsPlusTableWriter' / Author class in STIL soEND                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ◊Ã@b¡À
+äù}@ñ!Ç0«H@Y Â2È‘?Ÿ◊%≥Ÿ•N?·∞kÍ#g˝?ÓË`iç'?ê¿≠Ÿ©?Üà{@      ?È∑È    øòœHàààâ@"·fLπ>$?ˇ]”å´ÿ2013.1.00118.S_SB1_GB1_MB1_AzTECC10_sci.spw0_1_2_3.cont.I.image.fits                  2013.1.00118.S_SB1_GB1_MB1_AzTECC10_sci.spw0_1_2_3.cont.I.image                               Dú'
+@8CëL¬O≤?ª˜H°YÅ|?˘‡ÛÀ>WT?Ì´`kz¢@R-:í£S@$ÑéäqﬁjFTFFF¯      ¯      ¯      ¯      ¯      ¯      ¯      ¯      ¯      ¯      ¯                                                                                            ¿  ¯      ¯      ¯      ¯      ¯       FTF@"·fLπ>$?ˇ]”å´ÿ2013.1.00118.S_SB1_GB1_MB1_AzTECC10_sci.spw0_1_2_3.cont.I.image.fitsDú'
+@Y Â2È‘?·∞kÍ#g˝ ◊Ã@b¡…pﬁ~?@ñ.+Ä   ◊Ã          ˇù  ?h¡U ◊Ã     ◊Ã?h¡U?[πå?mVm?\<ü@ØRÃ7 Ê¬∆  AÅßm∂€l  @%’fœAÚ@%æ($x@&_o“ÚÂ@%ƒ?Â…øÂRÿàv\øË;F˝ÎR ø¿Eı≠ñ¶†øÂ»U⁄'(c¿'!ˇ.HËß¿'P|Ñµ‹∆¿&ßy¶µ¿' ƒõ•„T     ◊Ã@b¡…pﬁ~?@ñ.+Ä?Î4ÍJå?Î4ÍJå?Í¿Énóç?Î¶µ'ª?Îáì›óˆ+@Œ0ëå∫@%Où≤-V@%<PH@%b¯7¥¢4ø⁄N®⁄<˜øﬂ#·Üò5ø’yk¸®\´AﬁD   A€ö·   A‡Bˇä   ¿&8‚e+‘¿X¿     ¿X¿     Ä   Ä           @b¡…pﬁw∆@ñ.´     ◊Ã        B-l∆>-f·Aûu;ä8æAú0k;°+AqY≥=©ÌWAß°#;¬©'A§ÊC;2~,A˘Xo>8YA°Sf;ÃAû‡K;bñOAÆøÄ> ∆AA§iﬂ;ÀæA°ÊU;R“‘>™)<∆ÏA»ƒ™=°õ&A∆èÜ=mW2?äV∆=c:AæÜ{=csAºÔ&=9@∑v=ùNÆA∞8<m»A≠(Î<†•?ˇŸ∂=fZ†Aπ/:<¯ÌÇA∂¸ä<üπ±>á∏=\JA ªä>ÚÌAÀ‡=Ê…íA>X¥>3°A©±<Ç¥Aß7<!!ÍAJ/ =¢ãÆA©*ﬁ;ﬁFóA¶ {;ÑP>ıJ=üCﬂA≈ôW>3™JA»;>Z«–?uî=zê˚A√ñ©=‡ARA√=‡_œ?Ín\=ëiTAπÒ£=+~HA∏8= ◊@Köü=ˇDAµ%€=-'A¥Í<ÌÑi@n
+r=À!A≥ c<Î◊ A±rF<¬w∞@∑≥R>9ÅA∞S<≈Ä2A≠÷…<ÄÓé>ùtÊ=ñ-A…q3>ÉŸAŒdC>”‚C>√¡…=®M/A«ç>m≥ÒA≈Ul>21?I=ÆÂkA¡L(=zœAøªÌ=ƒiÛ?ò>ß=œ˝AΩ±=ºAªna=iÁO@cΩÀ=∆´¶A¥,Ω<Ò0A≤3<£ÿZA <t>≤ A≠H<õ˚±A™öﬂ<"˜ @VËm>#˚‡A¥≠µ=R˜MA± ’=;u/@·ÿz>0UBAÆ:<◊›‚A´¨ <Km‘BåK>¡DxAöJ˙;øºÃBTÃ>∏˘›Aú∂¨;Ú}˜B8ªR@7;ÛAùÈ=âÿ˛AÊË4@P%ˇA°˛9=˙ç®AÌ“k?B:˙A°ºú<·ÕvAü"æ<r!FB–ˆ?xã∫Aü+5<÷˝ëAúîi<SxâAm¯9>eTôAß¿Å<Ö8≠A•Q#<*È>Ä ø”ò«‚Ç@∏?h¡U  ?h¡U?[πå?mVm?\<ü@ØRÃ7 Ê¬∆  AÅßm∂€l ?^∏R@jë≥X¶%  z@5gÜ¬&Äù A·"Ê‡       ¡ïK«¡©¥9¡ØÛ∂¡¥è\¡∂Ÿ¡∏ß¡ª9X¡ªÃÕ¡ΩV¡øÒ™¡æŒŸ@%È·∞â†  @%’fœAÚ@%æ($x@&_o“ÚÂ@%ƒ?Â…øÂRÿàv\øË;F˝ÎR ø¿Eı≠ñ¶†øÂ»U⁄'(c¿'!ˇ.HËß¿'P|Ñµ‹∆¿&ßy¶µ¿' ƒõ•„T@;πiö@=¿¨ÖáÏ@>L}!     ◊Ã@b¡…pﬁ~?@ñ.+Ä?Î4ÍJå?Î4ÍJå?Í¿Énóç?Î¶µ'ª?Îáì›óˆ+@Œ0ëå∫       ?‡      ¿X˘ôôôôö       @ø	ï™¯@û:}™O @j˜èÓıÌ?ÃÃÃÃÃÕ?ÔlãCïÅ?Ò„S˜ŒŸ      Œ       @%Où≤-V@%<PH@%b¯7¥¢4ø⁄N®⁄<˜øﬂ#·Üò5ø’yk¸®\´AﬁD   A€ö·   A‡Bˇä   ¿&8‚e+‘¿X¿     ¿X¿      ◊Ã@b¡…pﬁ~?@ñ.+Ä?h¡UA.!ˇ¬∆  ?®o~hﬁ≈?Åhr∞ ƒú?ãê¥Óâµ˜?ë≠†∑õ`?È∏œa–?ÚlG◊/&^>◊∂™˜d˚ÿ?ˇXY»…2?±Ó>‚hÎQ?8º¸ÌsWﬁ?´#é–g·Ê?7≠K^?~€?ß•I˚˜á∂?gt7¨∂˙?ùé\§õ´B?j§õw∑ì¯?≠nFidfÊ?wãkáÉÖÖ?Ùv»øƒHB†_    ?Ë^5?|ÌëB†_    ?‘æÌ(åÁB†_    ¿X¿     B†_    ?úLúêƒﬁ¡B†_    ¬∆  B†_    ?a…¬è\)?dO˛5?|Ó?ÊV»CXπ˜         ?‘ƒõ•„S¯?‘ƒõ•„S¯@hr∞ ƒú@6E° ¿É@Æz·GÆ@Ωp£◊
+=@ù≤-V?^Ì?¿£◊
+=p§zBRIGHT       ?ÏÑµ‹∆? L_841676 @b¡…pﬁw∆@ñ.´simon.lilly@phys.ethz.ch,V4.2         ?ÏÑµ‹∆?Salvato?h¡ULaigle                                                       

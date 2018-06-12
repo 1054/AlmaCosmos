@@ -4,15 +4,19 @@
 if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     Data_type="PHYS-GALFIT"
     SNR_peak="3.77"
-elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]]; then
+    SNR_peak_cut="3.0"
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]] || [[ $(pwd) == *"Aravena"* ]]; then
     Data_type="PHYS-PYBDSM"
     SNR_peak="5.35"
+    SNR_peak_cut="4.0" # cut the data point because PyBDSM thresh_pix = 4.0
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
     Data_type="FULL-GALFIT"
     SNR_peak="3.77"
+    SNR_peak_cut="3.0"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSM"* ]]; then
     Data_type="FULL-PYBDSM"
     SNR_peak="5.35"
+    SNR_peak_cut="4.0" # cut the data point because PyBDSM thresh_pix = 4.0
 fi
 
 
@@ -21,7 +25,7 @@ margin=(100 70 100 20) # left, bottom, right, top
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{peak} / rms\;noise" \
+                xlabel="\Large S/N_{peak}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true \
                 ylog=false \
@@ -34,11 +38,12 @@ topcat -stilts plot2plane \
                 in1='datatable_applied_correction_fbias.txt' \
                 ifmt1=ascii \
                 icmd1="sort x2" \
+                icmd1="select \"(x1>= $SNR_peak_cut )\"" \
                 leglabel1="$Data_type" \
                 x1='x1' \
                 y1='fbias' \
                 \
-                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=4.0 \
+                aux='x2' auxvisible=false auxmap=rainbow2 auxflip=true auxfunc=log auxmin=1.0 auxmax=4.0 \
                 \
                 layer3=function \
                 fexpr3='0.0' \
@@ -65,6 +70,9 @@ topcat -stilts plot2plane \
                 out='Plot_corrected_fbias.pdf'
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+                # 
+                # 2018-05-31 removed the color bar because this figure will be shown with another figure sharing the color bar
+                #aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\Theta_{beam}" auxmin=1.0 auxmax=4.0 \
 
 echo "Output to \"Plot_corrected_fbias.pdf\"!"
 
@@ -89,7 +97,7 @@ topcat -stilts plot2plane \
                 y1='S_out_corr' \
                 leglabel1="$Data_type" \
                 \
-                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="x2 = sqrt(Area_{source}/Area_{beam})" auxmin=1.0 auxmax=4.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large \Theta_{beam}" auxmin=1.0 auxmax=4.0 \
                 \
                 layer3=function \
                 fexpr3='(x)' \
@@ -213,11 +221,11 @@ echo "Output to \"Plot_corrected_fbias_histogram.pdf\"!"
 
 
 
-convert -density 240 -geometry x800 "Plot_corrected_fbias.pdf" "Plot_corrected_fbias.png"
+convert -density 240 -geometry x800 -background white "Plot_corrected_fbias.pdf" "Plot_corrected_fbias.png"
 
-convert -density 240 -geometry x800 "Plot_corrected_fbias_vs_uncorrected.pdf" "Plot_corrected_fbias_vs_uncorrected.png"
+convert -density 240 -geometry x800 -background white "Plot_corrected_fbias_vs_uncorrected.pdf" "Plot_corrected_fbias_vs_uncorrected.png"
 
-convert -density 240 -geometry x800 "Plot_corrected_fbias_histogram.pdf" "Plot_corrected_fbias_histogram.png"
+convert -density 240 -geometry x800 -background white "Plot_corrected_fbias_histogram.pdf" "Plot_corrected_fbias_histogram.png"
 
 
 

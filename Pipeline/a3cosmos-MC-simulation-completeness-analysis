@@ -68,7 +68,7 @@ if [[ ! -f "$OutputDir/datatable_Matched.SNR_peak.txt" ]]; then
                 ifmt=fits \
                 cmd="select \"(flag_matched)\"" \
                 cmd="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
-                cmd="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                cmd="addcol convol_area_in_beam \"(source_area_in_beam+1)\"" \
                 cmd="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
                 cmd="addcol SNR_peak_out \"S_peak/noise\"" \
                 cmd="keepcols \"SNR_peak SNR_peak_out\"" \
@@ -79,13 +79,28 @@ if [[ ! -f "$OutputDir/datatable_Matched.SNR_peak.txt" ]]; then
     echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_Matched.SNR_peak.txt\"!"
     exit
 fi
+if [[ ! -f "$OutputDir/datatable_Matched.S_total_sim_to_rms_noise.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt=fits \
+                cmd="select \"(flag_matched)\"" \
+                cmd="addcol S_total_sim_to_rms_noise \"S_in/noise\"" \
+                cmd="addcol S_total_rec_to_rms_noise \"S_out/noise\"" \
+                cmd="keepcols \"S_total_sim_to_rms_noise S_total_rec_to_rms_noise\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_Matched.S_total_sim_to_rms_noise.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_Matched.S_total_sim_to_rms_noise.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_Matched.S_total_sim_to_rms_noise.txt\"!"
+    exit
+fi
 if [[ ! -f "$OutputDir/datatable_NotRecovered.missed.SNR_peak.txt" ]]; then
     topcat -stilts tpipe \
                 in="$InputCat" \
                 ifmt=fits \
                 cmd="select \"(flag_nonmatched_missed)\"" \
                 cmd="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
-                cmd="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                cmd="addcol convol_area_in_beam \"(source_area_in_beam+1)\"" \
                 cmd="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
                 cmd="keepcols \"SNR_peak\"" \
                 ofmt=ascii \
@@ -95,6 +110,25 @@ if [[ ! -f "$OutputDir/datatable_NotRecovered.missed.SNR_peak.txt" ]]; then
     echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_NotRecovered.missed.SNR_peak.txt\"!"
     exit
 fi
+if [[ ! -f "$OutputDir/datatable_NotRecovered.missed.S_total_sim_to_rms_noise.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt=fits \
+                cmd="select \"(flag_nonmatched_missed)\"" \
+                cmd="addcol S_total_sim_to_rms_noise \"S_in/noise\"" \
+                cmd="keepcols \"S_total_sim_to_rms_noise\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_NotRecovered.missed.S_total_sim_to_rms_noise.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_NotRecovered.missed.S_total_sim_to_rms_noise.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_NotRecovered.missed.S_total_sim_to_rms_noise.txt\"!"
+    exit
+fi
+
+
+# 
+# Make plots
+# 
 if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_completeness.pdf" ]]; then
     margin=(80 50 20 20) # left, bottom, right, top
     binsize="+1.20" # "+1.10"
@@ -118,7 +152,7 @@ if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_completeness.pdf" ]]; then
                 leglabel1='all \ simulated' \
                 icmd1="select \"(flag_nonmatched_missed || flag_matched)\"" \
                 icmd1="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
-                icmd1="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd1="addcol convol_area_in_beam \"(source_area_in_beam+1)\"" \
                 icmd1="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
                 x1="SNR_peak" \
                 \
@@ -133,7 +167,7 @@ if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_completeness.pdf" ]]; then
                 leglabel2='simulated \ but \ not \ recovered' \
                 icmd2="select \"(flag_nonmatched_missed)\"" \
                 icmd2="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
-                icmd2="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd2="addcol convol_area_in_beam \"(source_area_in_beam+1)\"" \
                 icmd2="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
                 x2="SNR_peak" \
                 \
@@ -148,7 +182,7 @@ if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_completeness.pdf" ]]; then
                 leglabel3='simulated \ and \ recovered' \
                 icmd3="select \"(flag_matched)\"" \
                 icmd3="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
-                icmd3="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd3="addcol convol_area_in_beam \"(source_area_in_beam+1)\"" \
                 icmd3="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
                 x3="SNR_peak" \
                 \
@@ -163,7 +197,7 @@ if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_completeness.pdf" ]]; then
                 leglabel4='simulated \ and \ recovered \ and \ flux \ accuracy < 30\%' \
                 icmd4="select \"(flag_matched && ( abs(S_in-S_out)<(0.3*S_in) && abs(S_in-S_out)<(0.3*S_out) && S_peak>3.0*noise ))\"" \
                 icmd4="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
-                icmd4="addcol convol_area_in_beam \"sqrt(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd4="addcol convol_area_in_beam \"(source_area_in_beam+1)\"" \
                 icmd4="addcol SNR_peak \"(S_in/convol_area_in_beam)/noise\"" \
                 x4="SNR_peak" \
                 \
@@ -185,6 +219,7 @@ fi
 # 
 # Copy supermongo macro
 # 
+cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-completeness-analysis-tools/analyze_completeness_curve_versus_S_total_sim_to_rms_noise.sm "$OutputDir/"
 cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-completeness-analysis-tools/analyze_completeness_curve.sm "$OutputDir/"
 cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-completeness-analysis-tools/fit_completeness_curve.py "$OutputDir/"
 
@@ -198,6 +233,7 @@ cd "$OutputDir"
 # 
 # Run the code
 # 
+echo "macro read analyze_completeness_curve_versus_S_total_sim_to_rms_noise.sm analyze_completeness_curve" | sm | tee log_analyze_completeness_curve_versus_S_total_sim_to_rms_noise.txt
 echo "macro read analyze_completeness_curve.sm analyze_completeness_curve" | sm | tee log_analyze_completeness_curve.txt
 # In which, the python code "fit_completeness_curve.py" will be called. 
 

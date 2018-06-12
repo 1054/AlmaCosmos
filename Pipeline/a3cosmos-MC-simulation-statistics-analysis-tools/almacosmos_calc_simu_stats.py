@@ -245,7 +245,7 @@ print('')
 # Prepare parameter grid cell
 npar = 2
 par1 = S_peak/noise
-par1_str = 'S_{peak}/\\sigma_{rms noise}'
+par1_str = 'S_{peak}/{rms\,noise}'
 par1_grid = [2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 8.0, 10., 20., 50., 100, 500, 1000.0]
 if Simulation_Phys:
     par1_grid = [2.5, 5.0, 10., 100, 1000.0]
@@ -253,7 +253,8 @@ if Simulation_Phys:
 par2 = numpy.sqrt((Maj_out_convol*Min_out_convol)/(Maj_beam*Min_beam))
 par2_str = 'FWHM_{source}/FWHM_{beam}'
 par2_grid = [1.00, 1.25, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00, +numpy.inf]
-par2_max = 4.0
+#<20180514>#par2_grid = [1.00, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00, +numpy.inf]
+#par2_max = 4.0
 # 
 # Prepare output directory name
 if Output_dir != '':
@@ -376,7 +377,7 @@ while cell_loop_index < cell_total_number:
     print('')
     # 
     # compute statistics
-    minimum_number_for_statistics = 25 # 5 before 2018-03-09, however, 5 can lead to overestimating the scatter.
+    minimum_number_for_statistics = 12 # 25 # 5 before 2018-03-09, however, 5 can lead to overestimating the scatter.
     if len(selected_args) > minimum_number_for_statistics:
         grid_cell_struct['id'] = cell_loop_index
         grid_cell_struct['size'] = len(selected_args)
@@ -414,14 +415,21 @@ while cell_loop_index < cell_total_number:
         plot_engine.set_figure_margin(left=0.2)
         plot_engine.plot_xy(S_peak[selected_args]/noise[selected_args], 
                             (S_in[selected_args]-S_out[selected_args]), 
-                             symsize=0.3, xtitle='$S_{peak} / rms \ noise$', ytitle='$S_{in}-S_{out}$')
+                             symsize=0.3, color='darkgray', xtitle='$S_{peak} \, / \, {rms\,noise}$', ytitle='$S_{sim.}-S_{rec.}$')
         plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
                             grid_cell_struct['S_in-S_out']['median'], 
                             yerr=[ [ grid_cell_struct['S_in-S_out']['scatter_L68'] ], 
                                    [ grid_cell_struct['S_in-S_out']['scatter_H68'] ]
                                  ], 
                             capsize=3, 
-                            symsize=2, symbol='open square', color='k', zorder=6, overplot=True)
+                            symsize=3, symbol='filled circle', color='dodgerblue', zorder=6, overplot=True)
+        plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
+                            grid_cell_struct['S_in-S_out']['mean'], 
+                            yerr=[ [ grid_cell_struct['S_in-S_out']['scatter'] ], 
+                                   [ grid_cell_struct['S_in-S_out']['scatter'] ]
+                                 ], 
+                            capsize=4, errorbarlinestyle='dotted', 
+                            symsize=4, symbol='open circle', color='orangered', zorder=6, overplot=True)
         plot_engine.plot_line(0.0,0.0, 1000,0.0, overplot=True, color='k')
         plot_engine.savefig(outdir+os.sep+'dump'+os.sep+'dump_figure_abs_scatter_cell_%d.pdf'%(cell_loop_index))
         plot_engine.clear()
@@ -431,14 +439,21 @@ while cell_loop_index < cell_total_number:
         plot_engine.set_figure_margin(left=0.2)
         plot_engine.plot_xy(S_peak[selected_args]/noise[selected_args], 
                             (S_in[selected_args]-S_out[selected_args])/(e_S_out[selected_args]), 
-                             symsize=0.3, yrange=[-10,10], xtitle='$S_{peak} / rms \ noise$', ytitle='$(S_{in}-S_{out})/\sigma_{S_{out}}$')
+                             symsize=0.3, color='darkgray', yrange=[-10,10], xtitle='$S_{peak} \, / \, {rms\,noise}$', ytitle='$(S_{sim.}-S_{rec.}) \, / \, {S_{rec.}}$')
         plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
                             grid_cell_struct['(S_in-S_out)/e_S_out']['median'], 
                             yerr=[ [ grid_cell_struct['(S_in-S_out)/e_S_out']['scatter_L68'] ], 
                                    [ grid_cell_struct['(S_in-S_out)/e_S_out']['scatter_H68'] ]
                                  ], 
                             capsize=3, 
-                            symsize=2, symbol='open square', color='k', zorder=6, overplot=True)
+                            symsize=3, symbol='filled circle', color='dodgerblue', zorder=6, overplot=True)
+        plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
+                            grid_cell_struct['(S_in-S_out)/e_S_out']['mean'], 
+                            yerr=[ [ grid_cell_struct['(S_in-S_out)/e_S_out']['scatter'] ], 
+                                   [ grid_cell_struct['(S_in-S_out)/e_S_out']['scatter'] ]
+                                 ], 
+                            capsize=4, errorbarlinestyle='dotted', 
+                            symsize=4, symbol='open circle', color='orangered', zorder=6, overplot=True)
         plot_engine.plot_line(0.0,0.0, 1000,0.0, overplot=True, color='k')
         plot_engine.savefig(outdir+os.sep+'dump'+os.sep+'dump_figure_norm_scatter_cell_%d.pdf'%(cell_loop_index))
         plot_engine.clear()
@@ -448,14 +463,21 @@ while cell_loop_index < cell_total_number:
         plot_engine.set_figure_margin(left=0.2)
         plot_engine.plot_xy(S_peak[selected_args]/noise[selected_args], 
                             (S_in[selected_args]-S_out[selected_args])/(S_in[selected_args]), 
-                             symsize=0.3, yrange=[-10,1.5], xtitle='$S_{peak} / rms \ noise$', ytitle='$(S_{in}-S_{out})/S_{in}$')
+                             symsize=0.3, color='darkgray', yrange=[-5,1.25], xtitle='$S_{peak} \, / \, {rms\,noise}$', ytitle='$(S_{sim.}-S_{rec.}) \, / \, S_{sim.}$')
         plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
                             grid_cell_struct['(S_in-S_out)/S_in']['median'], 
                             yerr=[ [ grid_cell_struct['(S_in-S_out)/S_in']['scatter_L68'] ], 
                                    [ grid_cell_struct['(S_in-S_out)/S_in']['scatter_H68'] ]
                                  ], 
                             capsize=3, 
-                            symsize=2, symbol='open square', color='k', zorder=6, overplot=True)
+                            symsize=3, symbol='filled circle', color='dodgerblue', zorder=6, overplot=True)
+        plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
+                            grid_cell_struct['(S_in-S_out)/S_in']['mean'], 
+                            yerr=[ [ grid_cell_struct['(S_in-S_out)/S_in']['scatter'] ], 
+                                   [ grid_cell_struct['(S_in-S_out)/S_in']['scatter'] ]
+                                 ], 
+                            capsize=4, errorbarlinestyle='dotted', 
+                            symsize=4, symbol='open circle', color='orangered', zorder=6, overplot=True)
         plot_engine.plot_line(0.0,0.0, 1000,0.0, overplot=True, color='k')
         plot_engine.savefig(outdir+os.sep+'dump'+os.sep+'dump_figure_rel_scatter_cell_%d.pdf'%(cell_loop_index))
         plot_engine.clear()
@@ -465,14 +487,21 @@ while cell_loop_index < cell_total_number:
         plot_engine.set_figure_margin(left=0.2)
         plot_engine.plot_xy(S_peak[selected_args]/noise[selected_args], 
                             (S_in[selected_args]-S_out[selected_args])/(noise[selected_args]), 
-                             symsize=0.3, yrange=[-10,10], xtitle='$S_{peak} / rms \ noise$', ytitle='$(S_{in}-S_{out}) / rms \ noise$')
+                             symsize=0.3, color='darkgray', yrange=[-25,25], xtitle='$S_{peak} \, / \, {rms\,noise}$', ytitle='$(S_{sim.}-S_{rec.}) \, / \, {rms\,noise}$')
         plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
                             grid_cell_struct['(S_in-S_out)/noise']['median'], 
                             yerr=[ [ grid_cell_struct['(S_in-S_out)/noise']['scatter_L68'] ], 
                                    [ grid_cell_struct['(S_in-S_out)/noise']['scatter_H68'] ]
                                  ], 
                             capsize=3, 
-                            symsize=2, symbol='open square', color='k', zorder=6, overplot=True)
+                            symsize=3, symbol='filled circle', color='dodgerblue', zorder=6, overplot=True)
+        plot_engine.plot_xy(grid_cell_struct['par1']['median'], 
+                            grid_cell_struct['(S_in-S_out)/noise']['mean'], 
+                            yerr=[ [ grid_cell_struct['(S_in-S_out)/noise']['scatter'] ], 
+                                   [ grid_cell_struct['(S_in-S_out)/noise']['scatter'] ]
+                                 ], 
+                            capsize=4, errorbarlinestyle='dotted', 
+                            symsize=4, symbol='open circle', color='orangered', zorder=6, overplot=True)
         plot_engine.plot_line(0.0,0.0, 1000,0.0, overplot=True, color='k')
         plot_engine.savefig(outdir+os.sep+'dump'+os.sep+'dump_figure_noi_scatter_cell_%d.pdf'%(cell_loop_index))
         plot_engine.clear()
@@ -480,9 +509,15 @@ while cell_loop_index < cell_total_number:
         # dump text file
         j = json.dumps(grid_cell_struct, indent=4)
         f = open(outdir+os.sep+'dump'+os.sep+'dump_data_cell_%d.json'%(cell_loop_index), 'w')
-        #print(j,file=f)
         print_to_log_file(j, file=f)
         f.close()
+        # 
+        # dump text file
+        asciitable.write(numpy.column_stack((S_in[selected_args], S_out[selected_args], S_peak[selected_args], noise[selected_args])), 
+                         outdir+os.sep+'dump'+os.sep+'dump_data_cell_%d.dat'%(cell_loop_index), 
+                         Writer=asciitable.CommentedHeader, names=['S_in','S_out','S_peak','noise'], 
+                         formats={'S_in':'%15.7e','S_out':'%15.7e','S_peak':'%15.7e','noise':'%15.7e'}, 
+                         overwrite=True)
         # 
         # append to output arrays
         all_cell_id.append(grid_cell_struct['id'])

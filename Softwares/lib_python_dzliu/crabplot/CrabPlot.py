@@ -12,6 +12,7 @@
 #   Last-update: 
 #                2017-12-05
 #                2018-01-02 plot_line, plot_text
+#                2018-05-25 plot_xy errorbarlinestyle
 # 
 #   Notes:
 #     -- to use TeX, we need to install 'texlive-latex-extra' and 'texlive-fonts-recommended'
@@ -26,7 +27,7 @@ except ImportError:
 pkg_resources.require("numpy")
 pkg_resources.require("astropy>=1.3")
 pkg_resources.require("matplotlib")
-pkg_resources.require("wcsaxes") # http://wcsaxes.readthedocs.io/en/latest/getting_started.html
+#pkg_resources.require("wcsaxes") # http://wcsaxes.readthedocs.io/en/latest/getting_started.html #20180611 commented out because it is merged into astropy
 
 # 
 # pip-2.7 install --user --upgrade matplotlib==2.0.1
@@ -813,6 +814,7 @@ class CrabPlot(object):
                 marker = None, size = None, color = '#1b81e5', fillstyle = None, 
                 linestyle = 'None', linewidth = None, drawstyle = None, 
                 facecolor = None, edgecolor = None, edgewidth = None, alpha = 1.0, zorder = 5, 
+                errorbarlinestyle = '', 
                 uplims = None, lolims = None, 
                 margin = None, 
                 **kwargs):
@@ -856,11 +858,26 @@ class CrabPlot(object):
                 marker = 's'
             elif symbol == 'cross':
                 marker = 'x'
-            elif symbol == 'open square' or symbol == 'open squares':
+            elif symbol == 'Cross':
+                marker = 'X'
+            elif symbol == 'diamond':
+                marker = 'd'
+            elif symbol == 'Diamond':
+                marker = 'D'
+            elif symbol == 'open square' or symbol == 'open squares' or symbol == 'empty square' or symbol == 'empty squares':
                 marker = 's'
                 facecolor = 'none'
                 if color is not None:
                     edgecolor = color
+            elif symbol == 'open circle' or symbol == 'open circles' or symbol == 'empty circle' or symbol == 'empty circles':
+                marker = 'o'
+                facecolor = 'none'
+                if color is not None:
+                    edgecolor = color
+            elif symbol == 'filled square' or symbol == 'filled squares':
+                marker = 's'
+            elif symbol == 'filled circle' or symbol == 'filled circles':
+                marker = 'o'
             elif symbol == 'upper limit' or symbol == 'upper limits':
                 #marker = u'$\u2193$'
                 marker = self.get_upper_limit_marker()
@@ -899,7 +916,10 @@ class CrabPlot(object):
             #plot_panel_xy['panel'].scatter(x, y, marker=marker, s=size**2, c=color, edgecolors=edgecolor, linewidths=linewidth, alpha=alpha)
         # plot errorbars
         if xerr is not None or yerr is not None:
-            plot_panel_ax.errorbar(x, y, xerr=xerr, yerr=yerr, marker=marker, markersize=size, color=color, markerfacecolor=facecolor, markeredgecolor=edgecolor, markeredgewidth=edgewidth, fillstyle=fillstyle, linestyle=linestyle, drawstyle=drawstyle, linewidth=linewidth, alpha=alpha, zorder=zorder, **kwargs)
+            plot_var_errorbar = plot_panel_ax.errorbar(x, y, xerr=xerr, yerr=yerr, marker=marker, markersize=size, color=color, markerfacecolor=facecolor, markeredgecolor=edgecolor, markeredgewidth=edgewidth, fillstyle=fillstyle, linestyle=linestyle, drawstyle=drawstyle, linewidth=linewidth, alpha=alpha, zorder=zorder, **kwargs)
+            # set errorbar line style if given by the user
+            if errorbarlinestyle != '':
+                plot_var_errorbar[-1][0].set_linestyle(errorbarlinestyle) # [-1][0] is the LineCollection objects of the errorbar lines -- https://stackoverflow.com/questions/22995797/can-matplotlib-errorbars-have-a-linestyle-set?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
         #if uplims is not None:
         #    plot_panel_ax.errorbar(x, y, xerr=xerr, yerr=0.8*y, markersize=size, color=color, markerfacecolor=facecolor, markeredgecolor=edgecolor, markeredgewidth=edgewidth, fillstyle=fillstyle, linestyle=linestyle, drawstyle=drawstyle, linewidth=linewidth, alpha=alpha, zorder=zorder, uplims=uplims, lolims=lolims, **kwargs)
         # axis ticks format

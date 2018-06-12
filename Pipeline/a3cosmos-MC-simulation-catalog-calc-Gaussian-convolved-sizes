@@ -1,0 +1,108 @@
+#!/bin/bash
+# 
+
+
+# 
+# Usage
+# 
+usage() {
+    echo ""
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-catalog-calc-Gaussian-convolved-sizes \\"
+    echo "        \"Prior_Simulation_Catalog.fits\""
+    echo ""
+    echo "Input: "
+    echo "    One catalog, which contains Maj, Min, PA, beam_Maj, beam_Min, beam_PA "
+    echo ""
+    echo "Output: "
+    echo "    A FITS format catalog with new columns: Maj_convol Min_convol PA_convol"
+    echo ""
+}
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not installed!"
+    exit 1
+fi
+if [[ $(type almacosmos_cmd_args 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    else
+        echo "Error! The download of this code from \"https://github.com/1054/AlmaCosmos.git\" in incomplete!"
+        exit 1
+    fi
+fi
+if [[ $(type almacosmos_recognize_fits_table_column_names.py 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! almacosmos_recognize_fits_table_column_names.py was not installed!"
+    exit 1
+fi
+
+
+# 
+# Read user input
+# 
+source almacosmos_cmd_args "$@"
+if [[ ${#almacosmos_cmd_misc_args[@]} -ge 1 ]]; then
+    InputCat="${almacosmos_cmd_misc_args[0]}"
+else
+    usage
+    exit
+fi
+InputName="${InputCat%.*}"
+InputSuffix="${InputCat##*.}"
+
+InputFormat="$InputSuffix"
+if [[ "$InputFormat" == "fits" ]] || [[ "$InputFormat" == "FITS" ]] || [[ "$InputFormat" == "fits.gz" ]] || [[ "$InputFormat" == "FITS.GZ" ]]; then
+    InputFormat="fits"
+else
+    InputFormat="ascii"
+fi
+
+OutputCat="${InputName}_with_convolved_sizes.fits"
+if [[ ! -z "$almacosmos_cmd_out" ]]; then
+    if [[ ${#almacosmos_cmd_out[@]} -ge 1 ]]; then
+        OutputCat="${almacosmos_cmd_out[0]}"
+    fi
+fi
+OutputName="${OutputCat%.*}"
+OutputSuffix="${OutputCat##*.}"
+
+echo "InputCat = $InputCat"
+echo "InputName = $InputName"
+echo "InputSuffix = $InputSuffix"
+echo "OutputCat = $OutputCat"
+echo "OutputName = $OutputName"
+echo "OutputSuffix = $OutputSuffix"
+check_input_file "$InputCat"
+create_output_dir $(dirname "$OutputCat")
+
+
+topcat -stilts tpipe in="$InputCat" ifmt="$InputFormat" \
+                    cmd="keepcols \"Maj Min PA beam_maj beam_min beam_PA\"" \
+                    out="simu_data_input.txt" ofmt="ascii"
+
+
+ScriptDir="$(dirname ${BASH_SOURCE[0]})/a3cosmos-MC-simulation-statistics-analysis-tools"
+echo "Recomputing S_peak with careful 2D Gaussian size convolution"
+cp "$ScriptDir/a_dzliu_code_calc_Gaussian_convolved_sizes_for_any_data_input.sm" .
+echo "macro read a_dzliu_code_calc_Gaussian_convolved_sizes_for_any_data_input.sm a_dzliu_code_calc_Gaussian_convolved_sizes simu_data_input" | sm
+#--> this will output: simu_data_input.convolved_sizes.txt -- with new Maj_convol, Min_convol and PA_convol
+if [[ ! -f "simu_data_input.convolved_sizes.txt" ]]; then
+    echo "Error! Failed to run \"a_dzliu_code_calc_Gaussian_convolved_sizes_for_any_data_input.sm\"!"
+    exit 255
+fi
+
+
+topcat -stilts tmatchn nin=2 in1="$InputCat" ifmt1="$InputFormat" in2=simu_data_input.convolved_sizes.txt ifmt2="ascii" matcher=exact values1=index values2=index \
+                            ocmd="delcols \"Maj Min PA Maj_pix Min_pix\"" out="$OutputCat" ofmt="fits"
+
+
+
+
+
+
+
+

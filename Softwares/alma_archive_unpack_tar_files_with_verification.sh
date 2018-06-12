@@ -5,7 +5,7 @@
 
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
-    echo "    alma_archive_unpack_tar_files_with_verification.sh ../*.cache/*.tar"
+    echo "    alma_archive_unpack_tar_files_with_verification.sh ../*.cache/*.tar -log alma_archive_unpack_tar_list.log"
     echo ""
     exit
 fi

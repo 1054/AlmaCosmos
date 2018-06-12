@@ -32,8 +32,16 @@ if [[ -d "calibrated.ms" ]] || [[ -d "calibrated.ms" ]]; then
 fi
 
 
+# read user input
+freqtol=""
+
+
 # run CASA
-casa -c "execfile('$script_path')"
+if [[ "x$freqtol" != "x" ]]; then
+    casa -c "freqtol='$freqtol'; execfile('$script_path')"
+else
+    casa -c "execfile('$script_path')"
+fi
 
 
 # check result

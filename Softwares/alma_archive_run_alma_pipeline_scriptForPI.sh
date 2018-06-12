@@ -63,12 +63,16 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
     # 
     # find "scriptForPI.py" files
     list_of_script_files=($(find "${list_of_input_dirs[i]}" -type f -name "scriptForPI.py"))
+    if [[ ${#list_of_script_files[@]} -eq 0 ]]; then
+        list_of_script_files=($(find "${list_of_input_dirs[i]}" -type f -name "member*.scriptForPI.py"))
+    fi
     # 
     # loop "scriptForPI.py" file 
     for (( j = 0; j < ${#list_of_script_files[@]}; j++ )); do
         # 
         # store script file name and dir path
         script_file="${list_of_script_files[j]}"
+        script_name=$(basename "$script_file")
         script_dir=$(dirname $(dirname "$script_file"))
         echo ""
         echo ""
@@ -107,13 +111,19 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             list_of_ms_split_cal_dirs=($(find "$script_dir/calibrated/" -mindepth 1 -maxdepth 1 -type d -name "uid___*.ms.split.cal"))
             if [[ ${#list_of_ms_split_cal_dirs[@]} -gt 0 ]]; then
                 echo "Found \"$script_dir/calibrated\" and \"uid___*.ms.split.cal\" therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will try to concatenate them."
-                # check README file which contains CASA version
-                if [[ ! -f "$script_dir/README" ]] && [[ ! -L "$script_dir/README" ]]; then
-                    echo "Error! File \"$script_dir/README\" was not found!"
-                    exit 1
+                # check README file which contains CASA version and source CASA version
+                list_of_readme_files=($(find -L "${script_dir}" -name "README"))
+                if [[ ${#list_of_readme_files[@]} -gt 0 ]]; then
+                    source "$casa_setup_script_path" "${list_of_readme_files[0]}"
+                else
+                    list_of_readme_files=($(find -L "${script_dir}" -name "README_CASA_VERSION"))
+                    if [[ ${#list_of_readme_files[@]} -gt 0 ]]; then
+                        source "$casa_setup_script_path" "${list_of_readme_files[0]}"
+                    else
+                        echo "Error! Failed to find README file under ${script_dir}!"
+                        exit 1
+                    fi
                 fi
-                # source CASA version
-                source "$casa_setup_script_path" "$script_dir/README"
                 # run CASA concat
                 if [[ $(type alma_archive_run_alma_pipeline_concat_ms_split_cal.sh 2>/dev/null | wc -l) -ge 1 ]]; then
                     alma_archive_run_alma_pipeline_concat_ms_split_cal.sh "$script_dir/calibrated"
@@ -162,10 +172,6 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             echo "Error! Direcotry \"$script_dir/script\" was not found!"
             exit 1
         fi
-        if [[ ! -f "$script_dir/README" ]] && [[ ! -L "$script_dir/README" ]]; then
-            echo "Error! File \"$script_dir/README\" was not found!"
-            exit 1
-        fi
         # 
         # check if pipeline mode, 
         # cd script dir, 
@@ -173,16 +179,33 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
         # then run CASA
         echo "cd \"$script_dir/script/\""
         cd "$script_dir/script/"
-        source "$casa_setup_script_path" "../README"
+        if [[ -f "../README" ]] || [[ -L "../README" ]]; then
+            source "$casa_setup_script_path" "../README"
+        else
+            if [[ -f "../README_CASA_VERSION" ]] || [[ -L "../README_CASA_VERSION" ]]; then
+                source "$casa_setup_script_path" "../README_CASA_VERSION"
+            else
+                # if no REAME file then read "qa/*.tgz"
+                if [[ -d "$script_dir/qa" ]] || [[ -L "$script_dir/qa" ]]; then
+                    list_of_found_files=($(find -L ../qa -name "*.tgz"))
+                    if [[ ${#list_of_found_files[@]} -gt 0 ]]; then
+                        $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py ${list_of_found_files[0]} > ../README_CASA_VERSION
+                    fi
+                else
+                    echo "Error! Could not find either README or README_CASA_VERSION or qa/*.tgz!"
+                    exit 1
+                fi
+            fi
+        fi
         if [[ $(type casa 2>/dev/null | wc -l) -eq 0 ]]; then
             echo "Error! CASA was not found!"
             exit 1
         fi
         if [[ $(find . -mindepth 1 -maxdepth 1 -type f -name "*_pipescript.py" | wc -l) -gt 0 ]] || \
             [[ $(find . -mindepth 1 -maxdepth 1 -type f -name "*_piperestorescript.py" | wc -l) -gt 0 ]]; then
-            casa --pipeline -c "execfile('scriptForPI.py')"
+            casa --pipeline -c "execfile('$script_name')"
         else
-            casa -c "execfile('scriptForPI.py')"
+            casa -c "execfile('$script_name')"
         fi
         # 
         # cd back

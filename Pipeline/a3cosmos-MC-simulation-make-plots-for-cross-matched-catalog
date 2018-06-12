@@ -152,7 +152,7 @@ topcat -stilts plot2plane \
                 xlog=true \
                 ylog=true \
                 \
-                auxvisible=true auxlabel="S/N \ total \ (rec.)" \
+                auxvisible=true auxlabel="\large S/N \ total \ (rec.)" \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
@@ -195,7 +195,7 @@ topcat -stilts plot2plane \
                 xlog=true \
                 ylog=true \
                 \
-                auxvisible=true auxlabel="S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                auxvisible=true auxlabel="\large S/N_{peak,\,rec.}" \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
@@ -321,7 +321,7 @@ topcat -stilts plot2plane \
                 \
                 seq='_4,_3,_2,_1' \
                 legend=true \
-                legpos='0.02,0.98' \
+                legpos=0.02,0.98 \
                 legborder=false \
                 legopaque=false \
                 fontsize=16 \
@@ -339,16 +339,16 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S/N_{peak,\,rec.}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
-                auxvisible=true auxlabel="S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                auxvisible=true auxlabel="\large S/N_{peak,\,rec.}" \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
-                leglabel_1="flux comparison" \
+                leglabel_1="$leglabel_1" \
                 in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
                 icmd_1="select (S_out/e_S_out>0.1)" \
                 x_1="S_peak/noise" \
@@ -364,8 +364,8 @@ topcat -stilts plot2plane \
                 thick_3=1 \
                 leglabel_3='Y=0' \
                 \
-                seq='_3,_1' \
-                legend=false \
+                legend=true \
+                legpos=0.02,0.98 \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -381,13 +381,13 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S/N_{peak,\,rec.}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
                 layer_1=Mark \
-                leglabel_1="flux comparison" \
+                leglabel_1="$leglabel_1" \
                 in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
                 icmd_1="select (S_out/e_S_out>0.1)" \
                 x_1="S_peak/noise" \
@@ -404,8 +404,8 @@ topcat -stilts plot2plane \
                 thick_3=1 \
                 leglabel_3='Y=0' \
                 \
-                seq='_3,_1' \
-                legend=false \
+                legend=true \
+                legpos=0.02,0.98 \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -421,16 +421,16 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S/N_{peak,\,rec.}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
-                auxvisible=true auxlabel="sqrt(Area_{source}/Area_{beam})" \
+                auxvisible=true auxlabel="\large \Theta_{beam}" \
                 auxmap=rdbu auxflip=true auxmin=1.0 auxmax=5.0 \
                 \
                 layer_1=Mark \
-                leglabel_1="flux comparison" \
+                leglabel_1="$leglabel_1" \
                 in_1="$crossmatched_cat" ifmt_1="$crossmatched_cat_fmt" \
                 icmd_1="select (S_out/e_S_out>0.1)" \
                 icmd_1="sort (sqrt(Maj_out*Min_out/(Maj_beam*Min_beam)+1))" \
@@ -447,8 +447,8 @@ topcat -stilts plot2plane \
                 thick_3=1 \
                 leglabel_3='Y=0' \
                 \
-                seq='_3,_1' \
-                legend=false \
+                legend=true \
+                legpos=0.02,0.98 \
                 fontsize=16 \
                 texttype=latex \
                 omode=out \
@@ -464,12 +464,12 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{sim.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S_{sim.}/{\large rms\,noise}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
-                auxvisible=true auxlabel="S/N \ total \ (rec.)" \
+                auxvisible=true auxlabel="\large S/N \ total \ (rec.)" \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
@@ -506,12 +506,12 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{rec.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S_{rec.}/{\large rms\,noise}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/S_{rec.}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-2 ymax=2 \
                 \
-                auxvisible=true auxlabel="S/N \ total \ (rec.)" \
+                auxvisible=true auxlabel="\large S/N \ total \ (rec.)" \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
@@ -552,12 +552,12 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{sim.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S_{sim.}/{\large rms\,noise}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{sim.}}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-5 ymax=5 \
                 \
-                auxvisible=true auxlabel="S/N \ total \ (rec.)" \
+                auxvisible=true auxlabel="\large S/N \ total \ (rec.)" \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
@@ -594,12 +594,12 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{rec.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S_{rec.}/{\large rms\,noise}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-5 ymax=5 \
                 \
-                auxvisible=true auxlabel="S/N \ total \ (rec.)" \
+                auxvisible=true auxlabel="\large S/N \ total \ (rec.)" \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
@@ -642,12 +642,12 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S/N_{peak,\,rec.}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-5 ymax=5 \
                 \
-                auxvisible=true auxlabel="S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                auxvisible=true auxlabel="\large S/N_{peak,\,rec.}" \
                 auxmap=rdbu auxflip=true auxfunc=log \
                 \
                 layer_1=Mark \
@@ -685,12 +685,12 @@ echo ""
 topcat -stilts plot2plane \
                 xpix=500 ypix=300 \
                 insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
-                xlabel="\Large S_{peak,\,rec.}/\sigma_{rms\ noise}" \
+                xlabel="\Large S/N_{peak,\,rec.}" \
                 ylabel="\Large (S_{sim.}-S_{rec.})/\sigma_{S_{rec.}}" \
                 xlog=true xmin=1 \
                 ylog=false ymin=-5 ymax=5 \
                 \
-                auxvisible=true auxlabel="Maj_{convol.,\,rec.}/Maj_{beam}" \
+                auxvisible=true auxlabel="\large \Theta_{beam}" \
                 auxmap=rdbu auxflip=true auxfunc=linear \
                 \
                 layer_1=Mark \
@@ -725,7 +725,7 @@ fi
 # convert to PNG images
 # 
 echo ""
-find "$output_dir" -name "Plot_*.pdf" -print0 | xargs -0 -I pdf_name bash -c "image_name=pdf_name; echo \$image_name; convert -format png -density 240 -geometry x800 \$image_name \$(echo \$image_name | sed -e 's/.pdf$/.png/g')"
+find "$output_dir" -name "Plot_*.pdf" -print0 | xargs -0 -I pdf_name bash -c "image_name=pdf_name; echo \$image_name; convert -format png -density 240 -geometry x800 -background white \$image_name \$(echo \$image_name | sed -e 's/.pdf$/.png/g')"
 
 echo ""
 echo "Output to \"$(pwd)/$output_dir/\"!"

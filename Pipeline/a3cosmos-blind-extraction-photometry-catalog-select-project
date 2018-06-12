@@ -1,0 +1,71 @@
+#!/bin/bash
+# 
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+# Usage
+if [[ $# -lt 2 ]]; then
+    echo "Usage: "
+    echo "  $(basename ${BASH_SOURCE[0]}) cat_pybdsm_concatenated_141117.fits 2013.1.00118.S"
+    echo ""
+    exit
+fi
+
+
+if [[ "$1" != *".fits" ]]; then
+    echo "Error! The input \"$1\" is not a *.fits file!"
+    exit 255
+fi
+
+
+if [[ ! -f "$1" ]] && [[ ! -L "$1" ]]; then
+    echo "Error! The input \"$1\" does not exist!"
+    exit 255
+fi
+
+
+cat_input=$(echo "$1" | sed -e 's/\.fits$//g')
+
+cat_basename=$(basename ${cat_input})
+
+cmd_select="( "
+
+for (( i = 2; i <= $#; i++ )); do
+    proj_name_split=($(echo "${!i}" | perl -p -e 's/\*/ /g')) # TODO: the input string should not contain white space
+    echo "${proj_name_split[@]}"
+    proj_name_cleaned=$(echo "${!i}" | perl -p -e 's/[^0-9a-zA-Z_.-]/_/g' | perl -p -e 's/^[_]+//g' | perl -p -e 's/[_]+$//g')
+    cmd_select="${cmd_select}( "
+    for (( j = 0; j < ${#proj_name_split[@]}; j++ )); do
+        cmd_select="${cmd_select} contains(Image,\\\"${proj_name_split[j]}\\\")"
+        if [[ $j -lt $((${#proj_name_split[@]}-1)) ]]; then
+            cmd_select="${cmd_select} &&"
+        fi
+    done
+    cmd_select="${cmd_select} )"
+    if [[ $i -lt $# ]]; then
+        cmd_select="${cmd_select} ||"
+    fi
+    if [[ $# -gt 2 ]]; then
+        proj_name_cleaned="s"
+    else
+        proj_name_cleaned="_${proj_name_cleaned}"
+    fi
+done
+
+cmd_select="${cmd_select} )"
+
+echo "${cmd_select}"
+
+topcat -stilts tpipe \
+                in="${cat_input}.fits" \
+                cmd="select \"${cmd_select}\"" \
+                out="${cat_basename}_selected_project${proj_name_cleaned}.fits"
+
+echo "Output to \"${cat_basename}_selected_project${proj_name_cleaned}.fits\""
+
+
+
+

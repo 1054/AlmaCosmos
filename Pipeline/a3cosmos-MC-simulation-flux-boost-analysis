@@ -1,0 +1,234 @@
+#!/bin/bash
+# 
+
+
+# 
+# Check input argument
+# 
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-flux-boost-analysis \"datatable_CrossMatched_all_entries.fits\""
+    echo "    a3cosmos-MC-simulation-flux-boost-analysis \"datatable_CrossMatched_all_entries.fits\" \"OutputDir\""
+    echo "Input: "
+    echo "    A catalog which contains S_in, S_out, Maj_in, Min_in, Maj_beam, Min_beam, noise, flag_matched, flag_nonmatched_missed"
+    echo "Output: "
+    echo "    A directory which contains output figures, the default name of which is \"Output_MC_sim_flux_boost\""
+    echo ""
+    exit
+fi
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Supermongo was not installed!"
+    exit 1
+fi
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+    exit 1
+fi
+if [[ ! -f $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-flux-boost-analysis-tools/analyze_flux_boost_curve.sm ]]; then
+    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-flux-boost-analysis-tools/analyze_flux_boost_curve.sm"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+fi
+
+
+# 
+# Read Input cat
+# 
+InputCat="$1"
+
+
+# 
+# Set Output dir
+# 
+if [[ $# -ge 2 ]]; then
+    OutputDir="$2"
+else
+    OutputDir="Flux_boost"
+fi
+
+
+# 
+# Check output dir
+# 
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir -p "$OutputDir"
+fi
+
+
+# 
+# Extract formatted data table
+# 
+if [[ ! -f "$OutputDir/datatable_Matched.SNR_peak.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt=fits \
+                cmd="select \"(flag_matched)\"" \
+                cmd="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                cmd="addcol convol_area_in_beam \"(source_area_in_beam*source_area_in_beam+1)\"" \
+                cmd="addcol SNR_peak_in \"(S_in/convol_area_in_beam)/noise\"" \
+                cmd="addcol SNR_peak_out \"S_peak/noise\"" \
+                cmd="keepcols \"SNR_peak_in SNR_peak_out\"" \
+                cmd="sort \"SNR_peak_in\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_Matched.SNR_peak.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_Matched.SNR_peak.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_Matched.SNR_peak.txt\"!"
+    exit
+fi
+if [[ ! -f "$OutputDir/datatable_Matched.spurious.SNR_peak.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt=fits \
+                cmd="select \"(flag_matched)\"" \
+                cmd="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                cmd="addcol convol_area_in_beam \"(source_area_in_beam*source_area_in_beam+1)\"" \
+                cmd="addcol SNR_peak_in \"(S_in/convol_area_in_beam)/noise\"" \
+                cmd="addcol SNR_peak_out \"S_peak/noise\"" \
+                cmd="keepcols \"SNR_peak_in SNR_peak_out\"" \
+                cmd="sort \"SNR_peak_in\"" \
+                cmd="select \"(SNR_peak_in < 3.0)\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_Matched.spurious.SNR_peak.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_Matched.spurious.SNR_peak.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_Matched.spurious.SNR_peak.txt\"!"
+    exit
+fi
+if [[ ! -f "$OutputDir/datatable_NonMatched.spurious.SNR_peak.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt=fits \
+                cmd="select \"(flag_nonmatched_spurious)\"" \
+                cmd="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                cmd="addcol convol_area_in_beam \"(source_area_in_beam*source_area_in_beam+1)\"" \
+                cmd="addcol SNR_peak_in \"(S_in/convol_area_in_beam)/noise\"" \
+                cmd="keepcols \"SNR_peak_in\"" \
+                cmd="sort \"SNR_peak_in\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_NonMatched.spurious.SNR_peak.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_NonMatched.spurious.SNR_peak.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_NonMatched.spurious.SNR_peak.txt\"!"
+    exit
+fi
+if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_flux_boost.pdf" ]]; then
+    margin=(80 50 20 20) # left, bottom, right, top
+    binsize="+1.20" # "+1.10"
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak,\,sim.}/{rms\,noise}" \
+                ylabel="\Large N" \
+                xlog=true \
+                ylog=true \
+                ymin=0.6 ymax=2e6 \
+                \
+                layer1=histogram \
+                thick1=1 \
+                barform1=semi_filled \
+                color1="cccccc" \
+                transparency1=0 \
+                binsize1="$binsize" \
+                in1="$InputCat" \
+                ifmt1=fits \
+                leglabel1='all \ simulated' \
+                icmd1="select \"(flag_nonmatched_missed || flag_matched)\"" \
+                icmd1="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                icmd1="addcol convol_area_in_beam \"(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd1="addcol SNR_peak_in \"(S_in/convol_area_in_beam)/noise\"" \
+                icmd1="addcol SNR_peak_out \"(S_peak/noise)\"" \
+                x1="SNR_peak_in" \
+                \
+                layer2=histogram \
+                thick2=1 \
+                barform2=semi_filled \
+                color2=orange \
+                transparency2=0 \
+                binsize2="$binsize" \
+                in2="$InputCat" \
+                ifmt2=fits \
+                leglabel2='all \ recovered' \
+                icmd2="select \"(flag_nonmatched_spurious || flag_matched)\"" \
+                icmd2="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                icmd2="addcol convol_area_in_beam \"(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd2="addcol SNR_peak_in \"(S_in/convol_area_in_beam)/noise\"" \
+                icmd2="addcol SNR_peak_out \"(S_peak/noise)\"" \
+                x2="SNR_peak_in" \
+                \
+                layer4=histogram \
+                thick4=1 \
+                barform4=semi_filled \
+                color4=blue \
+                transparency4=0.4 \
+                binsize4="$binsize" \
+                in4="$InputCat" \
+                ifmt4=fits \
+                leglabel4='flux \ boosted' \
+                icmd4="select \"(flag_matched || flag_nonmatched_spurious)\"" \
+                icmd4="addcol source_area_in_beam \"(Maj_in*Min_in)/(Maj_beam*Min_beam)\"" \
+                icmd4="addcol convol_area_in_beam \"(source_area_in_beam*source_area_in_beam+1)\"" \
+                icmd4="addcol SNR_peak_in \"(S_in/convol_area_in_beam)/noise\"" \
+                icmd4="addcol SNR_peak_out \"(S_peak/noise)\"" \
+                icmd4="select \"(SNR_peak_in < 3.0 || (SNR_peak_out-SNR_peak_in)/SNR_peak_in > 0.3 || flag_nonmatched_spurious)\"" \
+                x4="SNR_peak_in" \
+                \
+                legpos=0.08,0.94 \
+                seq='1,2,4' \
+                fontsize=16 \
+                texttype=latex \
+                aspect=1.0 \
+                omode=out \
+                out="$OutputDir/Plot_SNR_histogram_for_flux_boost.pdf"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+fi
+if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_flux_boost.pdf" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/Plot_SNR_histogram_for_flux_boost.pdf\"!"
+    exit
+fi
+
+
+# 
+# Copy supermongo macro
+# 
+cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-flux-boost-analysis-tools/analyze_flux_boost_curve.sm "$OutputDir/"
+#cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-flux-boost-analysis-tools/fit_flux_boost_curve.py "$OutputDir/"
+
+
+# 
+# Change dir to OutputDir
+# 
+cd "$OutputDir"
+
+
+# 
+# Run the code
+# 
+echo "macro read analyze_flux_boost_curve.sm analyze_flux_boost_curve" | sm | tee log_analyze_flux_boost_curve.txt
+# In which, the python code "fit_flux_boost_curve.py" will be called. 
+
+#if [[ ! -f "datatable_MC_sim_flux_boost_cumulative.txt" ]] || \
+#    [[ ! -f "function_MC_sim_flux_boost_cumulative.txt" ]] || \
+#    [[ ! -f "function_MC_sim_flux_boost_cumulative.xyfit.txt" ]]; then
+#    echo "Error! Failed to run \"analyze_flux_boost_curve.sm\"! Sorry!"
+#    exit 1
+#fi
+
+echo "************"
+echo "macro read analyze_flux_boost_curve.sm calc_flux_boost" | sm | tee log_calc_flux_boost.txt
+
+
+# 
+# Print final message
+# 
+echo "************"
+echo "Output to \"$OutputDir\"!"
+#echo "Please then run \"macro read caap_prior_extraction_photometry_read_results.sm read_results\" in Supermongo!"
+#echo "Great! Finally! All done!"
+
+

@@ -58,7 +58,7 @@ ecorr_min = numpy.nanmin(numpy.column_stack((ecorr_noi,ecorr_noi_L68,ecorr_noi_H
 asciitable.write(numpy.column_stack((data_x1,data_x2,ecorr_min,ecorr_noi,ecorr_noi_L68,ecorr_noi_H68)), sys.stdout, 
                     names=['data_x1','data_x2','ecorr_min','ecorr_noi','ecorr_noi_L68','ecorr_noi_H68'], 
                     Writer=asciitable.FixedWidthTwoLine, delimiter='|', delimiter_pad=' ', position_char='-', bookend=True)
-y_obs = ecorr_min  # scatter of ((S_in-S_out) / noise)
+y_obs = ecorr_noi # ecorr_min #<TODO>#
 y_err = numpy.sqrt(10.0/data_cell_size) * y_obs # <TODO> assign larger errors to larger x2
 
 

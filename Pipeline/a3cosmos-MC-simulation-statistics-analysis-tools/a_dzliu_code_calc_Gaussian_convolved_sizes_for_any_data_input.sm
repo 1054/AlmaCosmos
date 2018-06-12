@@ -1,0 +1,162 @@
+a_dzliu_code_calc_Gaussian_convolved_sizes 01
+    # 
+    # echo "macro read a_dzliu_code_calc_Gaussian_convolved_sizes_for_any_data_input.sm a_dzliu_code_calc_Gaussian_convolved_sizes concat_sim_rec_data_table.maj.min.PA" | sm
+    # 
+    data $1".txt"
+    read {Maj_deconv 1 Min_deconv 2 PA_deconv 3 Maj_beam 4 Min_beam 5 PA_beam 6}
+    # 
+    calc_convolved_sizes Maj_deconv Min_deconv PA_deconv Maj_beam Min_beam PA_beam
+    # 
+    # check -- roughly OK
+    #!almacosmos_convert_2D_Gaussian_convolved_Maj_Min_PA_to_convolved_values.py
+    # 
+    set Maj_convol = calcds_Maj_convol # convolved, apparent sizes
+    set Min_convol = calcds_Min_convol # convolved, apparent sizes
+    set PA_convol = calcds_PA_convol # convolved, apparent sizes
+    # 
+    print $1".convolved_sizes.txt" \
+            '%15g %15g %15g %15g %15g %15g %15g %15g %15g\n' \
+                {Maj_convol Min_convol PA_convol Maj_beam Min_beam PA_beam Maj_deconv Min_deconv PA_deconv}
+    echo "Output to \""$1".convolved_sizes.txt\"!"
+
+
+
+
+
+
+
+calc_deconvolved_sizes 06
+    # inputs: maj_convol, min_convol, PA_convol, maj_beam, min_beam, PA_beam
+    # based on the ForTran code from eva, see email on 2018-01-09, subject "deconvolution".
+    # <20180118>
+    if($?6) {
+        set calcds_Maj_convol = ($1)
+        set calcds_Min_convol = ($2)
+        set calcds_PA_convol = ($3)
+        set calcds_Maj_beam = ($4)
+        set calcds_Min_beam = ($5)
+        set calcds_PA_beam = ($6)
+        # c deconvolve the source size following AIPS
+        set calcds_PA_convol_xl = ((calcds_PA_convol + 900.0) % 180.0)
+        set calcds_PA_beam_xl = ((calcds_PA_beam + 900.0) % 180.0)
+        set calcds_Maj_beam_square = calcds_Maj_beam**2
+        set calcds_Min_beam_square = calcds_Min_beam**2
+        set calcds_Maj_convol_square = calcds_Maj_convol**2
+        set calcds_Min_convol_square = calcds_Min_convol**2
+        set calcds_PA_diff = (calcds_PA_convol_xl - calcds_PA_beam_xl) / 90.0 * pi
+        set calcds_cosc = cos(calcds_PA_diff)
+        set calcds_sinc = sin(calcds_PA_diff)
+        set calcds_rhoc = (calcds_Maj_convol_square-calcds_Min_convol_square) * calcds_cosc - (calcds_Maj_beam_square-calcds_Min_beam_square)
+        if (calcds_rhoc == 0.0) {
+           set calcds_sigic2 = 0.0
+           set calcds_rhoa = 0.0
+        } else {
+           set calcds_sigic2 = atan((calcds_Maj_convol_square-calcds_Min_convol_square)*calcds_sinc/calcds_rhoc)
+           #[dzliu]# calcds_sigic2 = atan( calcds_sinc / ( calcds_cosc - (calcds_Maj_beam_square-calcds_Min_beam_square)/(calcds_Maj_convol_square-calcds_Min_convol_square) ) )
+           set calcds_rhoa = ((calcds_Maj_beam_square-calcds_Min_beam_square) - (calcds_Maj_convol_square-calcds_Min_convol_square) * calcds_cosc) / (2.0*cos(calcds_sigic2))
+        }
+        set calcds_PA_deconv = calcds_sigic2 * 90.0 / pi + calcds_PA_beam_xl
+        set calcds_det = ((calcds_Maj_convol_square+calcds_Min_convol_square) - (calcds_Maj_beam_square+calcds_Min_beam_square)) / 2.0
+        set calcds_Maj_deconv = calcds_det - calcds_rhoa
+        set calcds_Min_deconv = calcds_det + calcds_rhoa
+        set calcds_Maj_deconv = calcds_Maj_deconv > 0.0 ? calcds_Maj_deconv : 0.0
+        set calcds_Min_deconv = calcds_Min_deconv > 0.0 ? calcds_Min_deconv : 0.0
+        set calcds_Maj_deconv = sqrt(abs(calcds_Maj_deconv))
+        set calcds_Min_deconv = sqrt(abs(calcds_Min_deconv))
+        if (calcds_Maj_deconv < calcds_Min_deconv) {
+           set calcds_Var_swap = calcds_Maj_deconv
+           set calcds_Maj_deconv = calcds_Min_deconv
+           set calcds_Min_deconv = calcds_Var_swap
+           unset calcds_Var_swap
+           set calcds_PA_deconv = calcds_PA_deconv + 90.0
+        }
+        set calcds_PA_deconv = ((calcds_PA_deconv+900.0) % 180.0)
+        if (calcds_Maj_deconv == 0.0) {
+           set calcds_PA_deconv = 0.0
+        } else {
+            if (calcds_Min_deconv == 0.0) {
+                if ((abs(calcds_PA_deconv-calcds_PA_convol_xl) > 45.0) && (abs(calcds_PA_deconv-calcds_PA_convol_xl) < 135.0)) {
+                    set calcds_PA_deconv = ((calcds_PA_deconv+450.0) % 180.0)
+                }
+           }
+        }
+        !printf \\"Maj convol, Maj beam => Maj deconv : \\033[0;31m\\t$(calcds_Maj_convol)\\033[0;0m, \\033[0;33m$(calcds_Maj_beam)\\033[0;0m => \\033[0;34m$(calcds_Maj_deconv)\\033[0;0m\\n\\"
+        !printf \\"Min convol, Min beam => Min deconv : \\033[0;31m\\t$(calcds_Min_convol)\\033[0;0m, \\033[0;33m$(calcds_Min_beam)\\033[0;0m => \\033[0;34m$(calcds_Min_deconv)\\033[0;0m\\n\\"
+        !printf \\"PA. convol, PA. beam => PA. deconv : \\033[0;31m\\t$(calcds_PA_convol)\\033[0;0m, \\033[0;33m$(calcds_PA_beam)\\033[0;0m => \\033[0;34m$(calcds_PA_deconv)\\033[0;0m\\n\\"
+    }
+
+
+calc_convolved_sizes 06
+    # inputs: maj_deconv, min_deconv, PA_deconv, maj_beam, min_beam, PA_beam
+    # based on the ForTran code from Eva, see email on 2018-01-09, subject "deconvolution".
+    # reverted the process of deconvolution, so that the inputs are intrinsic sizes and outputs are convolved sizes
+    # <20180118><20180226>
+    # 
+    # Assuming beam FWHM: B_maj, B_min, B_PA
+    #     intrinsic FWHM: H_maj, H_min, H_PA
+    #     convolved FWHM: C_maj, C_min, C_PA
+    # We have
+    #     (B_maj**2 + B_min**2) + (H_maj**2 + H_min**2) = (C_maj**2 + C_min**2)   --> verified by '/Users/dzliu/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-calc-Gaussian-convolved-sizes/calc_Gaussian_convolved_sizes_Test_2_PA_diff_90.pro'
+    #                                                                                         and '/Users/dzliu/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-calc-Gaussian-convolved-sizes/calc_Gaussian_convolved_sizes_Test_3_PA_diff_45.pro'
+    # ......
+    # 
+    if($?6) {
+        set calcds_Maj_deconv = ($1)
+        set calcds_Min_deconv = ($2)
+        set calcds_PA_deconv = ($3)
+        set calcds_Maj_beam = ($4)
+        set calcds_Min_beam = ($5)
+        set calcds_PA_beam = ($6)
+        # 
+        set calcds_sigic2 = (((calcds_PA_deconv + 900.0) % 180.0) - ((calcds_PA_beam + 900.0) % 180.0)) * 2.0 / 180.0 * pi
+        # 
+        set calcds_PA_diff = (((calcds_PA_deconv + 900.0) % 180.0) - ((calcds_PA_beam + 900.0) % 180.0))
+        # 
+        set calcds_sconv = (calcds_Maj_deconv**2+calcds_Min_deconv**2) + (calcds_Maj_beam**2+calcds_Min_beam**2)
+        set calcds_sbeam = (calcds_Maj_beam**2+calcds_Min_beam**2)
+        set calcds_dbeam = (calcds_Maj_beam**2-calcds_Min_beam**2)
+        set calcds_dconv_times_dcos = (calcds_Maj_deconv**2-calcds_Min_deconv**2) * cos(calcds_sigic2) + calcds_dbeam
+        set calcds_dconv_times_dsin = tan(calcds_sigic2) * (calcds_dconv_times_dcos-calcds_dbeam)
+        set calcds_PA_diff = atan2(calcds_dconv_times_dsin,calcds_dconv_times_dcos) / 2.0 / pi * 180.0
+        set calcds_dcos = cos(2*calcds_PA_diff/180.0*pi)
+        set calcds_dsin = sin(2*calcds_PA_diff/180.0*pi)
+        set calcds_dconv = calcds_dconv_times_dcos / calcds_dcos
+        #if dcos != 0.0:
+        #    dconv = dconv_times_dcos / dcos
+        #else:
+        #    dconv = dconv_times_dsin / dsin
+        # 
+        set calcds_PA_convol = calcds_PA_diff + ((calcds_PA_beam + 900.0) % 180.0)
+        set calcds_Maj_convol2 = (calcds_sconv + calcds_dconv)/2.0 # dconv = (Maj_convol**2-Min_convol**2), sconv = (Maj_convol**2+Min_convol**2), so ...
+        set calcds_Min_convol2 = (calcds_sconv - calcds_dconv)/2.0 # dconv = (Maj_convol**2-Min_convol**2), sconv = (Maj_convol**2+Min_convol**2), so ...
+        set calcds_Maj_convol = (calcds_Maj_convol2 >= calcds_Min_convol2) ? sqrt(calcds_Maj_convol2) : sqrt(calcds_Min_convol2)
+        set calcds_Min_convol = (calcds_Maj_convol2 >= calcds_Min_convol2) ? sqrt(calcds_Min_convol2) : sqrt(calcds_Maj_convol2)
+        # 
+        !printf \\"Maj deconv, Maj beam => Maj convol : \\033[0;31m\\t$(calcds_Maj_deconv)\\033[0;0m, \\033[0;33m$(calcds_Maj_beam)\\033[0;0m => \\033[0;34m$(calcds_Maj_convol)\\033[0;0m\\n\\"
+        !printf \\"Min deconv, Min beam => Min convol : \\033[0;31m\\t$(calcds_Min_deconv)\\033[0;0m, \\033[0;33m$(calcds_Min_beam)\\033[0;0m => \\033[0;34m$(calcds_Min_convol)\\033[0;0m\\n\\"
+        !printf \\"PA. deconv, PA. beam => PA. convol : \\033[0;31m\\t$(calcds_PA_deconv)\\033[0;0m, \\033[0;33m$(calcds_PA_beam)\\033[0;0m => \\033[0;34m$(calcds_PA_convol)\\033[0;0m\\n\\"
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

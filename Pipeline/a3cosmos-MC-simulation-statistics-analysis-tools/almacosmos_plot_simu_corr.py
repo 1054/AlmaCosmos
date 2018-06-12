@@ -28,6 +28,10 @@ x2_obs = data_table.getColumn('cell_par2_median')
 cell_size = data_table.getColumn('cell_size')
 fbias_obs = data_table.getColumn('cell_rel_median') # 'cell_rel_median'
 fbias_err = numpy.sqrt(10.0/cell_size) * fbias_obs
+fbias2_obs = data_table.getColumn('cell_rel_mean') # 'cell_rel_median'
+fbias2_err = numpy.sqrt(10.0/cell_size) * fbias2_obs
+#fbias2_obs = data_table.getColumn('cell_noi_median') # 'cell_noi_median': fbias2 is defined as cell_noi_mean = (S_in-S_out)/noise
+#fbias2_err = numpy.sqrt(10.0/cell_size) * fbias2_obs
 ecorr_noi = data_table.getColumn('cell_noi_scatter')
 ecorr_noi_L68 = data_table.getColumn('cell_noi_scatter_L68')
 ecorr_noi_H68 = data_table.getColumn('cell_noi_scatter_H68')
@@ -53,6 +57,7 @@ fig = pyplot.figure()
 fig.set_size_inches(13.0,11.5)
 font = { 'family': 'serif', 'weight': 'normal', 'size': 14 }
 n2 = len(x2_grid)-1
+n2 = n2 - 1 #<TODO># the last x2 bin is empty, so do not show it
 for i2 in range(n2):
     
     
@@ -68,12 +73,15 @@ for i2 in range(n2):
     ax = fig.add_subplot(n2, 2, 2*i2+i1+1)
     # 
     # set axis
-    ax.set_xlim([0.5,1000.0])
+    ax.set_xlim([1,1000.0])
     ax.set_xscale('log')
+    ax.set_ylim([-2.5,2.5])
     # 
     # print x2 value
-    plot_text(ax, 0, 0.5, r' %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
+    plot_text(ax, 0, 0.7, r' $\Theta_{beam}$: %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
                 NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='left', zorder=4)
+    #plot_text(ax, 0, 0.5, r' %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
+    #            NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='left', zorder=4)
     # 
     # print a line at Y=0
     plot_line(ax, 0, 0.0, 1000.0, 0.0, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1, zorder=1)
@@ -88,7 +96,9 @@ for i2 in range(n2):
         # plot observed data
         ax.scatter(x1_bin, fbias_obs[imask], marker='.', color='dodgerblue', s=100, zorder=5)
         ax.errorbar(x1_bin, fbias_obs[imask], yerr=fbias_err[imask], color='dodgerblue', linestyle='none', capsize=5, zorder=5)
-        plot_text(ax, 0, 0.48, r' %0.2f '%(numpy.mean(x2_bin)), NormalizedCoordinate=True, fontdict=font, verticalalignment='top', horizontalalignment='left', color='dodgerblue', zorder=4)
+        ax.scatter(x1_bin, fbias2_obs[imask], marker='o', edgecolor='orangered', facecolor='none', s=100, zorder=6)
+        #ax.errorbar(x1_bin, fbias2_obs[imask], yerr=fbias2_err[imask], color='orangered', linestyle='--', capsize=5, zorder=6)
+        #plot_text(ax, 0, 0.48, r' %0.2f '%(numpy.mean(x2_bin)), NormalizedCoordinate=True, fontdict=font, verticalalignment='top', horizontalalignment='left', color='dodgerblue', zorder=4)
     # 
     # plot splined data
     if os.path.isfile('spline_table_fbias.json'):
@@ -113,8 +123,8 @@ for i2 in range(n2):
             if (interp_table['x'][interp_table_i][1] >= x2_grid[i2]) and (interp_table['x'][interp_table_i][1] < x2_grid[i2]+x2_interval[i2]):
                 interp_table_x.append(interp_table['x'][interp_table_i][0])
                 interp_table_y.append(interp_table['y'][interp_table_i])
-        if len(interp_table_x)>0:
-            ax.plot(interp_table_x, interp_table_y, color='darkgray', marker='x', ls='None', ms=3, mew=1.5, zorder=7)
+        #<20180524># if len(interp_table_x)>0:
+        #<20180524>#     ax.plot(interp_table_x, interp_table_y, color='darkgray', marker='x', ls='None', ms=3, mew=1.5, zorder=7)
     # 
     # plot function-fitted data
     if os.path.isfile('fitfun_table_fbias.json'):
@@ -129,13 +139,17 @@ for i2 in range(n2):
         if len(fitfun_table_x)>0:
             ax.plot(fitfun_table_x, fitfun_table_y, color='red', marker='None', ls='solid')
     # 
+    # adjust tick font size
+    pyplot.xticks(fontsize=14)
+    pyplot.yticks(fontsize=14)
+    # 
     # show or hide xylabel
     if i2==0:
-        plot_text(ax, 0.5, 1.15, r'Total Flux Bias', NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='center', color='black')
+        plot_text(ax, 0.5, 1.15, r'Flux Bias Analysis', NormalizedCoordinate=True, fontdict=font, fontsize=18, verticalalignment='bottom', horizontalalignment='center', color='black')
     elif i2==n2-1:
-        ax.set_xlabel('peak_flux / rms_noise', fontdict=font)
+        ax.set_xlabel('$S/N_{peak}$', fontdict=font, fontsize=18)
     elif i2==int((n2-1)/2):
-        ax.set_ylabel('median of $(S_{in} - S_{out}) / S_{in}$', fontdict=font)
+        ax.set_ylabel('Median (Mean) of  $(S_{sim.} - S_{rec.}) / S_{sim.}$', fontdict=font, fontsize=18, labelpad=15)
     # 
     # show or hide xyticks
     if i2!=n2-1:
@@ -155,15 +169,18 @@ for i2 in range(n2):
     ax = fig.add_subplot(n2, 2, 2*i2+i1+1)
     # 
     # set axis
-    ax.set_xlim([0.5,1000.0])
+    ax.set_xlim([1,1000.0])
     ax.set_xscale('log')
+    ax.set_ylim([0.0,25.0])
     # 
     # print x2 value
-    plot_text(ax, 0, 0.5, r' %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
+    plot_text(ax, 0, 0.7, r' $\Theta_{beam}$: %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
                 NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='left', zorder=4)
+    #plot_text(ax, 0, 0.5, r' %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
+    #            NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='left', zorder=4)
     # 
     # print a line at Y=1
-    plot_line(ax, 0, 1.0, 1000.0, 1.0, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1, zorder=1)
+    #plot_line(ax, 0, 1.0, 1000.0, 1.0, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1, zorder=1)
     # 
     # select data in x2 bin
     imask = (x1_obs>=3.0) & (x2_obs >= x2_grid[i2]) & (x2_obs < x2_grid[i2]+x2_interval[i2])
@@ -174,9 +191,9 @@ for i2 in range(n2):
         # 
         # plot observed data
         ax.scatter(x1_bin, ecorr_obs[imask], marker='.', color='dodgerblue', s=100, zorder=5)
-        ax.scatter(x1_bin, ecorr_noi[imask], marker='.', color='orangered', s=80, zorder=5)
+        ax.scatter(x1_bin, ecorr_noi[imask], marker='o', edgecolor='orangered', facecolor='none', s=80, zorder=6)
         ax.errorbar(x1_bin, ecorr_obs[imask], yerr=ecorr_err[imask], color='dodgerblue', linestyle='none', capsize=5, zorder=5)
-        plot_text(ax, 0, 0.48, r' %0.2f '%(numpy.mean(x2_bin)), NormalizedCoordinate=True, fontdict=font, verticalalignment='top', horizontalalignment='left', color='dodgerblue', zorder=4)
+        #plot_text(ax, 0, 0.48, r' %0.2f '%(numpy.mean(x2_bin)), NormalizedCoordinate=True, fontdict=font, verticalalignment='top', horizontalalignment='left', color='dodgerblue', zorder=4)
     # 
     # plot splined data
     if os.path.isfile('spline_table_ecorr.json'):
@@ -201,8 +218,8 @@ for i2 in range(n2):
             if (interp_table['x'][interp_table_i][1] >= x2_grid[i2]) and (interp_table['x'][interp_table_i][1] < x2_grid[i2]+x2_interval[i2]):
                 interp_table_x.append(interp_table['x'][interp_table_i][0])
                 interp_table_y.append(interp_table['y'][interp_table_i])
-        if len(interp_table_x)>0:
-            ax.plot(interp_table_x, interp_table_y, color='darkgray', marker='x', ls='None', ms=3, mew=1.5, zorder=7)
+        #<20180524># if len(interp_table_x)>0:
+        #<20180524>#     ax.plot(interp_table_x, interp_table_y, color='darkgray', marker='x', ls='None', ms=3, mew=1.5, zorder=7)
     # 
     # plot function-fitted data
     if os.path.isfile('fitfun_table_ecorr.json'):
@@ -214,16 +231,20 @@ for i2 in range(n2):
             if (fitfun_table['x'][fitfun_table_i][1] >= x2_grid[i2]) and (fitfun_table['x'][fitfun_table_i][1] < x2_grid[i2]+x2_interval[i2]):
                 fitfun_table_x.append(fitfun_table['x'][fitfun_table_i][0])
                 fitfun_table_y.append(fitfun_table['y'][fitfun_table_i])
-        if len(fitfun_table_x)>0:
-            ax.plot(fitfun_table_x, fitfun_table_y, color='red', marker='None', ls='solid')
+        #<20180524># if len(fitfun_table_x)>0:
+        #<20180524>#     ax.plot(fitfun_table_x, fitfun_table_y, color='red', marker='None', ls='solid')
+    # 
+    # adjust tick font size
+    pyplot.xticks(fontsize=14)
+    pyplot.yticks(fontsize=14)
     # 
     # show or hide xylabel
     if i2==0:
-        plot_text(ax, 0.5, 1.15, r'Total Flux Error', NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='center', color='black')
+        plot_text(ax, 0.5, 1.15, r'Flux Error Analysis', NormalizedCoordinate=True, fontdict=font, fontsize=18, verticalalignment='bottom', horizontalalignment='center', color='black')
     elif i2==n2-1:
-        ax.set_xlabel('peak_flux / rms_noise', fontdict=font)
+        ax.set_xlabel('$S/N_{peak}$', fontdict=font, fontsize=18)
     elif i2==int((n2-1)/2):
-        ax.set_ylabel('scatter ($(S_{in} - S_{out})$ / rms_noise)', fontdict=font)
+        ax.set_ylabel('Scatter (Percentile) of  $(S_{sim.} - S_{rec.}) / {rms\,noise}$', fontdict=font, fontsize=18, labelpad=15)
     # 
     # show or hide xyticks
     if i2!=n2-1:
@@ -231,6 +252,11 @@ for i2 in range(n2):
 
 
 
+
+# 
+# adjust
+# 
+pyplot.subplots_adjust(wspace=0.28, hspace=0.00)
 
 
 

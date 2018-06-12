@@ -13,7 +13,7 @@ pkg_resources.require("scipy")
 import os, sys, json
 
 if len(sys.argv) <= 1:
-    print('Usage: almacosmos_apply_simu_data_correction_ecorr.py catalog.txt')
+    print('Usage: almacosmos_apply_simu_corr_ecorr_via_2D_interpolation.py catalog.txt')
     sys.exit()
 
 

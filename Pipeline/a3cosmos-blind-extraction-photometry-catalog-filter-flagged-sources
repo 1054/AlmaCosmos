@@ -1,0 +1,38 @@
+#!/bin/bash
+# 
+
+set -e
+
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "    $(basename ${BASH_SOURCE[0]}) \\"
+    echo "        \"cat_pybdsm_concatenated_141117_with_meta.fits\""
+    echo ""
+    echo "    $(basename ${BASH_SOURCE[0]}) \\"
+    echo "        \"cat_pybdsm_concatenated_020118_with_meta.fits\""
+    echo ""
+    exit
+fi
+
+
+cat_input=$(echo "$1" | sed -e 's/\.fits$//g')
+
+
+# filter Source_id_in_image
+topcat -stilts tpipe \
+                in="${cat_input}.fits" \
+                cmd="select \"(Source_id_in_image>=0)\"" \
+                out="${cat_input}_filtered_flagged_sources.fits"
+
+
+# 
+# print final output file name
+echo "Output to \"${cat_input}_filtered_flagged_sources.fits\"!"
+
+

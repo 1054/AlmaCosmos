@@ -35,11 +35,18 @@ topcat -stilts tskymatch2 \
                 in2="cosmos_field_radec.txt" ifmt2=ascii \
                 ra2="RA_COSMOS_Center" dec2="Dec_COSMOS_Center" \
                 error=5400.0 \
-                join=all1 \
+                join=1and2 \
                 find=best1 \
                 out="${cat_input}_tmp_within_cosmos_including_flagged_sources.fits"
                 # http://www.star.bris.ac.uk/~mbt/stilts/sun256/tskymatch2.html
                 # http://www.star.bris.ac.uk/~mbt/stilts/sun256/tskymatch2-usage.html
+                # 
+                # BUG FOUND 2018-06-03: 
+                # WAS USING 
+                #   join=all1 \
+                #   find=best1 \
+                # SHOULD USE
+                #   join=1and2
 
 # filter Source_id_in_image
 topcat -stilts tpipe \
@@ -57,22 +64,27 @@ topcat -stilts tpipe \
                 in="${cat_input}_Jy_within_cosmos.fits" \
                 cmd="replacecol Total_flux -units \"mJy\" \"Total_flux*1e3\"" \
                 cmd="replacecol E_Total_flux -units \"mJy\" \"E_Total_flux*1e3\"" \
+                cmd="replacecol Total_flux_Pbcor -units \"mJy\" \"Total_flux_Pbcor*1e3\"" \
+                cmd="replacecol E_Total_flux_Pbcor -units \"mJy\" \"E_Total_flux_Pbcor*1e3\"" \
                 cmd="replacecol Peak_flux -units \"mJy\" \"Peak_flux*1e3\"" \
                 cmd="replacecol E_Peak_flux -units \"mJy\" \"E_Peak_flux*1e3\"" \
+                cmd="replacecol Peak_flux_Pbcor -units \"mJy\" \"Peak_flux_Pbcor*1e3\"" \
+                cmd="replacecol E_Peak_flux_Pbcor -units \"mJy\" \"E_Peak_flux_Pbcor*1e3\"" \
                 cmd="replacecol Maj_deconv -units \"arcsec\" \"Maj_deconv*3600.0\"" \
                 cmd="replacecol E_Maj_deconv -units \"arcsec\" \"E_Maj_deconv*3600.0\"" \
                 cmd="replacecol Min_deconv -units \"arcsec\" \"Min_deconv*3600.0\"" \
                 cmd="replacecol E_Min_deconv -units \"arcsec\" \"E_Min_deconv*3600.0\"" \
+                cmd="replacecol Beam_MAJ -name \"beam_maj\" -units \"arcsec\" \"Beam_MAJ*3600.0\"" \
+                cmd="replacecol Beam_MIN -name \"beam_min\" -units \"arcsec\" \"Beam_MIN*3600.0\"" \
+                cmd="addcol rms_noise -after Isl_rms -units \"mJy/beam\" \"Isl_rms*1e3\"" \
                 out="${cat_input}_mJy_within_cosmos.fits"
-                #cmd="replacecol Beam_MAJ -name \"beam_maj\" -units \"arcsec\" \"Beam_MAJ*3600.0\"" \
-                #cmd="replacecol Beam_MIN -name \"beam_min\" -units \"arcsec\" \"Beam_MIN*3600.0\"" \
 
 
 # 
 topcat -stilts tpipe \
                 in="${cat_input}_Jy_within_cosmos.fits" \
                 cmd="replacecol Separation -name \"Distance_to_COSMOS_Center\" -units \"arcmin\" \"Separation/60.0\"" \
-                cmd="select \"(beam_maj>0.1)\"" \
+                cmd="select \"(Beam_MAJ*3600.0>0.1)\"" \
                 out="${cat_input}_Jy_within_cosmos_without_very_high_res_projects.fits"
 echo "Date: "$(date +"%Y-%m-%d %H:%M:%S %Z") > "${cat_input}_Jy_within_cosmos_without_very_high_res_projects.readme.txt"
 echo "Script name: "$(basename ${BASH_SOURCE[0]}) >> "${cat_input}_Jy_within_cosmos_without_very_high_res_projects.readme.txt"

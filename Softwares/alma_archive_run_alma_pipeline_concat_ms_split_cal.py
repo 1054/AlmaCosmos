@@ -18,11 +18,32 @@ if len(uid_dirs) == 0:
     sys.exit()
 
 
+# 
+# Read user input
+freqtol = '20MHz'
 concatvis = 'calibrated.ms'
+
+i = 1
+while i < len(sys.argv):
+    temp_argv = sys.argv[i].lower()
+    if temp_argv.find('--') == 0:
+        temp_argv = '-'+temp_argv.lstrip('-')
+    if temp_argv == '-freqtol':
+        if i+1 < len(sys.argv):
+            i = i + 1
+            freqtol = sys.argv[i]
+    if temp_argv == '-out' or temp_argv == '-output' or temp_argv == '-concatvis':
+        if i+1 < len(sys.argv):
+            i = i + 1
+            concatvis = sys.argv[i]
+    i = i + 1
+
+
+
 try:
     concat(vis=uid_dirs,
            concatvis=concatvis, 
-           freqtol='20MHz')
+           freqtol=freqtol)
 except:
     concat(vis=uid_dirs,
            concatvis=concatvis)

@@ -1,0 +1,53 @@
+#!/bin/bash
+# 
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+# Usage
+if [[ $# -lt 1 ]]; then
+    echo "Usage: "
+    echo "  This code will convert the \"Total_flux\" and \"Peak_flux\" from Jy to mJy in the input catalog."
+    echo "  To run this code, please input the catalog file path:"
+    echo "  e.g., $(basename ${BASH_SOURCE[0]}) cat_pybdsm_concatenated_141117.fits"
+    echo ""
+    exit
+fi
+
+
+if [[ "$1" != *".fits" ]]; then
+    echo "Error! The input \"$1\" is not a *.fits file!"
+    exit 255
+fi
+
+
+if [[ ! -f "$1" ]] && [[ ! -L "$1" ]]; then
+    echo "Error! The input \"$1\" does not exist!"
+    exit 255
+fi
+
+
+cat_input=$(echo "$1" | sed -e 's/\.fits$//g')
+
+
+topcat -stilts tpipe \
+                in="${cat_input}.fits" \
+                cmd="replacecol Total_flux -units \"mJy\" \"Total_flux*1e3\"" \
+                cmd="replacecol E_Total_flux -units \"mJy\" \"E_Total_flux*1e3\"" \
+                cmd="replacecol Total_flux_Pbcor -units \"mJy\" \"Total_flux*1e3\"" \
+                cmd="replacecol E_Total_flux_Pbcor -units \"mJy\" \"E_Total_flux*1e3\"" \
+                cmd="replacecol Peak_flux -units \"mJy\" \"Peak_flux*1e3\"" \
+                cmd="replacecol E_Peak_flux -units \"mJy\" \"E_Peak_flux*1e3\"" \
+                cmd="replacecol Maj_deconv -units \"arcsec\" \"Maj_deconv*3600.0\"" \
+                cmd="replacecol E_Maj_deconv -units \"arcsec\" \"E_Maj_deconv*3600.0\"" \
+                cmd="replacecol Min_deconv -units \"arcsec\" \"Min_deconv*3600.0\"" \
+                cmd="replacecol E_Min_deconv -units \"arcsec\" \"E_Min_deconv*3600.0\"" \
+                out="${cat_input}_mJy.fits"
+
+echo "Output to \"${cat_input}_mJy.fits\""
+
+
+
+

@@ -14,8 +14,11 @@
 # see exclude_3_*/Screen*.png
 # see exclude_4_*/Screen*.png
 # 
+#topcat -stilts tpipe in="concat_sim_rec_data_table.fits" \
+#                    cmd="select \"(sim_Maj/sim_beam_maj<3.99 && sim_Maj<=3.0 && sim_Maj>0.05 && rec_Maj>0.05 && sim_Maj/sim_beam_maj>=0.1 && rec_Maj/sim_beam_maj>=0.1 && rec_f>0)\"" \
+#                    out="concat_sim_rec_data_table_filtered_outliers.fits"
 topcat -stilts tpipe in="concat_sim_rec_data_table.fits" \
-                    cmd="select \"(sim_Maj/sim_beam_maj<3.99 && sim_Maj<=3.0 && sim_Maj>0.05 && rec_Maj>0.05 && sim_Maj/sim_beam_maj>=0.1 && rec_Maj/sim_beam_maj>=0.1)\"" \
+                    cmd="select \"(rec_f>0)\"" \
                     out="concat_sim_rec_data_table_filtered_outliers.fits"
 
 

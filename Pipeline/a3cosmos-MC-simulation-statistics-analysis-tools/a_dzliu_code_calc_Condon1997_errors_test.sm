@@ -2,30 +2,43 @@ a_dzliu_code_calc_Condon1997_errors
     # 
     # echo "macro read a_dzliu_code_calc_Condon1997_errors_test.sm a_dzliu_code_calc_Condon1997_errors" | sm
     # 
-    set S_out = 0.0026970393360337794 * 1e3 # mJy
-    set noise = 0.0657619 # mJy
-    set Maj_out = 9.876906313535998E-5 * 3600.0 # arcsec
-    set Min_out = 9.48384816859232E-5 * 3600.0 # arcsec
-    set PA_out = 82.11581370096236
-    set Maj_beam = 1.23216 # arcsec
-    set Min_beam = 0.798919 # arcsec
-    set PA_beam = -53.0928
+    #set S_out = 0.0026970393360337794 * 1e3 # mJy
+    #set noise = 0.0657619 # mJy
+    #set Maj_out = 9.876906313535998E-5 * 3600.0 # arcsec
+    #set Min_out = 9.48384816859232E-5 * 3600.0 # arcsec
+    #set PA_out = 82.11581370096236
+    #set Maj_beam = 1.23216 # arcsec
+    #set Min_beam = 0.798919 # arcsec
+    #set PA_beam = -53.0928
+    ## 
+    #calc_convolved_sizes Maj_out Min_out PA_out Maj_beam Min_beam PA_beam
     # 
-    calc_convolved_sizes Maj_out Min_out PA_out Maj_beam Min_beam PA_beam
+    # 
+    # <20180529> Another test
+    set S_out = 25.0 # mJy
+    set noise = 1.0 # mJy
+    set Maj_beam = 1.5 # arcsec
+    set Min_beam = 1.5 # arcsec
+    set PA_beam = 90.0
+    set Maj_out = Maj_beam * 5.0 * 3 # arcsec
+    set Min_out = Min_beam * 5.0 / 3 # arcsec
+    set PA_out = PA_beam + 90
+    # 
+    calc_deconvolved_sizes Maj_out Min_out PA_out Maj_beam Min_beam PA_beam
     # 
     # check -- roughly OK
     #calc_convolved_sizes 2.54036 0.919108 58.7547 0.826593 0.340374 -66.3829
     #!almacosmos_convert_2D_Gaussian_deconvolved_Maj_Min_PA_to_convolved_values.py 2.54036 0.919108 58.7547 0.826593 0.340374 -66.3829
     # 
-    set source_maj = Maj_out # deconvolved, intrinsic sizes
-    set source_min = Min_out # deconvolved, intrinsic sizes
-    set source_PA = PA_out # deconvolved, intrinsic sizes
+    set source_maj = calcds_Maj_deconv # deconvolved, intrinsic sizes
+    set source_min = calcds_Min_deconv # deconvolved, intrinsic sizes
+    set source_PA = calcds_PA_deconv # deconvolved, intrinsic sizes
     set convol_maj = calcds_Maj_convol # convolved, apparent sizes
     set convol_min = calcds_Min_convol # convolved, apparent sizes
     set convol_PA = calcds_PA_convol # convolved, apparent sizes
-    set beam_maj = Maj_beam
-    set beam_min = Min_beam
-    set beam_PA = PA_beam
+    set beam_maj = calcds_Maj_beam
+    set beam_min = calcds_Min_beam
+    set beam_PA = calcds_PA_beam
     set pixscale = noise*0.0 + 1.0
     set pixnoise = noise
     set source_total = S_out
@@ -46,6 +59,7 @@ a_dzliu_code_calc_Condon1997_errors
     # apply new S_peak
     set S_peak = source_peak
     set e_S_out = source_total_err
+    print {Condon_h_maj Condon_h_min source_major_err_rel source_minor_err_rel}
 
 
 

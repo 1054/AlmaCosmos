@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # 
 
 ################################
@@ -111,8 +111,8 @@ class CrabTable(object):
                 # 
                 if len(self.DataTableIndex)>0:
                     self.TableIndex = fits_extension
-                    self.TableData = Table(self.DataTableStruct[self.DataTableIndex[self.TableIndex]].data) # dtype astropy.io.fits.fitsrec.FITS_rec
-                    self.TableColumns = self.DataTableStruct[self.DataTableIndex[self.TableIndex]].columns # dtype astropy.io.fits.column.ColDefs
+                    self.TableData = Table(self.DataTableStruct[self.DataTableIndex[self.TableIndex]].data) # dtype astropy.table.Table, converted from astropy.io.fits.fitsrec.FITS_rec
+                    self.TableColumns = self.DataTableStruct[self.DataTableIndex[self.TableIndex]].columns # dtype astropy.table.TableColumns, previously astropy.io.fits.column.ColDefs
                     self.TableHeaders = self.TableColumns.names # string
                     self.TableColNames = self.TableColumns.names # string
                     self.TableColUnits = ['']*len(self.TableColNames) # string
@@ -156,8 +156,8 @@ class CrabTable(object):
                 # http://cxc.harvard.edu/contrib/asciitable/
                 self.DataTableStruct = asciitable.read(self.DataTableFile)
                 self.TableIndex = 0
-                self.TableData = self.DataTableStruct
-                self.TableColumns = self.DataTableStruct.columns # dtype astropy.table.table.Table
+                self.TableData = self.DataTableStruct # dtype astropy.table.Table or astropy.table.table.Table
+                self.TableColumns = self.DataTableStruct.columns # dtype astropy.table.TableColumns
                 self.TableHeaders = self.DataTableStruct.colnames # string
                 self.TableColNames = self.DataTableStruct.colnames # string
                 self.TableColUnits = ['']*len(self.TableColNames) # string
