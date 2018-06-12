@@ -109,9 +109,13 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             fi
             # if "calibrated" dir exists, but no "calibrated*.ms", then check if "uid___*.ms.split.cal" dirs exist or not
             list_of_ms_split_cal_dirs=($(find "$script_dir/calibrated/" -mindepth 1 -maxdepth 1 -type d -name "uid___*.ms.split.cal"))
+            # 20180612 for CASA 5, ALMA Cycle 5 and later, file names are changed
             if [[ ${#list_of_ms_split_cal_dirs[@]} -eq 0 ]]; then
-                # 20180612 for CASA 5, ALMA Cycle 5 and later, file names are changed
                 list_of_ms_split_cal_dirs=($(find "$script_dir/calibrated/" -mindepth 1 -maxdepth 1 -type d -name "uid___*.ms"))
+            fi
+            # 20180612 for CASA 5, ALMA Cycle 5 and later, file names are changed
+            if [[ ${#list_of_ms_split_cal_dirs[@]} -eq 0 ]]; then
+                list_of_ms_split_cal_dirs=($(find "$script_dir/calibrated/" -mindepth 1 -maxdepth 1 -type l -name "uid___*.ms"))
             fi
             if [[ ${#list_of_ms_split_cal_dirs[@]} -eq 1 ]]; then
                 echo "Found \"$script_dir/calibrated\" and one \"uid___*.ms.split.cal\" data therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will make a link."
