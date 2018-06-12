@@ -119,8 +119,8 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             fi
             if [[ ${#list_of_ms_split_cal_dirs[@]} -eq 1 ]]; then
                 echo "Found \"$script_dir/calibrated\" and one \"uid___*.ms.split.cal\" data therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will make a link."
-                echo bash -c "cd \"$script_dir/calibrated\"; ln -fsT \"${list_of_ms_split_cal_dirs[0]}\" \"calibrated.ms\""
-                bash -c "cd \"$script_dir/calibrated\"; ln -fsT \"${list_of_ms_split_cal_dirs[0]}\" \"calibrated.ms\""
+                echo bash -c "cd \"$script_dir/calibrated\"; ln -fsT \"$(basename ${list_of_ms_split_cal_dirs[0]})\" \"calibrated.ms\""
+                bash -c "cd \"$script_dir/calibrated\"; ln -fsT \"$(basename ${list_of_ms_split_cal_dirs[0]})\" \"calibrated.ms\""
                 continue
             elif [[ ${#list_of_ms_split_cal_dirs[@]} -gt 1 ]]; then
                 echo "Found \"$script_dir/calibrated\" and \"uid___*.ms.split.cal\" therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will try to concatenate them."
