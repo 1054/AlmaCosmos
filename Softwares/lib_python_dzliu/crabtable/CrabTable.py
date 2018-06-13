@@ -186,7 +186,7 @@ class CrabTable(object):
         return self.TableHeaders
     # 
     def getColumn(self, ColNameOrNumb):
-        if type(ColNameOrNumb) is str or type(ColNameOrNumb) is numpy.string_:
+        if type(ColNameOrNumb) is str or type(ColNameOrNumb) is numpy.string_ or type(ColNameOrNumb) is numpy.str_:
             if ColNameOrNumb in self.TableHeaders:
                 GotDataColumn = self.TableData.field(ColNameOrNumb)
                 if type(GotDataColumn) is astropy.table.Column:

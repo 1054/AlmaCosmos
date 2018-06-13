@@ -31,7 +31,6 @@ pkg_resources.require("wcsaxes") # http://wcsaxes.readthedocs.io/en/latest/getti
 import os
 import sys
 import re
-import glob
 import json
 import inspect
 import subprocess
@@ -42,8 +41,15 @@ from astropy import units
 from astropy.io import fits
 from astropy.wcs import WCS
 from pprint import pprint
-#from scipy import spatial
-#from scipy.spatial import KDTree
+from glob import glob
+
+import warnings
+
+warnings.filterwarnings("ignore",".*GUI is implemented.*")
+warnings.filterwarnings("ignore",".*following header keyword is invalid.*")
+warnings.filterwarnings("ignore",".*File may have been truncated.*")
+warnings.filterwarnings("ignore",".*astropy.wcs.wcs.*")
+warnings.filterwarnings("ignore",".*not a valid region tag.*")
 
 import matplotlib
 import platform
@@ -67,7 +73,7 @@ from skimage.feature import peak_local_max
 from itertools import groupby
 from operator import itemgetter
 from copy import copy
-import shutil
+#import shutil
 from datetime import datetime
 
 sys_path_to_add = os.path.dirname(__file__) + os.sep + 'lib_python'
@@ -201,7 +207,9 @@ class CrossMatch_Identifier(object):
         self.World['My Name'] = ""
         self.World['My Names'] = []
         tmp_frame = inspect.currentframe().f_back
-        tmp_variables = dict(tmp_frame.f_globals.items() + tmp_frame.f_locals.items())
+        #tmp_variables = dict(tmp_frame.f_globals.items() + tmp_frame.f_locals.items()) # In Python 3, we can not add dict but should use update().
+        tmp_variables = dict(tmp_frame.f_globals.items()).copy() # In Python 3, we can not add dict but should use update().
+        tmp_variables.update(tmp_frame.f_locals.items()) # In Python 3, we can not add dict but should use update().
         for tmp_name, tmp_variable in tmp_variables.items():
             if isinstance(tmp_variable, self.__class__):
                 if hash(self) == hash(tmp_variable):
@@ -237,16 +245,16 @@ class CrossMatch_Identifier(object):
                 os.mkdir(OutputDir)
             # 
             # check Source data structure
-            if not self.Source.Field:
+            if self.Source.Field is None:
                 print("Error! \"Source\" does not have \"Field\" info!")
                 return
-            if not self.Source.Name:
+            if self.Source.Name is None:
                 print("Error! \"Source\" does not have \"Name\" info!")
                 return
             #if not self.Source.ID:
             #    print("Error! \"Source\" does not have \"ID\" info!")
             #    return
-            if not self.Source.SubID:
+            if self.Source.SubID is None:
                 print("Error! \"Source\" does not have \"SubID\" info!")
                 return
             if not 'Major Axis' in self.Source.Morphology:
@@ -327,14 +335,14 @@ class CrossMatch_Identifier(object):
                     )
                 # 
                 # add annotation at top-left
-                self.RefImage.text('%s %s'%(StrTelescope,StrInstrument), fontsize=15, color=hex2color('#00CC00'), align_top_left=True)
-                self.RefImage.text('FoV %.1f arcsec'%(self.RefImage.ZoomSize[1]*self.RefImage.PixScale[1]), fontsize=14, color=hex2color('#00CC00'), align_top_left=True)
+                self.RefImage.text('%s %s'%(StrTelescope,StrInstrument), fontsize=15, color=hex2color('#00CC00'), align_top_left=True, horizontalalignment='left', zorder=13)
+                self.RefImage.text('FoV %.1f arcsec'%(self.RefImage.ZoomSize[1]*self.RefImage.PixScale[1]), fontsize=14, color=hex2color('#00CC00'), align_top_left=True, horizontalalignment='left', zorder=13)
                 # 
                 # add annotation at top-right
-                self.RefImage.text('%s--%s--%s'%(self.Source.Field,str(self.Source.Name),str(self.Source.SubID)), fontsize=15, align_top_right=True, horizontalalignment='right')
+                self.RefImage.text('%s--%s--%s'%(self.Source.Field,str(self.Source.Name),str(self.Source.SubID)), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
                 for refname in self.RefSource.Names.keys():
-                    self.RefImage.text('%s ID %s'%(refname,str(self.RefSource.Names.get(refname))), color=hex2color('#FF0000'), fontsize=15, align_top_right=True, horizontalalignment='right')
-                self.RefImage.text('zp = %.3f'%(self.Source.Redshifts['zphot_1']), color=hex2color('#FF0000'), fontsize=14, align_top_right=True, horizontalalignment='right')
+                    self.RefImage.text('%s ID %s'%(refname,str(self.RefSource.Names.get(refname))), color=hex2color('#FF0000'), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
+                self.RefImage.text('counterpart z = %.3f'%(self.Source.Redshifts['zphot_1']), color=hex2color('#FF0000'), fontsize=14, align_top_right=True, horizontalalignment='right', zorder=13)
                 # 
                 # 
                 # create source_aperture and refsource_aperture
@@ -391,6 +399,31 @@ class CrossMatch_Identifier(object):
                         zorder = zorder, 
                         label = 'refsource position %0.2fxFWHM'%(diameter)
                     )
+                # 
+                # plot more refsource crosses
+                if self.RefCatalog is not None:
+                    ref_catalog_all_ra = self.RefCatalog.ra()
+                    ref_catalog_all_dec = self.RefCatalog.dec()
+                    ref_catalog_diff_ra = - (ref_catalog_all_ra - self.Source.RA) * numpy.cos(self.Source.Dec/180.0*numpy.pi) * 3600.0
+                    ref_catalog_diff_dec = (ref_catalog_all_dec - self.Source.Dec) * 3600.0
+                    ref_catalog_flag_inside_FoV = numpy.logical_and(numpy.logical_and(ref_catalog_diff_ra > -float(FoV)/2.0, ref_catalog_diff_ra < float(FoV)/2.0), \
+                                                                    numpy.logical_and(ref_catalog_diff_dec > -float(FoV)/2.0, ref_catalog_diff_dec < float(FoV)/2.0) \
+                                                                    )
+                    ref_catalog_all_ra = ref_catalog_all_ra[ref_catalog_flag_inside_FoV]
+                    ref_catalog_all_dec = ref_catalog_all_dec[ref_catalog_flag_inside_FoV]
+                    print('Plotting ref_catalog_source %d'%(len(ref_catalog_all_dec)))
+                    for ref_catalog_source_ra, ref_catalog_source_dec in zip(ref_catalog_all_ra, ref_catalog_all_dec):
+                        # 
+                        print('Plotting ref_catalog_source %s %s'%(ref_catalog_source_ra, ref_catalog_source_dec))
+                        self.RefImage.aper(
+                            radec = [ ref_catalog_source_ra, ref_catalog_source_dec ], 
+                            linewidth = 1.0, 
+                            color = hex2color('#FF0000'), 
+                            draw_ellipse = False, 
+                            draw_cross = True, 
+                            cross_size = 0.5, 
+                            zorder = 8, 
+                        )
                 # 
                 # 
                 # store source_aperture and refsource_aperture
@@ -527,14 +560,14 @@ class CrossMatch_Identifier(object):
                     fitting_data_y = [ (t['y']) for t in self.Photometry['GrowthCurve'] ]
                     fitting_weights = [ 1.0/(t['err'])**2 for t in self.Photometry['GrowthCurve'] ]
                     fitting_poly_deg = 1
-                    fitting_data_inner = numpy.array(range(long(len(fitting_data_x)/2)))
-                    fitting_data_outer = numpy.array(range(long(len(fitting_data_x)/2)) + numpy.array(long(len(fitting_data_x)/2)))
-                    fitting_data_middle = numpy.array(range(long(len(fitting_data_x)/2)) + numpy.array(long(len(fitting_data_x)/4)))
-                    fitting_data_overall = numpy.array(range(long(len(fitting_data_x))))
-                    fitting_data_inner = fitting_data_inner.astype(long)
-                    fitting_data_outer = fitting_data_outer.astype(long)
-                    fitting_data_middle = fitting_data_middle.astype(long)
-                    fitting_data_overall = fitting_data_overall.astype(long)
+                    fitting_data_inner = numpy.array(range(int(len(fitting_data_x)/2)))
+                    fitting_data_outer = numpy.array(range(int(len(fitting_data_x)/2)) + numpy.array(int(len(fitting_data_x)/2)))
+                    fitting_data_middle = numpy.array(range(int(len(fitting_data_x)/2)) + numpy.array(int(len(fitting_data_x)/4)))
+                    fitting_data_overall = numpy.array(range(int(len(fitting_data_x))))
+                    fitting_data_inner = fitting_data_inner.astype(int)
+                    fitting_data_outer = fitting_data_outer.astype(int)
+                    fitting_data_middle = fitting_data_middle.astype(int)
+                    fitting_data_overall = fitting_data_overall.astype(int)
                     fitting_data_x = numpy.array(fitting_data_x)
                     fitting_data_y = numpy.array(fitting_data_y)
                     fitting_weights = numpy.array(fitting_weights)
@@ -649,34 +682,34 @@ class CrossMatch_Identifier(object):
                 # 
                 # plot annotation
                 self.RefImage.text('Sep. = %.3f [arcsec]'%(self.Morphology['Separation']), 
-                                    color=hex2color('#FF0000'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#FF0000'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 #self.RefImage.text('Ang. = %.1f [degree]'%(self.Morphology['Angle']), 
-                #                    color=hex2color('#FF0000'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                #                    color=hex2color('#FF0000'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # 
                 # plot annotation
                 self.RefImage.text('M. Score = %.1f [%%]'%(self.Morphology['Score']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
                 self.RefImage.text('P. Score = %.1f [%%]'%(self.Photometry['Score']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
                 self.RefImage.text('Extended = %.1f [%%]'%(self.Morphology['Extended']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
                 self.RefImage.text('Downweight = %.2f'%(offset_down_weighting), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
                 self.RefImage.text('ALMA S/N = %.3f'%(self.Source.Photometry['SNR_1']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
                 self.RefImage.text('Image S/N = %.3f'%(self.Photometry['S/N']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
                 self.RefImage.text('Image S/Ref = %.2f'%(self.Photometry['Source/RefSource']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
                 self.RefImage.text('Score = %.1f [%%]'%(self.MatchScore), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right')
+                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # 
                 # 
                 # 
@@ -800,7 +833,7 @@ while i < len(sys.argv):
                 print('Error! Columns should be a Python dict object! For example: {"Field":"ALMA_Image","ID":"ID_prior","RA":"RA_prior","Dec":"Dec_prior","RefRA":"RA_Master","RefDec":"Dec_Master"}')
                 sys.exit()
             i = i + 1
-    if tmp_arg == '-ref' or tmp_arg == '-ref-cat' or tmp_arg == '-ref-catalog':
+    if tmp_arg == '-ref' or tmp_arg == '-refcat' or tmp_arg == '-ref-cat' or tmp_arg == '-ref-catalog':
         if i+1 < len(sys.argv):
             Input_RefCat = sys.argv[i+1]
             print('Setting refcat %s'%(Input_RefCat))
@@ -848,7 +881,7 @@ if Input_Catalog == '':
 if Input_RefCat != '':
     if os.path.isfile(Input_RefCat):
         print("")
-        print("Found reference catalog \"%s\"! We will calculate the 'Crowdedness' and 'Clean_Index' parameters!")
+        print("Found reference catalog \"%s\"! We will calculate the 'Crowdedness' and 'Clean_Index' parameters!"%(Input_RefCat))
         print("")
         RefCat = Highz_Catalogue(Input_RefCat)
         #refcatalog_KDTree = KDTree()
@@ -857,9 +890,14 @@ if Input_RefCat != '':
         #refcatalog_DEC = refcatalog_CAT.getColumn('Dec')
     else:
         print("")
-        print("Warning! No reference catalog 'ref_catalog.fits' was found under current directory! Will not calculate 'Crowdedness' and 'Clean_Index'!")
+        print("Error! The reference catalog \"%s\" was not found!"%(Input_RefCat))
         print("")
-        RefCat = None
+        sys.exit()
+else:
+    print("")
+    print("Warning! No reference catalog 'ref_catalog.fits' was found under current directory! Will not calculate 'Crowdedness' and 'Clean_Index'!")
+    print("")
+    RefCat = None
 
 # 
 # Prepare Logger
@@ -873,8 +911,9 @@ Cat = Highz_Catalogue(Input_Catalog)
 # Read Catalog Columns
 if "ID" in Input_Columns:
     Cat_ID = Cat.TableData.field(Input_Columns["ID"])
+    Cat_ID_Column = Input_Columns["ID"]
 else:
-    Cat_ID = Cat.id() # guess an ID column
+    Cat_ID, Cat_ID_Column = Cat.id(ReturnColName=True) # guess an ID column
 
 if "Name" in Input_Columns:
     Cat_Name = Cat.TableData.field(Input_Columns["Name"])
@@ -911,10 +950,10 @@ else:
 
 if 'SNR_FIT' in Cat.TableHeaders:
     Cat_SNR = numpy.array(Cat.TableData.field('SNR_FIT'))
-    Cat_SNR_column = 'SNR_FIT'
+    Cat_SNR_Column = 'SNR_FIT'
 elif 'FLUX_ALMA' in Cat.TableHeaders and 'FLUXERR_ALMA' in Cat.TableHeaders and 'WAVELENGTH_ALMA' in Cat.TableHeaders:
     Cat_SNR = numpy.array(Cat.TableData.field('FLUX_ALMA'))/numpy.array(Cat.TableData.field('FLUXERR_ALMA'))
-    Cat_SNR_column = 'FLUX_ALMA / FLUXERR_ALMA at WAVELENGTH_ALMA'
+    Cat_SNR_Column = 'FLUX_ALMA / FLUXERR_ALMA at WAVELENGTH_ALMA'
 
 if 'Separation' in Cat.TableHeaders:
     Cat_Sep = numpy.array(Cat.TableData.field('Separation'))
@@ -923,9 +962,9 @@ else:
 
 if "zphot" in Input_Columns:
     Cat_zphot = Cat.TableData.field(Input_Columns["zphot"])
-    Cat_zphot_column = Input_Columns["zphot"]
+    Cat_zphot_Column = Input_Columns["zphot"]
 else:
-    Cat_zphot, Cat_zphot_column = Cat.zphot(ReturnColName=True) # guess a zphot column
+    Cat_zphot, Cat_zphot_Column = Cat.zphot(ReturnColName=True) # guess a zphot column
 
 
 #
@@ -990,34 +1029,32 @@ for i in range(len(Cat.TableData)):
     # 
     # Read Source Morphology
     # 
-    source_maj = numpy.nan
-    source_min = numpy.nan
-    source_pa = numpy.nan
+    Source_Maj = numpy.nan
+    Source_Min = numpy.nan
+    Source_PA = numpy.nan
     if 'FWHM_MAJ_FIT' in Cat.TableHeaders and \
        'FWHM_MIN_FIT' in Cat.TableHeaders and \
        'POSANG_FIT' in Cat.TableHeaders and \
        'MINAX_BEAM' in Cat.TableHeaders and \
        'AXRATIO_BEAM' in Cat.TableHeaders and \
        'POSANG_BEAM' in Cat.TableHeaders:
-        source_maj = float(Cat.TableData[i].field('FWHM_MAJ_FIT'))
-        source_min = float(Cat.TableData[i].field('FWHM_MIN_FIT'))
-        source_pa = float(Cat.TableData[i].field('POSANG_FIT'))
+        Source_Maj = float(Cat.TableData[i].field('FWHM_MAJ_FIT'))
+        Source_Min = float(Cat.TableData[i].field('FWHM_MIN_FIT'))
+        Source_PA = float(Cat.TableData[i].field('POSANG_FIT'))
         beam_maj = float(Cat.TableData[i].field('MINAX_BEAM')) * float(Cat.TableData[i].field('AXRATIO_BEAM'))
         beam_min = float(Cat.TableData[i].field('MINAX_BEAM'))
         beam_pa = float(Cat.TableData[i].field('POSANG_BEAM'))
         # prevent source size too small
-        if source_maj*source_min < beam_maj*beam_min:
-            source_maj = beam_maj
-            source_min = beam_min
-            source_pa = beam_pa
+        if Source_Maj*Source_Min < beam_maj*beam_min:
+            Source_Maj = beam_maj
+            Source_Min = beam_min
+            Source_PA = beam_pa
     else:
-        source_maj_deconv, source_min_deconv, source_pa_deconv = Cat.source_morphology(i)
+        Source_Maj_deconv, Source_Min_deconv, Source_PA_deconv = Cat.source_morphology(i)
         beam_maj, beam_min, beam_pa = Cat.telescope_beam(i)
-        print(type(source_maj_deconv))
-        print(type(beam_maj))
-        source_maj, source_min, source_pa = convolve_2D_Gaussian_Maj_Min_PA(source_maj_deconv, source_min_deconv, source_pa_deconv, beam_maj, beam_min, beam_pa)
+        Source_Maj, Source_Min, Source_PA = convolve_2D_Gaussian_Maj_Min_PA(Source_Maj_deconv, Source_Min_deconv, Source_PA_deconv, beam_maj, beam_min, beam_pa)
     # 
-    if source_maj != source_maj or source_min != source_min or source_pa != source_pa:
+    if Source_Maj != Source_Maj or Source_Min != Source_Min or Source_PA != Source_PA:
         print("")
         print("Error! Could not find appropriate columns in the input topcat cross-matched catalog!")
         print("We need 'FWHM_MAJ_FIT', 'FWHM_MIN_FIT', 'POSANG_FIT', 'MINAX_BEAM', 'AXRATIO_BEAM', 'POSANG_BEAM', etc.")
@@ -1030,22 +1067,23 @@ for i in range(len(Cat.TableData)):
     # 
     # Read Source info from Alex Karim's Blind Extraction Catalog
     # 
-    source_Name = Cat_Name[i]
-    source_Image = Cat_Image[i]
-    source_ID = Cat_ID[i]
-    source_SubID = 0
-    source_SNR = Cat_SNR[i].astype(float)
-    source_ref_SNR = Cat_SNR_column
-    source_separation = Cat_Sep[i].astype(float)
-    source_RA = Cat_RA[i].astype(float)
-    source_Dec = Cat_Dec[i].astype(float)
+    Source_Name = Cat_Name[i].strip()
+    Source_Image = Cat_Image[i].strip()
+    Source_ID = Cat_ID[i]
+    Source_ID_Column = Cat_ID_Column
+    Source_SubID = 0
+    Source_SNR = Cat_SNR[i].astype(float)
+    Source_SNR_Column = Cat_SNR_Column
+    Source_separation = Cat_Sep[i].astype(float)
+    Source_RA = Cat_RA[i].astype(float)
+    Source_Dec = Cat_Dec[i].astype(float)
     Source_zphot = Cat_zphot[i].astype(float)
-    Source_ref_zphot = Cat_zphot_column
+    Source_zphot_Column = Cat_zphot_Column
     
     if 'PROJECT' in Cat.TableHeaders and 'OBJECT' in Cat.TableHeaders:
-        source_Name = Cat.TableData[i].field('PROJECT').strip()+'--'+Cat.TableData[i].field('OBJECT').strip()
+        Source_Name = Cat.TableData[i].field('PROJECT').strip()+'--'+Cat.TableData[i].field('OBJECT').strip()
     if 'SUBID_TILE' in Cat.TableHeaders:
-        source_SubID = Cat.TableData[i].field('SUBID_TILE')
+        Source_SubID = Cat.TableData[i].field('SUBID_TILE')
     
     
     
@@ -1055,23 +1093,23 @@ for i in range(len(Cat.TableData)):
     # 
     Source = Highz_Galaxy(
         Field   = 'COSMOS', 
-        Name    = source_Name, 
-        ID      = source_ID, 
-        SubID   = source_SubID, 
-        RA      = source_RA, 
-        Dec     = source_Dec, 
+        Name    = Source_Name, 
+        ID      = Source_ID, 
+        SubID   = Source_SubID, 
+        RA      = Source_RA, 
+        Dec     = Source_Dec, 
         Morphology = {
-            'Major Axis': source_maj, 
-            'Minor Axis': source_min, 
-            'Pos Angle':  source_pa, 
+            'Major Axis': Source_Maj, 
+            'Minor Axis': Source_Min, 
+            'Pos Angle':  Source_PA, 
         }, 
         Photometry = {
-            'SNR_1': source_SNR, 
-            'ref_SNR_1': source_SNR, 
+            'SNR_1': Source_SNR, 
+            'ref_SNR_1': Source_SNR_Column, 
         }, 
         Redshifts = {
             'zphot_1': Source_zphot, 
-            'ref_zphot_1': Source_ref_zphot, 
+            'ref_zphot_1': Source_zphot_Column, 
         }, 
     )
     Source.about()
@@ -1082,8 +1120,8 @@ for i in range(len(Cat.TableData)):
     # 
     RefSource = Highz_Galaxy(
         Field = 'COSMOS', 
-        Name  = source_Name, 
-        ID    = source_ID, 
+        Name  = Source_Name, 
+        ID    = Source_ID, 
         RA    = Cat_RefRA[i], 
         Dec   = Cat_RefDec[i], 
     )
@@ -1091,26 +1129,75 @@ for i in range(len(Cat.TableData)):
     
     
     # 
-    # Prepare cutouts and copy to Cutout_Dir
+    # Prepare Cutout_Dir
     # 
-    Cutout_Dir = Output_Dir + os.sep + Output_Prefix + '%d'%(i+1) + Output_Sep + source_Name + os.sep + 'cutouts'
+    Source_Dir = Output_Dir + os.sep + Output_Prefix + '%d'%(i+1) + Output_Sep + Cat_ID_Column + Output_Sep + Source_Name
+    Cutout_Dir = Source_Dir + os.sep + 'cutouts'
     if not os.path.isdir(Cutout_Dir):
         os.makedirs(Cutout_Dir)
     
+    
+    
+    # 
+    # Prepare optical/near-infrared cutouts and copy to Cutout_Dir
+    # 
     Cutout_Files = []
     
-    if not os.path.isfile(Cutout_Dir + os.sep + 'UVISTA_K.fits'):
-        Cutout_downloading_subprocess = subprocess.Popen('almacosmos_cutouts_query_cosmos_cutouts_via_IRSA.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "UVISTA_K" -out "%s"'%(source_RA, source_Dec, Cutout_Dir + os.sep + 'UVISTA_K.fits'), 
-                                                            shell=True, stdout=open(Cutout_Dir + os.sep + 'UVISTA_K.fits.log', 'w'))
+    for Cutout_Band in ['UVISTA_K', 'ACS_i', 'VLA_3GHz']:
+        
+        Cutout_Name = Cutout_Band
+        Cutout_File = Cutout_Dir + os.sep + Cutout_Name + '.cutout.fits'
+        
+        if not os.path.isfile(Cutout_File):
+            Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
+            print('\nRunning ' + Cutout_downloading_command)
+            Cutout_downloading_command = 'echo "{0}"; echo ""; {1}'.format(Cutout_downloading_command.replace('\"','\\\"'), Cutout_downloading_command)
+            print('\nRunning ' + Cutout_downloading_command)
+            Cutout_downloading_subprocess = subprocess.Popen(Cutout_downloading_command, shell=True, stdout=open(Cutout_File + '.log', 'w'))
+            Cutout_downloading_errcode = Cutout_downloading_subprocess.wait()
+            #shutil.copy2()
+        
+        if os.path.isfile(Cutout_File):
+            print('\nCutout_Files.append("%s")'%(Cutout_File))
+            Cutout_Files.append(Cutout_File)
+        else:
+            print('\nError! Failed to run "%s"! Please check log file "%s"!'%(Cutout_downloading_command, Cutout_File + '.log'))
+            sys.exit()
+    
+    
+    # 
+    # Prepare ALMA cutouts and copy to Cutout_Dir
+    # 
+    ALMA_meta_table = '/Users/dzliu/Work/AlmaCosmos/Catalogs/A3COSMOS/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
+    ALMA_data_dir = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_cont_I_image'
+    
+    #if not os.path.isfile(Cutout_Dir + os.sep + 'ALMA_image_list.txt'):
+    #    Cutout_downloading_command = 'almacosmos_recognize_Source_in_fits_meta_table.py %s %s "%s"'%(Source_RA, Source_Dec, ALMA_meta_table)
+    #    #print('\nRunning ' + Cutout_downloading_command)
+    #    Cutout_downloading_subprocess = subprocess.Popen(Cutout_downloading_command, shell=True, stdout=open(Cutout_Dir + os.sep + 'ALMA_image_list.txt', 'w'))
+    #    Cutout_downloading_errcode = Cutout_downloading_subprocess.wait()
+    #    #shutil.copy2()
+    
+    if not os.path.isfile(Cutout_Dir + os.sep + 'ALMA.cutout.fits'):
+        Cutout_downloading_command = 'cp \"{0}\" \"{1}\"'.format(ALMA_data_dir + os.sep + Source_Image, Cutout_Dir + os.sep + 'ALMA.cutout.fits')
+        print('\nRunning ' + Cutout_downloading_command)
+        Cutout_downloading_command = 'echo "{0}"; echo ""; {1}'.format(Cutout_downloading_command.replace('\"','\\\"'), Cutout_downloading_command)
+        print('\nRunning ' + Cutout_downloading_command)
+        Cutout_downloading_subprocess = subprocess.Popen(Cutout_downloading_command, shell=True, stdout=open(Cutout_Dir + os.sep + 'ALMA.cutout.fits.log', 'w'))
         Cutout_downloading_errcode = Cutout_downloading_subprocess.wait()
         #shutil.copy2()
     
-    if os.path.isfile(Cutout_Dir + os.sep + 'UVISTA_K.fits'):
-        Cutout_Files.append(Cutout_Dir + os.sep + 'UVISTA_K.fits')
+    if os.path.isfile(Cutout_Dir + os.sep + 'ALMA.cutout.fits'):
+        #print('Cutout_Files.append("%s")'%(Cutout_Dir + os.sep + 'ALMA.cutout.fits'))
+        #Cutout_Files.append(Cutout_Dir + os.sep + 'ALMA.cutout.fits')
+        pass
     else:
-        print('Error! Failed to run %s'%(Cutout_downloading_subprocess))
+        print('Error! Failed to run %s! Please check log file "%s"!'%(Cutout_downloading_subprocess, Cutout_Dir + os.sep + 'ALMA.cutout.fits.log'))
         sys.exit()
     
+    
+    
+    #sys.exit()
     #StrInstrument, StrTelescope = recognize_Instrument(Cutout_File)
     
     
@@ -1131,14 +1218,14 @@ for i in range(len(Cat.TableData)):
             RefSource = RefSource, 
             RefImage = RefImage, 
             RefCatalog = RefCat, 
-            Separation = source_separation, 
+            Separation = Source_separation, 
         )
         IDX.about()
-        IDX.match_morphology(Overwrite=Overwrite, OutputName=str(i))
+        IDX.match_morphology(Overwrite=Overwrite, OutputDir=Source_Dir, OutputName=str(i))
         # 
-        break
+        #break
     
-    break
+    #break
 
 
 

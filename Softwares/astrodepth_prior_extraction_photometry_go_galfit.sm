@@ -308,9 +308,9 @@ calc_Condon1997_errors 02
         set source_total_err = source_total * sqrt( source_total_err_item_1 + source_total_err_item_2 + source_total_err_item_3 ) # Condon1997 Eq(42)
         set source_gaussian_snr = Condon_rho
         # 
-        set Condon_i = 0,dimen(source_total)-1
-        set Condon_i = Condon_i if(maj>0 && min>0)
-        if(dimen(Condon_i)>0) {
+        if(sum((maj>0 && min>0))>0) {
+            set Condon_i = 0,dimen(source_total)-1
+            set Condon_i = Condon_i if(maj>0 && min>0)
             set source_major_err[Condon_i] = maj[Condon_i] * source_major_err_rel[Condon_i] # Condon1997 Eq(21)
             set source_minor_err[Condon_i] = min[Condon_i] * source_minor_err_rel[Condon_i] # Condon1997 Eq(21)
         }
@@ -854,7 +854,7 @@ print_result 02
         set ResultFlux = ResultMags*0.0 + 1e-30
         set ResultFluxErr = ResultMags*0.0 + 1e+30
         set ResultFluxPeak = ResultMags*0.0 + 1e-30 # <20170613> getpix f_peak
-        set ResultFluxOrigin = ResultMags*0.0 + 1e-30 # <20170613> getpix f_origin, flux in the original image_sci_input.fits
+        set ResultFluxOrigin = ResultMags*0.0==0.0 ? 'nan' : 'nan' # <20170613> getpix f_origin, flux in the original image_sci_input.fits
         do i=0,dimen(ResultMags)-1 {
             if(ResultType[$i]=='psf') {
                 # In this case (10**(ResultMags/(-2.5))) equals the (pix_max / peak2total)
@@ -871,7 +871,7 @@ print_result 02
                 } else {
                     !getpix '%15.10e' image_sci_input.fits $(ResultPosX[$i]) $(ResultPosY[$i]) > aaa.getpix.tmp
                 }
-                verbose 0 data aaa.getpix.tmp read {fluxorigin 1.f}
+                verbose 0 data aaa.getpix.tmp read {fluxorigin 1.s} #<20180613># bug --> should read as str instead of float
                 verbose 1 !rm aaa.getpix.tmp
                 set ResultFluxOrigin[$i] = fluxorigin # Jy/beam <20180109>
             }
@@ -890,7 +890,7 @@ print_result 02
                 } else {
                     !getpix '%15.10e' image_sci_input.fits $(ResultPosX[$i]) $(ResultPosY[$i]) > aaa.getpix.tmp
                 }
-                verbose 0 data aaa.getpix.tmp read {fluxorigin 1.f}
+                verbose 0 data aaa.getpix.tmp read {fluxorigin 1.s}
                 verbose 1 !rm aaa.getpix.tmp
                 set ResultFluxOrigin[$i] = fluxorigin # Jy/beam <20180109>
             }
@@ -1032,9 +1032,9 @@ print_result 02
         # 
         # 
         #<below><added><20170923><dzliu>#
-        print $1.result.flux_origin.txt '%25g %15.0f %15s\n' \
+        print $1.result.flux_origin.txt '%25s %15.0f %15s\n' \
             {f_origin cat_index cat_id}
-        #<above><added><20170923><dzliu>#
+        #<above><added><20170923><dzliu># #<20180613># bug --> should read f_origin as str instead of float
         # 
         # 
         #<below><added><20171123><dzliu>#

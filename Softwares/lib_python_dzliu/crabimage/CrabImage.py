@@ -18,22 +18,18 @@ pkg_resources.require("astropy>=1.3")
 import os
 import sys
 import re
-import glob
-import inspect
 import math
 import numpy
-import scipy
-import scipy.interpolate
-from scipy.interpolate import interp1d
-from scipy.interpolate import UnivariateSpline
 import astropy
-import astropy.io.ascii as asciitable
+from astropy.io import ascii as asciitable
+from astropy.io import fits
+from astropy.wcs import WCS
 from pprint import pprint
 from copy import copy
 
-import warnings
+#import warnings
 
-warnings.filterwarnings("ignore",".*GUI is implemented.*")
+#warnings.filterwarnings("ignore",".*GUI is implemented.*")
 
 
 
@@ -79,7 +75,7 @@ class CrabImage(object):
                                 if TempKey in self.Header:
                                     del self.Header[TempKey]
                                     #print("del %s"%(TempKey))
-                            for TempInt in range(long(self.Header['NAXIS'])):
+                            for TempInt in range(int(self.Header['NAXIS'])):
                                 TempKey = 'PC%02d_%02d'%(TempInt+1,self.Header['NAXIS'])
                                 if TempKey in self.Header:
                                     del self.Header[TempKey]
@@ -95,7 +91,7 @@ class CrabImage(object):
                                 if TempKey in self.Header:
                                     del self.Header[TempKey]
                     # 
-                    self.Dimension = [ numpy.long(self.Header['NAXIS1']), numpy.long(self.Header['NAXIS2']) ]
+                    self.Dimension = [ numpy.int(self.Header['NAXIS1']), numpy.int(self.Header['NAXIS2']) ]
                     self.WCS = WCS(self.Header)
                     self.PixScale = astropy.wcs.utils.proj_plane_pixel_scales(self.WCS) * 3600.0 # arcsec
                     # 

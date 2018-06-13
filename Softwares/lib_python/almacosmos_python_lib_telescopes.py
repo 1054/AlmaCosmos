@@ -7,7 +7,7 @@
 # 
 ##################################################################################
 
-import os, sys
+import os, sys, re
 
 
 
@@ -18,40 +18,40 @@ def recognize_Instrument(FitsFileName):
     rec_Telescope = ""
     rec_Instrument = ""
     if type(FitsFileName) is str:
-        if FitsFileName.lower().find('_acs_')>=0:
+        if re.match(r'.*[^a-zA-Z]*ACS[^a-zA-Z]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "HST"
             rec_Instrument = "ACS"
-        elif FitsFileName.lower().find('_irac_ch1')>=0:
+        elif re.match(r'.*[^a-zA-Z]*IRAC[^a-zA-Z0-9]*ch1[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "Spitzer"
             rec_Instrument = "IRAC ch1"
-        elif FitsFileName.lower().find('_irac_ch2')>=0:
+        elif re.match(r'.*[^a-zA-Z]*IRAC[^a-zA-Z0-9]*ch2[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "Spitzer"
             rec_Instrument = "IRAC ch2"
-        elif FitsFileName.lower().find('_irac_ch3')>=0:
+        elif re.match(r'.*[^a-zA-Z]*IRAC[^a-zA-Z0-9]*ch3[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "Spitzer"
             rec_Instrument = "IRAC ch3"
-        elif FitsFileName.lower().find('_irac_ch4')>=0:
+        elif re.match(r'.*[^a-zA-Z]*IRAC[^a-zA-Z0-9]*ch4[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "Spitzer"
             rec_Instrument = "IRAC ch4"
-        elif FitsFileName.lower().find('_mips_160_')>=0:
+        elif re.match(r'.*[^a-zA-Z]*MIPS[^a-zA-Z0-9]*160[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "Spitzer"
             rec_Instrument = "MIPS 160um"
-        elif FitsFileName.lower().find('_mips_70_')>=0:
+        elif re.match(r'.*[^a-zA-Z]*MIPS[^a-zA-Z0-9]*70[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "Spitzer"
             rec_Instrument = "MIPS 70um"
-        elif FitsFileName.lower().find('_mips_24_')>=0:
+        elif re.match(r'.*[^a-zA-Z]*MIPS[^a-zA-Z0-9]*24[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "Spitzer"
             rec_Instrument = "MIPS 24um"
         # 
-        elif FitsFileName.find(('.J.fits'))>=0:
+        elif re.match(r'.*[^a-zA-Z]*U(ltra)*VISTA[^a-zA-Z0-9]*J[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             #<TODO># and FitsFileName.find('ir_bb')>=0
             rec_Telescope = "UltraVISTA"
             rec_Instrument = "J"
-        elif FitsFileName.find(('.H.fits'))>=0:
+        elif re.match(r'.*[^a-zA-Z]*U(ltra)*VISTA[^a-zA-Z0-9]*H[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             #<TODO># and FitsFileName.find('ir_bb')>=0
             rec_Telescope = "UltraVISTA"
             rec_Instrument = "H"
-        elif FitsFileName.find(('.Ks.fits'))>=0:
+        elif re.match(r'.*[^a-zA-Z]*U(ltra)*VISTA[^a-zA-Z0-9]*K(s)*[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             #<TODO># and FitsFileName.find('ir_bb')>=0
             rec_Telescope = "UltraVISTA"
             rec_Instrument = "Ks"
@@ -99,7 +99,7 @@ def recognize_Instrument(FitsFileName):
         elif FitsFileName.lower().find(('_vla_90cm').lower())>=0:
             rec_Telescope = "VLA"
             rec_Instrument = "90cm"
-        elif FitsFileName.lower().find(('_vla_3ghz').lower())>=0:
+        elif re.match(r'.*[^a-zA-Z]*VLA[^a-zA-Z0-9]*3GHz*[^a-zA-Z0-9]*.*', FitsFileName, re.IGNORECASE) is not None:
             rec_Telescope = "VLA"
             rec_Instrument = "3GHz"
     # 

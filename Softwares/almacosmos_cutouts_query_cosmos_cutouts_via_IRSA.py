@@ -39,12 +39,23 @@ Output_Name = ''
 Cutout_Field = 'COSMOS'
 Cutout_Band = ''
 Image_Urls = {
-                'COSMOS_UVISTA_J': 'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
-                'COSMOS_UVISTA_H': 'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
-                'COSMOS_UVISTA_K': 'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
-                'COSMOS_UVISTA_Y': 'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
-                'COSMOS_ACS': 'http://irsa.ipac.caltech.edu/data/COSMOS/images/acs_mosaic_2.0/mosaic_Shrink10.fits',  
+                'COSMOS_UVISTA_J':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
+                'COSMOS_UVISTA_H':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
+                'COSMOS_UVISTA_K':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
+                'COSMOS_UVISTA_Y':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
+                'COSMOS_ACS_i':     'http://irsa.ipac.caltech.edu/data/COSMOS/images/acs_mosaic_2.0/mosaic_Shrink10.fits',  
+                'COSMOS_ACS_F814W': 'http://irsa.ipac.caltech.edu/data/COSMOS/images/acs_mosaic_2.0/mosaic_Shrink10.fits',  
+                'COSMOS_VLA_3GHz':  'https://irsa.ipac.caltech.edu/data/COSMOS/images/vla/vla_3ghz_msmf.fits', 
             }
+Header_Caches = {
+                'COSMOS_UVISTA_J':  os.path.dirname(os.path.dirname(__file__))+os.sep+'Data'+os.sep+'cosmos_image_fits_header_files'+os.sep+'COSMOS_UVISTA_J.header',  
+                'COSMOS_UVISTA_H':  os.path.dirname(os.path.dirname(__file__))+os.sep+'Data'+os.sep+'cosmos_image_fits_header_files'+os.sep+'COSMOS_UVISTA_H.header',  
+                'COSMOS_UVISTA_K':  os.path.dirname(os.path.dirname(__file__))+os.sep+'Data'+os.sep+'cosmos_image_fits_header_files'+os.sep+'COSMOS_UVISTA_K.header',  
+                'COSMOS_UVISTA_Y':  os.path.dirname(os.path.dirname(__file__))+os.sep+'Data'+os.sep+'cosmos_image_fits_header_files'+os.sep+'COSMOS_UVISTA_Y.header',  
+                'COSMOS_ACS_i':     os.path.dirname(os.path.dirname(__file__))+os.sep+'Data'+os.sep+'cosmos_image_fits_header_files'+os.sep+'COSMOS_ACS_i.header',  
+                'COSMOS_ACS_F814W': os.path.dirname(os.path.dirname(__file__))+os.sep+'Data'+os.sep+'cosmos_image_fits_header_files'+os.sep+'COSMOS_ACS_F814W.header',  
+                'COSMOS_VLA_3GHz':  os.path.dirname(os.path.dirname(__file__))+os.sep+'Data'+os.sep+'cosmos_image_fits_header_files'+os.sep+'COSMOS_VLA_3GHz.header', 
+}
 Overwrite_Level = 0
 
 # Read User Input
@@ -66,16 +77,18 @@ while i < len(sys.argv):
     elif tmp_arg == '-out':
         if i+1 < len(sys.argv):
             Output_Name = sys.argv[i+1]
-            if Output_Name.endswith('.fits'):
-                Output_Name.replace('.fits','')
+            if Output_Name.endswith('.cutout.fits'):
+                Output_Name = Output_Name.replace('.cutout.fits','')
+            elif Output_Name.endswith('.fits'):
+                Output_Name = Output_Name.replace('.fits','')
             i = i + 1
     elif tmp_arg == '-field':
         if i+1 < len(sys.argv):
-            Cutout_Field = sys.argv[i+1].upper().replace('-','_')
+            Cutout_Field = sys.argv[i+1].replace('-','_')
             i = i + 1
     elif tmp_arg == '-band':
         if i+1 < len(sys.argv):
-            Cutout_Band = sys.argv[i+1].upper().replace('-','_')
+            Cutout_Band = sys.argv[i+1].replace('-','_')
             i = i + 1
     elif tmp_arg == '-overwrite':
         Overwrite_Level = Overwrite_Level + 1
@@ -101,12 +114,24 @@ if Cutout_Band == '':
 # Prepare Url for Image Data
 if Cutout_Field+'_'+Cutout_Band in Image_Urls:
     Http_Request_Url = Image_Urls[Cutout_Field+'_'+Cutout_Band]
+    Header_Cache_Txt = Header_Caches[Cutout_Field+'_'+Cutout_Band]+'.txt'
+    Header_Cache_Json = Header_Caches[Cutout_Field+'_'+Cutout_Band]+'.json'
+elif Cutout_Field+'_'+Cutout_Band.upper() in Image_Urls:
+    Http_Request_Url = Image_Urls[Cutout_Field+'_'+Cutout_Band.upper()]
+    Header_Cache_Txt = Header_Caches[Cutout_Field+'_'+Cutout_Band.upper()]+'.txt'
+    Header_Cache_Json = Header_Caches[Cutout_Field+'_'+Cutout_Band.upper()]+'.json'
+elif Cutout_Field.upper()+'_'+Cutout_Band.upper() in Image_Urls:
+    Http_Request_Url = Image_Urls[Cutout_Field.upper()+'_'+Cutout_Band.upper()]
+    Header_Cache_Txt = Header_Caches[Cutout_Field.upper()+'_'+Cutout_Band.upper()]+'.txt'
+    Header_Cache_Json = Header_Caches[Cutout_Field.upper()+'_'+Cutout_Band.upper()]+'.json'
 else:
     print('Error! The input Field and Band "%s" is not in our Image Url list!'%(Cutout_Field+'_'+Cutout_Band))
     sys.exit()
 
 if Output_Name == '':
     Output_Name = Http_Request_Url.split("/")[-1].replace('.fits','')
+elif Output_Name.find('.fits') > 0:
+    Output_Name = Output_Name.replace('.fits','')
 
 # Print Settings
 print('Http_Request_Url = %s'%(Http_Request_Url))
@@ -118,13 +143,21 @@ print('Source PY = %s [pix]'%(Source_Coordinate_Box['PY']))
 print('Source DX = %s [pix]'%(Source_Coordinate_Box['DX']))
 print('Source DY = %s [pix]'%(Source_Coordinate_Box['DY']))
 print('Output_Name = %s'%(Output_Name))
+print('Header_Cache_Txt = %s'%(Header_Cache_Txt))
+print('Header_Cache_Json = %s'%(Header_Cache_Json))
 
 with open(Output_Name+'.cutout.ds9.reg','w') as fp:
     fp.write('# Region file format: DS9\n')
     fp.write('fk5\n')
     fp.write('box(%s,%s,%s",%s")\n'%(Source_Coordinate_Box['RA'], Source_Coordinate_Box['Dec'], Source_Coordinate_Box['FoV'], Source_Coordinate_Box['FoV']))
 
-if not os.path.isfile(Output_Name+'.header.txt') or Overwrite_Level >= 2:
+if not os.path.isfile(Header_Cache_Txt) or not os.path.isfile(Header_Cache_Json):
+    Header_Cache_Txt = Output_Name+'.header.txt'
+    Header_Cache_Json = Output_Name+'.header.json'
+    # we need fits headers to determine how many bytes to shift 
+    # if we have not downloaded the fits header files before, then download the into target directory.
+
+if not os.path.isfile(Header_Cache_Txt) or Overwrite_Level >= 2:
     # 
     Http_Request_Head = requests.head(Http_Request_Url, allow_redirects=True)
     print(Http_Request_Head.headers)
@@ -139,7 +172,7 @@ if not os.path.isfile(Output_Name+'.header.txt') or Overwrite_Level >= 2:
     FITS_Header_Length1 = 0
     FITS_Header_Length2 = 0
     # 
-    with open(Output_Name+'.header.txt', 'w') as fp:
+    with open(Header_Cache_Txt, 'w') as fp:
         while Http_Request_Offset < int(Http_Request_Head.headers['Content-Length']):
             Http_Request_Range = {'Range': 'bytes=%d-%d'%(Http_Request_Offset, Http_Request_Offset+Http_Request_Length)}
             print(Http_Request_Range)
@@ -174,7 +207,7 @@ if not os.path.isfile(Output_Name+'.header.txt') or Overwrite_Level >= 2:
             Http_Request_Offset = Http_Request_Offset + Http_Request_Length
             Http_Request_Content = ''
     # 
-    with open(Output_Name+'.header.json', 'w') as jfp:
+    with open(Header_Cache_Json, 'w') as jfp:
         json.dump({'FITS_Header_Length': FITS_Header_Length2, 'FITS_Total_Length': int(Http_Request_Head.headers['Content-Length'])}, jfp)
     #print('FITS_Header_Length = %d'%(FITS_Header_Length2))
 
@@ -182,7 +215,8 @@ if not os.path.isfile(Output_Name+'.header.txt') or Overwrite_Level >= 2:
 
 if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
     # 
-    with open(Output_Name+'.header.json', 'r') as jfp:
+    print('Prepare to download '+Output_Name+'.cutout.fits')
+    with open(Header_Cache_Json, 'r') as jfp:
         # 
         # Read FITS header length in (bytes)
         jdict = json.load(jfp)
@@ -191,16 +225,20 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
         
         # 
         # Generate FITS header object
-        FITS_Header_Object = Header.fromfile(Output_Name+'.header.txt', sep='\n', endcard=False, padding=False) # , output_verify='ignore'
+        FITS_Header_Object = Header.fromfile(Header_Cache_Txt, sep='\n', endcard=False, padding=False) # , output_verify='ignore'
         FITS_Data_Unit_Byte = 4 # float/float16 type 
         if str(FITS_Header_Object['BITPIX']).strip() == '-64':
             FITS_Data_Unit_Byte = 8 # double/float32 type 
         print('FITS_Data_Unit_Byte = %s'%(FITS_Data_Unit_Byte))
         
         # 
+        # Fix NAXIS
+        #if FITS_Header_Object['NAXIS']
+        
+        # 
         # Generate FITS header WCS
-        FITS_Header_WCS = WCS(FITS_Header_Object)
-        FITS_Header_WCS.printwcs()
+        FITS_Header_WCS = WCS(FITS_Header_Object, naxis=2)
+        print(FITS_Header_WCS.printwcs())
         print('')
         
         # 
@@ -271,23 +309,9 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
         #print(FITS_Header_Object['NAXIS1'])
         #cutout = Cutout2D(pf[0].data, position, size, wcs=wcs)
         pprint('Source_Coordinate_Box = %s'%(Source_Coordinate_Box))
-        
+            
         # 
-        # Http request range
-        Http_Request_Range = {'Range': 'bytes=', 'Content-Type': 'multipart/byteranges;boundary=XXX'}
-        for y in numpy.arange(Source_Coordinate_Box['Cutout_LowerY'], Source_Coordinate_Box['Cutout_UpperY']+1, 1):
-            Http_Request_Offset_1 = FITS_Header_Length + FITS_Data_Unit_Byte * ((y-1) * int(FITS_Header_Object['NAXIS1']) + (Source_Coordinate_Box['Cutout_LowerX']-1))
-            Http_Request_Offset_2 = FITS_Header_Length + FITS_Data_Unit_Byte * ((y-1) * int(FITS_Header_Object['NAXIS1']) + (Source_Coordinate_Box['Cutout_UpperX']-1)) + FITS_Data_Unit_Byte-1
-            #if Http_Request_Offset_2>int(Http_Request_Head.headers['Content-Length']):
-            #    print('Error! Requested range too large!')
-            print('Http_Request_Offset = %d-%d (X:%d-%d, Y:%d)'%(Http_Request_Offset_1, Http_Request_Offset_2, Source_Coordinate_Box['Cutout_LowerX'], Source_Coordinate_Box['Cutout_UpperX'], y))
-            if Http_Request_Range['Range'] == 'bytes=':
-                Http_Request_Range['Range'] = Http_Request_Range['Range'] + '%d-%d'%(Http_Request_Offset_1, Http_Request_Offset_2)
-            else:
-                Http_Request_Range['Range'] = Http_Request_Range['Range'] + ',%d-%d'%(Http_Request_Offset_1, Http_Request_Offset_2)
-        
-        # 
-        # Prepare new fits header
+        # Prepare new fits header and write to fits file
         FITS_Header_Object2 = copy(FITS_Header_Object)
         FITS_Header_Object2['NAXIS1'] = Source_Coordinate_Box['Cutout_UpperX'] - Source_Coordinate_Box['Cutout_LowerX'] + 1
         FITS_Header_Object2['NAXIS2'] = Source_Coordinate_Box['Cutout_UpperY'] - Source_Coordinate_Box['Cutout_LowerY'] + 1
@@ -296,52 +320,81 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
         FITS_Header_Object2.tofile(Output_Name+'.cutout.fits', sep='', endcard=True, padding=True, overwrite=True)
         Cutout_Data_Length = FITS_Header_Object2['NAXIS1'] * FITS_Header_Object2['NAXIS2'] * FITS_Data_Unit_Byte
         
-        #Http_Request_Range['Transfer-Length'] = '%d'%(Cutout_Data_Length)
-        
-        pprint(Http_Request_Range)
-        
         # 
-        # Http request get -- partially get byte ranges
-        with open(Output_Name+'.cutout.fits', 'ab') as fp:
-            Http_Request_Get = requests.get(Http_Request_Url, headers=Http_Request_Range, stream=True)
-            print(Http_Request_Get)
-            if Http_Request_Get.status_code == 206:
-                #Http_Request_Content = Http_Request_Get.content
-                # To read multi byte range request content, we need the help of requests_toolbelt.multipart.decoder.MultipartDecoder
-                Http_Request_Content = MultipartDecoder.from_response(Http_Request_Get) # see -- https://github.com/requests/toolbelt/blob/master/requests_toolbelt/multipart/decoder.py
-                for part in Http_Request_Content.parts:
-                    #pprint(part.text())
-                    fp.write(part.content)
-                #if len(Http_Request_Content) > Cutout_Data_Length:
-                #    Http_Request_Content_Cutoff = 0
-                #    j = 0
-                #    #while j < len(Http_Request_Content):
-                #    #    if Http_Request_Content[j:j+4] == bytes.fromhex('0d0a2d2d'):
-                #    #        Http_Request_Content_Cutoff = 1
-                #    #    k = j+101
-                #    #    while k < len(Http_Request_Content):
-                #    #        if Http_Request_Content[k:k+4] == bytes.fromhex('0d0a0d0a'):
-                #    #        
-                #    #    j = j + 1
-                #fp.write(Http_Request_Content)
-                #for chunk in Http_Request_Get.iter_content(chunk_size=128):
-                #    fp.write(chunk)
-                #print(binascii.hexlify(copy(Http_Request_Content)))
-            elif Http_Request_Get.status_code == 200:
-                print('Error! Remote server does not support Http Range request!')
-                with open(Output_Name+'.cutout.http.request.json', 'w') as jfp:
-                    json.dump(Http_Request_Range, jfp)
-                sys.exit()
-            elif Http_Request_Get.status_code == 416:
-                print('Error! Requested range out of limit!')
-                with open(Output_Name+'.cutout.http.request.json', 'w') as jfp:
-                    json.dump(Http_Request_Range, jfp)
-                sys.exit()
-            else:
-                print('Error! Connection broken!')
-                with open(Output_Name+'.cutout.http.request.json', 'w') as jfp:
-                    json.dump(Http_Request_Range, jfp)
-                sys.exit()
+        # Http request range
+        Download_loop = Source_Coordinate_Box['Cutout_LowerY']
+        Download_step = Source_Coordinate_Box['Cutout_UpperY'] - Source_Coordinate_Box['Cutout_LowerY']
+        if Download_step > 50:
+            Download_step = 50 # must devide into multiple loops, because each request should not be too long
+        while Download_loop <= Source_Coordinate_Box['Cutout_UpperY']:
+            
+            Http_Request_Range = {'Range': 'bytes=', 'Content-Type': 'multipart/byteranges'}
+            
+            if Download_loop+Download_step > Source_Coordinate_Box['Cutout_UpperY']:
+                Download_step = Source_Coordinate_Box['Cutout_UpperY'] - Download_loop
+            
+            for y in numpy.arange(Download_loop, Download_loop+Download_step+1, 1):
+                Http_Request_Offset_1 = FITS_Header_Length + FITS_Data_Unit_Byte * ((y-1) * int(FITS_Header_Object['NAXIS1']) + (Source_Coordinate_Box['Cutout_LowerX']-1))
+                Http_Request_Offset_2 = FITS_Header_Length + FITS_Data_Unit_Byte * ((y-1) * int(FITS_Header_Object['NAXIS1']) + (Source_Coordinate_Box['Cutout_UpperX']-1)) + FITS_Data_Unit_Byte-1
+                #if Http_Request_Offset_2>int(Http_Request_Head.headers['Content-Length']):
+                #    print('Error! Requested range too large!')
+                print('Http_Request_Offset = %d-%d (X:%d-%d, Y:%d)'%(Http_Request_Offset_1, Http_Request_Offset_2, Source_Coordinate_Box['Cutout_LowerX'], Source_Coordinate_Box['Cutout_UpperX'], y))
+                if Http_Request_Range['Range'] == 'bytes=':
+                    Http_Request_Range['Range'] = Http_Request_Range['Range'] + '%d-%d'%(Http_Request_Offset_1, Http_Request_Offset_2)
+                else:
+                    Http_Request_Range['Range'] = Http_Request_Range['Range'] + ',%d-%d'%(Http_Request_Offset_1, Http_Request_Offset_2)
+            
+            Download_loop = Download_loop+Download_step+1
+            
+            #Http_Request_Range['Transfer-Length'] = '%d'%(Cutout_Data_Length)
+            
+            pprint(Http_Request_Range)
+            
+            # 
+            # Http request get -- partially get byte ranges -- then append to fits file
+            with open(Output_Name+'.cutout.fits', 'ab') as fp:
+                Http_Request_Get = requests.get(Http_Request_Url, headers=Http_Request_Range, stream=True)
+                print(Http_Request_Get)
+                if Http_Request_Get.status_code == 206:
+                    #Http_Request_Content = Http_Request_Get.content
+                    # To read multi byte range request content, we need the help of requests_toolbelt.multipart.decoder.MultipartDecoder
+                    Http_Request_Content = MultipartDecoder.from_response(Http_Request_Get) # see -- https://github.com/requests/toolbelt/blob/master/requests_toolbelt/multipart/decoder.py
+                    for part in Http_Request_Content.parts:
+                        #pprint(part.text())
+                        fp.write(part.content)
+                    #if len(Http_Request_Content) > Cutout_Data_Length:
+                    #    Http_Request_Content_Cutoff = 0
+                    #    j = 0
+                    #    #while j < len(Http_Request_Content):
+                    #    #    if Http_Request_Content[j:j+4] == bytes.fromhex('0d0a2d2d'):
+                    #    #        Http_Request_Content_Cutoff = 1
+                    #    #    k = j+101
+                    #    #    while k < len(Http_Request_Content):
+                    #    #        if Http_Request_Content[k:k+4] == bytes.fromhex('0d0a0d0a'):
+                    #    #        
+                    #    #    j = j + 1
+                    #fp.write(Http_Request_Content)
+                    #for chunk in Http_Request_Get.iter_content(chunk_size=128):
+                    #    fp.write(chunk)
+                    #print(binascii.hexlify(copy(Http_Request_Content)))
+                elif Http_Request_Get.status_code == 200:
+                    print('Error! Remote server does not support Http Range request!')
+                    with open(Output_Name+'.cutout.http.request.json', 'w') as jfp:
+                        json.dump(Http_Request_Range, jfp)
+                    os.system('rm '+Output_Name+'.cutout.fits')
+                    sys.exit()
+                elif Http_Request_Get.status_code == 416:
+                    print('Error! Requested range out of limit!')
+                    with open(Output_Name+'.cutout.http.request.json', 'w') as jfp:
+                        json.dump(Http_Request_Range, jfp)
+                    os.system('rm '+Output_Name+'.cutout.fits')
+                    sys.exit()
+                else:
+                    print('Error! Connection broken!')
+                    with open(Output_Name+'.cutout.http.request.json', 'w') as jfp:
+                        json.dump(Http_Request_Range, jfp)
+                    os.system('rm '+Output_Name+'.cutout.fits')
+                    sys.exit()
     
     
 

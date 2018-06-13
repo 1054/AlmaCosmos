@@ -185,6 +185,12 @@ class Highz_Galaxy(object):
         # 
         self.World = {}
     # 
+    def morph(self):
+        if 'Major Axis' in self.Morphology and 'Minor Axis' in self.Morphology and 'Pos Angle' in self.Morphology:
+            return '%0.2fx%0.2f@%0.2f'%(self.Morphology['Major Axis'],self.Morphology['Minor Axis'],self.Morphology['Pos Angle'])
+        else:
+            return ''
+    # 
     def about(self):
         # 
         # get my name 
@@ -211,19 +217,17 @@ class Highz_Galaxy(object):
         #         break
         # 
         # print galaxy info
-        tmp_str_max_length = 0
-        if tmp_str_max_length < len(self.World['My Name']+' '):
-            tmp_str_max_length = len(self.World['My Name']+' ')
-        if tmp_str_max_length < len(self.Field):
-            tmp_str_max_length = len(self.Field)
-        if tmp_str_max_length < len( str(self.ID) ):
-            tmp_str_max_length = len( str(self.ID) )
-        if tmp_str_max_length < len( str(self.SubID) ):
-            tmp_str_max_length = len( str(self.SubID) )
-        if tmp_str_max_length < len(self.Name):
-            tmp_str_max_length = len(self.Name)
-        if tmp_str_max_length < len( ', '.join(self.Names.values()) ):
-            tmp_str_max_length = len( ', '.join(self.Names.values()) )
+        tmp_str_list = [    self.World['My Name']+' ', 
+                            self.Field, 
+                            str(self.ID), 
+                            str(self.SubID), 
+                            self.Name, 
+                            ', '.join(self.Names.values()), 
+                            self.morph(), 
+                        ]
+        #for tmp_str in tmp_str_list:
+        #    print(type(tmp_str))
+        tmp_str_max_length = len(max(tmp_str_list, key=len)) + 1
         tmp_str_format_fixedwidth = '{0:<%d}'%(tmp_str_max_length)
         tmp_str_format_filleddash = '{0:-<%d}'%(tmp_str_max_length)
         print("")
@@ -233,6 +237,7 @@ class Highz_Galaxy(object):
         print(' | SubID | %s |'%( tmp_str_format_fixedwidth.format(self.SubID)                      ))
         print(' |  Name | %s |'%( tmp_str_format_fixedwidth.format(self.Name)                       ))
         print(' | Names | %s |'%( tmp_str_format_fixedwidth.format(', '.join(self.Names.values()))  ))
+        print(' | Morph | %s |'%( tmp_str_format_fixedwidth.format(self.morph())                    ))
         print(' |---------%s-|'%( tmp_str_format_filleddash.format('-')                             ))
         print("")
 
@@ -806,7 +811,11 @@ class Highz_Image(object):
     def aper(self, label='no name', radec=[], position=[], major=numpy.nan, minor=numpy.nan, angle=numpy.nan, 
              color='green', edgecolor='', facecolor='', linewidth=2, 
              alpha=1.0, edgealpha=numpy.nan, facealpha=0.0, zorder=10, 
-             draw_ellipse = True, draw_cross = False):
+             draw_ellipse = True, 
+             draw_cross = False, cross_size = 1.0):
+        # 
+        # input arguments
+        # -- cross_size, arcsec unit
         # 
         # parse input arguments as list
         if type(position) is numpy.ndarray:
@@ -864,14 +873,14 @@ class Highz_Image(object):
             # 
             # draw Cross
             if draw_cross:
-                pix_line_x1 = matplotlib.lines.Line2D([pix_posxy[0]+0.25/self.PixScale[0],pix_posxy[0]+1.00/self.PixScale[0]], 
-                                                      [pix_posxy[1]+0.00/self.PixScale[1],pix_posxy[1]+0.00/self.PixScale[1]], color=color, linewidth=linewidth, alpha=alpha, zorder=zorder)
-                pix_line_x2 = matplotlib.lines.Line2D([pix_posxy[0]-0.25/self.PixScale[0],pix_posxy[0]-1.00/self.PixScale[0]], 
-                                                      [pix_posxy[1]+0.00/self.PixScale[1],pix_posxy[1]+0.00/self.PixScale[1]], color=color, linewidth=linewidth, alpha=alpha, zorder=zorder)
-                pix_line_y1 = matplotlib.lines.Line2D([pix_posxy[0]+0.00/self.PixScale[0],pix_posxy[0]+0.00/self.PixScale[0]], 
-                                                      [pix_posxy[1]+0.25/self.PixScale[1],pix_posxy[1]+1.00/self.PixScale[1]], color=color, linewidth=linewidth, alpha=alpha, zorder=zorder)
-                pix_line_y2 = matplotlib.lines.Line2D([pix_posxy[0]+0.00/self.PixScale[0],pix_posxy[0]+0.00/self.PixScale[0]], 
-                                                      [pix_posxy[1]-0.25/self.PixScale[1],pix_posxy[1]-1.00/self.PixScale[1]], color=color, linewidth=linewidth, alpha=alpha, zorder=zorder)
+                pix_line_x1 = matplotlib.lines.Line2D([pix_posxy[0]+cross_size*0.25/self.PixScale[0],pix_posxy[0]+cross_size*1.00/self.PixScale[0]], 
+                                                      [pix_posxy[1]+cross_size*0.00/self.PixScale[1],pix_posxy[1]+cross_size*0.00/self.PixScale[1]], color=color, linewidth=linewidth, alpha=alpha, zorder=zorder)
+                pix_line_x2 = matplotlib.lines.Line2D([pix_posxy[0]-cross_size*0.25/self.PixScale[0],pix_posxy[0]-cross_size*1.00/self.PixScale[0]], 
+                                                      [pix_posxy[1]+cross_size*0.00/self.PixScale[1],pix_posxy[1]+cross_size*0.00/self.PixScale[1]], color=color, linewidth=linewidth, alpha=alpha, zorder=zorder)
+                pix_line_y1 = matplotlib.lines.Line2D([pix_posxy[0]+cross_size*0.00/self.PixScale[0],pix_posxy[0]+cross_size*0.00/self.PixScale[0]], 
+                                                      [pix_posxy[1]+cross_size*0.25/self.PixScale[1],pix_posxy[1]+cross_size*1.00/self.PixScale[1]], color=color, linewidth=linewidth, alpha=alpha, zorder=zorder)
+                pix_line_y2 = matplotlib.lines.Line2D([pix_posxy[0]+cross_size*0.00/self.PixScale[0],pix_posxy[0]+cross_size*0.00/self.PixScale[0]], 
+                                                      [pix_posxy[1]-cross_size*0.25/self.PixScale[1],pix_posxy[1]-cross_size*1.00/self.PixScale[1]], color=color, linewidth=linewidth, alpha=alpha, zorder=zorder)
                 #pix_cross = self.PlotPanel.plot([pix_posxy[0]], [pix_posxy[1]], marker='+', markeredgewidth=1.85, markersize=numpy.mean(3.0/self.PixScale), color=color, zorder=zorder)
                 #markersize=numpy.mean(0.06*self.PlotDevice.get_size_inches()*self.PlotDevice.dpi/self.PixScale)
                 self.PlotPanel.add_line(pix_line_x1)
@@ -930,7 +939,7 @@ class Highz_Image(object):
     def text(self, input_text, align_xy = [], align_top_right = True, align_top_left = False, 
                    text_box_alpha = 0.8, text_box_color = hex2color('#FFFFFF'), 
                    line_spacing = 0.042, fontsize = 14, color = hex2color('#00CC00'), 
-                   horizontalalignment = 'left', verticalalignment = 'center'):
+                   horizontalalignment = 'left', verticalalignment = 'center', zorder = 10):
         if self.PlotPanel:
             # parse the input align_xy as a list
             if type(align_xy) is numpy.ndarray:
@@ -963,7 +972,8 @@ class Highz_Image(object):
                     xy = align_xy, xycoords = 'axes fraction', 
                     fontsize = fontsize, color = color, 
                     bbox = dict(boxstyle="round,pad=0.2", alpha=text_box_alpha, facecolor=text_box_color, edgecolor=text_box_color, linewidth=1), 
-                    horizontalalignment = horizontalalignment, verticalalignment = verticalalignment
+                    horizontalalignment = horizontalalignment, verticalalignment = verticalalignment, 
+                    zorder = zorder
                 )
                 if self.PlotTexts:
                     self.PlotTexts.append( {'Text': input_text, 'align_xy': align_xy, 'align_top_right': align_top_right, 'align_top_left': align_top_left} )

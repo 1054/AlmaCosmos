@@ -13,6 +13,7 @@ except ImportError:
     raise SystemExit("Error! Failed to import pkg_resources!")
 
 import os, sys, io, re
+from datetime import datetime
 
 
 
@@ -50,13 +51,16 @@ class CrabLogger(object):
     def __exit__(self, *args):
         self.close()
     
-    def begin_log_file(self, filename="CrabLogger.log", mode="a", buff=0):
+    def begin_log_file(self, filename="CrabLogger.log", mode="a", buff=None):
         if self.file != None:
             self.file.close()
             self.file = None
         if filename != '':
             self.filename = filename
-            self.file = open(filename, mode, buff)
+            if buff is None:
+                self.file = open(filename, mode)
+            else:
+                self.file = open(filename, mode, buff)
             self.file.write("# %s\n\n"%(str(datetime.now()))) # write current time # datetime.isoformat(datetime.today())
     
     def end_log_file(self):

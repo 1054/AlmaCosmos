@@ -53,10 +53,10 @@ def crop(image, zoomrect, imagewcs=[]):
     """
     Return the cropped image at the x1, x2, y1, y2 coordinates -- http://stackoverflow.com/questions/7665076/matplotlib-imshow-zoom-function
     """
-    i0 = numpy.round(zoomrect[0]).astype(long)-1
-    i1 = numpy.round(zoomrect[1]).astype(long)-1
-    j0 = numpy.round(zoomrect[2]).astype(long)-1
-    j1 = numpy.round(zoomrect[3]).astype(long)-1
+    i0 = numpy.round(zoomrect[0]).astype(int)-1
+    i1 = numpy.round(zoomrect[1]).astype(int)-1
+    j0 = numpy.round(zoomrect[2]).astype(int)-1
+    j1 = numpy.round(zoomrect[3]).astype(int)-1
     if i0 <= 0:
         i0 = 0
     if j0 <= 0:
@@ -104,8 +104,8 @@ def elliptical_Photometry(image, ellipse=Ellipse([0,0],0,0,0), imagewcs=[], verb
     # 
     xc = numpy.array(ellipse.center[0]).astype(float)
     yc = numpy.array(ellipse.center[1]).astype(float)
-    i0 = numpy.round(ellipse.center[0]).astype(long)-1
-    j0 = numpy.round(ellipse.center[1]).astype(long)-1
+    i0 = numpy.round(ellipse.center[0]).astype(int)-1
+    j0 = numpy.round(ellipse.center[1]).astype(int)-1
     amaj = numpy.array(ellipse.width).astype(float)
     amin = numpy.array(ellipse.height).astype(float)
     aang = numpy.array(ellipse.angle).astype(float) / 180.0 * math.pi # -pi to pi
