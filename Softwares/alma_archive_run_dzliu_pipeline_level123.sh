@@ -150,6 +150,8 @@ done
 echo cd "../"
 cd "../"
 
+# print a separator line
+seq -s "-" 100 | tr -d '[:digit:]'; echo ""
 
 # deal with Level_3_Calib
 echo cd "Level_3_Split/"
@@ -213,6 +215,7 @@ for (( i = 0; i < ${#datasets[@]}; i++ )); do
         echo "Found \"done_casa_split\" for ${datasets[i]}! Which means CASA split and exportuvfits are already done!"
     fi
     
+    # print a separator line
     seq -s "-" 100 | tr -d '[:digit:]'; echo ""
     
 done
