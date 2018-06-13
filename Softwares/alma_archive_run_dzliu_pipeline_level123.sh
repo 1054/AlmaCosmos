@@ -136,6 +136,7 @@ for (( i = 0; i < ${#ms_directories[@]}; i++ )); do
             fi
         else
             echo "Error! Could not find \"$(dirname $(dirname "$ms_directory"))/README\"*!"
+            mv "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh" "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh.failed"
             exit 1
         fi
     fi
