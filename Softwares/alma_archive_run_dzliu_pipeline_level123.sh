@@ -197,7 +197,7 @@ for (( i = 0; i < ${#datasets[@]}; i++ )); do
         echo "source \"$casa_setup_script_path\" README*" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
         echo "source \"$gildas_setup_script_path\"" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
         echo "source \"$crab_toolkit_pdbi_setup_script_path\"" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
-        echo "casa-ms-split -vis calibrated.ms -width 25km/s -steps split exportuvfits" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "casa-ms-split -vis calibrated.ms -width 25km/s -timebin 30s -steps split exportuvfits | tee log_casa_split.txt" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
         echo "date +\"%Y-%m-%d %Hh%Mm%Ss %Z\" > done_casa_split" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
         chmod +x "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
     else
