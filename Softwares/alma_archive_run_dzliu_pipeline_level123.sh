@@ -106,7 +106,7 @@ for (( i = 0; i < ${#ms_directories[@]}; i++ )); do
     if [[ ! -d "DataSet_$ms_mem_id" ]]; then
         mkdir "DataSet_$ms_mem_id"
     fi
-    if [[ ! -L "DataSet_$ms_mem_id/calibrated.ms" ]]; then
+    if [[ ! -f "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh" ]]; then
         ms_link=""
         if [[ x"$ms_directory" != x"/"* ]] && [[ x"$ms_directory" != x"~"* ]]; then
             # if $ms_directory is a relative path, it should be relative to $current_dir
