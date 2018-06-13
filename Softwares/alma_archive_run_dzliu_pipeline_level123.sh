@@ -124,13 +124,19 @@ for (( i = 0; i < ${#ms_directories[@]}; i++ )); do
         echo "ln -fsT \"$ms_link\" \"DataSet_$ms_mem_id/calibrated.ms\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
         ln -fsT "$ms_link" "DataSet_$ms_mem_id/calibrated.ms"
         # also copy readme
-        if [[ -f $(dirname $(dirname "$ms_link"))/README ]] && [[ ! -f "DataSet_$ms_mem_id/README" ]]; then
-            echo "cp \"$(dirname $(dirname "$ms_link"))/README\" \"DataSet_$ms_mem_id/README\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-            cp $(dirname $(dirname "$ms_link"))/README "DataSet_$ms_mem_id/README"
-        fi
-        if [[ -f $(dirname $(dirname "$ms_link"))/README_CASA_VERSION ]] && [[ ! -f "DataSet_$ms_mem_id/README_CASA_VERSION" ]]; then
-            echo "cp \"$(dirname $(dirname "$ms_link"))/README_CASA_VERSION\" \"DataSet_$ms_mem_id/README_CASA_VERSION\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-            cp $(dirname $(dirname "$ms_link"))/README_CASA_VERSION "DataSet_$ms_mem_id/README_CASA_VERSION"
+        if [[ -f $(dirname $(dirname "$ms_link"))/README ]]; then
+            if [[ ! -f "DataSet_$ms_mem_id/README" ]]; then
+                echo "cp \"$(dirname $(dirname "$ms_link"))/README\" \"DataSet_$ms_mem_id/README\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+                cp $(dirname $(dirname "$ms_link"))/README "DataSet_$ms_mem_id/README"
+            fi
+        elif [[ -f $(dirname $(dirname "$ms_link"))/README_CASA_VERSION ]]; then
+            if [[ ! -f "DataSet_$ms_mem_id/README_CASA_VERSION" ]]; then
+                echo "cp \"$(dirname $(dirname "$ms_link"))/README_CASA_VERSION\" \"DataSet_$ms_mem_id/README_CASA_VERSION\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+                cp $(dirname $(dirname "$ms_link"))/README_CASA_VERSION "DataSet_$ms_mem_id/README_CASA_VERSION"
+            fi
+        else
+            echo "Error! Could not find \"$(dirname $(dirname "$ms_link"))/README\"*!"
+            exit 1
         fi
     fi
     datasets+=("DataSet_$ms_mem_id")
@@ -143,12 +149,15 @@ cd "../"
 echo cd "Level_3_Split/"
 cd "Level_3_Split/"
 for (( i = 0; i < ${#datasets[@]}; i++ )); do
+    if [[ ! -d "DataSet_$ms_mem_id" ]]; then
+        mkdir "DataSet_$ms_mem_id"
+    fi
     if [[ ! -f "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh" ]]; then
         echo "#!/bin/bash" > "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-        echo "ln -fsT \"../Level_2_Calib/${datasets[i]}/calibrated.ms\" \"calibrated.ms\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-        ln -fsT "../Level_2_Calib/${datasets[i]}/calibrated.ms" "calibrated.ms"
-        echo "cp \"../Level_2_Calib/${datasets[i]}/README\"* \"./${datasets[i]}/\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-        cp "../Level_2_Calib/${datasets[i]}/README"* "./${datasets[i]}/"
+        echo "ln -fsT \"../../Level_2_Calib/${datasets[i]}/calibrated.ms\" \"${datasets[i]}/calibrated.ms\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        ln -fsT "../../Level_2_Calib/${datasets[i]}/calibrated.ms" "${datasets[i]}/calibrated.ms"
+        echo "cp \"../Level_2_Calib/${datasets[i]}/README\"* \"${datasets[i]}/\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        cp "../Level_2_Calib/${datasets[i]}/README"* "${datasets[i]}/"
     fi
     if [[ ! -f "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh" ]]; then
         echo "#!/bin/bash" > "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
