@@ -142,6 +142,8 @@ for (( i = 0; i < ${#ms_directories[@]}; i++ )); do
             mv "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh" "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh.failed"
             exit 1
         fi
+    else
+        echo "Found \"a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh\" under \"Level_2_Calib\"! Will not re-execute it!"
     fi
     datasets+=("DataSet_$ms_mem_id")
 done
@@ -180,6 +182,8 @@ for (( i = 0; i < ${#datasets[@]}; i++ )); do
             mv "a_dzliu_code_make_links_for_${datasets[i]}.sh" "a_dzliu_code_make_links_for_${datasets[i]}.sh.failed"
             exit 1
         fi
+    else
+        echo "Found \"a_dzliu_code_make_links_for_${datasets[i]}.sh\" under \"Level_3_Split\"! Will not re-execute it!"
     fi
     # make script to run CASA split
     if [[ ! -f "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh" ]]; then
@@ -194,16 +198,19 @@ for (( i = 0; i < ${#datasets[@]}; i++ )); do
         echo "casa-ms-split -vis calibrated.ms -width 25km/s -steps split exportuvfits" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
         echo "date +\"%Y-%m-%d %Hh%Mm%Ss %Z\" > done_casa_split" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
         chmod +x "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+    else
+        echo "Found \"a_dzliu_code_run_casa_split_for_${datasets[i]}.sh\" under \"Level_3_Split\"!"
     fi
     # execute the script
     if [[ ! -f "done_casa_split" ]]; then
         if [[ $dry_run -eq 0 ]]; then
+            echo "Executing \"a_dzliu_code_run_casa_split_for_${datasets[i]}.sh\"!"
             ./"a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
         else
             echo "We are in dry run mode! Will not execute \"a_dzliu_code_run_casa_split_for_${datasets[i]}.sh\"!"
         fi
     else
-        echo "Found \"done_casa_split\" for ${datasets[i]}!"
+        echo "Found \"done_casa_split\" for ${datasets[i]}! Which means CASA split and exportuvfits are already done!"
     fi
     
 done
