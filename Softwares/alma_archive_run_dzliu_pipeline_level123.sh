@@ -4,7 +4,12 @@
 # check input argument
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
-    echo "    alma_archive_run_dzliu_pipeline_level123.sh -root root_directory -ms /path/to/calibrated.ms"
+    echo "    alma_archive_run_dzliu_pipeline_level123.sh -ms /path/to/mem_ous_id_1/calibrated.ms /path/to/mem_ous_id_2/calibrated.ms [-root root_directory]"
+    echo ""
+    echo "Notes:"
+    echo "    This code will create Level_* directories under current directory or root directory if given, "
+    echo "    Then will make links under each Level_* directory and run CASA split in Level_3_Split."
+    echo "    The input \"-ms\" should be the MeasurementSet already applied calibration with \"scriptForPI.py\"."
     echo ""
     exit
 fi
