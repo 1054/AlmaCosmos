@@ -213,6 +213,8 @@ for (( i = 0; i < ${#datasets[@]}; i++ )); do
         echo "Found \"done_casa_split\" for ${datasets[i]}! Which means CASA split and exportuvfits are already done!"
     fi
     
+    seq -s "-" 100 | tr -d '[:digit:]'; echo ""
+    
 done
 echo cd "../"
 cd "../"
