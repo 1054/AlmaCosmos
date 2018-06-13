@@ -54,7 +54,6 @@ while [[ $i -le $# ]]; do
             i=$((i+1))
             ms_directories+=("${!i}")
         fi
-    else
     elif [[ "$str_arg" == "-dry-run" ]]; then
         dry_run=1
     else
