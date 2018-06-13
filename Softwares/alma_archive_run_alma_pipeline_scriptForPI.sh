@@ -67,6 +67,8 @@ check_and_extract_casa_version_in_readme_file() {
                 if [[ -d "$script_dir/qa" ]] || [[ -L "$script_dir/qa" ]]; then
                     list_of_found_files=($(find -L "$script_dir/qa" -name "*.tgz"))
                     if [[ ${#list_of_found_files[@]} -gt 0 ]]; then
+                        # run our python code to extract CASA Version from "qa/*.tgz"
+                        echo "Running alma_archive_find_casa_version_in_qa_weblog.py \"${list_of_found_files[0]}\" > \"$script_dir/README_CASA_VERSION\""
                         if [[ $(type alma_archive_find_casa_version_in_qa_weblog.py 2>/dev/null | wc -l) -ge 1 ]]; then
                             alma_archive_find_casa_version_in_qa_weblog.py "${list_of_found_files[0]}" > "$script_dir/README_CASA_VERSION"
                         elif [[ -f $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py ]]; then
@@ -167,6 +169,7 @@ check_and_concat_calibrated_ms() {
                             fi
                         fi
                         # run CASA concat
+                        echo "Running alma_archive_run_alma_pipeline_concat_ms_split_cal.sh \"$script_dir/calibrated\""
                         if [[ $(type alma_archive_run_alma_pipeline_concat_ms_split_cal.sh 2>/dev/null | wc -l) -ge 1 ]]; then
                             alma_archive_run_alma_pipeline_concat_ms_split_cal.sh "$script_dir/calibrated"
                         elif [[ -f $(dirname ${BASH_SOURCE[0]})"/alma_archive_run_alma_pipeline_concat_ms_split_cal.sh" ]]; then
@@ -259,10 +262,10 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
         script_dir=$(dirname $(dirname "$script_file"))
         echo ""
         echo ""
-        echo "********************************************************************************"
+        seq -s "*" 100 | tr -d '[:digit:]'; echo "" # separator
         echo "script_file = $script_file"
         echo "script_dir = $script_dir"
-        echo "********************************************************************************"
+        seq -s "*" 100 | tr -d '[:digit:]'; echo "" # separator
         # 
         # check_and_extract_casa_version_in_readme_file
         echo "check_and_extract_casa_version_in_readme_file \"$script_dir\""
