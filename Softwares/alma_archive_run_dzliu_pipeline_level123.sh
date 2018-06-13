@@ -107,6 +107,7 @@ for (( i = 0; i < ${#ms_directories[@]}; i++ )); do
         mkdir "DataSet_$ms_mem_id"
     fi
     if [[ ! -f "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh" ]]; then
+        # solve relative ms link with respect to DataSet subfolder
         ms_link=""
         if [[ x"$ms_directory" != x"/"* ]] && [[ x"$ms_directory" != x"~"* ]]; then
             # if $ms_directory is a relative path, it should be relative to $current_dir
@@ -121,21 +122,23 @@ for (( i = 0; i < ${#ms_directories[@]}; i++ )); do
         fi
         # make links
         echo "#!/bin/bash" > "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-        echo "ln -fsT \"$ms_link\" \"DataSet_$ms_mem_id/calibrated.ms\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-        ln -fsT "$ms_link" "DataSet_$ms_mem_id/calibrated.ms"
-        # also copy readme
-        if [[ -f $(dirname $(dirname "$ms_directory"))/README ]]; then
-            if [[ ! -f "DataSet_$ms_mem_id/README" ]]; then
-                echo "cp \"$(dirname $(dirname "$ms_directory"))/README\" \"DataSet_$ms_mem_id/README\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-                cp $(dirname $(dirname "$ms_directory"))/README "DataSet_$ms_mem_id/README"
-            fi
-        elif [[ -f $(dirname $(dirname "$ms_directory"))/README_CASA_VERSION ]]; then
-            if [[ ! -f "DataSet_$ms_mem_id/README_CASA_VERSION" ]]; then
-                echo "cp \"$(dirname $(dirname "$ms_directory"))/README_CASA_VERSION\" \"DataSet_$ms_mem_id/README_CASA_VERSION\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-                cp $(dirname $(dirname "$ms_directory"))/README_CASA_VERSION "DataSet_$ms_mem_id/README_CASA_VERSION"
-            fi
-        else
-            echo "Error! Could not find \"$(dirname $(dirname "$ms_directory"))/README\"*!"
+        echo "set -e" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        echo "#cd \"$(pwd)/\" # pwd" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        echo "cd \${BASH_SOURCE[0]}/ # cd script dir" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        echo "cd \"DataSet_$ms_mem_id/\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        echo "ln -fsT \"$ms_link\" \"calibrated.ms\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        echo "cp \"$(dirname $(dirname "$ms_link"))/README\"* \"./\" # also copy readme" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        chmod +x "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        ./"a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+        # check 
+        if [[ ! -L "DataSet_$ms_mem_id/calibrated.ms" ]] && [[ ! -d "DataSet_$ms_mem_id/calibrated.ms" ]]; then
+            echo "Error! Failed to run \"a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh\" and make links for \"Level_2_Calib/DataSet_$ms_mem_id/calibrated.ms\"! Backed it up as \"a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh.failed\"!"
+            mv "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh" "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh.failed"
+            exit 1
+        fi
+        # check 
+        if [[ $(find "DataSet_$ms_mem_id" -type f -name "README*" | wc -l) -eq 0 ]]; then
+            echo "Error! Failed to run \"a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh\" and copy \"Level_2_Calib/DataSet_$ms_mem_id/README*\"! Backed it up as \"a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh.failed\"!"
             mv "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh" "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh.failed"
             exit 1
         fi
@@ -150,36 +153,57 @@ cd "../"
 echo cd "Level_3_Split/"
 cd "Level_3_Split/"
 for (( i = 0; i < ${#datasets[@]}; i++ )); do
-    if [[ ! -d "DataSet_$ms_mem_id" ]]; then
-        mkdir "DataSet_$ms_mem_id"
+    # make DataSet_* subfolder
+    if [[ ! -d "${datasets[i]}" ]]; then
+        mkdir "${datasets[i]}"
     fi
-    if [[ ! -f "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh" ]]; then
-        echo "#!/bin/bash" > "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-        echo "ln -fsT \"../../Level_2_Calib/${datasets[i]}/calibrated.ms\" \"${datasets[i]}/calibrated.ms\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-        ln -fsT "../../Level_2_Calib/${datasets[i]}/calibrated.ms" "${datasets[i]}/calibrated.ms"
-        echo "cp \"../Level_2_Calib/${datasets[i]}/README\"* \"${datasets[i]}/\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-        cp "../Level_2_Calib/${datasets[i]}/README"* "${datasets[i]}/"
+    # make links
+    if [[ ! -f "a_dzliu_code_make_links_for_${datasets[i]}.sh" ]]; then
+        echo "#!/bin/bash" > "a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        echo "set -e" >> "a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        echo "#cd \"$(pwd)/\" # pwd" >> "a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        echo "cd \${BASH_SOURCE[0]}/ # cd script dir" >> "a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        echo "cd \"${datasets[i]}/\"" >> "a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        echo "ln -fsT \"../../Level_2_Calib/${datasets[i]}/calibrated.ms\" \"calibrated.ms\"" >> "a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        echo "cp \"../../Level_2_Calib/${datasets[i]}/README\"* \"./\"" >> "a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        chmod +x "a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        ./"a_dzliu_code_make_links_for_${datasets[i]}.sh"
+        # check 
+        if [[ ! -L "${datasets[i]}/calibrated.ms" ]] && [[ ! -d "${datasets[i]}/calibrated.ms" ]]; then
+            echo "Error! Failed to run \"a_dzliu_code_make_links_for_${datasets[i]}.sh\" and make links for \"Level_3_Split/${datasets[i]}/calibrated.ms\"! Backed it up as \"a_dzliu_code_make_links_for_${datasets[i]}.sh.failed\"!"
+            mv "a_dzliu_code_make_links_for_${datasets[i]}.sh" "a_dzliu_code_make_links_for_${datasets[i]}.sh.failed"
+            exit 1
+        fi
+        # check 
+        if [[ $(find "${datasets[i]}" -type f -name "README*" | wc -l) -eq 0 ]]; then
+            echo "Error! Failed to run \"a_dzliu_code_make_links_for_${datasets[i]}.sh\" and copy \"Level_3_Split/${datasets[i]}/README*\"! Backed it up as \"a_dzliu_code_make_links_for_${datasets[i]}.sh.failed\"!"
+            mv "a_dzliu_code_make_links_for_${datasets[i]}.sh" "a_dzliu_code_make_links_for_${datasets[i]}.sh.failed"
+            exit 1
+        fi
     fi
-    if [[ ! -f "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh" ]]; then
-        echo "#!/bin/bash" > "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        echo "set -e" >> "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        echo "cd $(pwd)/ # pwd" >> "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        echo "cd ${datasets[i]}/" >> "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        echo "source \"$casa_setup_script_path\" README*" >> "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        echo "source \"$gildas_setup_script_path\"" >> "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        echo "source \"$crab_toolkit_pdbi_setup_script_path\"" >> "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        echo "casa-ms-split -vis calibrated.ms -width 25km/s -steps split exportuvfits" >> "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        echo "date +\"%Y-%m-%d %Hh%Mm%Ss %Z\" > done_casa_split" >> "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
-        chmod +x "a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
+    # make script to run CASA split
+    if [[ ! -f "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh" ]]; then
+        echo "#!/bin/bash" > "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "set -e" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "#cd $(pwd)/ # pwd" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "cd \${BASH_SOURCE[0]}/ # cd script dir" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "cd ${datasets[i]}/" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "source \"$casa_setup_script_path\" README*" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "source \"$gildas_setup_script_path\"" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "source \"$crab_toolkit_pdbi_setup_script_path\"" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "casa-ms-split -vis calibrated.ms -width 25km/s -steps split exportuvfits" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        echo "date +\"%Y-%m-%d %Hh%Mm%Ss %Z\" > done_casa_split" >> "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
+        chmod +x "a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
     fi
+    # execute the script
     if [[ ! -f "done_casa_split" ]]; then
         if [[ $dry_run -eq 0 ]]; then
-            ./"a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh"
+            ./"a_dzliu_code_run_casa_split_for_${datasets[i]}.sh"
         else
-            echo "We are in dry run mode! Will not execute \"a_dzliu_code_run_casa_split_for_DataSet_$ms_mem_id.sh\"!"
+            echo "We are in dry run mode! Will not execute \"a_dzliu_code_run_casa_split_for_${datasets[i]}.sh\"!"
         fi
     else
-        echo "Found \"done_casa_split\" for DataSet_$ms_mem_id!"
+        echo "Found \"done_casa_split\" for ${datasets[i]}!"
     fi
     
 done
