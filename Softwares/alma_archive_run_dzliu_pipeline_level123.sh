@@ -124,18 +124,18 @@ for (( i = 0; i < ${#ms_directories[@]}; i++ )); do
         echo "ln -fsT \"$ms_link\" \"DataSet_$ms_mem_id/calibrated.ms\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
         ln -fsT "$ms_link" "DataSet_$ms_mem_id/calibrated.ms"
         # also copy readme
-        if [[ -f $(dirname $(dirname "$ms_link"))/README ]]; then
+        if [[ -f $(dirname $(dirname "$ms_directory"))/README ]]; then
             if [[ ! -f "DataSet_$ms_mem_id/README" ]]; then
-                echo "cp \"$(dirname $(dirname "$ms_link"))/README\" \"DataSet_$ms_mem_id/README\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-                cp $(dirname $(dirname "$ms_link"))/README "DataSet_$ms_mem_id/README"
+                echo "cp \"$(dirname $(dirname "$ms_directory"))/README\" \"DataSet_$ms_mem_id/README\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+                cp $(dirname $(dirname "$ms_directory"))/README "DataSet_$ms_mem_id/README"
             fi
-        elif [[ -f $(dirname $(dirname "$ms_link"))/README_CASA_VERSION ]]; then
+        elif [[ -f $(dirname $(dirname "$ms_directory"))/README_CASA_VERSION ]]; then
             if [[ ! -f "DataSet_$ms_mem_id/README_CASA_VERSION" ]]; then
-                echo "cp \"$(dirname $(dirname "$ms_link"))/README_CASA_VERSION\" \"DataSet_$ms_mem_id/README_CASA_VERSION\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
-                cp $(dirname $(dirname "$ms_link"))/README_CASA_VERSION "DataSet_$ms_mem_id/README_CASA_VERSION"
+                echo "cp \"$(dirname $(dirname "$ms_directory"))/README_CASA_VERSION\" \"DataSet_$ms_mem_id/README_CASA_VERSION\"" >> "a_dzliu_code_make_links_for_DataSet_$ms_mem_id.sh"
+                cp $(dirname $(dirname "$ms_directory"))/README_CASA_VERSION "DataSet_$ms_mem_id/README_CASA_VERSION"
             fi
         else
-            echo "Error! Could not find \"$(dirname $(dirname "$ms_link"))/README\"*!"
+            echo "Error! Could not find \"$(dirname $(dirname "$ms_directory"))/README\"*!"
             exit 1
         fi
     fi
