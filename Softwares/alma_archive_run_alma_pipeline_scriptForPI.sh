@@ -192,6 +192,18 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
         # then run CASA
         echo "cd \"$script_dir/script/\""
         cd "$script_dir/script/"
+        # check empty README* files
+        if [[ -f "../README" ]] || [[ -L "../README" ]]; then
+            if [[ $(cat ../README | wc -l) -eq 0 ]]; then
+                rm "../README"
+            fi
+        fi
+        if [[ -f "../README_CASA_VERSION" ]] || [[ -L "../README_CASA_VERSION" ]]; then
+            if [[ $(cat ../README_CASA_VERSION | wc -l) -eq 0 ]]; then
+                rm "../README_CASA_VERSION"
+            fi
+        fi
+        # determine CASA version in README* files
         if [[ -f "../README" ]] || [[ -L "../README" ]]; then
             source "$casa_setup_script_path" "../README"
         else
@@ -203,6 +215,10 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
                     list_of_found_files=($(find -L "../qa" -name "*.tgz"))
                     if [[ ${#list_of_found_files[@]} -gt 0 ]]; then
                         $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py "${list_of_found_files[0]}" > "../README_CASA_VERSION"
+                        if [[ $(cat ../README_CASA_VERSION | wc -l) -eq 0 ]]; then
+                            echo "Error! Failed to run $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py \"${list_of_found_files[0]}\"!"
+                            exit 1
+                        fi
                         source "$casa_setup_script_path" "../README_CASA_VERSION"
                     else
                         echo "Error! Could not find \"$script_dir/qa/*.tgz\"!"
