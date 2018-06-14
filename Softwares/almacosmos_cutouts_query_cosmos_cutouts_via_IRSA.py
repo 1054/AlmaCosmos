@@ -254,6 +254,13 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
             sys.exit()
         
         # 
+        # print x y
+        print('Source PX = %s [pix]'%(Source_Coordinate_Box['PX']))
+        print('Source PY = %s [pix]'%(Source_Coordinate_Box['PY']))
+        print('Source DX = %s [pix]'%(Source_Coordinate_Box['DX']))
+        print('Source DY = %s [pix]'%(Source_Coordinate_Box['DY']))
+        
+        # 
         # check x y
         if Source_Coordinate_Box['PX']<1:
             print('Error! Source x coordinate < 1!')

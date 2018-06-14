@@ -1162,7 +1162,9 @@ for i in range(len(Cat.TableData)):
             Cutout_Files.append(Cutout_File)
         else:
             print('\nError! Failed to run "%s"! Please check log file "%s"!'%(Cutout_downloading_command, Cutout_File + '.log'))
-            sys.exit()
+            print('\n')
+            continue
+            #sys.exit()
     
     
     # 
