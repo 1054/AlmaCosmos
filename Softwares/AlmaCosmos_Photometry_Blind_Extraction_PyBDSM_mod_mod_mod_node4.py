@@ -136,6 +136,7 @@ input_flag_maxsize_fwhm = 0.5 # flag (discard) a Gaussian if ... -- see -- http:
 input_thresh_rms = 3.0
 input_thresh_pix = 4.0
 input_group_by_isl = True
+input_frequency = None
 output_root = 'Output_Blind_Extraction_Photometry_PyBDSM'
 
 i = 1
@@ -209,6 +210,13 @@ while i < len(sys.argv):
             if i+1 <= len(sys.argv)-1:
                 input_thresh_rms = float(sys.argv[i+1])
                 print('Setting thresh_rms to %s'%(input_thresh_rms))
+                i = i + 1
+        elif temp_arg_str == '-freq' or \
+            temp_arg_str == '-frequency' or \
+            temp_arg_str == '-sky-frequency':
+            if i+1 <= len(sys.argv)-1:
+                input_frequency = float(sys.argv[i+1])
+                print('Setting frequency to %s'%(input_frequency))
                 i = i + 1
         elif temp_arg_str == '-verbose' or \
             temp_arg_str == '-verbose-fitting':
@@ -300,7 +308,10 @@ for i in range(len(input_fits_files)):
                                         rms_map = False, rms_value = input_rms_value, mean_map = 'zero', \
                                         flag_maxsize_bm = input_flag_maxsize_bm, \
                                         flag_maxsize_fwhm = input_flag_maxsize_fwhm, \
-                                        verbose_fitting = input_verbose_fitting) # <20171105> allow input rms value
+                                        verbose_fitting = input_verbose_fitting, 
+                                        frequency = input_frequency) 
+                                        # <20171105> allow input rms value
+                                        # <20180717> allow input frequency
     else:
         # let PyBDSM to determine rms value, which might be not uniform.
         fit_result = process_image(input_fits_file, thresh = 'hard', thresh_isl = input_thresh_rms, thresh_pix = input_thresh_pix, \
@@ -309,7 +320,9 @@ for i in range(len(input_fits_files)):
                                         mean_map = 'zero', \
                                         flag_maxsize_bm = input_flag_maxsize_bm, \
                                         flag_maxsize_fwhm = input_flag_maxsize_fwhm, \
-                                        verbose_fitting = input_verbose_fitting) # rms_map=False, rms_value=1e-5, 
+                                        verbose_fitting = input_verbose_fitting, 
+                                        frequency = input_frequency) 
+                                        # rms_map=False, rms_value=1e-5, 
     # 
     fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat0.fits', format = 'fits', clobber = True) # clobber = True means overwrite existing file. 
     fit_result.write_catalog(outfile = output_dir + os.sep + 'pybdsm_cat0.ds9.reg', format = 'ds9', clobber = True)
