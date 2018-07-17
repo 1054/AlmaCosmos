@@ -83,10 +83,6 @@ try:
 except ImportError:
     raise SystemExit("Error! Failed to import MinMaxInterval, PercentileInterval, AsymmetricPercentileInterval, SqrtStretch, PowerStretch, ImageNormalize from astropy.visualization!")
 
-#import warnings
-#
-#warnings.filterwarnings("ignore",".*GUI is implemented.*")
-
 
 
 
@@ -115,6 +111,9 @@ except ImportError:
 def parseIntSet(nputstr=""):
     # https://stackoverflow.com/questions/712460/interpreting-number-ranges-in-python?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
     # http://thoughtsbyclayg.blogspot.com/2008/10/parsing-list-of-numbers-in-python.html
+    # 
+    # This function parses a string like '1234~1240' into a list [1234,1235,1236,...,1240]
+    # 
     selection = set()
     invalid = set()
     # tokens are comma seperated values
@@ -493,13 +492,13 @@ class Highz_Catalogue(object):
         ColList = ['SPECZ','zspec','spec-z','z_spec']
         return self.col(ColName=ColList, ColSelect=1, RowSelect=InputIndex, ReturnColName=ReturnColName)
     # 
-    def morph(self, InputIndex=[], ReturnColName=False):
-        ColList_maj = ['FWHM_MAJ','FWHM_MAJ_.*','Maj','Maj_.*']
-        ColList_min = ['FWHM_MIN','FWHM_MIN_.*','Min','Min_.*']
+    def morph(self, InputIndex=[], ColSelect=1, ReturnColName=False):
+        ColList_maj = ['FWHM_MAJ','FWHM_MAJ_((?!(beam)).)+','Maj','Maj_((?!(beam)).)+']
+        ColList_min = ['FWHM_MIN','FWHM_MIN_((?!(beam)).)+','Min','Min_((?!(beam)).)+']
         ColList_pa = ['POSANG','POSANG_.*','PA','PA_.*']
-        ColVal_maj, ColName_maj = self.col(ColName=ColList_maj, ColSelect=1, RowSelect=InputIndex, ReturnColName=True)
-        ColVal_min, ColName_min = self.col(ColName=ColList_min, ColSelect=1, RowSelect=InputIndex, ReturnColName=True)
-        ColVal_pa, CoName_pa = self.col(ColName=ColList_pa, ColSelect=1, RowSelect=InputIndex, ReturnColName=True)
+        ColVal_maj, ColName_maj = self.col(ColName=ColList_maj, ColSelect=ColSelect, RowSelect=InputIndex, ReturnColName=True)
+        ColVal_min, ColName_min = self.col(ColName=ColList_min, ColSelect=ColSelect, RowSelect=InputIndex, ReturnColName=True)
+        ColVal_pa, CoName_pa = self.col(ColName=ColList_pa, ColSelect=ColSelect, RowSelect=InputIndex, ReturnColName=True)
         if ReturnColName:
             return ColVal_maj, ColVal_min, ColVal_pa, ColName_maj, ColName_min, ColName_pa
         else:
@@ -508,13 +507,16 @@ class Highz_Catalogue(object):
     def source_morphology(self, InputIndex=[], ReturnColName=False):
         return self.morph(InputIndex, ReturnColName=ReturnColName)
     # 
-    def beam(self, InputIndex=[], ReturnColName=False):
+    def source_morphology_2(self, InputIndex=[], ReturnColName=False):
+        return self.morph(InputIndex, ColSelect=2, ReturnColName=ReturnColName)
+    # 
+    def beam(self, InputIndex=[], ColSelect=1, ReturnColName=False):
         ColList_maj = ['Maj_beam','Maj_.*_beam','Maj_beam_.*']
         ColList_min = ['Min_beam','Min_.*_beam','Min_beam_.*']
         ColList_pa = ['PA_beam','PA_.*_beam','PA_beam_.*']
-        ColVal_maj, ColName_maj = self.col(ColName=ColList_maj, ColSelect=1, RowSelect=InputIndex, ReturnColName=True)
-        ColVal_min, ColName_min = self.col(ColName=ColList_min, ColSelect=1, RowSelect=InputIndex, ReturnColName=True)
-        ColVal_pa, ColName_pa = self.col(ColName=ColList_pa, ColSelect=1, RowSelect=InputIndex, ReturnColName=True)
+        ColVal_maj, ColName_maj = self.col(ColName=ColList_maj, ColSelect=ColSelect, RowSelect=InputIndex, ReturnColName=True)
+        ColVal_min, ColName_min = self.col(ColName=ColList_min, ColSelect=ColSelect, RowSelect=InputIndex, ReturnColName=True)
+        ColVal_pa, ColName_pa = self.col(ColName=ColList_pa, ColSelect=ColSelect, RowSelect=InputIndex, ReturnColName=True)
         if ReturnColName:
             return ColVal_maj, ColVal_min, ColVal_pa, ColName_maj, ColName_min, ColName_pa
         else:
@@ -522,6 +524,9 @@ class Highz_Catalogue(object):
     # 
     def telescope_beam(self, InputIndex=[], ReturnColName=False):
         return self.beam(InputIndex, ReturnColName=ReturnColName)
+    # 
+    def telescope_beam_2(self, InputIndex=[], ReturnColName=False):
+        return self.beam(InputIndex, ColSelect=2, ReturnColName=ReturnColName)
     # 
     def recognize(self, InputFileName=''):
         if InputFileName == '':

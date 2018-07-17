@@ -323,6 +323,17 @@ class CrossMatch_Identifier(object):
             if 'Output_Logger' in globals():
                 Output_Logger.begin_log_file(filename=LoggOutput, mode='w')
             # 
+            # set source size to be no smaller than refImage PSF size (20180618)
+            Image_PSF_size = recognize_PSF_size(StrTelescope, StrInstrument)
+            if not numpy.isnan(Image_PSF_size):
+                if 'Major Axis' in self.Source.Morphology:
+                    print('Limiting source size %s %s to be no smaller than the refImage PSF size %s'%(self.Source.Morphology['Major Axis'], self.Source.Morphology['Minor Axis'], Image_PSF_size))
+                    if self.Source.Morphology['Major Axis'] < Image_PSF_size:
+                        self.Source.Morphology['Major Axis'] = Image_PSF_size
+                if 'Minor Axis' in self.Source.Morphology:
+                    if self.Source.Morphology['Minor Axis'] < Image_PSF_size:
+                        self.Source.Morphology['Minor Axis'] = Image_PSF_size
+            # 
             # do morphology check
             # -- we will create a series of ellipse from Source position to RefSource position
             # -- then check the morphological extent
@@ -798,8 +809,10 @@ Input_Columns = {}
 Input_Filters = []
 Input_RefCat = ''
 Input_Overwrite = False
+Input_Continue_On_Error = False
 Output_Dir = ''
 Output_Prefix = 'Output_'
+Output_Suffix = ''
 Output_Sep = '_'
 
 # Print Usage
@@ -865,8 +878,15 @@ while i < len(sys.argv):
         if i+1 < len(sys.argv):
             Output_Sep = sys.argv[i+1]
             i = i + 1
+    elif tmp_arg == '-output-suffix':
+        # must be dict
+        if i+1 < len(sys.argv):
+            Output_Suffix = sys.argv[i+1]
+            i = i + 1
     elif tmp_arg == '-overwrite':
         Input_Overwrite = True
+    elif tmp_arg == '-continue-on-error':
+        Input_Continue_On_Error = True
     else:
         if Input_Catalog == '':
             Input_Catalog = sys.argv[i]
@@ -880,9 +900,7 @@ if Input_Catalog == '':
 # Read 'ref_catalog.fits'
 if Input_RefCat != '':
     if os.path.isfile(Input_RefCat):
-        print("")
         print("Found reference catalog \"%s\"! We will calculate the 'Crowdedness' and 'Clean_Index' parameters!"%(Input_RefCat))
-        print("")
         RefCat = Highz_Catalogue(Input_RefCat)
         #refcatalog_KDTree = KDTree()
         #refcatalog_CAT = CrabFitsTable('ref_catalog.fits')
@@ -910,23 +928,84 @@ Cat = Highz_Catalogue(Input_Catalog)
 # 
 # Read Catalog Columns
 if "ID" in Input_Columns:
-    Cat_ID = Cat.TableData.field(Input_Columns["ID"])
-    Cat_ID_Column = Input_Columns["ID"]
+    if type(Input_Columns["ID"]) is list:
+        pass
+    else:
+        if Input_Columns["ID"] == '':
+            Cat_ID = numpy.array([-99]*len(Cat.TableData))
+            Cat_ID_Column = 'NO_ID'
+        else:
+            Cat_ID = Cat.TableData.field(Input_Columns["ID"])
+            Cat_ID_Column = Input_Columns["ID"]
 else:
     Cat_ID, Cat_ID_Column = Cat.id(ReturnColName=True) # guess an ID column
 
 if "Name" in Input_Columns:
-    Cat_Name = Cat.TableData.field(Input_Columns["Name"])
+    if type(Input_Columns["Name"]) is list:
+        pass
+        #Cat_Name = []
+        #Cat_Name_Column_List = Input_Columns["Name"]
+        #print('DEBUG')
+        #print('Cat_Name_Column_List = '+str(Cat_Name_Column_List))
+        ## we can input a list of name columns and take the first valid column value as the source name
+        #for i in range(len(Cat.TableData)):
+        #    Cat_Name_Best = 'NULL'
+        #    for j in range(len(Cat_Name_Column_List)):
+        #        Cat_Cell_Value = Cat.TableData.field(Cat_Name_Column_List[j])[i]
+        #        print('Cat_Cell_Value = '+str(Cat_Cell_Value))
+        #        if Cat_Cell_Value is not None:
+        #            if str(Cat_Cell_Value) != '' and str(Cat_Cell_Value).upper() != 'NULL':
+        #                Cat_Name_Best = str(Cat_Cell_Value)
+        #                break
+        #    Cat_Name.append(Cat_Name_Best)
+        #Cat_Name_Column = ', '.join(Cat_Name_Column_List)
+    else:
+        if Input_Columns["Name"] == '':
+            Cat_Name = numpy.array(['NO_NAME']*len(Cat.TableData))
+            Cat_Name_Column = 'NO_NAME'
+        else:
+            Cat_Name = Cat.TableData.field(Input_Columns["Name"])
+            Cat_Name_Column = Input_Columns["Name"]
 else:
-    Cat_Name = Cat.col(ColName=['OBJECT','PROJECT'], ColSelect=1) # guess a Name column -- which is the source name
-
-if len(Cat_Name) == 0:
-    Cat_Name = Cat_ID.astype(str)
+    Cat_Name, Cat_Name_Column = Cat.col(ColName=['OBJECT','PROJECT'], ColSelect=1, ReturnColName=True) # guess a Name column -- which is the source name
 
 if "Image" in Input_Columns:
     Cat_Image = Cat.TableData.field(Input_Columns["Image"])
+    Cat_Image_Column = Input_Columns["Image"]
 else:
-    Cat_Image = Cat.col(ColName=['Image','ALMA_IMAGE','image_name'], ColSelect=1) # guess an Image column
+    Cat_Image, Cat_Image_Column = Cat.col(ColName=['Image','ALMA_IMAGE','image_name'], ColSelect=1, ReturnColName=True) # guess an Image column
+
+
+#if len(Cat_ID) == 0:
+#    if len(Cat_Image) > 0:
+#        Cat_ID = numpy.arange(1,len(Cat_Image)+1)
+#        Cat_ID_Column = Cat_ID_Column
+#        if len(Cat_Name) == 0:
+#            Cat_Name = Cat_ID.astype(str)
+#            Cat_Name_Column = Cat_ID_Column
+#
+#if len(Cat_Name) == 0:
+#    Cat_Name = []
+#    if len(Cat_Image) > 0:
+#        for i in range(len(Cat_Image)):
+#            Cat_Name.append(Cat_Image[i].)
+#    elif len(Cat_ID) > 0:
+#        Cat_Name = Cat_ID.astype(str)
+#        Cat_Name_Column = Cat_ID_Column
+#    else:
+#        print('')
+#        print('*******************************************************************************')
+#        print('Error! Could not determine ID column from the input catalog!')
+#        print('*******************************************************************************')
+#        print('')
+#
+if len(Cat_Name) == 0:
+    if len(Cat_ID) > 0:
+        Cat_Name = []
+        Cat_Name_Column = Cat_ID_Column
+        for i in range(0,len(Cat_ID)):
+            Cat_Name.append('%s_%s'%(Cat_ID_Column, Cat_ID[i])) # use 'ID_Column'+'_'+ID as the source name
+
 
 if "RA" in Input_Columns:
     Cat_RA = Cat.TableData.field(Input_Columns["RA"])
@@ -965,6 +1044,66 @@ if "zphot" in Input_Columns:
     Cat_zphot_Column = Input_Columns["zphot"]
 else:
     Cat_zphot, Cat_zphot_Column = Cat.zphot(ReturnColName=True) # guess a zphot column
+
+if ("Maj_convol" in Input_Columns and "Min_convol" in Input_Columns and "PA_convol" in Input_Columns):
+    Cat_Maj_convol = Cat.TableData.field(Input_Columns["Maj_convol"])
+    Cat_Maj_convol_Column = Input_Columns["Maj_convol"]
+    Cat_Min_convol = Cat.TableData.field(Input_Columns["Min_convol"])
+    Cat_Min_convol_Column = Input_Columns["Min_convol"]
+    Cat_PA_convol = Cat.TableData.field(Input_Columns["PA_convol"])
+    Cat_PA_convol_Column = Input_Columns["PA_convol"]
+    Do_Source_Size_Convolution = False
+elif ("AXRATIO" in Input_Columns and "MINAX" in Input_Columns and "POSANG" in Input_Columns):
+    # if user input "AXRATIO", "MINAX", and "POSANG", i.e., according to Alex Karim's catalog, 
+    # we consider it as convolved (apparent) source sizes and compute Maj axis size from AXRATIO * MINAX.
+    Cat_Maj_convol = Cat.TableData.field(Input_Columns["AXRATIO"]).astype(float) * Cat.TableData.field(Input_Columns["MINAX"]).astype(float)
+    Cat_Maj_convol_Column = Input_Columns["AXRATIO"] + ' * ' + Input_Columns["MINAX"]
+    Cat_Min_convol = Cat.TableData.field(Input_Columns["MINAX"]).astype(float)
+    Cat_Min_convol_Column = Input_Columns["MINAX"]
+    Cat_PA_convol = Cat.TableData.field(Input_Columns["POSANG"]).astype(float)
+    Cat_PA_convol_Column = Input_Columns["POSANG"]
+    Do_Source_Size_Convolution = False
+elif ("Maj_deconv" in Input_Columns and "Min_deconv" in Input_Columns and "PA_deconv" in Input_Columns):
+    Cat_Maj_deconv = Cat.TableData.field(Input_Columns["Maj_deconv"])
+    Cat_Maj_deconv_Column = Input_Columns["Maj_deconv"]
+    Cat_Min_deconv = Cat.TableData.field(Input_Columns["Min_deconv"])
+    Cat_Min_deconv_Column = Input_Columns["Min_deconv"]
+    Cat_PA_deconv = Cat.TableData.field(Input_Columns["PA_deconv"])
+    Cat_PA_deconv_Column = Input_Columns["PA_deconv"]
+    Do_Source_Size_Convolution = True
+elif ("Maj" in Input_Columns and "Min" in Input_Columns and "PA" in Input_Columns):
+    # if user input "Maj", "Min", and "PA", we consider it as deconvolved (intrinsic) source sizes
+    Cat_Maj_deconv = Cat.TableData.field(Input_Columns["Maj"])
+    Cat_Maj_deconv_Column = Input_Columns["Maj"]
+    Cat_Min_deconv = Cat.TableData.field(Input_Columns["Min"])
+    Cat_Min_deconv_Column = Input_Columns["Min"]
+    Cat_PA_deconv = Cat.TableData.field(Input_Columns["PA"])
+    Cat_PA_deconv_Column = Input_Columns["PA"]
+    Do_Source_Size_Convolution = True
+else:
+    Cat_Maj_deconv, Cat_Min_deconv, Cat_PA_deconv, Cat_Maj_deconv_Column, Cat_Min_deconv_Column, Cat_PA_deconv_Column = Cat.source_morphology(ReturnColName=True) # guess source morphology columns
+    if Cat_Maj_deconv is None or Cat_Min_deconv is None or Cat_PA_deconv is None:
+        print('Error! Could not determine source morphology columns from the input catalog!')
+        sys.exit()
+    Do_Source_Size_Convolution = True
+
+if ("Maj_beam" in Input_Columns and "Min_beam" in Input_Columns and "PA_beam" in Input_Columns):
+    Cat_Maj_beam = Cat.TableData.field(Input_Columns["Maj_beam"])
+    Cat_Maj_beam_Column = Input_Columns["Maj_beam"]
+    Cat_Min_beam = Cat.TableData.field(Input_Columns["Min_beam"])
+    Cat_Min_beam_Column = Input_Columns["Min_beam"]
+    Cat_PA_beam = Cat.TableData.field(Input_Columns["PA_beam"])
+    Cat_PA_beam_Column = Input_Columns["PA_beam"]
+elif Do_Source_Size_Convolution:
+    Cat_Maj_beam, Cat_Min_beam, Cat_PA_beam, Cat_Maj_beam_Column, Cat_Min_beam_Column, Cat_PA_beam_Column = Cat.telescope_beam(ReturnColName=True) # guess beam morphology columns
+    if Cat_Maj_beam is None or Cat_Min_beam is None or Cat_PA_beam is None:
+        print('')
+        print('*******************************************************************************')
+        print('Error! Could not determine beam morphology columns from the input catalog!')
+        print('*******************************************************************************')
+        print('')
+        sys.exit()
+    # we will do source size convolution inside the loop (see below)
 
 
 #
@@ -1006,13 +1145,24 @@ for i in range(len(Cat.TableData)):
                     break
         if "ID" in Input_Filter:
             if type(Input_Filter["ID"]) is str:
-                Input_Filter_IDs = parseIntSet(Input_Filter["ID"])
+                Input_Filter_IDs = parseIntSet(Input_Filter["ID"]) # parseIntSet is a function in python_lib_highz
             elif type(Input_Filter["ID"]) is list:
                 Input_Filter_IDs = Input_Filter["ID"]
             else:
                 Input_Filter_IDs = [Input_Filter["ID"]]
             if len(Cat_ID) > i:
                 if Cat_ID[i] not in Input_Filter_IDs:
+                    Flag_Skip = True
+                    break
+        if "index" in Input_Filter:
+            if type(Input_Filter["index"]) is str:
+                Input_Filter_IDs = parseIntSet(Input_Filter["index"]) # parseIntSet is a function in python_lib_highz
+            elif type(Input_Filter["index"]) is list:
+                Input_Filter_IDs = Input_Filter["index"]
+            else:
+                Input_Filter_IDs = [Input_Filter["index"]]
+            if len(Input_Filter_IDs) > 0:
+                if i not in Input_Filter_IDs:
                     Flag_Skip = True
                     break
     
@@ -1027,48 +1177,12 @@ for i in range(len(Cat.TableData)):
     
     
     # 
-    # Read Source Morphology
-    # 
-    Source_Maj = numpy.nan
-    Source_Min = numpy.nan
-    Source_PA = numpy.nan
-    if 'FWHM_MAJ_FIT' in Cat.TableHeaders and \
-       'FWHM_MIN_FIT' in Cat.TableHeaders and \
-       'POSANG_FIT' in Cat.TableHeaders and \
-       'MINAX_BEAM' in Cat.TableHeaders and \
-       'AXRATIO_BEAM' in Cat.TableHeaders and \
-       'POSANG_BEAM' in Cat.TableHeaders:
-        Source_Maj = float(Cat.TableData[i].field('FWHM_MAJ_FIT'))
-        Source_Min = float(Cat.TableData[i].field('FWHM_MIN_FIT'))
-        Source_PA = float(Cat.TableData[i].field('POSANG_FIT'))
-        beam_maj = float(Cat.TableData[i].field('MINAX_BEAM')) * float(Cat.TableData[i].field('AXRATIO_BEAM'))
-        beam_min = float(Cat.TableData[i].field('MINAX_BEAM'))
-        beam_pa = float(Cat.TableData[i].field('POSANG_BEAM'))
-        # prevent source size too small
-        if Source_Maj*Source_Min < beam_maj*beam_min:
-            Source_Maj = beam_maj
-            Source_Min = beam_min
-            Source_PA = beam_pa
-    else:
-        Source_Maj_deconv, Source_Min_deconv, Source_PA_deconv = Cat.source_morphology(i)
-        beam_maj, beam_min, beam_pa = Cat.telescope_beam(i)
-        Source_Maj, Source_Min, Source_PA = convolve_2D_Gaussian_Maj_Min_PA(Source_Maj_deconv, Source_Min_deconv, Source_PA_deconv, beam_maj, beam_min, beam_pa)
-    # 
-    if Source_Maj != Source_Maj or Source_Min != Source_Min or Source_PA != Source_PA:
-        print("")
-        print("Error! Could not find appropriate columns in the input topcat cross-matched catalog!")
-        print("We need 'FWHM_MAJ_FIT', 'FWHM_MIN_FIT', 'POSANG_FIT', 'MINAX_BEAM', 'AXRATIO_BEAM', 'POSANG_BEAM', etc.")
-        print("Abort!")
-        print("")
-        sys.exit()
-    
-    
-    
-    # 
     # Read Source info from Alex Karim's Blind Extraction Catalog
     # 
     Source_Name = Cat_Name[i].strip()
+    Source_Name_Column = Cat_Name_Column
     Source_Image = Cat_Image[i].strip()
+    Source_Image_Column = Cat_Image_Column
     Source_ID = Cat_ID[i]
     Source_ID_Column = Cat_ID_Column
     Source_SubID = 0
@@ -1084,6 +1198,127 @@ for i in range(len(Cat.TableData)):
         Source_Name = Cat.TableData[i].field('PROJECT').strip()+'--'+Cat.TableData[i].field('OBJECT').strip()
     if 'SUBID_TILE' in Cat.TableHeaders:
         Source_SubID = Cat.TableData[i].field('SUBID_TILE')
+    
+    print('Process Index: %s'%(i))
+    print('Process Number: %s'%(i+1))
+    print('Source ID: %s'%(Source_ID))
+    print('Source ID Column: %s'%(Source_ID_Column))
+    print('Source Name: %s'%(Source_Name))
+    print('Source Name Column: %s'%(Source_Name_Column))
+    print('Source Image: %s'%(Source_Image))
+    print('Source Image Column: %s'%(Source_Image_Column))
+    
+    
+    
+    # 
+    # Read Source Morphology
+    # 
+    Source_Maj = numpy.nan
+    Source_Min = numpy.nan
+    Source_PA = numpy.nan
+    Beam_Maj = numpy.nan
+    Beam_Min = numpy.nan
+    Beam_PA = numpy.nan
+    
+    # 
+    # check beam sizes
+    print('Beam Morphology Columns: %s %s %s'%(Cat_Maj_beam_Column, Cat_Min_beam_Column, Cat_PA_beam_Column))
+    Beam_Maj = Cat_Maj_beam[i]
+    Beam_Min = Cat_Min_beam[i]
+    Beam_PA = Cat_PA_beam[i]
+    if numpy.isnan(Beam_Maj) or numpy.isnan(Beam_Min) or numpy.isnan(Beam_PA):
+        print('')
+        print('*******************************************************************************')
+        print('Warning! The Beam morphological parameters contain NaN!')
+        print('*******************************************************************************')
+        print('')
+        if Input_Continue_On_Error:
+            continue
+        else:
+            sys.exit()
+    
+    # 
+    # check source sizes
+    if Do_Source_Size_Convolution:
+        # check source deconv. sizes
+        print('Source Morphology Columns: %s %s %s'%(Cat_Maj_deconv_Column, Cat_Min_deconv_Column, Cat_PA_deconv_Column))
+        Source_Maj_deconv = Cat_Maj_deconv[i]
+        Source_Min_deconv = Cat_Min_deconv[i]
+        Source_PA_deconv = Cat_PA_deconv[i]
+        if numpy.isnan(Source_Maj_deconv) or numpy.isnan(Source_Min_deconv) or numpy.isnan(Source_PA_deconv):
+            print('')
+            print('*******************************************************************************')
+            print('Error! Source morphological parameters contain NaN!')
+            print('*******************************************************************************')
+            print('')
+            if Input_Continue_On_Error:
+                continue
+            else:
+                sys.exit()
+        else:
+            Source_Maj, Source_Min, Source_PA = convolve_2D_Gaussian_Maj_Min_PA(Source_Maj_deconv, Source_Min_deconv, Source_PA_deconv, Beam_Maj, Beam_Min, Beam_PA)
+    else:
+        # check source convol. sizes
+        print('Source Morphology Columns: %s %s %s'%(Cat_Maj_convol_Column, Cat_Min_convol_Column, Cat_PA_convol_Column))
+        Source_Maj = Cat_Maj_convol_beam[i]
+        Source_Min = Cat_Min_convol_beam[i]
+        Source_PA = Cat_PA_convol_beam[i]
+        if numpy.isnan(Source_Maj) or numpy.isnan(Source_Min) or numpy.isnan(Source_PA):
+            print('')
+            print('*******************************************************************************')
+            print('Error! Source morphological parameters contain NaN!')
+            print('*******************************************************************************')
+            print('')
+            if Input_Continue_On_Error:
+                continue
+            else:
+                sys.exit()
+        else:
+            # check source sizes not smaller than beam sizes
+            if Source_Maj*Source_Min < Beam_Maj*Beam_Min:
+                Source_Maj = Beam_Maj
+                Source_Min = Beam_Min
+                Source_PA = Beam_PA
+    
+    
+    #if 'FWHM_MAJ_FIT' in Cat.TableHeaders and \
+    #   'FWHM_MIN_FIT' in Cat.TableHeaders and \
+    #   'POSANG_FIT' in Cat.TableHeaders and \
+    #   'MINAX_BEAM' in Cat.TableHeaders and \
+    #   'AXRATIO_BEAM' in Cat.TableHeaders and \
+    #   'POSANG_BEAM' in Cat.TableHeaders:
+    #    Source_Maj = float(Cat.TableData[i].field('FWHM_MAJ_FIT'))
+    #    Source_Min = float(Cat.TableData[i].field('FWHM_MIN_FIT'))
+    #    Source_PA = float(Cat.TableData[i].field('POSANG_FIT'))
+    #    beam_maj = float(Cat.TableData[i].field('MINAX_BEAM')) * float(Cat.TableData[i].field('AXRATIO_BEAM'))
+    #    beam_min = float(Cat.TableData[i].field('MINAX_BEAM'))
+    #    beam_pa = float(Cat.TableData[i].field('POSANG_BEAM'))
+    #    # prevent source size too small
+    #    if Source_Maj*Source_Min < beam_maj*beam_min:
+    #        Source_Maj = beam_maj
+    #        Source_Min = beam_min
+    #        Source_PA = beam_pa
+    # 
+    #if Source_Maj != Source_Maj or Source_Min != Source_Min or Source_PA != Source_PA:
+    #    print("")
+    #    print("Error! Could not find appropriate columns in the input topcat cross-matched catalog, or the data are invalid!")
+    #    print("We need 'FWHM_MAJ_FIT', 'FWHM_MIN_FIT', 'POSANG_FIT', 'MINAX_BEAM', 'AXRATIO_BEAM', 'POSANG_BEAM', etc.")
+    #    print("Abort!")
+    #    print("")
+    #    sys.exit()
+    
+    
+    
+    # 
+    # Prepare Cutout_Dir
+    # 
+    Source_Dir = Output_Dir + os.sep + Output_Prefix + '%d'%(i+1) + Output_Sep + Source_Name + Output_Suffix
+    Cutout_Dir = Source_Dir + os.sep + 'cutouts'
+    if not os.path.isdir(Cutout_Dir):
+        os.makedirs(Cutout_Dir)
+    
+    print('Source Directory: "%s"'%(Source_Dir))
+    print('Cutout Directory: "%s"'%(Cutout_Dir))
     
     
     
@@ -1129,42 +1364,45 @@ for i in range(len(Cat.TableData)):
     
     
     # 
-    # Prepare Cutout_Dir
-    # 
-    Source_Dir = Output_Dir + os.sep + Output_Prefix + '%d'%(i+1) + Output_Sep + Cat_ID_Column + Output_Sep + Source_Name
-    Cutout_Dir = Source_Dir + os.sep + 'cutouts'
-    if not os.path.isdir(Cutout_Dir):
-        os.makedirs(Cutout_Dir)
-    
-    
-    
-    # 
     # Prepare optical/near-infrared cutouts and copy to Cutout_Dir
     # 
     Cutout_Files = []
     
-    for Cutout_Band in ['UVISTA_K', 'ACS_i', 'VLA_3GHz']:
+    Cutout_Bands = ['UVISTA_K', 'ACS_i', 'VLA_3GHz', 'IRAC_ch1'] # []
+    
+    for Cutout_Band in Cutout_Bands:
         
         Cutout_Name = Cutout_Band
         Cutout_File = Cutout_Dir + os.sep + Cutout_Name + '.cutout.fits'
         
         if not os.path.isfile(Cutout_File):
-            Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
-            print('\nRunning ' + Cutout_downloading_command)
+            if Cutout_Band == 'UVISTA_K' or Cutout_Band == 'ACS_i' or Cutout_Band == 'VLA_3GHz':
+                Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
+            else:
+                Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_local.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
+            print('')
+            print('Running ' + Cutout_downloading_command)
             Cutout_downloading_command = 'echo "{0}"; echo ""; {1}'.format(Cutout_downloading_command.replace('\"','\\\"'), Cutout_downloading_command)
-            print('\nRunning ' + Cutout_downloading_command)
+            print('')
+            print('Running ' + Cutout_downloading_command)
             Cutout_downloading_subprocess = subprocess.Popen(Cutout_downloading_command, shell=True, stdout=open(Cutout_File + '.log', 'w'))
             Cutout_downloading_errcode = Cutout_downloading_subprocess.wait()
             #shutil.copy2()
         
         if os.path.isfile(Cutout_File):
-            print('\nCutout_Files.append("%s")'%(Cutout_File))
+            print('')
+            print('Cutout_Files.append("%s")'%(Cutout_File))
             Cutout_Files.append(Cutout_File)
         else:
-            print('\nError! Failed to run "%s"! Please check log file "%s"!'%(Cutout_downloading_command, Cutout_File + '.log'))
-            print('\n')
-            continue
-            #sys.exit()
+            print('')
+            print('*******************************************************************************')
+            print('Error! Failed to run "%s"! Please check log file "%s"!'%(Cutout_downloading_command, Cutout_File + '.log'))
+            print('*******************************************************************************')
+            print('')
+            if Input_Continue_On_Error:
+                continue
+            else:
+                sys.exit()
     
     
     # 
@@ -1182,9 +1420,11 @@ for i in range(len(Cat.TableData)):
     
     if not os.path.isfile(Cutout_Dir + os.sep + 'ALMA.cutout.fits'):
         Cutout_downloading_command = 'cp \"{0}\" \"{1}\"'.format(ALMA_data_dir + os.sep + Source_Image, Cutout_Dir + os.sep + 'ALMA.cutout.fits')
-        print('\nRunning ' + Cutout_downloading_command)
+        print('')
+        print('Running ' + Cutout_downloading_command)
         Cutout_downloading_command = 'echo "{0}"; echo ""; {1}'.format(Cutout_downloading_command.replace('\"','\\\"'), Cutout_downloading_command)
-        print('\nRunning ' + Cutout_downloading_command)
+        print('')
+        print('Running ' + Cutout_downloading_command)
         Cutout_downloading_subprocess = subprocess.Popen(Cutout_downloading_command, shell=True, stdout=open(Cutout_Dir + os.sep + 'ALMA.cutout.fits.log', 'w'))
         Cutout_downloading_errcode = Cutout_downloading_subprocess.wait()
         #shutil.copy2()
@@ -1194,8 +1434,15 @@ for i in range(len(Cat.TableData)):
         #Cutout_Files.append(Cutout_Dir + os.sep + 'ALMA.cutout.fits')
         pass
     else:
+        print('')
+        print('*******************************************************************************')
         print('Error! Failed to run %s! Please check log file "%s"!'%(Cutout_downloading_subprocess, Cutout_Dir + os.sep + 'ALMA.cutout.fits.log'))
-        sys.exit()
+        print('*******************************************************************************')
+        print('')
+        if Input_Continue_On_Error:
+            continue
+        else:
+            sys.exit()
     
     
     
@@ -1223,7 +1470,7 @@ for i in range(len(Cat.TableData)):
             Separation = Source_separation, 
         )
         IDX.about()
-        IDX.match_morphology(Overwrite=Overwrite, OutputDir=Source_Dir, OutputName=str(i))
+        IDX.match_morphology(Overwrite=Overwrite, OutputDir=Source_Dir, OutputName=str(i+1))
         # 
         #break
     

@@ -26,11 +26,10 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from pprint import pprint
 from copy import copy
-
-#import warnings
-
-#warnings.filterwarnings("ignore",".*GUI is implemented.*")
-
+from astropy.utils.exceptions import AstropyWarning, AstropyUserWarning
+import warnings
+#warnings.simplefilter('ignore', category=AstropyUserWarning)
+warnings.simplefilter('ignore', category=AstropyWarning)
 
 
 

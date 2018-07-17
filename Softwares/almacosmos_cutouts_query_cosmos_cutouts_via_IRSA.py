@@ -13,13 +13,27 @@ from astropy.nddata import Cutout2D
 from astropy.io.fits import Header
 from copy import copy
 from pprint import pprint
-import binascii
-import requests_toolbelt # pip install --user requests-toolbelt
-from requests_toolbelt.multipart.decoder import MultipartDecoder # https://pypi.org/project/requests-toolbelt/
+#import binascii
 #from regions import DS9Parser, read_ds9, write_ds9
 
-import requests
+import six
+bytes_to_hex_str = lambda bb: ''.join('%02x'%(tt) for tt in six.iterbytes(bb)).upper() # print bytes as hex
+string_to_hex_str = lambda bb: ''.join('%02x'%(ord(tt)) for tt in six.iterbytes(bb)).upper() # print string as hex
+def check_non_ascii(input_bytes):
+    # check if a byte array contains non ascii char
+    for input_char in input_bytes:
+        #print('%02x'%(input_char))
+        if input_char == 0 or input_char > 128:
+            #print('%02x found in "%s"'%(input_char, input_bytes))
+            return True
+    return False
 
+import requests
+import requests_toolbelt # pip install --user requests-toolbelt
+from requests_toolbelt.multipart.decoder import MultipartDecoder # https://pypi.org/project/requests-toolbelt/
+
+
+# Initialize
 Source_Coordinate_Box = {
                             'RA': numpy.nan, 
                             'Dec': numpy.nan, 
@@ -39,10 +53,10 @@ Output_Name = ''
 Cutout_Field = 'COSMOS'
 Cutout_Band = ''
 Image_Urls = {
-                'COSMOS_UVISTA_J':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
+                'COSMOS_UVISTA_J':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.J.UV_original_psf.v1.fits',  
                 'COSMOS_UVISTA_H':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
-                'COSMOS_UVISTA_K':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
-                'COSMOS_UVISTA_Y':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.H.UV_original_psf.v1.fits',  
+                'COSMOS_UVISTA_K':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.K.UV_original_psf.v1.fits',  
+                'COSMOS_UVISTA_Y':  'http://irsa.ipac.caltech.edu/data/COSMOS/images/Ultra-Vista/mosaics/COSMOS.Y.UV_original_psf.v1.fits',  
                 'COSMOS_ACS_i':     'http://irsa.ipac.caltech.edu/data/COSMOS/images/acs_mosaic_2.0/mosaic_Shrink10.fits',  
                 'COSMOS_ACS_F814W': 'http://irsa.ipac.caltech.edu/data/COSMOS/images/acs_mosaic_2.0/mosaic_Shrink10.fits',  
                 'COSMOS_VLA_3GHz':  'https://irsa.ipac.caltech.edu/data/COSMOS/images/vla/vla_3ghz_msmf.fits', 
@@ -78,9 +92,9 @@ while i < len(sys.argv):
         if i+1 < len(sys.argv):
             Output_Name = sys.argv[i+1]
             if Output_Name.endswith('.cutout.fits'):
-                Output_Name = Output_Name.replace('.cutout.fits','')
+                Output_Name = ''.join(Output_Name.rsplit('.cutout.fits',1)) # replace the last pattern
             elif Output_Name.endswith('.fits'):
-                Output_Name = Output_Name.replace('.fits','')
+                Output_Name = ''.join(Output_Name.rsplit('.fits',1)) # replace the last pattern
             i = i + 1
     elif tmp_arg == '-field':
         if i+1 < len(sys.argv):
@@ -129,9 +143,9 @@ else:
     sys.exit()
 
 if Output_Name == '':
-    Output_Name = Http_Request_Url.split("/")[-1].replace('.fits','')
-elif Output_Name.find('.fits') > 0:
-    Output_Name = Output_Name.replace('.fits','')
+    Output_Name = Http_Request_Url.split("/")[-1]
+if Output_Name.find('.fits') > 0:
+    Output_Name = ''.join(Output_Name.rsplit('.fits',1)) # replace the last pattern
 
 # Print Settings
 print('Http_Request_Url = %s'%(Http_Request_Url))
@@ -167,27 +181,33 @@ if not os.path.isfile(Header_Cache_Txt) or Overwrite_Level >= 2:
     # 
     Http_Request_Offset = 0
     Http_Request_Length = 2880 # 80*36, 36 lines of the FITS header
-    Http_Request_Content = '' # to store FITS header
+    #Http_Request_Content = '' # to store FITS header
     Flag_END = False # whether we have read the END mark
     FITS_Header_Length1 = 0
     FITS_Header_Length2 = 0
     # 
     with open(Header_Cache_Txt, 'w') as fp:
         while Http_Request_Offset < int(Http_Request_Head.headers['Content-Length']):
-            Http_Request_Range = {'Range': 'bytes=%d-%d'%(Http_Request_Offset, Http_Request_Offset+Http_Request_Length)}
+            Http_Request_Range = {'Range': 'bytes=%d-%d'%(Http_Request_Offset, Http_Request_Offset+Http_Request_Length-1)}
+            print('')
             print(Http_Request_Range)
             Http_Request_Get = requests.get(Http_Request_Url, headers=Http_Request_Range)
-            print(Http_Request_Get)
+            #print(Http_Request_Get)
             if Http_Request_Get.status_code == 206:
-                Http_Request_Content = Http_Request_Get.text
+                Http_Request_Content = Http_Request_Get.content # Http_Request_Get.text
                 for i in range(0,len(Http_Request_Content),80):
-                    if ord(Http_Request_Content[i]) == 0 or ord(Http_Request_Content[i]) >= 128:
+                    try:
+                        print('Http_Request_Content[%d:%d] = %s | %s (non-ASCII = %s)'%(Http_Request_Offset+i, Http_Request_Offset+i+80, bytes_to_hex_str(Http_Request_Content[i:i+4]), Http_Request_Content[i:i+80].decode("utf-8").rstrip(), check_non_ascii(Http_Request_Content[i:i+80]) ) )
+                    except:
+                        print('Http_Request_Content[%d:%d] = %s | %s (non-ASCII = %s)'%(Http_Request_Offset+i, Http_Request_Offset+i+80, bytes_to_hex_str(Http_Request_Content[i:i+4]), Http_Request_Content[i:i+80], check_non_ascii(Http_Request_Content[i:i+80]) ) )
+                    # 
+                    if check_non_ascii(Http_Request_Content[i:i+80]):
                         FITS_Header_Length2 = Http_Request_Offset + i
                         break
-                    elif Http_Request_Content[i:i+80].rstrip() == 'END':
+                    elif Http_Request_Content[i:i+80].decode("utf-8").rstrip() == 'END':
                         Flag_END = True
                         FITS_Header_Length1 = Http_Request_Offset + i + 80
-                    fp.write(Http_Request_Content[i:i+80]+'\n')
+                    fp.write(Http_Request_Content[i:i+80].decode("utf-8")+'\n')
             elif Http_Request_Get.status_code == 200:
                 print('Error! Remote server does not support Http Range request!')
                 with open(Output_Name+'.header.http.request.json', 'w') as jfp:
@@ -199,13 +219,13 @@ if not os.path.isfile(Header_Cache_Txt) or Overwrite_Level >= 2:
                     json.dump({'Http_Request_Offset': Http_Request_Offset, 'Http_Request_Length': Http_Request_Length}, jfp)
                 sys.exit()
             # 
-            if Flag_END:
+            if Flag_END and FITS_Header_Length2 > 0:
                 if os.path.isfile(Output_Name+'.header.http.request.json'):
                     os.remove(Output_Name+'.header.http.request.json')
                 break
             # 
             Http_Request_Offset = Http_Request_Offset + Http_Request_Length
-            Http_Request_Content = ''
+            #Http_Request_Content = ''
     # 
     with open(Header_Cache_Json, 'w') as jfp:
         json.dump({'FITS_Header_Length': FITS_Header_Length2, 'FITS_Total_Length': int(Http_Request_Head.headers['Content-Length'])}, jfp)
@@ -215,6 +235,8 @@ if not os.path.isfile(Header_Cache_Txt) or Overwrite_Level >= 2:
 
 if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
     # 
+    print('')
+    print('')
     print('Prepare to download '+Output_Name+'.cutout.fits')
     with open(Header_Cache_Json, 'r') as jfp:
         # 
@@ -257,8 +279,6 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
         # print x y
         print('Source PX = %s [pix]'%(Source_Coordinate_Box['PX']))
         print('Source PY = %s [pix]'%(Source_Coordinate_Box['PY']))
-        print('Source DX = %s [pix]'%(Source_Coordinate_Box['DX']))
-        print('Source DY = %s [pix]'%(Source_Coordinate_Box['DY']))
         
         # 
         # check x y
@@ -289,6 +309,11 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
             Source_Coordinate_Box['DY'] = numpy.abs(Source_Coordinate_Box['FoV'] / FITS_Pixel_Scale[1])
         
         # 
+        # print dx dy
+        print('Source DX = %s [pix]'%(Source_Coordinate_Box['DX']))
+        print('Source DY = %s [pix]'%(Source_Coordinate_Box['DY']))
+        
+        # 
         # check x y
         if Source_Coordinate_Box['PX']-Source_Coordinate_Box['DX']<1:
             print('Error! Cutout lower x coordinate < 1!')
@@ -309,14 +334,16 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
         Source_Coordinate_Box['Cutout_UpperX'] = int(Source_Coordinate_Box['PX'] + Source_Coordinate_Box['DX']/2.0)
         Source_Coordinate_Box['Cutout_LowerY'] = int(Source_Coordinate_Box['PY'] - Source_Coordinate_Box['DY']/2.0)
         Source_Coordinate_Box['Cutout_UpperY'] = int(Source_Coordinate_Box['PY'] + Source_Coordinate_Box['DY']/2.0)
-        pprint(FITS_Header_WCS.calc_footprint())
+        sys.stdout.write('FITS_Header_WCS.calc_footprint() = ') # print()
+        pprint(FITS_Header_WCS.calc_footprint(), indent=4)
         FITS_Header_WCS.footprint_to_file(Output_Name+'.cutout.footprint.ds9.reg', color='green', width=2)
         #with open(Output_Name+'.cutout.footprint.json', 'w') as jfp:
         #    json.dump(FITS_Header_WCS.calc_footprint().tolist(), jfp)
         #print(FITS_Header_Object['NAXIS1'])
         #cutout = Cutout2D(pf[0].data, position, size, wcs=wcs)
-        pprint('Source_Coordinate_Box = %s'%(Source_Coordinate_Box))
-            
+        sys.stdout.write('Source_Coordinate_Box = ') # print()
+        pprint(Source_Coordinate_Box, indent=4)
+        
         # 
         # Prepare new fits header and write to fits file
         FITS_Header_Object2 = copy(FITS_Header_Object)
@@ -355,7 +382,8 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
             
             #Http_Request_Range['Transfer-Length'] = '%d'%(Cutout_Data_Length)
             
-            pprint(Http_Request_Range)
+            sys.stdout.write('Http_Request_Range = ') # print()
+            pprint(Http_Request_Range, indent=4)
             
             # 
             # Http request get -- partially get byte ranges -- then append to fits file
@@ -402,8 +430,8 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
                         json.dump(Http_Request_Range, jfp)
                     os.system('rm '+Output_Name+'.cutout.fits')
                     sys.exit()
-    
-    
+    print('')
+    print('Output to "'+Output_Name+'.cutout.fits"!')
 
 
 
