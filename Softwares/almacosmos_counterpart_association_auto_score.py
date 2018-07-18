@@ -1390,7 +1390,7 @@ for i in range(len(Cat.TableData)):
                 Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA_Cutouts_Service.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
             elif Cutout_Band == 'VLA_3GHz':
                 Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
-            elif Cutout_Band.startswith('UVISTA_'):
+            elif Cutout_Band.startswith('UVISTA_') or Cutout_Band.startswith('IRAC_'):
                 Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS_INT" -Band "%s" -out "%s" -http-user-name "%s" -http-user-pass "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File, Http_User_Name, Http_User_Pass)
             else:
                 Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_local.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
