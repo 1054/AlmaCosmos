@@ -1423,8 +1423,15 @@ for i in range(len(Cat.TableData)):
     # Prepare ALMA cutouts and copy to Cutout_Dir
     # 
     #ALMA_meta_table = '/Users/dzliu/Work/AlmaCosmos/Catalogs/A3COSMOS/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
-    ALMA_meta_table = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
-    ALMA_data_dir = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_cont_I_image'
+    if os.path.isdir('/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/'):
+        ALMA_meta_table = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
+        ALMA_data_dir = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_cont_I_image'
+    elif os.path.isdir('/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102'):
+        ALMA_meta_table = '/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
+        ALMA_data_dir = '/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102/fits_cont_I_image'
+    else:
+        print('Error! Could not find ALMA data directory! *** TODO ***')
+        sys.exit()
     
     #if not os.path.isfile(Cutout_Dir + os.sep + 'ALMA_image_list.txt'):
     #    Cutout_downloading_command = 'almacosmos_recognize_Source_in_fits_meta_table.py %s %s "%s"'%(Source_RA, Source_Dec, ALMA_meta_table)
