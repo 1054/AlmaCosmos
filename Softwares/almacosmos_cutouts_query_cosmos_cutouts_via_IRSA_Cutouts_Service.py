@@ -126,8 +126,9 @@ if Output_Name == '':
     Output_Name = Image_Name.split("/")[-1]
 if Output_Name.find('.fits') > 0:
     Output_Name = ''.join(Output_Name.rsplit('.fits',1)) # replace the last pattern
-if not os.path.isdir(os.path.dirname(Output_Name)):
-    os.makedirs(os.path.dirname(Output_Name))
+if Output_Name.find(os.sep)>=0:
+    if not os.path.isdir(os.path.dirname(Output_Name)):
+        os.makedirs(os.path.dirname(Output_Name))
 
 # Print Settings
 print('Image_Name = %s'%(Image_Name))
