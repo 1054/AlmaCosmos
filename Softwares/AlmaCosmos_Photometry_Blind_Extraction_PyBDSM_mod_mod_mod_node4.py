@@ -353,8 +353,8 @@ for i in range(len(input_fits_files)):
     # in default 'bdsf' will create a '*.pybdsf.log' at the input fits file directory
     if os.access(os.path.dirname(input_fits_file), os.W_OK):
         #os.system('mv "%s" "%s"'%(os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log')))
-        if os.path.isfile(output_dir+os.sep+os.path.basename(input_fits_file)+'.pybdsf.log'):
-            shutil.move(output_dir+os.sep+os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log'))
+        if os.path.isfile(os.path.dirname(input_fits_file)+os.sep+os.path.basename(input_fits_file)+'.pybdsf.log'):
+            shutil.move(os.path.dirname(input_fits_file)+os.sep+os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log'))
         elif os.path.isfile(os.path.basename(input_fits_file)+'.pybdsf.log'):
             shutil.move(os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log'))
         else:
