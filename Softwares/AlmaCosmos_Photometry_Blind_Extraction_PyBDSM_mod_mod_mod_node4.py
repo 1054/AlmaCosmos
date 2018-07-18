@@ -358,7 +358,7 @@ for i in range(len(input_fits_files)):
         elif os.path.isfile(os.path.basename(input_fits_file)+'.pybdsf.log'):
             shutil.move(os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log'))
         else:
-            shutil.move(output_dir+os.sep+os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log'))
+            shutil.move(os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log'))
     else:
         logfilepath2 = input_fits_file
         #os.system('mv "%s" "%s"'%(logfilepath2.replace(os.sep,'.')+'.pybdsf.log', output_log.replace('.log','.pybdsf.log')))
