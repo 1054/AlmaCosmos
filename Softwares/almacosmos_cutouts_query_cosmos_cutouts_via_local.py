@@ -182,6 +182,8 @@ with open(Output_Name+'.cutout.ds9.reg','w') as fp:
 if not os.path.isfile(Header_Cache_Txt) or not os.path.isfile(Header_Cache_Json):
     Header_Cache_Txt = Output_Name+'.header.txt'
     Header_Cache_Json = Output_Name+'.header.json'
+    if os.path.isfile(Header_Cache_Txt):
+        os.remove(Header_Cache_Txt)
     # we need fits headers to determine how many bytes to shift 
     # if we have not downloaded the fits header files before, then download the into target directory.
 
