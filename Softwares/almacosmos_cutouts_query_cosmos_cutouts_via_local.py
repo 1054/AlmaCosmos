@@ -427,7 +427,8 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
                 # Padding LowerY
                 if Source_Coordinate_Box['Cutout_LowerY_Padding'] > 0:
                     for k in range(Source_Coordinate_Box['Cutout_LowerY_Padding'] * FITS_Header_Object2['NAXIS1']):
-                        fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                        #fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                        fp.write(bytearray.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
                 
                 # Downloading main image area
                 while Download_loop <= Source_Coordinate_Box['Cutout_UpperY_Mapping']:
@@ -461,18 +462,21 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
                         # Padding LowerX
                         if Source_Coordinate_Box['Cutout_LowerX_Padding'] > 0:
                             for kb in range(Source_Coordinate_Box['Cutout_LowerX_Padding']):
-                                fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                                #fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                                fp.write(bytearray.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
                         # Writting main image area
                         lfp.seek(Local_Request_Range['Range1'][k], 0)
                         fp.write(lfp.read(Local_Request_Range['Range2'][k]-Local_Request_Range['Range1'][k]+1))
                         # Padding UpperX
                         if Source_Coordinate_Box['Cutout_UpperX_Padding'] > 0:
                             for kb in range(Source_Coordinate_Box['Cutout_UpperX_Padding']):
-                                fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                                #fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                                fp.write(bytearray.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
                 # Padding UpperY
                 if Source_Coordinate_Box['Cutout_UpperY_Padding'] > 0:
                     for k in range(Source_Coordinate_Box['Cutout_UpperY_Padding'] * FITS_Header_Object2['NAXIS1']):
-                        fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                        #fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                        fp.write(bytearray.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
     
     print('')
     print('Output to "'+Output_Name+'.cutout.fits"!')
