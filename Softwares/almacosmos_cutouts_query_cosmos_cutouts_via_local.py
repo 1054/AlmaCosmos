@@ -21,19 +21,19 @@ bytes_to_hex_str = lambda bb: ''.join('%02x'%(tt) for tt in six.iterbytes(bb)).u
 string_to_hex_str = lambda bb: ''.join('%02x'%(ord(tt)) for tt in six.iterbytes(bb)).upper() # print string as hex
 def check_non_ascii(input_bytes):
     # check if a byte array contains non ascii char
-    print('DEBUG: check_non_ascii:', 'type(input_bytes)', type(input_bytes))
+    #print('DEBUG: check_non_ascii:', 'type(input_bytes)', type(input_bytes))
     loop_count = 0
     for input_char in input_bytes:
-        print('DEBUG: check_non_ascii:', 'type(input_char)', type(input_char))
+        #print('DEBUG: check_non_ascii:', 'type(input_char)', type(input_char))
         if sys.version_info.major < 3:
             input_char_ord = ord(input_char)
         else:
             # type(input_char) is int
             input_char_ord = input_char
-        print('DEBUG: check_non_ascii:', 'type(input_char_ord)', type(input_char_ord))
-        print('%02x'%(input_char_ord))
+        #print('DEBUG: check_non_ascii:', 'type(input_char_ord)', type(input_char_ord))
+        #print('DEBUG: check_non_ascii:', 'input_char_ord', '%02x'%(input_char_ord))
         if input_char_ord == 0 or input_char_ord > 128:
-            print('DEBUG: check_non_ascii:', 'Found non-ASCII %02x at position %d in text "%s"'%(input_char, loop_count, input_bytes))
+            #print('DEBUG: check_non_ascii:', 'Found non-ASCII %02x at position %d in text "%s"'%(input_char, loop_count, input_bytes))
             return True
         loop_count = loop_count + 1
     return False
