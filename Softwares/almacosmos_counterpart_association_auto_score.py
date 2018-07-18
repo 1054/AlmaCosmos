@@ -814,6 +814,8 @@ Output_Dir = ''
 Output_Prefix = 'Output_'
 Output_Suffix = ''
 Output_Sep = '_'
+Http_User_Name = ''
+Http_User_Pass = ''
 
 # Print Usage
 if len(sys.argv) <= 1:
@@ -882,6 +884,14 @@ while i < len(sys.argv):
         # must be dict
         if i+1 < len(sys.argv):
             Output_Suffix = sys.argv[i+1]
+            i = i + 1
+    elif tmp_arg == '-http-username' or tmp_arg == '-http-user-name':
+        if i+1 < len(sys.argv):
+            Http_User_Name = sys.argv[i+1]
+            i = i + 1
+    elif tmp_arg == '-http-userpass' or tmp_arg == '-http-user-pass':
+        if i+1 < len(sys.argv):
+            Http_User_Pass = sys.argv[i+1]
             i = i + 1
     elif tmp_arg == '-overwrite':
         Input_Overwrite = True
@@ -1376,8 +1386,12 @@ for i in range(len(Cat.TableData)):
         Cutout_File = Cutout_Dir + os.sep + Cutout_Name + '.cutout.fits'
         
         if not os.path.isfile(Cutout_File):
-            if Cutout_Band == 'UVISTA_K' or Cutout_Band == 'ACS_i' or Cutout_Band == 'VLA_3GHz':
+            if Cutout_Band == 'ACS_i':
+                Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA_Cutouts_Service.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
+            elif Cutout_Band == 'VLA_3GHz':
                 Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
+            elif Cutout_Band == 'UVISTA_K':
+                Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_IRSA.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS_INT" -Band "%s" -out "%s" -http-user-name "%s" -http-user-pass "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File, Http_User_Name, Http_User_Pass)
             else:
                 Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_local.py -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(Source_RA, Source_Dec, Cutout_Band, Cutout_File)
             print('')
@@ -1408,7 +1422,8 @@ for i in range(len(Cat.TableData)):
     # 
     # Prepare ALMA cutouts and copy to Cutout_Dir
     # 
-    ALMA_meta_table = '/Users/dzliu/Work/AlmaCosmos/Catalogs/A3COSMOS/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
+    #ALMA_meta_table = '/Users/dzliu/Work/AlmaCosmos/Catalogs/A3COSMOS/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
+    ALMA_meta_table = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
     ALMA_data_dir = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_cont_I_image'
     
     #if not os.path.isfile(Cutout_Dir + os.sep + 'ALMA_image_list.txt'):
@@ -1419,7 +1434,8 @@ for i in range(len(Cat.TableData)):
     #    #shutil.copy2()
     
     if not os.path.isfile(Cutout_Dir + os.sep + 'ALMA.cutout.fits'):
-        Cutout_downloading_command = 'cp \"{0}\" \"{1}\"'.format(ALMA_data_dir + os.sep + Source_Image, Cutout_Dir + os.sep + 'ALMA.cutout.fits')
+        #Cutout_downloading_command = 'cp \"{0}\" \"{1}\"'.format(ALMA_data_dir + os.sep + Source_Image, Cutout_Dir + os.sep + 'ALMA.cutout.fits')
+        Cutout_downloading_command = 'almacosmos_cutouts_query_cosmos_cutouts_via_local.py -image "%s" -RA %s -Dec %s -FoV 15.0 -Field "COSMOS" -Band "%s" -out "%s"'%(ALMA_data_dir+os.sep+Source_Image, Source_RA, Source_Dec, 'ALMA', Cutout_Dir+os.sep+'ALMA')
         print('')
         print('Running ' + Cutout_downloading_command)
         Cutout_downloading_command = 'echo "{0}"; echo ""; {1}'.format(Cutout_downloading_command.replace('\"','\\\"'), Cutout_downloading_command)

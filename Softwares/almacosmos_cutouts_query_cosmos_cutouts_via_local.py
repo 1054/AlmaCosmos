@@ -42,6 +42,14 @@ Source_Coordinate_Box = {
                             'Cutout_LowerY': numpy.nan, 
                             'Cutout_UpperX': numpy.nan, 
                             'Cutout_UpperY': numpy.nan, 
+                            'Cutout_LowerX_Padding': numpy.nan, 
+                            'Cutout_LowerY_Padding': numpy.nan, 
+                            'Cutout_UpperX_Padding': numpy.nan, 
+                            'Cutout_UpperY_Padding': numpy.nan, 
+                            'Cutout_LowerX_Mapping': numpy.nan, 
+                            'Cutout_LowerY_Mapping': numpy.nan, 
+                            'Cutout_UpperX_Mapping': numpy.nan, 
+                            'Cutout_UpperY_Mapping': numpy.nan, 
                         }
 
 # Preset
@@ -94,6 +102,14 @@ while i < len(sys.argv):
         if i+1 < len(sys.argv):
             Cutout_Band = sys.argv[i+1].replace('-','_')
             i = i + 1
+    elif tmp_arg == '-image' or tmp_arg == '-image-file':
+        if i+1 < len(sys.argv):
+            Image_Urls['User_Input'] = sys.argv[i+1]
+            i = i + 1
+    elif tmp_arg == '-header' or tmp_arg == '-header-file':
+        if i+1 < len(sys.argv):
+            Header_Caches['User_Input'] = sys.argv[i+1]
+            i = i + 1
     elif tmp_arg == '-overwrite':
         Overwrite_Level = Overwrite_Level + 1
     else:
@@ -116,7 +132,15 @@ if Cutout_Band == '':
 
 
 # Prepare Url for Image Data
-if Cutout_Field+'_'+Cutout_Band in Image_Urls:
+if 'User_Input' in Image_Urls:
+    Local_Request_Url = Image_Urls['User_Input']
+    if 'User_Input' in Header_Caches:
+        Header_Cache_Txt = Header_Caches['User_Input']+'.txt'
+        Header_Cache_Json = Header_Caches['User_Input']+'.json'
+    else:
+        Header_Cache_Txt = ''
+        Header_Cache_Json = ''
+elif Cutout_Field+'_'+Cutout_Band in Image_Urls:
     Local_Request_Url = Image_Urls[Cutout_Field+'_'+Cutout_Band]
     Header_Cache_Txt = Header_Caches[Cutout_Field+'_'+Cutout_Band]+'.txt'
     Header_Cache_Json = Header_Caches[Cutout_Field+'_'+Cutout_Band]+'.json'
@@ -301,26 +325,65 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
             print('Source DY = %s [pix]'%(Source_Coordinate_Box['DY']))
             
             # 
-            # check x y
-            if Source_Coordinate_Box['PX']-Source_Coordinate_Box['DX']<1:
-                print('Error! Cutout lower x coordinate < 1!')
-                sys.exit()
-            elif Source_Coordinate_Box['PX']+Source_Coordinate_Box['DX']>int(FITS_Header_Object['NAXIS1']):
-                print('Error! Cutout upper x coordinate > NAXIS1 (%d)!'%(int(FITS_Header_Object['NAXIS1'])))
-                sys.exit()
-            elif Source_Coordinate_Box['PY']-Source_Coordinate_Box['DY']<1:
-                print('Error! Cutout lower y coordinate < 1!')
-                sys.exit()
-            elif Source_Coordinate_Box['PY']+Source_Coordinate_Box['DY']>int(FITS_Header_Object['NAXIS2']):
-                print('Error! Cutout upper y coordinate > NAXIS2 (%d)!'%(int(FITS_Header_Object['NAXIS2'])))
-                sys.exit()
-            
-            # 
             # define cutout box
             Source_Coordinate_Box['Cutout_LowerX'] = int(Source_Coordinate_Box['PX'] - Source_Coordinate_Box['DX']/2.0)
             Source_Coordinate_Box['Cutout_UpperX'] = int(Source_Coordinate_Box['PX'] + Source_Coordinate_Box['DX']/2.0)
             Source_Coordinate_Box['Cutout_LowerY'] = int(Source_Coordinate_Box['PY'] - Source_Coordinate_Box['DY']/2.0)
             Source_Coordinate_Box['Cutout_UpperY'] = int(Source_Coordinate_Box['PY'] + Source_Coordinate_Box['DY']/2.0)
+            print('Cutout_LowerX = %s'%(Source_Coordinate_Box['Cutout_LowerX']))
+            print('Cutout_UpperX = %s'%(Source_Coordinate_Box['Cutout_UpperX']))
+            print('Cutout_LowerY = %s'%(Source_Coordinate_Box['Cutout_LowerY']))
+            print('Cutout_UpperY = %s'%(Source_Coordinate_Box['Cutout_UpperY']))
+            
+            # 
+            # check x y
+            if Source_Coordinate_Box['Cutout_LowerX']<1:
+                print('Warning! Cutout lower X coordinate < 1!')
+                Source_Coordinate_Box['Cutout_LowerX_Padding']=1-Source_Coordinate_Box['Cutout_LowerX']
+                Source_Coordinate_Box['Cutout_LowerX_Mapping']=1
+            else:
+                Source_Coordinate_Box['Cutout_LowerX_Padding']=0
+                Source_Coordinate_Box['Cutout_LowerX_Mapping']=Source_Coordinate_Box['Cutout_LowerX']
+            
+            if Source_Coordinate_Box['Cutout_UpperX']>int(FITS_Header_Object['NAXIS1']):
+                print('Warning! Cutout upper X coordinate > NAXIS1 (%d)!'%(int(FITS_Header_Object['NAXIS1'])))
+                Source_Coordinate_Box['Cutout_UpperX_Padding']=Source_Coordinate_Box['Cutout_UpperX']-int(FITS_Header_Object['NAXIS1'])
+                Source_Coordinate_Box['Cutout_UpperX_Mapping']=int(FITS_Header_Object['NAXIS1'])
+            else:
+                Source_Coordinate_Box['Cutout_UpperX_Padding']=0
+                Source_Coordinate_Box['Cutout_UpperX_Mapping']=Source_Coordinate_Box['Cutout_UpperX']
+            
+            if Source_Coordinate_Box['Cutout_LowerY']<1:
+                print('Warning! Cutout lower Y coordinate < 1!')
+                Source_Coordinate_Box['Cutout_LowerY_Padding']=1-Source_Coordinate_Box['Cutout_LowerY']
+                Source_Coordinate_Box['Cutout_LowerY_Mapping']=1
+            else:
+                Source_Coordinate_Box['Cutout_LowerY_Padding']=0
+                Source_Coordinate_Box['Cutout_LowerY_Mapping']=Source_Coordinate_Box['Cutout_LowerY']
+            
+            if Source_Coordinate_Box['Cutout_UpperY']>int(FITS_Header_Object['NAXIS2']):
+                print('Warning! Cutout upper Y coordinate > NAXIS2 (%d)!'%(int(FITS_Header_Object['NAXIS2'])))
+                Source_Coordinate_Box['Cutout_UpperY_Padding']=Source_Coordinate_Box['Cutout_UpperY']-int(FITS_Header_Object['NAXIS2'])
+                Source_Coordinate_Box['Cutout_UpperY_Mapping']=int(FITS_Header_Object['NAXIS2'])
+            else:
+                Source_Coordinate_Box['Cutout_UpperY_Padding']=0
+                Source_Coordinate_Box['Cutout_UpperY_Mapping']=Source_Coordinate_Box['Cutout_UpperY']
+            
+            print('Cutout_LowerX_Padding = %s'%(Source_Coordinate_Box['Cutout_LowerX_Padding']))
+            print('Cutout_UpperX_Padding = %s'%(Source_Coordinate_Box['Cutout_UpperX_Padding']))
+            print('Cutout_LowerY_Padding = %s'%(Source_Coordinate_Box['Cutout_LowerY_Padding']))
+            print('Cutout_UpperY_Padding = %s'%(Source_Coordinate_Box['Cutout_UpperY_Padding']))
+            print('Cutout_LowerX_Mapping = %s'%(Source_Coordinate_Box['Cutout_LowerX_Mapping']))
+            print('Cutout_UpperX_Mapping = %s'%(Source_Coordinate_Box['Cutout_UpperX_Mapping']))
+            print('Cutout_LowerY_Mapping = %s'%(Source_Coordinate_Box['Cutout_LowerY_Mapping']))
+            print('Cutout_UpperY_Mapping = %s'%(Source_Coordinate_Box['Cutout_UpperY_Mapping']))
+            print('Image_LowerX = %s'%(0))
+            print('Image_UpperX = %s'%(int(FITS_Header_Object['NAXIS1'])))
+            print('Image_LowerY = %s'%(0))
+            print('Image_UpperY = %s'%(int(FITS_Header_Object['NAXIS2'])))
+            
+            # 
+            # print footprint
             sys.stdout.write('FITS_Header_WCS.calc_footprint() = ') # print()
             pprint(FITS_Header_WCS.calc_footprint(), indent=4)
             FITS_Header_WCS.footprint_to_file(Output_Name+'.cutout.footprint.ds9.reg', color='green', width=2)
@@ -343,41 +406,61 @@ if not os.path.isfile(Output_Name+'.cutout.fits') or Overwrite_Level >= 1:
             
             # 
             # Local request range
-            Download_loop = Source_Coordinate_Box['Cutout_LowerY']
-            Download_step = Source_Coordinate_Box['Cutout_UpperY'] - Source_Coordinate_Box['Cutout_LowerY']
-            if Download_step > 50:
-                Download_step = 50 # must devide into multiple loops, because each request should not be too long
-            while Download_loop <= Source_Coordinate_Box['Cutout_UpperY']:
+            Download_loop = Source_Coordinate_Box['Cutout_LowerY_Mapping']
+            Download_step = Source_Coordinate_Box['Cutout_UpperY_Mapping'] - Source_Coordinate_Box['Cutout_LowerY_Mapping']
+            if Download_step > 1:
+                Download_step = 1 # must devide into multiple loops, because each request should not be too long
+            with open(Output_Name+'.cutout.fits', 'ab') as fp:
                 
-                Local_Request_Range = {'Range1': [], 'Range2': []}
+                # Padding LowerY
+                if Source_Coordinate_Box['Cutout_LowerY_Padding'] > 0:
+                    for k in range(Source_Coordinate_Box['Cutout_LowerY_Padding'] * FITS_Header_Object2['NAXIS1']):
+                        fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
                 
-                if Download_loop+Download_step > Source_Coordinate_Box['Cutout_UpperY']:
-                    Download_step = Source_Coordinate_Box['Cutout_UpperY'] - Download_loop
-                
-                for y in numpy.arange(Download_loop, Download_loop+Download_step+1, 1):
-                    Local_Request_Offset_1 = FITS_Header_Length + FITS_Data_Unit_Byte * ((y-1) * int(FITS_Header_Object['NAXIS1']) + (Source_Coordinate_Box['Cutout_LowerX']-1))
-                    Local_Request_Offset_2 = FITS_Header_Length + FITS_Data_Unit_Byte * ((y-1) * int(FITS_Header_Object['NAXIS1']) + (Source_Coordinate_Box['Cutout_UpperX']-1)) + FITS_Data_Unit_Byte-1
-                    #if Local_Request_Offset_2>int(Local_Request_Content_Length):
-                    #    print('Error! Requested range too large!')
-                    print('Local_Request_Offset = %d-%d (X:%d-%d, Y:%d)'%(Local_Request_Offset_1, Local_Request_Offset_2, Source_Coordinate_Box['Cutout_LowerX'], Source_Coordinate_Box['Cutout_UpperX'], y))
-                    if Local_Request_Range['Range1'] == []:
-                        Local_Request_Range['Range1'].append(Local_Request_Offset_1)
-                        Local_Request_Range['Range2'].append(Local_Request_Offset_2)
-                    else:
-                        Local_Request_Range['Range1'].append(Local_Request_Offset_1)
-                        Local_Request_Range['Range2'].append(Local_Request_Offset_2)
-                
-                Download_loop = Download_loop+Download_step+1
-                
-                sys.stdout.write('Local_Request_Range = ') # print()
-                pprint(Local_Request_Range, indent=4)
-                
-                # 
-                # Local request get -- partially get byte ranges -- then append to fits file
-                with open(Output_Name+'.cutout.fits', 'ab') as fp:
+                # Downloading main image area
+                while Download_loop <= Source_Coordinate_Box['Cutout_UpperY_Mapping']:
+                    
+                    Local_Request_Range = {'Range1': [], 'Range2': []}
+                    
+                    if Download_loop+Download_step > Source_Coordinate_Box['Cutout_UpperY_Mapping']:
+                        Download_step = Source_Coordinate_Box['Cutout_UpperY_Mapping'] - Download_loop
+                    
+                    for y in numpy.arange(Download_loop, Download_loop+Download_step+1, 1):
+                        Local_Request_Offset_1 = FITS_Header_Length + FITS_Data_Unit_Byte * ((y-1) * int(FITS_Header_Object['NAXIS1']) + (Source_Coordinate_Box['Cutout_LowerX_Mapping']-1))
+                        Local_Request_Offset_2 = FITS_Header_Length + FITS_Data_Unit_Byte * ((y-1) * int(FITS_Header_Object['NAXIS1']) + (Source_Coordinate_Box['Cutout_UpperX_Mapping']-1)) + FITS_Data_Unit_Byte-1
+                        #if Local_Request_Offset_2>int(Local_Request_Content_Length):
+                        #    print('Error! Requested range too large!')
+                        print('Local_Request_Offset = %d-%d (X:%d-%d, Y:%d)'%(Local_Request_Offset_1, Local_Request_Offset_2, Source_Coordinate_Box['Cutout_LowerX_Mapping'], Source_Coordinate_Box['Cutout_UpperX_Mapping'], y))
+                        if Local_Request_Range['Range1'] == []:
+                            Local_Request_Range['Range1'].append(Local_Request_Offset_1)
+                            Local_Request_Range['Range2'].append(Local_Request_Offset_2)
+                        else:
+                            Local_Request_Range['Range1'].append(Local_Request_Offset_1)
+                            Local_Request_Range['Range2'].append(Local_Request_Offset_2)
+                    
+                    Download_loop = Download_loop+Download_step+1
+                    
+                    sys.stdout.write('Local_Request_Range = ') # print()
+                    pprint(Local_Request_Range, indent=4)
+                    
+                    # 
+                    # Local request get -- partially get byte ranges -- then append to fits file
                     for k in range(len(Local_Request_Range['Range1'])):
+                        # Padding LowerX
+                        if Source_Coordinate_Box['Cutout_LowerX_Padding'] > 0:
+                            for kb in range(Source_Coordinate_Box['Cutout_LowerX_Padding']):
+                                fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                        # Writting main image area
                         lfp.seek(Local_Request_Range['Range1'][k], 0)
                         fp.write(lfp.read(Local_Request_Range['Range2'][k]-Local_Request_Range['Range1'][k]+1))
+                        # Padding UpperX
+                        if Source_Coordinate_Box['Cutout_UpperX_Padding'] > 0:
+                            for kb in range(Source_Coordinate_Box['Cutout_UpperX_Padding']):
+                                fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
+                # Padding UpperY
+                if Source_Coordinate_Box['Cutout_UpperY_Padding'] > 0:
+                    for k in range(Source_Coordinate_Box['Cutout_UpperY_Padding'] * FITS_Header_Object2['NAXIS1']):
+                        fp.write(bytes.fromhex('FF'*FITS_Data_Unit_Byte)) # pad with NaN
     
     print('')
     print('Output to "'+Output_Name+'.cutout.fits"!')
