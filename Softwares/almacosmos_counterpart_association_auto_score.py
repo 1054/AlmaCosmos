@@ -375,7 +375,7 @@ class CrossMatch_Identifier(object):
                         radec = [ self.Source.RA, self.Source.Dec ], 
                         major = diameter * self.Source.Morphology['Major Axis'], 
                         minor = diameter * self.Source.Morphology['Minor Axis'], 
-                        angle = self.Source.Morphology['Pos Angle'], 
+                        angle = self.Source.Morphology['Pos Angle'] + 90.0, 
                         edgecolor = hex2color('#00FF00'), 
                         facecolor = hex2color('#00FF00'), 
                         linewidth = linewidth, 
@@ -402,7 +402,7 @@ class CrossMatch_Identifier(object):
                         radec = [ self.RefSource.RA, self.RefSource.Dec ], 
                         major = diameter * self.Source.Morphology['Major Axis'], 
                         minor = diameter * self.Source.Morphology['Minor Axis'], 
-                        angle = self.Source.Morphology['Pos Angle'], 
+                        angle = self.Source.Morphology['Pos Angle'] + 90.0, 
                         linewidth = linewidth, 
                         color = color, 
                         draw_ellipse = False, 
@@ -468,8 +468,8 @@ class CrossMatch_Identifier(object):
                 sep_x = (refsource_aperture['X'] - source_aperture['X']) * self.RefImage.PixScale[0]
                 sep_y = (refsource_aperture['Y'] - source_aperture['Y']) * self.RefImage.PixScale[1]
                 SepDist = numpy.sqrt( sep_x**2 + sep_y**2 ) # in arcsec
-                SepAngle = numpy.arctan2(sep_y, sep_x) / numpy.pi * 180.0
-                PosAngle = self.Source.Morphology['Pos Angle']
+                SepAngle = numpy.arctan2(sep_y, sep_x) / numpy.pi * 180.0 - 90.0 # degree
+                PosAngle = self.Source.Morphology['Pos Angle'] # degree
                 print("Source position %.3f %.3f"%(source_aperture['X'], source_aperture['Y']))
                 print("RefSource position %.3f %.3f"%(refsource_aperture['X'], refsource_aperture['Y']))
                 print("Separated distance x y %0.3f %0.3f"%(sep_x, sep_y))
@@ -501,7 +501,7 @@ class CrossMatch_Identifier(object):
                         position = [ jiggle_pos_x, jiggle_pos_y ], 
                         major = source_aperture['Major'], 
                         minor = source_aperture['Minor'], 
-                        angle = self.Source.Morphology['Pos Angle'], 
+                        angle = self.Source.Morphology['Pos Angle'] + 90.0, 
                         edgecolor = hex2color('#00FF00'), 
                         facecolor = hex2color('#00FF00'), 
                         linewidth = linewidth, 
@@ -651,7 +651,7 @@ class CrossMatch_Identifier(object):
                 self.Morphology['SepAngle'] = SepAngle # 
                 self.Morphology['PosAngle'] = PosAngle # 
                 self.Morphology['Separation'] = SepDist # value ranges from 0 to Major Axis and more
-                self.Morphology['Angle'] = numpy.min( [ numpy.abs(SepAngle-PosAngle),numpy.abs(SepAngle-PosAngle-360), numpy.abs(SepAngle-PosAngle+360) ] ) # value ranges from 0 to 180.0
+                self.Morphology['Angle'] = numpy.min( [ numpy.abs(SepAngle-PosAngle),numpy.abs(SepAngle-PosAngle-360.0), numpy.abs(SepAngle-PosAngle+360.0) ] ) # value ranges from 0 to 180.0
                 #<DEBUG>#self.Morphology['Separation'] = self.Source.Morphology['Major Axis'] / 2.0
                 #<DEBUG>#self.Morphology['Angle'] = 0.0
                 self.Morphology['Projected_Source_Radius'] = numpy.abs( self.Source.Morphology['Major Axis'] * numpy.cos(numpy.deg2rad(self.Morphology['Angle'])) ) + \

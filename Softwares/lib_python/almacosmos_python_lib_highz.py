@@ -858,7 +858,7 @@ class Highz_Image(object):
             area = numpy.pi * major/2.0 * minor/2.0 # pix_major * pix_minor * self.PixScale[0] * self.PixScale[1]
             # 
             # print aperture info
-            print('Plotting aperture "%s" at position %0.3f %0.3f (RA Dec %0.10f %0.10f) with major minor %0.3f %0.3f pix (%0.3f %0.3f arcsec) angle %0.3f deg'%(label, position[0], position[1], radec[0], radec[1], pix_major, pix_minor, major, minor, angle))
+            print('Plotting aperture "%s" at position %0.3f %0.3f (RA Dec %0.10f %0.10f) with major minor %0.3f %0.3f pix (%0.3f %0.3f arcsec) angle %0.3f deg (from +X-axis)'%(label, position[0], position[1], radec[0], radec[1], pix_major, pix_minor, major, minor, angle))
             # 
             # draw Ellipse (with transparancy according to the input alpha arguments)
             if facealpha > 0.0:
