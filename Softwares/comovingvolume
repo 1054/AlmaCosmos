@@ -1,0 +1,17 @@
+#!/bin/bash
+# 
+
+if [[ $# -lt 3 ]]; then
+    echo "Usage: $(basename ${BASH_SOURCE[0]}) z1 z2 area_sq_arcmin"
+    exit
+fi
+
+if [[ $(type sm 2>/dev/null | wc -l) -eq 1 ]]; then
+sm << EOF
+load astroSfig.sm
+set dVc = calc_comoving_volume(4.5,abs($2-$1),float($3))
+define print_noheader 1
+print '%0.6e Mpc^3' {dVc}
+EOF
+fi
+

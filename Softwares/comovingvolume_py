@@ -1,0 +1,46 @@
+#!/bin/bash
+# 
+
+if [[ $# -lt 3 ]]; then
+    echo "Usage: $(basename ${BASH_SOURCE[0]}) z1 z2 area_sq_arcmin"
+    exit
+fi
+
+if [[ $(type python 2>/dev/null | wc -l) -eq 1 ]]; then
+python << EOF
+import numpy, astropy
+from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(H0=70, Om0=0.3, Tcmb0=2.725)
+vol1 = cosmo.comoving_volume($1).to_value()
+vol2 = cosmo.comoving_volume($2).to_value()
+dis1 = cosmo.comoving_distance($1).to_value()
+dis2 = cosmo.comoving_distance($2).to_value()
+area0 = ($3) / 3600.0 # sq. arcmin -> sq. degree
+theta0 = numpy.sqrt(area0 / numpy.pi) / 180.0 * numpy.pi # radians; area = pi * radius**2; it is half of the apex angle. 
+dihedral0 = numpy.sqrt(area0) / 180.0 * numpy.pi # radians; area = diameter**2; it is the full apex angle (dihedral angles measured to the opposite side faces). 
+#print(theta0*2/numpy.pi * 180.0 * 60.0, 'arcmin') # checked that they are reasonable.
+#print(dihedral0/numpy.pi * 180.0 * 60.0, 'arcmin') # checked that they are reasonable.
+radius1 = dis1 * numpy.sin(theta0/2.0) * 2.0 # same unit as dis1
+radius2 = dis2 * numpy.sin(theta0/2.0) * 2.0 # same unit as dis2
+theta1 = theta0 # radians; it is half of the apex angle. 
+theta2 = theta0 # radians; it is half of the apex angle. 
+#theta1c = numpy.arcsin(radius1 / dis1) # [-pi/2, pi/2]
+#theta2c = numpy.arcsin(radius2 / dis2) # [-pi/2, pi/2]
+#print(theta1, theta2) # checked that small number approximation agrees within <0.000001%.
+#print(theta1c, theta2c) # checked that small number approximation agrees within <0.000001%.
+omega1 = 2 * numpy.pi * (1.0 - numpy.cos(theta1)) # cone solid angle, https://en.wikipedia.org/wiki/Solid_angle
+omega2 = 2 * numpy.pi * (1.0 - numpy.cos(theta2)) # cone solid angle, https://en.wikipedia.org/wiki/Solid_angle
+omega1c = numpy.pi * (theta1)**2 # cone solid angle with small number approximation, https://en.wikipedia.org/wiki/Solid_angle
+omega2c = numpy.pi * (theta2)**2 # cone solid angle with small number approximation, https://en.wikipedia.org/wiki/Solid_angle
+omega1p = 4 * numpy.arcsin(numpy.sin(theta1) * numpy.sin(theta1)) # pyramid solid angle, https://en.wikipedia.org/wiki/Solid_angle
+omega2p = 4 * numpy.arcsin(numpy.sin(theta2) * numpy.sin(theta2)) # pyramid solid angle, https://en.wikipedia.org/wiki/Solid_angle
+#print(omega1, omega2) # check that cone and pyramid omega diff by about 30%.
+#print(omega1p, omega2p) # check that cone and pyramid omega diff by about 30%.
+#print(omega1c, omega2c) # check that small number approximation agrees within <0.000001%
+#print('%0.6e Mpc^3'%(numpy.abs( vol2 / (4*numpy.pi) * (omega2p) - vol1 / (4*numpy.pi) * (omega1p) ) ) )
+#print('%0.6e Mpc^3'%(numpy.abs( vol2 / (4*numpy.pi) * (omega2c) - vol1 / (4*numpy.pi) * (omega1c) ) ) )
+#we choose the pyramid solid angle in the end
+print('%0.6e Mpc^3'%(numpy.abs( vol2 / (4*numpy.pi) * (omega2p) - vol1 / (4*numpy.pi) * (omega1p) ) ) )
+EOF
+fi
+

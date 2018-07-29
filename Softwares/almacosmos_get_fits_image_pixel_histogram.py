@@ -61,6 +61,7 @@ import matplotlib.pyplot as pl
 import matplotlib.mlab as mlab
 from matplotlib.colors import LogNorm
 from matplotlib.colors import hex2color, rgb2hex
+from matplotlib.ticker import ScalarFormatter, FormatStrFormatter
 
 
 from almacosmos_get_fits_image_pixel_mode import mode
@@ -70,10 +71,10 @@ from almacosmos_fit_Gaussian_1D import fit_Gaussian_1D
 #print(pl.rcParams.keys())
 #pl.rcParams['font.family'] = 'NGC'
 pl.rcParams['font.size'] = 20
-#pl.rcParams['axes.labelsize'] = 'large'
+pl.rcParams['axes.labelsize'] = 'large'
 pl.rcParams['axes.labelpad'] = 12 # padding between axis and xy title (label)
-#pl.rcParams['xtick.major.pad'] = 10 # padding between ticks and axis
-#pl.rcParams['ytick.major.pad'] = 10 # padding between ticks and axis
+pl.rcParams['xtick.major.pad'] = 10 # padding between ticks and axis
+pl.rcParams['ytick.major.pad'] = 10 # padding between ticks and axis
 pl.rcParams['xtick.labelsize'] = 18
 pl.rcParams['ytick.labelsize'] = 18
 pl.rcParams['xtick.minor.visible'] = True # 
@@ -254,7 +255,8 @@ while BinLoop and BinNumb <= (len(BinVar)/17.5):
     if FitParam['sigma'] != np.nan and FitParam['sigma'] > InnerSigma * 0.2:
         # 
         pl.plot(BinCents[FitRange], FitGauss, color=hex2color('#FF0000'), linewidth=3, linestyle='solid') # marker='o', markerfacecolor='blue', markersize=12)
-        pl.text(FitParam['mu']+1.0*FitParam['sigma'], FitParam['A'], 'sigma = %.10g'%(FitParam['sigma']), color=hex2color('#FF0000'), fontsize=18)
+        #pl.text(FitParam['mu']+1.0*FitParam['sigma'], FitParam['A'], 'sigma = %.10g'%(FitParam['sigma']), color=hex2color('#FF0000'), fontsize=18)
+        pl.text(FitParam['mu']+1.0*FitParam['sigma'], FitParam['A'], '$\sigma$ = %.4f mJy/beam'%(FitParam['sigma']*1e3), color=hex2color('#FF0000'), fontsize=24)
         # output to txt file
         with open('%s.pixel.statistics.txt'%(FitsFile), 'a') as fp:
             print(   "Gaussian_A     = %.10g"  %(FitParam['A'])     )
@@ -270,7 +272,9 @@ while BinLoop and BinNumb <= (len(BinVar)/17.5):
 
 #FitGauss = mlab.normpdf(BinEdges, BinMean, BinSigma)
 #FitGauss = FitGauss / np.max(FitGauss) * np.max(BinHists)
-pl.xlabel("Pixel Value")
+locs,labels = pl.xticks()
+pl.xticks(locs, map(lambda x: '%.2f' % x, locs*1e3)) # show x axis in unit of mJy/beam instead of Jy/beam
+pl.xlabel("Pixel Value [mJy/beam]")
 pl.ylabel("N")
 
 
@@ -293,14 +297,17 @@ fig.savefig('%s.pixel.histogram.eps'%(FitsFile), format='eps')
 pl.clf()
 pl.yscale('log')
 pl.hist(BinVar, BinNumb, log=True, histtype='stepfilled', color=hex2color('#0000FF'), linewidth=0.2)
-pl.ylim([-0.75, (np.max(BinHists))*10**0.35])
+pl.ylim([10**-0.75, (np.max(BinHists))*10**0.35])
 
 if type(FitParam) is dict and len(FitRange)>0:
     if FitParam['sigma'] != np.nan and FitParam['sigma'] > 0.0:
         pl.semilogy(BinCents[FitRange], FitGauss, color=hex2color('#FF0000'), linewidth=3, linestyle='solid') # -- You simply need to use semilogy instead of plot -- http://stackoverflow.com/questions/773814/plot-logarithmic-axes-with-matplotlib-in-python
-        pl.text(FitParam['mu']+1.0*FitParam['sigma'], FitParam['A'], 'sigma = %.10g'%(FitParam['sigma']), color=hex2color('#FF0000'), fontsize=18)
+        #pl.text(FitParam['mu']+1.0*FitParam['sigma'], FitParam['A'], 'sigma = %.10g'%(FitParam['sigma']), color=hex2color('#FF0000'), fontsize=18)
+        pl.text(FitParam['mu']+1.0*FitParam['sigma'], FitParam['A'], '$\sigma$ = %.4f mJy/beam'%(FitParam['sigma']*1e3), color=hex2color('#FF0000'), fontsize=24)
 
-pl.xlabel("Pixel Value")
+locs,labels = pl.xticks()
+pl.xticks(locs, map(lambda x: '%.2f' % x, locs*1e3)) # show x axis in unit of mJy/beam instead of Jy/beam
+pl.xlabel("Pixel Value [mJy/beam]")
 pl.ylabel("log N")
 
 

@@ -1,0 +1,24 @@
+#!/bin/bash
+# 
+
+if [[ $# -lt 3 ]]; then
+    echo "Usage: $(basename ${BASH_SOURCE[0]}) z1 z2 area_sq_arcmin"
+    exit
+fi
+
+if [[ $(type R 2>/dev/null | wc -l) -eq 1 ]]; then
+R --no-save << EOF
+library('celestial')
+comovingvolumevar = cosvol(area=($3), zmin=($1), zmax=($2), H0=73, OmegaM=0.27, OmegaL=0.73, OmegaR=0, w0=-1, wprime=0, inunit="amin2")
+comovingvolume = comovingvolumevar['voltot'] * (1e3)^3 # converted Gpc^3 to Mpc^3
+#sprintf("%0.6e",comovingvolume)
+cat(sprintf("%0.6e\n",comovingvolume))
+EOF
+fi
+
+# see -- https://www.rdocumentation.org/packages/celestial/versions/1.4.1/topics/cosvol
+# example
+#   cosvol(area=(134), zmin=(5.0), zmax=(7.0), H0=73, OmegaM=0.27, OmegaL=0.73, OmegaR=0, w0=-1, wprime=0, inunit="amin2")
+# package to install in R
+#   install.packages('celestial')
+#   library('celestial')
