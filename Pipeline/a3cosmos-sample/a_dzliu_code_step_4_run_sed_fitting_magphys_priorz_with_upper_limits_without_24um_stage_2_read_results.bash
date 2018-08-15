@@ -1,5 +1,24 @@
 #!/bin/bash
 # 
+
+
+#__DOCUMENTATION__  
+#__DOCUMENTATION__  Description: 
+#__DOCUMENTATION__      Run MAGPHYS SED fitting. 
+#__DOCUMENTATION__  
+#__DOCUMENTATION__  Usage Example: 
+#__DOCUMENTATION__      
+#__DOCUMENTATION__      
+#__DOCUMENTATION__  Input Files:
+#__DOCUMENTATION__      Multi-wavelength_SEDs/
+#__DOCUMENTATION__      Multi-wavelength_Plots/SED_fitting_magphys_priorz_with_upper_limits_without_24um/stage_1_before_examining_z/
+#__DOCUMENTATION__      
+#__DOCUMENTATION__  Output Files:
+#__DOCUMENTATION__      Multi-wavelength_Plots/SED_fitting_magphys_priorz_with_upper_limits_without_24um/stage_2_read_results/
+#__DOCUMENTATION__  
+
+
+
 # The aim of this code is to combine multi-wavelength photometry for all sources 
 # into one datatable_for_photometry.txt
 # and run DeepFields.SuperDeblending SED fitting
@@ -11,7 +30,7 @@ set -e
 # 
 # Setup
 # 
-SED_fitting_Type="SED_fitting_magphys_priorz_with_upper_limits"
+SED_fitting_Type="SED_fitting_magphys_priorz_with_upper_limits_without_24um"
 Input_Dir="Multi-wavelength_SEDs"
 Output_Dir="Multi-wavelength_SED_Results/${SED_fitting_Type}/stage_2_read_results"
 Do_Overwrite=1

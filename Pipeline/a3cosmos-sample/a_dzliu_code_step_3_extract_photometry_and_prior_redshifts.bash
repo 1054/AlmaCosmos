@@ -1,5 +1,24 @@
 #!/bin/bash
 # 
+
+
+#__DOCUMENTATION__  
+#__DOCUMENTATION__  Description: 
+#__DOCUMENTATION__      Prepare folders and files for the SED fitting.
+#__DOCUMENTATION__      This includes the extraction of photometry and prior redshifts from catalog into each galaxy folder. 
+#__DOCUMENTATION__  
+#__DOCUMENTATION__  Usage Example: 
+#__DOCUMENTATION__      
+#__DOCUMENTATION__      
+#__DOCUMENTATION__  Input Files:
+#__DOCUMENTATION__      Selected_Sample_v20180720c.photometry_with_prior_redshifts.fits
+#__DOCUMENTATION__      
+#__DOCUMENTATION__  Output Files:
+#__DOCUMENTATION__      Multi-wavelength_SEDs/
+#__DOCUMENTATION__  
+
+
+# 
 # The aim of this code is to get multi-wavelength photometry 
 # from Laigle+2015 catalog 
 # for each source in the input id catalog 
@@ -10,6 +29,15 @@ set -e
 
 
 source ~/Cloud/Github/Crab.Toolkit.michi2/SETUP.bash
+
+
+# apply patch
+if [[ ! -f "Selected_Sample_v20180720c.photometry_with_prior_redshifts.patched_20180414_18h53m.fits" ]]; then
+     if [[ ! -f $(dirname "${BASH_SOURCE[0]}")/a_dzliu_patch_code_fix_catalog_flux_errors_20180814_18h53m.bash ]]; then
+          echo "Error! Patch code \"$(dirname "${BASH_SOURCE[0]}")/a_dzliu_patch_code_fix_catalog_flux_errors_20180814_18h53m.bash\" was not found!"
+          exit
+     fi
+fi
 
 
 #input_cat="Selected_Sample_v20180720c.photometry_with_prior_redshifts.fits"

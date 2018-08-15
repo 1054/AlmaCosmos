@@ -6,13 +6,15 @@
 #__DOCUMENTATION__      Selecting subsample from two photometry. 
 #__DOCUMENTATION__      Creating fits format table file, in which each row is a source, and the photometry flux and error for each band are stored in each column. :
 #__DOCUMENTATION__      
-#__DOCUMENTATION__  Input Files::
-#__DOCUMENTATION__      $input_cat_1
-#__DOCUMENTATION__      $input_cat_2
+#__DOCUMENTATION__  Input Files:
+#__DOCUMENTATION__      "../../Catalogs/A3COSMOS/A-COSMOS_prior_2018-06-01a_Gaussian_with_meta_without_very_high_res_projects_corrected_within_Pbcor_0.1.fits"
+#__DOCUMENTATION__      "../../Catalogs/A3COSMOS/cat_pybdsm_concatenated_290318_mJy_within_cosmos_without_very_high_res_projects_with_meta_corrected.fits"
 #__DOCUMENTATION__      
 #__DOCUMENTATION__  Output Files:
-#__DOCUMENTATION__      $output_cat.photometry_with_prior_redshifts.fits
+#__DOCUMENTATION__      Selected_Sample_v20180720c.photometry_with_prior_redshifts.fits
+#__DOCUMENTATION__      Selected_Sample_v20180720c.photometry.fits
 #__DOCUMENTATION__      out_*.*
+#__DOCUMENTATION__      tmp_*.*
 #__DOCUMENTATION__  
 
 # 20180720
@@ -603,8 +605,8 @@ if [[ ! -f "$output_cat.photometry_with_prior_redshifts.fits" ]]; then
     # OK, now we merge all prior redshift catalogs and solve the multiplicity!
     # 
     echo ""
-    echo "Running \"./a_dzliu_code_step_2_set_prior_redshifts_v2.py\"!"
-    ./a_dzliu_code_step_2_set_prior_redshifts_v2.py \
+    echo "Running \"./a_dzliu_patch_code_set_prior_redshifts_v2.py\"!"
+    ./a_dzliu_patch_code_set_prior_redshifts_v2.py \
     -pcat "$output_cat.photometry.fits" \
     -zcat \
         'tmp_Salvato2017_specz_xmatch_backward.fits' \

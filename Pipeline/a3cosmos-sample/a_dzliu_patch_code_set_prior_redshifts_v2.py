@@ -9,13 +9,11 @@
 #__DOCUMENTATION__  Usage Example: 
 #__DOCUMENTATION__      
 #__DOCUMENTATION__      
-#__DOCUMENTATION__  Input Files::
-#__DOCUMENTATION__      $input_cat_1
-#__DOCUMENTATION__      $input_cat_2
+#__DOCUMENTATION__  Input Files:
+#__DOCUMENTATION__      Selected_Sample_v20180720c.fits
 #__DOCUMENTATION__      
 #__DOCUMENTATION__  Output Files:
-#__DOCUMENTATION__      $output_cat.photometry_with_prior_redshifts.fits
-#__DOCUMENTATION__      out_*.*
+#__DOCUMENTATION__      Selected_Sample_v20180720c.photometry_with_prior_redshifts.fits
 #__DOCUMENTATION__  
 
 

@@ -1,5 +1,23 @@
 #!/bin/bash
 # 
+
+
+#__DOCUMENTATION__  
+#__DOCUMENTATION__  Description: 
+#__DOCUMENTATION__      Run MAGPHYS SED fitting. 
+#__DOCUMENTATION__  
+#__DOCUMENTATION__  Usage Example: 
+#__DOCUMENTATION__      
+#__DOCUMENTATION__      
+#__DOCUMENTATION__  Input Files:
+#__DOCUMENTATION__      Multi-wavelength_SEDs/
+#__DOCUMENTATION__      
+#__DOCUMENTATION__  Output Files:
+#__DOCUMENTATION__      Multi-wavelength_Plots/SED_fitting_magphys_priorz_with_upper_limits/stage_1_before_examining_z/
+#__DOCUMENTATION__  
+
+
+
 # The aim of this code is to combine multi-wavelength photometry for all sources 
 # into one datatable_for_photometry.txt
 # and run DeepFields.SuperDeblending SED fitting
@@ -11,7 +29,8 @@ set -e
 # 
 # Set Parameters
 # 
-output_dir="Multi-wavelength_SED_Plots/SED_fitting_magphys_priorz_with_upper_limits/stage_1_before_examining_z" #<TODO># Tune this!
+SED_fitting_Type="SED_fitting_magphys_priorz_with_upper_limits"
+output_dir="Multi-wavelength_SED_Plots/${SED_fitting_Type}/stage_1_before_examining_z" #<TODO># Tune this!
 
 
 # 
@@ -95,13 +114,13 @@ known_alias_val=($(cat "../datatable_known_alias.txt" | grep -v "^#" | sed -e 's
 #magphys_parallel=9
 magphys_parallel=16
 for (( k = 0; k <= $magphys_parallel; k++ )); do
-    echo "#!/bin/bash" > "run_sed_fitting_magphys_priorz_with_upper_limits_for_all_magphys${k}.sh"
-    echo "export PATH=\"\$HOME/Softwares/magphys${k}:\$PATH\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_all_magphys${k}.sh"
+    echo "#!/bin/bash" > "run_${SED_fitting_Type}_for_all_magphys${k}.sh"
+    echo "export PATH=\"\$HOME/Softwares/magphys${k}:\$PATH\"" >> "run_${SED_fitting_Type}_for_all_magphys${k}.sh"
     
     if [[ $k == 0 ]]; then
-        echo "#!/bin/bash" > "batch_run_sed_fitting_magphys_priorz_with_upper_limits_for_all.sh"
+        echo "#!/bin/bash" > "batch_run_${SED_fitting_Type}_for_all.sh"
     fi
-    echo "screen -d -S magphys${k} -m bash -c \"./run_sed_fitting_magphys_priorz_with_upper_limits_for_all_magphys${k}.sh\"; sleep 30" >> "batch_run_sed_fitting_magphys_priorz_with_upper_limits_for_all.sh"
+    echo "screen -d -S magphys${k} -m bash -c \"./run_${SED_fitting_Type}_for_all_magphys${k}.sh\"; sleep 30" >> "batch_run_${SED_fitting_Type}_for_all.sh"
 done
 
 
@@ -146,9 +165,9 @@ for (( i=0; i<${#source_list[@]}; i++ )); do
     #for (( k=0; k<${#suspicious_zspec_sou[@]}; k++ )); do
     #    if [[ "$source_name" == "${suspicious_zspec_sou[k]}" ]]; then
     #        source_zspec[i]="-99"
-    #        if [[ -f "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zspec.txt" ]]; then
-    #            if [[ $(cat "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zspec.txt" | grep -v "^#" | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 4) != "-99" ]]; then
-    #                if [[ -f "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zspec.txt" ]]; then rm "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zspec.txt"; fi
+    #        if [[ -f "${SED_fitting_Type}/datatable_id_ra_dec_zspec.txt" ]]; then
+    #            if [[ $(cat "${SED_fitting_Type}/datatable_id_ra_dec_zspec.txt" | grep -v "^#" | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 4) != "-99" ]]; then
+    #                if [[ -f "${SED_fitting_Type}/datatable_id_ra_dec_zspec.txt" ]]; then rm "${SED_fitting_Type}/datatable_id_ra_dec_zspec.txt"; fi
     #            fi
     #        fi
     #    fi
@@ -158,9 +177,9 @@ for (( i=0; i<${#source_list[@]}; i++ )); do
     #for (( k=0; k<${#suspicious_zphot_sou[@]}; k++ )); do
     #    if [[ "$source_name" == "${suspicious_zphot_sou[k]}" ]]; then
     #        source_zphot[i]="-99"
-    #        if [[ -f "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zphot.txt" ]]; then
-    #            if [[ $(cat "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zphot.txt" | grep -v "^#" | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 4) != "-99" ]]; then
-    #                if [[ -f "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zphot.txt" ]]; then rm "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zphot.txt"; fi
+    #        if [[ -f "${SED_fitting_Type}/datatable_id_ra_dec_zphot.txt" ]]; then
+    #            if [[ $(cat "${SED_fitting_Type}/datatable_id_ra_dec_zphot.txt" | grep -v "^#" | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d ' ' -f 4) != "-99" ]]; then
+    #                if [[ -f "${SED_fitting_Type}/datatable_id_ra_dec_zphot.txt" ]]; then rm "${SED_fitting_Type}/datatable_id_ra_dec_zphot.txt"; fi
     #            fi
     #        fi
     #    fi
@@ -178,23 +197,23 @@ for (( i=0; i<${#source_list[@]}; i++ )); do
     
     
     # prepare SED fitting files
-    if [[ ! -d "SED_fitting_magphys_priorz_with_upper_limits" ]]; then 
-        mkdir "SED_fitting_magphys_priorz_with_upper_limits"
+    if [[ ! -d "${SED_fitting_Type}" ]]; then 
+        mkdir "${SED_fitting_Type}"
     fi
-    if [[ ! -f "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zprior.txt" ]] && [[ ! -L "SED_fitting_magphys_priorz_with_upper_limits/datatable_id_ra_dec_zprior.txt" ]]; then
+    if [[ ! -f "${SED_fitting_Type}/datatable_id_ra_dec_zprior.txt" ]] && [[ ! -L "${SED_fitting_Type}/datatable_id_ra_dec_zprior.txt" ]]; then
         if [[ ! -f "datatable_id_ra_dec_zprior.txt" ]] && [[ ! -L "datatable_id_ra_dec_zprior.txt" ]]; then
             echo "Error! \"datatable_id_ra_dec_zphot.txt\" was not found for ID_$source_name! Please make sure step_3 code is run successfully!"
             exit
         else
-            cp "datatable_id_ra_dec_zprior.txt" "SED_fitting_magphys_priorz_with_upper_limits/"
+            cp "datatable_id_ra_dec_zprior.txt" "${SED_fitting_Type}/"
         fi
     fi
-    if [[ ! -f "SED_fitting_magphys_priorz_with_upper_limits/datatable_photometry_magphys.txt" ]] && [[ ! -L "SED_fitting_magphys_priorz_with_upper_limits/datatable_photometry_magphys.txt" ]]; then
+    if [[ ! -f "${SED_fitting_Type}/datatable_photometry_magphys.txt" ]] && [[ ! -L "${SED_fitting_Type}/datatable_photometry_magphys.txt" ]]; then
         if [[ ! -f "datatable_photometry_dupl.txt" ]] && [[ ! -L "datatable_photometry_dupl.txt" ]]; then
             echo "Error! \"datatable_photometry_dupl.txt\" was not found for ID_$source_name! Please make sure step_3 code is run successfully!"
             exit
         else
-            cd "SED_fitting_magphys_priorz_with_upper_limits"
+            cd "${SED_fitting_Type}"
             #michi2_filter_flux_0sigma.py "../datatable_photometry_dupl.txt" "datatable_photometry_magphys.txt" #20180603#
             #michi2_filter_flux_0sigma_no_SNR_limit.py "../datatable_photometry_dupl.txt" "datatable_photometry_magphys.txt"
             michi2_filter_flux_2sigma_fit_infrared_upper_limits.py "../datatable_photometry_dupl.txt" "datatable_photometry_magphys.txt"
@@ -213,28 +232,28 @@ for (( i=0; i<${#source_list[@]}; i++ )); do
     
     
     # run SED fitting
-    echo "#!/bin/bash" > "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-    echo "#source \"\$HOME/Cloud/Github/DeepFields.SuperDeblending/Softwares/SETUP.bash\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
+    echo "#!/bin/bash" > "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+    echo "#source \"\$HOME/Cloud/Github/DeepFields.SuperDeblending/Softwares/SETUP.bash\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     echo "#export PATH=\"\$PATH:\$HOME/Softwares/magphys/magphys_highz\"" >> "run_sed_fitting_magphys_priorz_for_ID_${source_name}.sh"
-    echo "cd \"ID_$source_name/SED_fitting_magphys_priorz_with_upper_limits/\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-    echo "if [[ ! -f \"magphys_fitting/fit_1_with_datatable_photometry_magphys/best-fit_SED.pdf\" ]]; then" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
+    echo "cd \"ID_$source_name/${SED_fitting_Type}/\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+    echo "if [[ ! -f \"magphys_fitting/fit_1_with_datatable_photometry_magphys/best-fit_SED.pdf\" ]]; then" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     if [[ ${#source_zspec[@]} -gt 0 ]]; then
-        echo "magphys_highz_go_a3cosmos \"datatable_photometry_magphys.txt\" -redshift \"${source_zspec[@]}\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-        echo "rm \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_z\"* 2>/dev/null" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-        echo "echo \"${source_zspec}\" > \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_zspec_known\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
+        echo "magphys_highz_go_a3cosmos \"datatable_photometry_magphys.txt\" -redshift \"${source_zspec[@]}\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+        echo "rm \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_z\"* 2>/dev/null" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+        echo "echo \"${source_zspec}\" > \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_zspec_known\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     elif [[ ${#source_zprior[@]} -gt 0 ]]; then
-        echo "magphys_highz_go_a3cosmos \"datatable_photometry_magphys.txt\" -redshift \"${source_zprior[@]}\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-        echo "rm \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_z\"* 2>/dev/null" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-        echo "echo \"${source_zprior[@]}\" > \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_zprior\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
+        echo "magphys_highz_go_a3cosmos \"datatable_photometry_magphys.txt\" -redshift \"${source_zprior[@]}\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+        echo "rm \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_z\"* 2>/dev/null" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+        echo "echo \"${source_zprior[@]}\" > \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_zprior\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     else
-        echo "rm \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_z\"* 2>/dev/null" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-        echo "echo \"No valid zspec or zphot\" > \"no_valid_z\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
+        echo "rm \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_z\"* 2>/dev/null" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+        echo "echo \"No valid zspec or zphot\" > \"no_valid_z\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     fi
-    echo "else" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-    echo "echo \"Found \\\"ID_$source_name/SED_fitting_magphys_priorz_with_upper_limits/magphys_fitting/fit_1_with_datatable_photometry_magphys/best-fit_SED.pdf\\\"! Will not overwrite!\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-    echo "fi" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-    echo "cp \"magphys_fitting/fit_1_with_datatable_photometry_magphys/best-fit_SED.pdf\" \"../../../$output_dir/Plot_SED_Magphys_${source_name}${source_alias}.pdf\"" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
-    echo "" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh"
+    echo "else" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+    echo "echo \"Found \\\"ID_$source_name/${SED_fitting_Type}/magphys_fitting/fit_1_with_datatable_photometry_magphys/best-fit_SED.pdf\\\"! Will not overwrite!\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+    echo "fi" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+    echo "cp \"magphys_fitting/fit_1_with_datatable_photometry_magphys/best-fit_SED.pdf\" \"../../../$output_dir/Plot_SED_Magphys_${source_name}${source_alias}.pdf\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+    echo "" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     
     # break
     #break
@@ -243,7 +262,7 @@ for (( i=0; i<${#source_list[@]}; i++ )); do
     
     magphys_parallel_plus_one=$(awk "BEGIN {print (${magphys_parallel}+1);}")
     k=$(awk "BEGIN {print ($i%${magphys_parallel_plus_one})}")
-    echo "./run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_${source_name}.sh" >> "run_sed_fitting_magphys_priorz_with_upper_limits_for_all_magphys${k}.sh"
+    echo "./run_${SED_fitting_Type}_for_ID_${source_name}.sh" >> "run_${SED_fitting_Type}_for_all_magphys${k}.sh"
     
 done
     
@@ -254,15 +273,15 @@ done
 
 # Then
 # 
-#if [[ ! -f "run_sed_fitting_magphys_priorz_with_upper_limits_for_all.sh" ]]; then
-#ls -1 "run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_"*".sh" | sort -V > "run_sed_fitting_magphys_priorz_with_upper_limits_for_all.sh"
+#if [[ ! -f "run_${SED_fitting_Type}_for_all.sh" ]]; then
+#ls -1 "run_${SED_fitting_Type}_for_ID_"*".sh" | sort -V > "run_${SED_fitting_Type}_for_all.sh"
 #chmod +x *.sh
 #fi
-#echo "Then please run \"almacosmos_cmd_run_in_parallel run_sed_fitting_magphys_priorz_with_upper_limits_for_all.sh\" under \"Multi-wavelength_SEDs/\"!"
+#echo "Then please run \"almacosmos_cmd_run_in_parallel run_${SED_fitting_Type}_for_all.sh\" under \"Multi-wavelength_SEDs/\"!"
 chmod +x *.sh
-echo "Then please run \"batch_run_sed_fitting_magphys_priorz_with_upper_limits_for_all.sh\" under \"Multi-wavelength_SEDs/\", "
-echo "or run each parallized MAGPHYS \"run_sed_fitting_magphys_priorz_with_upper_limits_for_all_magphys*.sh\" under \"Multi-wavelength_SEDs/\" separately, "
-echo "or run each individual SED fitting \"run_sed_fitting_magphys_priorz_with_upper_limits_for_ID_*.sh\" under \"Multi-wavelength_SEDs/\" but remember to first add MAGPHYS source code directory into \$PATH!"
+echo "Then please run \"batch_run_${SED_fitting_Type}_for_all.sh\" under \"Multi-wavelength_SEDs/\", "
+echo "or run each parallized MAGPHYS \"run_${SED_fitting_Type}_for_all_magphys*.sh\" under \"Multi-wavelength_SEDs/\" separately, "
+echo "or run each individual SED fitting \"run_${SED_fitting_Type}_for_ID_*.sh\" under \"Multi-wavelength_SEDs/\" but remember to first add MAGPHYS source code directory into \$PATH!"
 
 
 
