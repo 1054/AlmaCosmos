@@ -1,15 +1,13 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # 
 
-# pip-2.7 install --user --upgrade google-api-python-client
+# pip install --user --upgrade oauth2client google-api-python-client
 
 # code are mainly from 
 # -- https://developers.google.com/drive/v3/web/quickstart/python
 
 # before runing this code, make sure you have created credential via the following link: 
 # https://console.developers.google.com/start/api?id=drive
-
-from __future__ import print_function
 
 import os, sys, io, re
 import pkg_resources
@@ -98,26 +96,31 @@ class CAAP_Google_Drive_Operator(object):
                                                 ).execute()
             items = results.get('files', [])
             if not items:
-                print('No files found.')
+                print('No file found.')
             else:
                 print('Files:')
                 for item in items:
                     print('{0} ({1})'.format(item['name'], item['id']))
+        else:
+            print('Error! Not initialized!')
     # 
-    def get_team_drive(self):
+    def get_team_drive(self, name = ''):
         # Teamdrives
         # -- https://developers.google.com/drive/v3/reference/teamdrives
         # -- https://developers.google.com/drive/v3/reference/teamdrives/list
         if self.service:
             self.team_drive = None
+            #if name != '':
+            #    self.team_drive_name = name
             token = None
             while True:
                 try:
                     time.sleep(0.25) # Google Drive has a limit of 10 query per second per user
-                    query = self.service.teamdrives().list(pageSize=1, 
+                    query = self.service.teamdrives().list(
+                                                            pageSize=1, 
                                                             pageToken=token, 
                                                             quotaUser=self.quota_user
-                                                        ).execute()
+                                                          ).execute()
                     #print(query)
                     for item in query.get('teamDrives'):
                         #print('Team Drive Id: %s; Name: %s;'%(item['id'], item['name']))
@@ -127,7 +130,7 @@ class CAAP_Google_Drive_Operator(object):
                     token = query.get('nextPageToken')
                     if not token:
                         break
-                except errors.HttpError, error:
+                except errors.HttpError as error:
                     print('An error occurred: %s'%(error))
                     break
                 token = query.get('nextPageToken', None)
@@ -136,6 +139,133 @@ class CAAP_Google_Drive_Operator(object):
                 return
             # 
             #print('Team Drive: "%s" (Id: %s)'%(self.team_drive['name'], self.team_drive['id']))
+        else:
+            print('Error! Not initialized!')
+    # 
+    def print_all_team_drives(self):
+        # TODO: not printing all team drives, but fine for now
+        # REF: https://developers.google.com/drive/api/v3/manage-teamdrives
+        if self.service:
+            time.sleep(0.25) # Google Drive has a limit of 10 query per second per user
+            token = None
+            while True:
+                query = self.service.teamdrives().list(
+                                fields='nextPageToken, teamDrives(id, name)', 
+                                quotaUser=self.quota_user, 
+                                pageToken=token
+                            ).execute()
+                            # q='organizerCount = 0' -- find team drives without organizer
+                            # fields='nextPageToken, teamDrives(id, name)', 
+                            # useDomainAdminAccess = True, 
+                for item_team_drive in query.get('teamDrives', []):
+                    print('Found Team Drive: %s (%s)' % (
+                            item_team_drive.get('name'), 
+                            item_team_drive.get('id')
+                            # REF is wrong: item_team_drive.get('title') is not working
+                        )
+                    )
+                token = query.get('nextPageToken', None)
+                if token is None:
+                    break
+        else:
+            print('Error! Not initialized!')
+    # 
+    def print_files_in_team_drive(self, pageSize=30):
+        # TODO: untested
+        if self.service:
+            time.sleep(0.25) # Google Drive has a limit of 10 query per second per user
+            results = self.service.teamdrives().list(
+                                                      pageSize=pageSize, 
+                                                      fields="nextPageToken, files(id, name, size, mimeType, parents, md5Checksum)", 
+                                                      quotaUser=self.quota_user
+                                                    ).execute()
+            items = results.get('files', [])
+            if not items:
+                print('No file found.')
+            else:
+                print('Files:')
+                for item in items:
+                    print('{0} ({1})'.format(item['name'], item['id']))
+        else:
+            print('Error! Not initialized!')
+    # 
+    def search_folders(self, names, verbose=False):
+        return self.search_files_or_folders_by_names(names=names, folderOnly=True, verbose=verbose)
+    # 
+    def search_files(self, names, verbose=False):
+        return self.search_files_or_folders_by_names(names=names, fileOnly=True, verbose=verbose)
+    # 
+    def search_files_or_folders_by_names(self, names, fileOnly=True, folderOnly=False, trash=False, pageSize=30, verbose=False):
+        # REF: https://developers.google.com/drive/api/v3/search-parameters#team_drive_fields
+        found_items = []
+        if self.service:
+            time.sleep(0.25) # Google Drive has a limit of 10 query per second per user
+            if (type(names) is not list) and (type(names) is not tuple):
+                names = [names]
+            query_str = ''
+            item_count = 0
+            for item_name in names:
+                if item_count > 0:
+                    query_str = query_str + 'or '
+                if (not folderOnly) and (not fileOnly):
+                    item_mime_type = ''
+                elif folderOnly:
+                    item_mime_type = 'mimeType = \'application/vnd.google-apps.folder\''
+                else:
+                    item_mime_type = 'mimeType != \'application/vnd.google-apps.folder\'' # default is fileOnly
+                if trash:
+                    item_trash = 'trashed = true'
+                else:
+                    item_trash = 'trashed = false'
+                if item_name.find('*') >= 0:
+                    item_name_split = item_name.split('*')
+                    item_name_query_str = ''
+                    for item_name_piece in item_name_split:
+                        if item_name_piece != '':
+                            if item_name_query_str != '':
+                                item_name_query_str = item_name_query_str + ' and '
+                            item_name_query_str = item_name_query_str + 'name contains \'%s\'' % (item_name_piece)
+                else:
+                    item_name_query_str = 'name = \'%s\'' % (item_name)
+                query_str = query_str + '(%s and %s and %s)'%(item_trash, item_name_query_str, item_mime_type)
+                item_count = item_count + 1
+            if verbose:
+                print('Query string: %s'%(query_str))
+                print('Team drive id: %s (name: %s)'%(self.team_drive['id'], self.team_drive_name))
+            token = 'INIT'
+            while token is not None:
+                if token == 'INIT':
+                    token = None
+                results = self.service.files().list(
+                                                      q=query_str, 
+                                                      supportsTeamDrives=True, 
+                                                      includeTeamDriveItems=True, 
+                                                      teamDriveId=self.team_drive['id'], 
+                                                      corpora='teamDrive', 
+                                                      fields="nextPageToken, files(id, name, size, mimeType, parents, md5Checksum)", 
+                                                      pageToken=token, 
+                                                      pageSize=pageSize, 
+                                                      quotaUser=self.quota_user
+                                                    ).execute()
+                items = results.get('files', [])
+                token = results.get('nextPageToken', None)
+                if not items:
+                    print('No folder found.')
+                else:
+                    if len(found_items) == 0:
+                        print('Found folders:')
+                    for item in items:
+                        if item['mimeType'].find('folder') >= 0:
+                            item['url'] = 'http://drive.google.com/open?id=%s' % (item['id'])
+                            item['download_url'] = ''
+                        else:
+                            item['url'] = 'http://drive.google.com/uc?export=view&id=%s' % (item['id'])
+                            item['download_url'] = 'http://drive.google.com/uc?export=download&id=%s' % (item['id'])
+                        print('  {0} ({1})'.format(item['name'], item['url']))
+                        found_items.append(item)
+        else:
+            print('Error! Not initialized!')
+        return found_items
     # 
     def get_parents(self, input_resource):
         # Search for Files
@@ -150,10 +280,10 @@ class CAAP_Google_Drive_Operator(object):
                 try:
                     time.sleep(0.25) # Google Drive has a limit of 10 query per second per user
                     query = self.service.files().get(
-                                                        fileId=item_id, 
-                                                        supportsTeamDrives=True, 
-                                                        fields="id, name, size, mimeType, parents, md5Checksum", 
-                                                        quotaUser=self.quota_user
+                                                      fileId=item_id, 
+                                                      supportsTeamDrives=True, 
+                                                      fields="id, name, size, mimeType, parents, md5Checksum", 
+                                                      quotaUser=self.quota_user
                                                     ).execute()
                     #print(query)
                     if query is not None:
@@ -166,11 +296,14 @@ class CAAP_Google_Drive_Operator(object):
                         else:
                             item_id = None
                             break
-                except errors.HttpError, error:
+                except errors.HttpError as error:
                     print('An error occurred: %s'%(error))
                     break
         # 
         return output_parents
+    # 
+    def get_folder_by_path(self, folder_path, verbose = True):
+        return self.get_folder_by_name(folder_name=folder_path, verbose=verbose)
     # 
     def get_folder_by_name(self, folder_name, verbose = True):
         # File List Search
@@ -201,6 +334,7 @@ class CAAP_Google_Drive_Operator(object):
             #    query_str = " and name = '"+folder_name+"'"
             # 
             if len(folder_paths)>=2:
+                # if the input folder name is an absolute or relative path, we make sure the parent folders are correct
                 folder_pathi = len(folder_paths)-2
                 # len(folder_paths)-2 is the parent directory of the last element [len(folder_paths)-1]
                 if folder_paths[folder_pathi] != '*' and folder_paths[folder_pathi] != '':
@@ -245,7 +379,7 @@ class CAAP_Google_Drive_Operator(object):
                     token = query.get('nextPageToken')
                     if not token:
                         break
-                except errors.HttpError, error:
+                except errors.HttpError as error:
                     print('An error occurred: %s'%(error))
                     break
                 token = query.get('nextPageToken', None)
@@ -286,6 +420,9 @@ class CAAP_Google_Drive_Operator(object):
                         del folder_resources[folder_itemi]
             # 
         return folder_resources
+    # 
+    def get_file_by_path(self, file_path, verbose = True):
+        return self.get_file_by_name(file_name=file_path, verbose=verbose)
     # 
     def get_file_by_name(self, file_name, verbose = True):
         # File List Search
@@ -358,7 +495,7 @@ class CAAP_Google_Drive_Operator(object):
                     token = query.get('nextPageToken')
                     if not token:
                         break
-                except errors.HttpError, error:
+                except errors.HttpError as error:
                     print('An error occurred: %s'%(error))
                     break
                 token = query.get('nextPageToken', None)
@@ -447,7 +584,7 @@ class CAAP_Google_Drive_Operator(object):
                     token = query.get('nextPageToken')
                     if not token:
                         break
-                except errors.HttpError, error:
+                except errors.HttpError as error:
                     print('An error occurred: %s'%(error))
                     break
                 token = query.get('nextPageToken', None)
@@ -508,7 +645,7 @@ class CAAP_Google_Drive_Operator(object):
                     token = query.get('nextPageToken')
                     if not token:
                         break
-                except errors.HttpError, error:
+                except errors.HttpError as error:
                     print('An error occurred: %s'%(error))
                     break
                 token = query.get('nextPageToken', None)
