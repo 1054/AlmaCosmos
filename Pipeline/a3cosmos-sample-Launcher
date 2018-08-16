@@ -7,8 +7,9 @@ set -e # let bash immediately stop when got error in any subprocess
 root_dir=$(dirname "${BASH_SOURCE[0]}")/$(basename "${BASH_SOURCE[0]}" | sed -e 's/-Launcher$//g')
 list_of_step_command=()
 list_of_step_number=()
-bash_find_args=(-regextype posix-extended); if [[ $(uname -s) == "Darwin" ]]; then bash_find_args=(-E); fi
-IFS=$'\n' bash_find_results=($(find ${bash_find_args[@]} "${root_dir}" -type f -regex ".*/a_dzliu_code_step_[0-9]+_.*" | sort -V))
+bash_find_arg1=();                          if [[ $(uname -s) == "Darwin" ]]; then bash_find_arg1=(-E); fi
+bash_find_arg2=(-regextype posix-extended); if [[ $(uname -s) == "Darwin" ]]; then bash_find_arg2=(); fi
+IFS=$'\n' bash_find_results=($(find ${bash_find_arg1[@]} "${root_dir}" ${bash_find_arg2[@]} -type f -regex ".*/a_dzliu_code_step_[0-9]+_.*" | sort -V))
 
 
 # sort code into step number and sub-step number
