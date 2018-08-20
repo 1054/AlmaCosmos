@@ -238,11 +238,11 @@ for (( i=0; i<${#source_list[@]}; i++ )); do
     echo "cd \"ID_$source_name/${SED_fitting_Type}/\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     echo "if [[ ! -f \"magphys_fitting/fit_1_with_datatable_photometry_magphys/best-fit_SED.pdf\" ]]; then" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     if [[ ${#source_zspec[@]} -gt 0 ]]; then
-        echo "magphys_highz_go_a3cosmos \"datatable_photometry_magphys.txt\" -redshift \"${source_zspec[@]}\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+        echo "magphys_highz_go_a3cosmos_with_upper_limits \"datatable_photometry_magphys.txt\" -redshift \"${source_zspec[@]}\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
         echo "rm \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_z\"* 2>/dev/null" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
         echo "echo \"${source_zspec}\" > \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_zspec_known\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     elif [[ ${#source_zprior[@]} -gt 0 ]]; then
-        echo "magphys_highz_go_a3cosmos \"datatable_photometry_magphys.txt\" -redshift \"${source_zprior[@]}\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
+        echo "magphys_highz_go_a3cosmos_with_upper_limits \"datatable_photometry_magphys.txt\" -redshift \"${source_zprior[@]}\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
         echo "rm \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_z\"* 2>/dev/null" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
         echo "echo \"${source_zprior[@]}\" > \"magphys_fitting/fit_1_with_datatable_photometry_magphys/fit_with_zprior\"" >> "run_${SED_fitting_Type}_for_ID_${source_name}.sh"
     else
