@@ -21,15 +21,16 @@ tb = None
 with open(input_list_of_catalog, 'r') as fp:
     for line in fp:
         tbfile = input_root+os.sep+line.rstrip('\n')
-        tb1 = Table.read(tbfile)
-        if len(tb1) > 0:
-            col1 = np.empty(len(tb1), dtype='|S255')
-            col1[:] = os.path.basename(os.path.dirname(tbfile))+'.fits'
-            tb1['Image'] = col1
-            if tb is None:
-                tb = tb1
-            else:
-                tb = vstack([tb,tb1])
+        if os.path.isfile(tbfile):
+            tb1 = Table.read(tbfile)
+            if len(tb1) > 0:
+                col1 = np.empty(len(tb1), dtype='|S255')
+                col1[:] = os.path.basename(os.path.dirname(tbfile))+'.fits'
+                tb1['Image'] = col1
+                if tb is None:
+                    tb = tb1
+                else:
+                    tb = vstack([tb,tb1])
     if tb is not None:
         tb.write(output_name, overwrite=True)
         print('Output to "%s"!' % (output_name))
