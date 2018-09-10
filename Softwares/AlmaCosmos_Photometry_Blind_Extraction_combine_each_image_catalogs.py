@@ -19,8 +19,8 @@ output_name = 'Output_Blind_Extraction_Photometry_PyBDSM_%s.fits'%(datetime.toda
 
 tb = None
 with open(input_list_of_catalog, 'r') as fp:
-    for line in fp:
-        tb1 = Table.read(line)
+    for line in fp.lines():
+        tb1 = Table.read(input_root + os.sep + line)
         if len(tb1) > 0:
             col1 = np.empty(len(tb1), dtype='|S255')
             col1[:] = os.path.basename(os.path.dirname(line))+'.fits'
