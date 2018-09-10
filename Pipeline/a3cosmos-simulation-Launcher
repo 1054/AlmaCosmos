@@ -1,0 +1,171 @@
+#!/bin/bash
+# 
+
+set -e # let bash immediately stop when got error in any subprocess
+
+
+root_dir=$(dirname "${BASH_SOURCE[0]}")/$(basename "${BASH_SOURCE[0]}" | sed -e 's/-Launcher$//g')
+list_of_step_command=()
+list_of_step_number=()
+bash_find_arg1=();                          if [[ $(uname -s) == "Darwin" ]]; then bash_find_arg1=(-E); fi
+bash_find_arg2=(-regextype posix-extended); if [[ $(uname -s) == "Darwin" ]]; then bash_find_arg2=(); fi
+IFS=$'\n' bash_find_results=($(find ${bash_find_arg1[@]} "${root_dir}" ${bash_find_arg2[@]} -type f -regex ".*/a_dzliu_code_step_[0-9]+_.*" | sort -V))
+
+
+# sort code into step number and sub-step number
+i1=0
+i2=1
+j1=-1
+for (( i = 0; i < ${#bash_find_results[@]}; i++ )); do
+    j2=$(basename "${bash_find_results[i]}" | perl -p -e 's/a_dzliu_code_step_([0-9]+)_.*/\1/g')
+    if [[ $j1 -gt 0 ]] && [[ $j2 -eq $j1 ]]; then
+        # if the same step_[0-9]+, then cumulate sub-step number
+        i2=$((i2+1))
+    else
+        i1=$((i1+1))
+        i2=1
+    fi
+    list_of_step_command+=($(basename "${bash_find_results[i]}"))
+    list_of_step_number+=("${i1}.${i2}")
+    #echo "${i1}.${i2}" $(basename "${bash_find_results[i]}" | cut -b 1-120)
+    j1=$j2
+done
+
+
+# read and check code input and output files
+list_of_step_input_files_check=()
+list_of_step_output_files_check=()
+for (( i = 0; i < ${#list_of_step_number[@]}; i++ )); do
+    # read code documentation
+    #set -f # prevent bash from expanding glob
+    IFS=$'\n' code_input_files=($(cat "${root_dir}/${list_of_step_command[i]}" | grep '^#__DOCUMENTATION__' | sed -e 's/^#__DOCUMENTATION__ *//g' | sed -e 's/ *$//g' | awk "/^Input Files:/ {flag=1;next;}; /^$/ && flag {flag=0;}; flag;"))
+    IFS=$'\n' code_output_files=($(cat "${root_dir}/${list_of_step_command[i]}" | grep '^#__DOCUMENTATION__' | sed -e 's/^#__DOCUMENTATION__ *//g' | sed -e 's/ *$//g' | awk "/^Output Files:/ {flag=1;next;}; /^$/ && flag {flag=0;}; flag;"))
+    #set +f # back to original globbing behavior for remainder of script...
+    
+    #echo "  input files: "
+    check_input_files=1
+    for (( j = 0; j < ${#code_input_files[@]}; j++ )); do
+        #echo "    ${code_input_files[j]}"
+        if [[ x"${code_input_files[j]}" != x*"*"* ]]; then
+            if [[ ! -f "${code_input_files[j]}" ]] && [[ ! -d "${code_input_files[j]}" ]] && [[ ! -L "${code_input_files[j]}" ]]; then
+                code_input_files=0 # file required but not found
+            fi
+        fi
+    done
+    if [[ ${#code_input_files[@]} -eq 0 ]]; then
+        check_input_files=-1 # no file found
+    fi
+    list_of_step_input_files_check+=($check_input_files)
+    
+    check_output_files=1
+    #echo "  output files: "
+    for (( j = 0; j < ${#code_output_files[@]}; j++ )); do
+        #echo "    \""${code_output_files[j]}"\""
+        if [[ x"${code_output_files[j]}" != x*"*"* ]]; then
+            if [[ ! -f "${code_output_files[j]}" ]] && [[ ! -d "${code_output_files[j]}" ]] && [[ ! -L "${code_output_files[j]}" ]]; then
+                check_output_files=0 # file required but not found
+            fi
+        fi
+    done
+    if [[ ${#code_output_files[@]} -eq 0 ]]; then
+        check_output_files=-1 # no file found
+    fi
+    list_of_step_output_files_check+=($check_output_files)
+    
+    # print each step
+    if [[ $check_input_files -eq 1 ]]; then
+        if [[ $LC_CTYPE =~ \.?[Uu][Tt][Ff]-?8 ]]; then
+            print_input_files_check=" \033[30;42m[inputs ready$(perl -CO -E 'say chr 0x1f600')]\033[0m" # green bg
+        else
+            print_input_files_check=" \033[30;42m[inputs ready !]\033[0m" # green bg
+        fi
+    elif [[ $check_input_files -eq -1 ]]; then
+        print_input_files_check=" \033[30;100m[inputs not set]\033[0m" # gray bg
+    else
+        print_input_files_check=" \033[30;101m[inputs invalid]\033[0m" # red bg
+    fi
+    if [[ $check_output_files -eq 1 ]]; then
+        if [[ $LC_CTYPE =~ \.?[Uu][Tt][Ff]-?8 ]]; then
+            print_output_files_check="\033[30;42m[outputs ready$(perl -CO -E 'say chr 0x1f600')]\033[0m" # green bg
+        else
+            print_output_files_check="\033[30;42m[outputs ready !]\033[0m" # green bg
+        fi
+    elif [[ $check_output_files -eq -1 ]]; then
+        print_output_files_check="\033[30;100m[outputs not set]\033[0m" # gray bg
+    else
+        print_output_files_check="\033[30;101m[outputs invalid]\033[0m" # red bg
+    fi
+    print_step_number="\033[1mStep ${list_of_step_number[i]}\033[0m"
+    print_step_command=$(printf "%-120s" "${list_of_step_command[i]}" | cut -b 1-120 | sed 's/[^ ][^ ][^ ]$/.../g')
+    printf "${print_step_number} \"${print_step_command}\" ${print_input_files_check} ${print_output_files_check}\n"
+done
+
+
+# read user input with default value
+#user_input_check=1
+#user_input_prompt="Please input step number: "
+#user_input_string="1"
+#user_input_first_char=""
+#echo -n "${user_input_prompt}${user_input_string}"
+#read -n 1 user_input_first_char
+#if [[ x"${user_input_first_char}" != x"" ]]; then
+#    if [[ x"$(echo ${user_input_first_char} | tr -cd '[:print:]')" == x"" ]]; then
+#        user_input_first_char=""
+#    fi
+#    #echo -e -n "\r$(tput el)${user_input_prompt}${user_input_first_char}" # $(tput el) is used to clear things to the end
+#    echo -e -n "\r${user_input_prompt}${user_input_first_char}           " # clear the prompt and the first char to the end of the line. in some cases the first char is a multi-byte char or control sequence so we need more white spaces to clear it.
+#    echo -e -n "\r${user_input_prompt}${user_input_first_char}" # then print the prompt and the first char
+#    read user_input_string
+#    user_input_string="$(echo ${user_input_first_char}${user_input_string} | tr -cd '[:print:]')"
+#fi
+## Check again the input is not empty
+#if [[ x"$user_input_string" != x ]]; then
+#    user_input_check=1
+#fi
+## 
+#echo "user_input_string = $user_input_string"
+
+
+user_input_prompt="Please input step number: "
+echo -n "${user_input_prompt}"
+read user_input_step_number
+user_input_step_number="$(echo ${user_input_step_number} | tr -cd '[:print:]')"
+if [[ x"${user_input_step_number}" != x*"."* ]]; then
+    user_input_step_number="${user_input_step_number}.1" # append sub-step number 1 if not given
+fi
+
+
+user_selected_step_index=-1
+for (( i = 0; i < ${#list_of_step_command[@]}; i++ )); do
+    if [[ "${list_of_step_number[i]}" == "${user_input_step_number}" ]]; then
+        echo "Selecting step ${user_input_step_number}"
+        user_selected_step_index=$i
+    fi
+done
+if [[ $user_selected_step_index -lt 0 ]]; then
+    echo "No valid step number selected! Abort!"
+    exit
+fi
+if [[ ${list_of_step_input_files_check[$user_selected_step_index]} != 1 ]]; then
+    echo "Error! The input files are invalid for the selected step ${list_of_step_number[user_selected_step_index]}! Exit!"
+    exit
+fi
+if [[ ${list_of_step_output_files_check[$user_selected_step_index]} == 1 ]]; then
+    echo "Error! The output files are valid for the selected step ${list_of_step_number[user_selected_step_index]}! We will not re-run the code!"
+    exit
+fi
+
+
+user_input_prompt="Please input running arguments: "
+echo -n "${user_input_prompt}"
+read user_input_args
+user_input_args="$(echo ${user_input_args} | tr -cd '[:print:]')"
+
+echo "We will run: "
+echo "${root_dir}/${list_of_step_command[user_selected_step_index]} ${user_input_args}"
+
+
+
+
+
+

@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # 
 
-# pip-3.6 install --user --upgrade google-api-python-client
+# pip install --user --upgrade google-api-python-client
 
 # code are mainly from 
 # -- https://developers.google.com/drive/v3/web/quickstart/python
@@ -23,6 +23,8 @@ foo.print_all_team_drives()
 #foo.get_folder_by_name('Samples')
 #foo.search_files('Samples')
 folders = foo.search_folders('Samples', verbose=True)
+folders = foo.search_files('OptiLIB_bc03_highz.params', verbose=True)
+
 
 
 

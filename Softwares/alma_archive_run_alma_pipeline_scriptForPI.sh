@@ -117,8 +117,8 @@ check_and_concat_calibrated_ms() {
                 if [[ $(find "$script_dir/calibrated/calibrated_final.ms/" -mindepth 1 -maxdepth 1 | wc -l) -eq 0 ]]; then
                     echo "Warning! \"$script_dir/calibrated/calibrated_final.ms\" is empty! Deleting it!"
                     echo "rm -r \"$script_dir/calibrated/calibrated_final.ms\""
-                    echo "*************************** dry-run *************************"
-                    #rm -r "$script_dir/calibrated/calibrated_final.ms"
+                    #echo "*************************** dry-run *************************"
+                    rm -r "$script_dir/calibrated/calibrated_final.ms"
                 fi
             fi
             if [[ -d "$script_dir/calibrated/calibrated_final.ms" ]] || [[ -L "$script_dir/calibrated/calibrated_final.ms" ]]; then
@@ -130,8 +130,8 @@ check_and_concat_calibrated_ms() {
                     if [[ $(find "$script_dir/calibrated/calibrated.ms/" -mindepth 1 -maxdepth 1 | wc -l) -eq 0 ]]; then
                         echo "Warning! \"$script_dir/calibrated/calibrated.ms\" is empty! Deleting it!"
                         echo "rm -r \"$script_dir/calibrated/calibrated.ms\""
-                        echo "*************************** dry-run *************************"
-                        #rm -r "$script_dir/calibrated/calibrated.ms"
+                        #echo "*************************** dry-run *************************"
+                        rm -r "$script_dir/calibrated/calibrated.ms"
                     fi
                 fi
                 if [[ -d "$script_dir/calibrated/calibrated.ms" ]] || [[ -L "$script_dir/calibrated/calibrated.ms" ]]; then
@@ -190,8 +190,8 @@ check_and_concat_calibrated_ms() {
                         # if not, then detele the whole "calibrated" directory
                         echo "Found \"$script_dir/calibrated\" but no \"calibrated_final.ms\", \"calibrated.ms\" or \"uid___*.ms.split.cal\"! Will delete this \"calibrated\" directory!"
                         echo "rm -r \"$script_dir/calibrated\""
-                        echo "*************************** dry-run *************************"
-                        #rm -r "$script_dir/calibrated" #<TODO><dry-run>#
+                        #echo "*************************** dry-run *************************"
+                        rm -r "$script_dir/calibrated"
                     fi
                 fi
             fi

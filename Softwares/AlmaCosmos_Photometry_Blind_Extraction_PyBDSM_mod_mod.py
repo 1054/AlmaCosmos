@@ -337,7 +337,7 @@ for i in range(len(input_fits_files)):
     # 
     # in default 'bdsf' will create a '*.pybdsf.log' at the input fits file directory
     if os.access(os.path.dirname(input_fits_file), os.W_OK):
-        os.system('mv "%s" "%s"'%(os.path.basename(input_fits_file)+'.pybdsf.log', output_log.replace('.log','.pybdsf.log')))
+        os.system('mv "%s" "%s"'%(input_fits_file+'.pybdsf.log', output_log.replace('.log','.pybdsf.log')))
     else:
         logfilepath2 = input_fits_file
         os.system('mv "%s" "%s"'%(logfilepath2.replace(os.sep,'.')+'.pybdsf.log', output_log.replace('.log','.pybdsf.log')))
