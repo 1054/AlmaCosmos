@@ -158,11 +158,11 @@ while i < len(sys.argv):
         # check input arg str
         if temp_arg_str == '-start':
             if i+1 <= len(sys.argv)-1:
-                input_loop_start = long(sys.argv[i+1])
+                input_loop_start = long(sys.argv[i+1]) # the number starts from 1
                 i = i + 1
         elif temp_arg_str == '-end':
             if i+1 <= len(sys.argv)-1:
-                input_loop_end = long(sys.argv[i+1])
+                input_loop_end = long(sys.argv[i+1]) # the number starts from 1
                 i = i + 1
         elif temp_arg_str == '-rms' or temp_arg_str == '-rms-value':
             if i+1 <= len(sys.argv)-1:
@@ -301,6 +301,7 @@ for i in range(len(input_fits_files)):
         print('%s'%('*'*80))
         print('Warning! Found existing log file "%s"! Will not overwrite unless the option "-overwrite" is given!'%(output_log))
         print('')
+        os.system('echo "%s" >> "%s"'%(input_fits_base + os.sep + 'pybdsm_cat.fits', output_list_of_catalog))
         continue
     # 
     # prepare logger
