@@ -92,6 +92,9 @@ if len(sys.argv) <= 1:
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -thresh_pix               # (new parameter to tune, default 3.0)')
     print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -thresh_rms               # (new parameter to tune, default 4.0)')
     print('    ')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -start 1 -end 100         # (input a list of fits files then process only a range of them)')
+    print('    AlmaCosmos_Photometry_Blind_Extraction_PyBDSM.py "ALMA_Image_List.txt" -start 101 -end 200       # (input a list of fits files then process only a range of them)')
+    print('    ')
     sys.exit()
 
 
@@ -123,6 +126,7 @@ input_fits_files = []
 input_list_files = []
 input_loop_start = -1
 input_loop_end = -1
+input_rms_image = '' #<TODO><20180910><dzliu># can we input an rms fits image? currently PyBDSM does not support this.
 input_rms_value = -99
 input_ini_gausfit = 'default'
 input_peak_fit = True # whether to find and fit peaks of large islands before fitting entire island
@@ -135,6 +139,8 @@ input_thresh_rms = 3.0
 input_thresh_pix = 4.0
 input_group_by_isl = True
 output_root = 'Output_Blind_Extraction_Photometry_PyBDSM'
+
+overwrite = False
 
 i = 1
 while i < len(sys.argv):
@@ -161,6 +167,10 @@ while i < len(sys.argv):
         elif temp_arg_str == '-rms' or temp_arg_str == '-rms-value':
             if i+1 <= len(sys.argv)-1:
                 input_rms_value = float(sys.argv[i+1])
+                i = i + 1
+        elif temp_arg_str == '-rms-map' or temp_arg_str == '-rms-image':
+            if i+1 <= len(sys.argv)-1:
+                input_rms_image = sys.argv[i+1] #<TODO><20180910><dzliu># can we input an rms fits image? currently PyBDSM does not support this.
                 i = i + 1
         elif temp_arg_str == '-out' or temp_arg_str == '-output-dir':
             if i+1 <= len(sys.argv)-1:
@@ -225,6 +235,9 @@ while i < len(sys.argv):
             temp_arg_str == '-group-by-gaussian':
             input_group_by_isl = False
             print('Setting group_by_isl to %s'%(input_group_by_isl))
+        elif temp_arg_str == '-overwrite':
+            overwrite = True
+            print('Setting overwrite to %s'%(overwrite))
     else:
         if os.path.isfile(sys.argv[i]):
             with open(sys.argv[i]) as fp:
@@ -282,6 +295,15 @@ for i in range(len(input_fits_files)):
         continue
     output_dir = output_root + os.sep + input_fits_base
     output_log = output_root + os.sep + input_fits_base + '.log'
+    # 
+    # check overwriting (20180910)
+    if os.path.isfile(output_log) and not overwrite:
+        print('%s'%('*'*80))
+        print('Warning! Found existing log file "%s"! Will not overwrite unless the option "-overwrite" is given!'%(output_log))
+        print('')
+        continue
+    # 
+    # prepare logger
     sys_stdout = sys.stdout
     sys.stdout = Logger(output_log)
     print('%s'%('*'*80))
