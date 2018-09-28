@@ -32,11 +32,11 @@ debug = False # False #<TODO>#
 # 
 # backup existing files
 if os.path.isfile('query_ALMA_archive_integration_time.txt'):
-    os.system('cp output_integration_time.txt output_integration_time.txt.backup')
+    os.system('cp query_ALMA_archive_integration_time.txt query_ALMA_archive_integration_time.txt.backup')
 if os.path.isfile('query_ALMA_archive_observation_date.txt'):
-    os.system('cp output_observation_date.txt output_observation_date.txt.backup')
+    os.system('cp query_ALMA_archive_observation_date.txt query_ALMA_archive_observation_date.txt.backup')
 if os.path.isfile('query_ALMA_archive_frequency_support.txt'):
-    os.system('cp output_frequency_support.txt output_frequency_support.txt.backup')
+    os.system('cp query_ALMA_archive_frequency_support.txt query_ALMA_archive_frequency_support.txt.backup')
 
 
 # 
@@ -84,6 +84,7 @@ while i < len(input_meta_table):
     source_ra = input_meta_table['OBSRA'][i]
     source_dec = input_meta_table['OBSDEC'][i]
     source_name_alma = input_meta_table['source'][i]
+    source_name_alma = re.sub(r'^[_]*(.*)[_]*$', r'\1', source_name_alma)
     frequency_range = r'%0.5f .. %0.5f'%(2.99792458e5 / input_meta_table['wavelength'][i] - 7.5 - 3.5, 2.99792458e5 / input_meta_table['wavelength'][i] + 7.5 + 3.5)
     #start_date = re.sub(r'([0-9]+-[0-9]+-[0-9]+)T([0-9]+:[0-9]+:[0-9]+)\.[0-9]+', r'\1 \2', start_date)
     start_date = parser.parse(start_date)
