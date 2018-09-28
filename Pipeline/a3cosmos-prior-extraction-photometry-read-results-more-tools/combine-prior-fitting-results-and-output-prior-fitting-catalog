@@ -52,7 +52,7 @@ echo "Reading ${str_Fit} results and output ${str_Type}!"
 # convert the data table, delete columns, convert all flux units to Jy or Jy/beam, and angular size units to degrees.
 if [[ $use_Gaussian -eq 1 ]]; then
     topcat -stilts tmatchn \
-                nin=3 \
+                nin=4 \
                 in1="Read_Results_all_final_${str_Fit}.result.all.txt" \
                 icmd1="replacecol pix_noise -name \"pix_noise_1\" pix_noise" \
                 icmd1="replacecol pix_scale -name \"pix_scale_1\" pix_scale" \
@@ -72,19 +72,26 @@ if [[ $use_Gaussian -eq 1 ]]; then
                 icmd3="replacecol image_file -name \"image_file_3\" image_file" \
                 ifmt3=ascii \
                 values3="index" \
+                in4="Read_Results_all_final_${str_Fit}.result.flux_origin.txt" \
+                icmd4="delcols \"cat_index\"" \
+                icmd4="replacecol cat_id -name \"cat_id_4\" cat_id" \
+                icmd4="replacecol image_file -name \"image_file_4\" image_file" \
+                ifmt4=ascii \
+                values4="index" \
                 matcher=exact \
                 ofmt=fits \
                 ocmd="select \"(flag_buffer==0)\"" \
                 ocmd="addcol ID \"id_${str_Fit}_str\"" \
                 ocmd="addcol RA \"ra_${str_Fit}\"" \
                 ocmd="addcol Dec \"dec_${str_Fit}\"" \
-                ocmd="addcol Total_flux -units \"Jy\" \"f\"" \
+                ocmd="addcol Total_flux -units \"Jy\" \"source_total\"" \
                 ocmd="addcol E_Total_flux -units \"Jy\" \"source_total_err\"" \
                 ocmd="addcol Galfit_flux -units \"Jy\" \"f_${str_Fit}/1e3\"" \
                 ocmd="addcol E_Galfit_flux -units \"Jy\" \"df_${str_Fit}/1e3\"" \
                 ocmd="addcol Peak_flux -units \"Jy\" \"source_peak\"" \
                 ocmd="addcol E_Peak_flux -units \"Jy\" \"source_peak_err\"" \
                 ocmd="addcol Residual_flux -units \"Jy\" \"fres_${str_Fit}/1e3\"" \
+                ocmd="addcol Origin_flux -units \"Jy\" \"f_origin\"" \
                 ocmd="addcol Total_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3\"" \
                 ocmd="addcol Peak_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3/flux_conv/sqrt(convol_area_in_pix)\"" \
                 ocmd="addcol RMS -units \"Jy/beam\" \"Peak_RMS\"" \

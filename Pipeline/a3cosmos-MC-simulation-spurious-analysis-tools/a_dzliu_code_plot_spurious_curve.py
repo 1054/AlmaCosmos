@@ -36,7 +36,7 @@ ax = fig.add_subplot(1,1,1)
 ax.plot(differential_curve['snr'], differential_curve['spur'], color=color_curve, marker='o', markersize=3, linestyle='none', label='Differential', zorder=9)
 ax.plot(differential_curve['snr'], differential_curve['spur'], color=color_curve, marker='.', markersize=1, linestyle='-', lw=1, label='_nolegend_', zorder=8)
 # 
-ax.plot(cumulative_curve['snr'], cumulative_curve['spur'], markerfacecolor='none', markeredgecolor=color_curve, marker='o', markersize=4, linestyle='none', label='Cumultaive')
+ax.plot(cumulative_curve['snr'], cumulative_curve['spur'], markerfacecolor='none', markeredgecolor=color_curve, marker='o', markersize=4, linestyle='none', label='Cumulative')
 ax.plot(cumulative_curve['snr'], cumulative_curve['spur'], color=color_curve, marker='.', markersize=1, linestyle='dotted', lw=1, label='_nolegend_')
 # 
 ax.set_xlabel('$S_{peak,rec.}\,/\,rms\,noise$', fontsize=15)

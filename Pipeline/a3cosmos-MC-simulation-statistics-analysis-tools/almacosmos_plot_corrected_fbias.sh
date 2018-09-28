@@ -1,21 +1,24 @@
 #!/bin/bash
 # 
 
+set -e
+
+
 if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     Data_type="PHYS-GALFIT"
-    SNR_peak="3.77"
+    SNR_peak="4.35"
     SNR_peak_cut="3.0"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]] || [[ $(pwd) == *"Aravena"* ]]; then
     Data_type="PHYS-PYBDSM"
-    SNR_peak="5.35"
+    SNR_peak="5.40"
     SNR_peak_cut="4.0" # cut the data point because PyBDSM thresh_pix = 4.0
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
     Data_type="FULL-GALFIT"
-    SNR_peak="3.77"
+    SNR_peak="4.35"
     SNR_peak_cut="3.0"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSM"* ]]; then
     Data_type="FULL-PYBDSM"
-    SNR_peak="5.35"
+    SNR_peak="5.40"
     SNR_peak_cut="4.0" # cut the data point because PyBDSM thresh_pix = 4.0
 fi
 
@@ -29,7 +32,7 @@ topcat -stilts plot2plane \
                 ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true \
                 ylog=false \
-                xmin=1 xmax=500 ymin=-1.25 ymax=1.25 \
+                xmin=3 xmax=100 ymin=-1.25 ymax=1.25 \
                 \
                 layer1=mark \
                 shape1=filled_circle \
@@ -39,18 +42,17 @@ topcat -stilts plot2plane \
                 ifmt1=ascii \
                 icmd1="sort x2" \
                 icmd1="select \"(x1>= $SNR_peak_cut )\"" \
-                leglabel1="$Data_type" \
+                leglabel1="\large $Data_type" \
                 x1='x1' \
                 y1='fbias' \
                 \
-                aux='x2' auxvisible=false auxmap=rainbow2 auxflip=true auxfunc=log auxmin=1.0 auxmax=4.0 \
+                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxmin=1.0 auxmax=4.0 auxlabel="\large \Theta_{beam}" \
                 \
                 layer3=function \
                 fexpr3='0.0' \
                 color3=black \
                 antialias3=true \
                 thick3=1 \
-                leglabel3='\footnotesize Y=0' \
                 \
                 layer2=function \
                 axis2=Vertical \
@@ -59,11 +61,14 @@ topcat -stilts plot2plane \
                 color2=black \
                 antialias2=true \
                 thick2=1 \
-                leglabel2="\footnotesize S/N_{peak}=$SNR_peak" \
+                leglabel2="S/N_{peak}=$SNR_peak" \
                 \
-                legpos=0.04,0.98 \
+                legpos=0.98,0.98 \
                 seq="1,2,3" \
-                fontsize=16 \
+                legseq="1,2" \
+                legborder=false \
+                legopaque=false \
+                fontsize=18 \
                 texttype=latex \
                 aspect=1.0 \
                 omode=out \

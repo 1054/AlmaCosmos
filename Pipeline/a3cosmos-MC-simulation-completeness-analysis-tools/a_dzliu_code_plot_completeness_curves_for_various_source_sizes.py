@@ -63,7 +63,7 @@ ax.plot(differential_curve_2_3['snr'], 1.0-differential_curve_2_3['incomp'], col
 ax.plot(differential_curve_3_4['snr'], 1.0-differential_curve_3_4['incomp'], color=color_curve_3_4, marker='.', markersize=1, linestyle='-', lw=1, label='_nolegend_', zorder=8)
 ax.plot(differential_curve_4_5['snr'], 1.0-differential_curve_4_5['incomp'], color=color_curve_4_5, marker='.', markersize=1, linestyle='-', lw=1, label='_nolegend_', zorder=8)
 #
-ax.plot(cumulative_curve_1_2['snr'], 1.0-cumulative_curve_1_2['incomp'], markerfacecolor='none', markeredgecolor=color_curve_1_2, marker='o', markersize=4, linestyle='none', label='Cumultaive')
+ax.plot(cumulative_curve_1_2['snr'], 1.0-cumulative_curve_1_2['incomp'], markerfacecolor='none', markeredgecolor=color_curve_1_2, marker='o', markersize=4, linestyle='none', label='Cumulative')
 ax.plot(cumulative_curve_2_3['snr'], 1.0-cumulative_curve_2_3['incomp'], markerfacecolor='none', markeredgecolor=color_curve_2_3, marker='o', markersize=4, linestyle='none', label='_nolegend_')
 ax.plot(cumulative_curve_3_4['snr'], 1.0-cumulative_curve_3_4['incomp'], markerfacecolor='none', markeredgecolor=color_curve_3_4, marker='o', markersize=4, linestyle='none', label='_nolegend_')
 ax.plot(cumulative_curve_4_5['snr'], 1.0-cumulative_curve_4_5['incomp'], markerfacecolor='none', markeredgecolor=color_curve_4_5, marker='o', markersize=4, linestyle='none', label='_nolegend_')
@@ -77,7 +77,7 @@ ax.plot(cumulative_curve_4_5['snr'], 1.0-cumulative_curve_4_5['incomp'], color=c
 ax.fill_between(differential_curve_ref['snr'], (1.0-differential_curve_ref['incomp']/width_of_curve_ref), (1.0-differential_curve_ref['incomp']*width_of_curve_ref), edgecolor=color_curve_ref, facecolor='none', alpha=0.2, hatch='\\\\\\\\\\', lw=0, label='_nolegend_', zorder=1)
 ax.fill_between(differential_curve_ref['snr'], (1.0-differential_curve_ref['incomp']/width_of_curve_ref), (1.0-differential_curve_ref['incomp']*width_of_curve_ref), color=color_curve_ref, alpha=0.2, lw=0, label='_nolegend_', zorder=1)
 # 
-ax.set_xlabel('$S_{peak,sim.}\,/\,rms\,noise$', fontsize=15)
+ax.set_xlabel(r'$S_{\mathrm{peak,sim.}}\,/\,\mathrm{rms\,noise}$', fontsize=15)
 ax.set_ylabel('Completeness', fontsize=15)
 ax.set_xscale('log')
 ax.set_xlim([1,500])

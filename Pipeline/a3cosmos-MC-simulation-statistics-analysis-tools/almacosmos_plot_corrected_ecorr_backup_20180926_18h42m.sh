@@ -29,36 +29,38 @@ topcat -stilts plot2plane \
                 in1='datatable_applied_correction_ecorr.txt' \
                 ifmt1=ascii \
                 icmd1='sort x2' \
-                leglabel1="\large $Data_type" \
+                leglabel1="$Data_type" \
                 x1='x1' \
                 y1='ecorr' \
                 \
-                aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxmin=1.0 auxmax=5.0 auxlabel="\large \Theta_{beam}" \
+                aux='x2' auxvisible=false auxmap=rainbow2 auxflip=true auxfunc=log auxmin=1.0 auxmax=5.0 \
                 \
                 layer3=function \
                 fexpr3='sqrt(1.*8/(pow((1+1/1.),1.5)*pow((1+1/1.),1.5)) + 8/(pow((1+1/1.),2.5)*pow((1+1/1.),0.5)) + 8/(pow((1+1/1.),0.5)*pow((1+1/1.),2.5)))' \
                 color3=blue \
                 antialias3=true \
                 thick3=2 \
+                leglabel3="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
                 \
                 layer4=function \
                 fexpr4='sqrt(4.*8/(pow((1+1/4.),1.5)*pow((1+1/4.),1.5)) + 8/(pow((1+1/4.),2.5)*pow((1+1/4.),0.5)) + 8/(pow((1+1/4.),0.5)*pow((1+1/4.),2.5)))' \
                 color4='#47FEE3' \
                 antialias4=true \
                 thick4=2 \
+                leglabel4="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
                 \
                 layer5=function \
                 fexpr5='sqrt(25.*8/(pow((1+1/25.),1.5)*pow((1+1/25.),1.5)) + 8/(pow((1+1/25.),2.5)*pow((1+1/25.),0.5)) + 8/(pow((1+1/25.),0.5)*pow((1+1/25.),2.5)))' \
                 color5=red \
                 antialias5=true \
                 thick5=2 \
+                leglabel5="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
                 \
                 legend=true \
                 legborder=false \
                 legopaque=false \
-                legseq="1" \
-                legpos=0.98,0.98 \
-                fontsize=18 \
+                legpos=0.04,0.98 \
+                fontsize=16 \
                 texttype=latex \
                 omode=out \
                 out='Plot_corrected_ecorr.pdf'
@@ -67,10 +69,6 @@ topcat -stilts plot2plane \
                 # 
                 # 2018-05-31 removed the color bar because this figure will be shown with another figure sharing the color bar
                 #aux='x2' auxvisible=true auxmap=rainbow2 auxflip=true auxfunc=log auxlabel="\large \Theta_{beam}" auxmin=1.0 auxmax=5.0 \
-                # 
-                # leglabel3="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
-                # leglabel4="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
-                # leglabel5="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
                 # 
 echo "Output to \"Plot_corrected_ecorr.pdf\"!"
 convert -density 240 -geometry x800 "Plot_corrected_ecorr.pdf" "Plot_corrected_ecorr.png"
@@ -82,7 +80,7 @@ if [[ ! -f 'datatable_applied_correction_ecorr_with_more_columns.txt' ]]; then
 topcat -stilts tmatchn \
                 nin=2 \
                 in1='datatable_applied_correction_ecorr.txt' ifmt1=ascii \
-                in2='../../simu_data_input.txt' ifmt2=ascii icmd2="keepcols \"S_peak noise Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
+                in2='../simu_data_input.txt' ifmt2=ascii icmd2="keepcols \"S_peak noise Maj_out Min_out Maj_beam Min_beam image_file_STR simu_name_STR\"" \
                 values1='index' values2='index' \
                 suffix1="" \
                 matcher=exact multimode=pairs iref=1 \

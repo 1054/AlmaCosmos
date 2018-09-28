@@ -9,6 +9,7 @@ except ImportError:
 pkg_resources.require("numpy")
 pkg_resources.require("astropy")
 pkg_resources.require("scipy")
+pkg_resources.require("matplotlib")
 
 import os, sys, json
 from copy import copy
@@ -53,7 +54,7 @@ import astropy
 import astropy.io.ascii as asciitable
 import scipy.optimize
 import matplotlib
-#from matplotlib import pyplot
+from matplotlib import pyplot
 from pprint import pprint
 sys.path.insert(1,os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
 from CrabTable import *
