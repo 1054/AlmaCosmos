@@ -9,47 +9,71 @@ if len(sys.argv) <= 1:
     print('')
     sys.exit()
 
+import numpy as np, time, json
 import astropy
 from astropy.table import Table
-
-input_meta_table_file = sys.argv[1]
-#output_meta_table_file = sys.argv[2]
-
-input_meta_table = Table.read(input_meta_table_file)
-print(input_meta_table.columns)
-
-
+from astropy.coordinates import SkyCoord
+from astropy import units as u
 from astroquery import alma
 from astroquery.alma import Alma
 from datetime import datetime, timedelta
 from dateutil import parser
-import numpy, time, json
 
+
+
+# 
+# read user input
+input_meta_table_file = sys.argv[1]
+#output_meta_table_file = sys.argv[2]
+
+debug = False # False #<TODO># 
+
+
+# 
+# backup existing files
+if os.path.isfile('query_ALMA_archive_integration_time.txt'):
+    os.system('cp output_integration_time.txt output_integration_time.txt.backup')
+if os.path.isfile('query_ALMA_archive_observation_date.txt'):
+    os.system('cp output_observation_date.txt output_observation_date.txt.backup')
+if os.path.isfile('query_ALMA_archive_frequency_support.txt'):
+    os.system('cp output_frequency_support.txt output_frequency_support.txt.backup')
+
+
+# 
+# read input_meta_table
+input_meta_table = Table.read(input_meta_table_file)
+print(input_meta_table.columns)
+
+
+# 
+# load previous query results
 output_integration_time = []
-debug = False #<TODO># 
-if os.path.isfile('output_integration_time.txt'):
-    with open('output_integration_time.txt', 'r') as fp:
+if os.path.isfile('query_ALMA_archive_integration_time.txt'):
+    with open('query_ALMA_archive_integration_time.txt', 'r') as fp:
         output_integration_time = json.load(fp)
     if type(output_integration_time) is not list:
         output_integration_time = [output_integration_time]
 
 output_observation_date = []
-if os.path.isfile('output_observation_date.txt'):
-    with open('output_observation_date.txt', 'r') as fp:
+if os.path.isfile('query_ALMA_archive_observation_date.txt'):
+    with open('query_ALMA_archive_observation_date.txt', 'r') as fp:
         output_observation_date = json.load(fp)
     if type(output_observation_date) is not list:
         output_observation_date = [output_observation_date]
 
 output_frequency_support = []
-if os.path.isfile('output_frequency_support.txt'):
-    with open('output_frequency_support.txt', 'r') as fp:
+if os.path.isfile('query_ALMA_archive_frequency_support.txt'):
+    with open('query_ALMA_archive_frequency_support.txt', 'r') as fp:
         output_frequency_support = json.load(fp)
     if type(output_frequency_support) is not list:
         output_frequency_support = [output_frequency_support]
 
 
+
+# 
+# query Alma archive for each row of the input_meta_table
 alma = Alma() # 
-i = len(output_frequency_support)
+i = len(output_frequency_support) # continue from this index
 set_no_consistency_check = False #<TODO># 
 while i < len(input_meta_table):
     print('')
@@ -123,9 +147,10 @@ while i < len(input_meta_table):
         # 
         # process source name format and observation date time difference
         query_results['Source name cleaned'] = [t.replace(' ','_') for t in query_results['Source name']]
-        query_results['Observation date obj'] = [parser.parse(t.decode("utf-8")) for t in query_results['Observation date']]
         query_results['Member ous id cleaned'] = [t.replace('/','_').replace(':','_') for t in query_results['Member ous id']]
-        query_results['Observation date diff'] = [abs((t-start_date).seconds) for t in query_results['Observation date obj']]
+        query_results['Observation date obj'] = [parser.parse(t.decode("utf-8")) for t in query_results['Observation date']]
+        query_results['Observation date diff'] = [abs((t-start_date)).seconds for t in query_results['Observation date obj']]
+        query_results['RA Dec diff'] = [SkyCoord(t_RA*u.deg,t_Dec*u.deg).separation(SkyCoord(source_ra*u.deg,source_dec*u.deg)).to(u.arcsec).value for t_RA,t_Dec in zip(query_results['RA'],query_results['Dec']) ]
         query_results.sort('Observation date diff')
         # 
         # find row by source name
@@ -137,7 +162,7 @@ while i < len(input_meta_table):
             if source_name_alma in query_results['Source name cleaned']:
                 check_rows = np.argwhere(query_results['Source name cleaned'] == source_name_alma).flatten()
             for k in range(len(check_rows)):
-                print('Checking row %d: Source name "%s" vs "%s", Observation date "%s" vs "%s", diff. %s vs integr. %s for Mem_ous_id "%s"' % (
+                print('Checking row %d: Source name "%s" vs "%s", Observation date "%s" vs "%s", diff. time %s vs integr. time %s for Mem_ous_id "%s", diff. ra dec sep. %s' % (
                                     k+1, 
                                     query_results['Source name cleaned'][k], 
                                     source_name_alma, 
@@ -145,10 +170,15 @@ while i < len(input_meta_table):
                                     start_date.strftime('%Y-%m-%d %H:%M:%S'), 
                                     query_results['Observation date diff'][k], 
                                     queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]], 
-                                    query_results['Member ous id cleaned'][k]
+                                    query_results['Member ous id cleaned'][k], 
+                                    query_results['RA Dec diff'][k]
                     ) )
                 if (found_row < 0) and (query_results['Observation date diff'][k] <= queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
-                    found_row = check_rows[0]
+                    found_row = check_rows[k]
+                # 
+                # <TODO> special cases:
+                if (found_row < 0) and project_code == '2011.0.00097.S' and source_name_alma == 'COSMOS9_field2' and query_results['Source name cleaned'][k] == 'COSMOSmedz_83':
+                    found_row = check_rows[k]
         # 
         if found_row >= 0:
             queried_integration_time = query_results['Integration'][found_row]
@@ -192,37 +222,25 @@ while i < len(input_meta_table):
     
     time.sleep(0.5)
     if debug:
-        break
-    
+        print('In debug mode we do not write to files.')
+        sys.exit()
+
     ##print(query_result.colnames)
     #query_result.sort(['Array','QA2 Status','Observation date'])
     #query_result.reverse()
     ##print(query_result[['Source name','Array','Observation date','QA2 Status']])
     #asciitable.write(query_result[['Source name','Array','Observation date','QA2 Status']], 'datatable_query_%s_%s.txt'%(project_code, datetime.now().strftime(r'%Y%m%d_%Hh%Mm%Ss') ), Writer=asciitable.FixedWidthTwoLine)
+    
+    # 
+    # output after each query
+    with open('query_ALMA_archive_integration_time.txt', 'w') as fp:
+        json.dump(output_integration_time, fp, indent=4)
+    with open('query_ALMA_archive_observation_date.txt', 'w') as fp:
+        json.dump(output_observation_date, fp, indent=4)
+    with open('query_ALMA_archive_frequency_support.txt', 'w') as fp:
+        json.dump(output_frequency_support, fp, indent=4)
 
-# 
-# debug mode
-if debug:
-    print('In debug mode we do not write to files.')
-    sys.exit()
 
-# 
-# backup existing files
-if os.path.isfile('output_integration_time.txt'):
-    os.system('cp output_integration_time.txt output_integration_time.txt.backup')
-if os.path.isfile('output_observation_date.txt'):
-    os.system('cp output_observation_date.txt output_observation_date.txt.backup')
-if os.path.isfile('output_frequency_support.txt'):
-    os.system('cp output_frequency_support.txt output_frequency_support.txt.backup')
-
-# 
-# output
-with open('output_integration_time.txt', 'w') as fp:
-    json.dump(output_integration_time, fp, indent=4)
-with open('output_observation_date.txt', 'w') as fp:
-    json.dump(output_observation_date, fp, indent=4)
-with open('output_frequency_support.txt', 'w') as fp:
-    json.dump(output_frequency_support, fp, indent=4)
 
 
 
