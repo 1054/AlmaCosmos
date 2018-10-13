@@ -96,15 +96,29 @@ print('Input fits file: %s\n'%(FitsFile))
 # Read input fits image
 # 
 FitsStruct = fits.open(FitsFile)
-FitsImage = FitsStruct[0].data
-FitsHeader = FitsStruct[0].header
+i = 0
+FitsImage = None
+FitsHeader = None
+while True:
+    FitsImage = FitsStruct[i].data
+    FitsHeader = FitsStruct[i].header
+    if FitsImage is not None: 
+        if i > 0:
+            if 'EXTNAME' in FitsHeader:
+                print('Input fits extension: %d "%s"\n'%(i, FitsHeader['EXTNAME']))
+            else:
+                print('Input fits extension: %d\n'%(i))
+        break
+    i = i + 1
+#print('len(FitsStruct) = %d'%(len(FitsStruct)))
 
 
 # 
 # Remove NaN and get the rest Bin pixel values
 # 
 BinVar = FitsImage.flatten()
-BinVar = BinVar[~np.isnan(BinVar)]
+BinVar = BinVar[np.logical_and(~np.isnan(BinVar),np.isfinite(BinVar))]
+#print('len(BinVar) = %d'%(len(BinVar)))
 
 
 # 

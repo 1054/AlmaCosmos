@@ -17,7 +17,8 @@ def mode(ndarray,axis=0):
         axis = [i for i in range(ndarray.ndim)][axis]
     except IndexError:
         raise Exception('Axis %i out of range for array with %i dimension(s)' % (axis,ndarray.ndim))
-    srt = numpy.sort(ndarray,axis=axis)
+    ndarray2 = ndarray[~numpy.isnan(ndarray)]
+    srt = numpy.sort(ndarray2,axis=axis)
     dif = numpy.diff(srt,axis=axis)
     shape = [i for i in dif.shape]
     shape[axis] += 2
