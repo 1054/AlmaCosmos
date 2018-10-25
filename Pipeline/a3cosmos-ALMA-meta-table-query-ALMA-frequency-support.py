@@ -178,6 +178,10 @@ while i < len(input_meta_table):
                     found_row = check_rows[k]
                 # 
                 # <TODO> special cases:
+                if (found_row < 0) and (0 == queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
+                    found_row = check_rows[k]
+                # 
+                # <TODO> special cases:
                 if (found_row < 0) and project_code == '2011.0.00097.S' and source_name_alma == 'COSMOS9_field2' and query_results['Source name cleaned'][k] == 'COSMOSmedz_83':
                     found_row = check_rows[k]
         # 
