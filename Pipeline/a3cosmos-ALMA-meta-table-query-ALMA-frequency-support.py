@@ -84,7 +84,7 @@ while i < len(input_meta_table):
     source_ra = input_meta_table['OBSRA'][i]
     source_dec = input_meta_table['OBSDEC'][i]
     source_name_alma = input_meta_table['source'][i]
-    source_name_alma = re.sub(r'^[_]*(.*)[_]*$', r'\1', source_name_alma)
+    source_name_alma = re.sub(r'^[_]*(.*?)[_]*$', r'\1', source_name_alma)
     frequency_range = r'%0.5f .. %0.5f'%(2.99792458e5 / input_meta_table['wavelength'][i] - 7.5 - 3.5, 2.99792458e5 / input_meta_table['wavelength'][i] + 7.5 + 3.5)
     #start_date = re.sub(r'([0-9]+-[0-9]+-[0-9]+)T([0-9]+:[0-9]+:[0-9]+)\.[0-9]+', r'\1 \2', start_date)
     start_date = parser.parse(start_date)
