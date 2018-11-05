@@ -9,9 +9,9 @@ fi
 # Usage
 if [[ $# -lt 2 ]]; then
     echo "Usage: "
-    echo "  This code will combine \"A-COSMOS_prior_*.fits\" catalog and the meta table."
+    echo "  This code will combine PyBDSM blind extraction catalog and the meta table."
     echo "  To run this code, please input the catalog file path and the meta table file path:"
-    echo "  e.g., $(basename ${BASH_SOURCE[0]}) A-COSMOS_prior_2018-02-21a_Gaussian_SNR_GE_3.fits fits_meta_table_v20180102.txt"
+    echo "  e.g., $(basename ${BASH_SOURCE[0]}) Output_Blind_Extraction_Photometry_PyBDSM_20180911_01h04m52s.fits a3cosmos_meta_table.fits"
     echo ""
     echo "  Note that the meta table should be either a fits file or a text file with the first row being #-commented header line, and the second row the data."
     echo ""
@@ -67,7 +67,6 @@ topcat -stilts tmatchn \
                 nin=2 \
                 in1="${cat_input}.fits" \
                 values1="Image" \
-                icmd1="delcols \"RMS\"" \
                 in2="${meta_table_file}" \
                 ifmt2="${meta_table_fmt}" \
                 icmd2="replacecol image_file -name \"image_file_meta_table\" \"image_file\"" \
