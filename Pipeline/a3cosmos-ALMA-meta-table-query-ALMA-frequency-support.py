@@ -176,18 +176,39 @@ while i < len(input_meta_table):
                     ) )
                 if (found_row < 0) and (query_results['Observation date diff'][k] <= queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
                     found_row = check_rows[k]
-                # 
-                # <TODO> special cases:
-                if (found_row < 0) and (0 == queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
-                    found_row = check_rows[k]
-                # 
-                # <TODO> special cases:
-                if (found_row < 0) and project_code == '2011.0.00097.S' and source_name_alma == 'COSMOS9_field2' and query_results['Source name cleaned'][k] == 'COSMOSmedz_83':
-                    found_row = check_rows[k]
-                # 
-                # <TODO> special cases: we know that the source names have no duplication in this project
-                if (found_row < 0) and project_code == '2012.1.00076.S':
-                    found_row = check_rows[k]
+            # 
+            # re-check if nothing found
+            if (found_row < 0):
+                if len(check_rows) == 1:
+                    found_row = check_rows[0]
+            # 
+            # re-check if nothing found
+            #if (found_row < 0):
+            #    for k in range(len(check_rows)):
+            #        # 
+            #        # <TODO> special cases: if mem ous id integration time is zero
+            #        if (found_row < 0) and (0 == queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
+            #            found_row = check_rows[k]
+            # 
+            # re-check if nothing found
+            #if (found_row < 0):
+            #    for k in range(len(check_rows)):
+            #        # 
+            #        # <TODO> special cases: 
+            #        if (found_row < 0) and project_code == '2011.0.00097.S' and source_name_alma == 'COSMOS9_field2' and query_results['Source name cleaned'][k] == 'COSMOSmedz_83':
+            #            found_row = check_rows[k]
+            #        # 
+            #        # <TODO> special cases: we know that the source names have no duplication in this project
+            #        if (found_row < 0) and project_code == '2012.1.00076.S':
+            #            found_row = check_rows[k]
+            # 
+            # re-check if nothing found
+            #if (found_row < 0):
+            #    for k in range(len(check_rows)):
+            #        # 
+            #        # allow twice integration time difference
+            #        if (found_row < 0) and (query_results['Observation date diff'][k] <= 2.0*queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
+            #            found_row = check_rows[k]
         # 
         if found_row >= 0:
             queried_integration_time = query_results['Integration'][found_row]
