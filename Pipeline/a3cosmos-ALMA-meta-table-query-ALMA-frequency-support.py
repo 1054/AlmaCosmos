@@ -184,6 +184,10 @@ while i < len(input_meta_table):
                 # <TODO> special cases:
                 if (found_row < 0) and project_code == '2011.0.00097.S' and source_name_alma == 'COSMOS9_field2' and query_results['Source name cleaned'][k] == 'COSMOSmedz_83':
                     found_row = check_rows[k]
+                # 
+                # <TODO> special cases: we know that the source names have no duplication in this project
+                if (found_row < 0) and project_code == '2012.1.00076.S':
+                    found_row = check_rows[k]
         # 
         if found_row >= 0:
             queried_integration_time = query_results['Integration'][found_row]
