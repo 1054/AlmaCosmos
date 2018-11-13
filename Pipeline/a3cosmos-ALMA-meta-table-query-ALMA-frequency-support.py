@@ -184,12 +184,10 @@ while i < len(input_meta_table):
                     found_row = check_rows[0]
             # 
             # re-check if nothing found
-            #if (found_row < 0):
-            #    for k in range(len(check_rows)):
-            #        # 
-            #        # <TODO> special cases: if mem ous id integration time is zero
-            #        if (found_row < 0) and (0 == queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
-            #            found_row = check_rows[k]
+            if (found_row < 0) and (0 == queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
+                # if mem ous id integration time is zero, then just take the nearest time data
+                if len(check_rows) > 0:
+                    found_row = check_rows[0]
             # 
             # re-check if nothing found
             #if (found_row < 0):
