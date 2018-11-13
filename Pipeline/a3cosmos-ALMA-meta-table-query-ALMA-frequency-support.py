@@ -218,7 +218,7 @@ while i < len(input_meta_table):
                         found_row = check_rows[k]
         # 
         if found_row >= 0:
-            print('Taking row %d'%(found_row))
+            print('Taking row %d'%(found_row+1))
             queried_integration_time = query_results['Integration'][found_row]
             queried_observation_date = query_results['Observation date'][found_row].decode("utf-8")
             queried_frequency_support = query_results['Frequency support'][found_row]
