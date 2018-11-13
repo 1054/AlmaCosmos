@@ -179,6 +179,7 @@ while i < len(input_meta_table):
             # 
             # re-check if nothing found
             if (found_row < 0):
+                # if there is only one row matched with the source name, then just take it.
                 if len(check_rows) == 1:
                     found_row = check_rows[0]
             # 
@@ -202,13 +203,12 @@ while i < len(input_meta_table):
             #        if (found_row < 0) and project_code == '2012.1.00076.S':
             #            found_row = check_rows[k]
             # 
-            # re-check if nothing found
-            #if (found_row < 0):
-            #    for k in range(len(check_rows)):
-            #        # 
-            #        # allow twice integration time difference
-            #        if (found_row < 0) and (query_results['Observation date diff'][k] <= 2.0*queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
-            #            found_row = check_rows[k]
+            # re-check with less time difference constraint if nothing found
+            if (found_row < 0) and (project_code == '2013.1.01258.S'):
+                for k in range(len(check_rows)):
+                    # allow twice integration time difference
+                    if (found_row < 0) and (query_results['Observation date diff'][k] <= 2.0*queried_mem_ous_id_integration[query_results['Member ous id cleaned'][k]]):
+                        found_row = check_rows[k]
         # 
         if found_row >= 0:
             queried_integration_time = query_results['Integration'][found_row]
