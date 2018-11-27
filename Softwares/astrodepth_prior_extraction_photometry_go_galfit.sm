@@ -683,12 +683,36 @@ go_galfit 01
             # 
             if('$1'=='1' || '$1'=='n1') { 
                 # varied position PSF
-                set Allow_To_Use_Preivous_Mags = ((ResultMagsErr>0 && ResultMagsErr<0.25) || (ResultMags<-2.5*lg(3.0*pixnoise/fluxconv))) && (ResultMags<Mags) #<TODO># 
+                if(is_file("fit_galfit_prior_vary_position_threshold_magerr")) {
+                    data "fit_galfit_prior_vary_position_threshold_magerr" read {threshold_magerr 1.f}
+                } else {
+                    set threshold_magerr = 0.25
+                    print "fit_galfit_prior_vary_position_threshold_magerr" {threshold_magerr}
+                }
+                if(is_file("fit_galfit_prior_vary_position_threshold_totrms")) {
+                    data "fit_galfit_prior_vary_position_threshold_totrms" read {threshold_totrms 1.f}
+                } else {
+                    set threshold_totrms = 3.0
+                    print "fit_galfit_prior_vary_position_threshold_totrms" {threshold_totrms}
+                }
+                set Allow_To_Use_Preivous_Mags = ((ResultMagsErr>0 && ResultMagsErr<threshold_magerr) || (ResultMags<-2.5*lg(threshold_totrms*pixnoise/fluxconv))) && (ResultMags<Mags) #<TODO># 
                 set Mags = (Allow_To_Use_Preivous_Mags) ? ResultMags : Mags # use previous step magnitude results
             }
             if('$1'=='2' || '$1'=='n2') { 
                 # elliptic Gaussian
-                set Allow_To_Fit_Gaussian = ((ResultMagsErr>0 && ResultMagsErr<0.20) || (ResultMags<-2.5*lg(3.0*pixnoise/fluxconv))) #<TODO># 
+                if(is_file("fit_galfit_prior_fit_gaussian_threshold_magerr")) {
+                    data "fit_galfit_prior_fit_gaussian_threshold_magerr" read {threshold_magerr 1.f}
+                } else {
+                    set threshold_magerr = 0.20
+                    print "fit_galfit_prior_fit_gaussian_threshold_magerr" {threshold_magerr}
+                }
+                if(is_file("fit_galfit_prior_fit_gaussian_threshold_totrms")) {
+                    data "fit_galfit_prior_fit_gaussian_threshold_totrms" read {threshold_totrms 1.f}
+                } else {
+                    set threshold_totrms = 3.0
+                    print "fit_galfit_prior_fit_gaussian_threshold_totrms" {threshold_totrms}
+                }
+                set Allow_To_Fit_Gaussian = ((ResultMagsErr>0 && ResultMagsErr<threshold_magerr) || (ResultMags<-2.5*lg(threshold_totrms*pixnoise/fluxconv))) #<TODO># 
                 set Mags         = (Allow_To_Fit_Gaussian && ResultMags<Mags)  ? ResultMags         : Mags # use previous step magnitude results, but only when the fitted magnitude is not fainter than the initial magnitude
                 set Type         = (Allow_To_Fit_Gaussian)                     ? 'gaussian'         : Type
                 set Rads         = (Allow_To_Fit_Gaussian)                     ? 0.25/abs(pixscale) : Rads # initial guess 0.25 arcsec Gaussian FWHM #<before><20171123># 0.5 arcsec
@@ -705,7 +729,19 @@ go_galfit 01
             }
             if('$1'=='3' || '$1'=='n3') { 
                 # elliptic sersic
-                set Allow_To_Fit_Sersic = ((ResultMagsErr>0 && ResultMagsErr<0.20) || (ResultMags<-2.5*lg(3.0*pixnoise/fluxconv))) #<TODO># 
+                if(is_file("fit_galfit_prior_fit_sersic_threshold_magerr")) {
+                    data "fit_galfit_prior_fit_sersic_threshold_magerr" read {threshold_magerr 1.f}
+                } else {
+                    set threshold_magerr = 0.20
+                    print "fit_galfit_prior_fit_sersic_threshold_magerr" {threshold_magerr}
+                }
+                if(is_file("fit_galfit_prior_fit_sersic_threshold_totrms")) {
+                    data "fit_galfit_prior_fit_sersic_threshold_totrms" read {threshold_totrms 1.f}
+                } else {
+                    set threshold_totrms = 3.0
+                    print "fit_galfit_prior_fit_sersic_threshold_totrms" {threshold_totrms}
+                }
+                set Allow_To_Fit_Sersic = ((ResultMagsErr>0 && ResultMagsErr<threshold_magerr) || (ResultMags<-2.5*lg(threshold_totrms*pixnoise/fluxconv))) #<TODO># 
                 set Mags         = (Allow_To_Fit_Sersic && ResultMags<Mags)                              ? ResultMags                     : Mags # use previous step magnitude results, but only when the fitted magnitude is not fainter than the initial magnitude
                 set Mags         = (Allow_To_Fit_Sersic && ResultFluxRedChisq>=2.0)                      ? ResultMags-2.5*lg(0.5)         : Mags # use previous step magnitude results, but note that for bad chisq sources we need to set fainter starting magnitude
                 set Type         = (Allow_To_Fit_Sersic)                                                 ? 'sersic'                       : Type
