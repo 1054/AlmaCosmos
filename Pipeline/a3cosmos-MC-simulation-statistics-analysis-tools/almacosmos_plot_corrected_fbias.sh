@@ -7,19 +7,26 @@ set -e
 if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     Data_type="PHYS-GALFIT"
     SNR_peak="4.35"
-    SNR_peak_cut="3.0"
+    SNR_peak_cut="3.90"
+    Theta_beam_cut="4.0"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]] || [[ $(pwd) == *"Aravena"* ]]; then
-    Data_type="PHYS-PYBDSM"
+    Data_type="PHYS-PYBDSF" # "PHYS-PYBDSM"
     SNR_peak="5.40"
-    SNR_peak_cut="4.0" # cut the data point because PyBDSM thresh_pix = 4.0
+    SNR_peak_cut="4.44" # cut the data point because PyBDSM thresh_pix = 4.0, also because the first bin we spline fbias is x1=4.44
+    Theta_beam_cut="4.0"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
     Data_type="FULL-GALFIT"
     SNR_peak="4.35"
     SNR_peak_cut="3.0"
+    Theta_beam_cut="999.0"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSM"* ]]; then
-    Data_type="FULL-PYBDSM"
+    Data_type="FULL-PYBDSF" # "FULL-PYBDSM"
     SNR_peak="5.40"
     SNR_peak_cut="4.0" # cut the data point because PyBDSM thresh_pix = 4.0
+    Theta_beam_cut="999.0"
+else
+    echo "Error! Could not recognize the simulation and photometry methods!"
+    exit 1
 fi
 
 
@@ -42,6 +49,7 @@ topcat -stilts plot2plane \
                 ifmt1=ascii \
                 icmd1="sort x2" \
                 icmd1="select \"(x1>= $SNR_peak_cut )\"" \
+                icmd1="select \"(x2<= $Theta_beam_cut )\"" \
                 leglabel1="\large $Data_type" \
                 x1='x1' \
                 y1='fbias' \
@@ -109,12 +117,14 @@ topcat -stilts plot2plane \
                 color3=black \
                 antialias3=true \
                 thick3=1 \
-                leglabel3='\footnotesize 1:1' \
                 \
                 legend=true \
                 legpos=0.04,0.98 \
                 seq="1,3" \
-                fontsize=16 \
+                legseq="1" \
+                legborder=false \
+                legopaque=false \
+                fontsize=18 \
                 texttype=latex \
                 aspect=1.0 \
                 omode=out \
@@ -174,7 +184,9 @@ topcat -stilts plot2plane \
                 \
                 legpos=0.08,0.94 \
                 seq='1,2,6' \
-                fontsize=16 \
+                legborder=false \
+                legopaque=false \
+                fontsize=18 \
                 texttype=latex \
                 omode=out \
                 out='Plot_corrected_fbias_histogram.pdf'
@@ -214,7 +226,9 @@ topcat -stilts plot2plane \
                 \
                 legpos=0.08,0.94 \
                 seq='1,2' \
-                fontsize=16 \
+                fontsize=18 \
+                legborder=false \
+                legopaque=false \
                 texttype=latex \
                 omode=out \
                 out='Plot_corrected_fbias_histogram.pdf'
@@ -226,11 +240,11 @@ echo "Output to \"Plot_corrected_fbias_histogram.pdf\"!"
 
 
 
-convert -density 240 -geometry x800 -background white "Plot_corrected_fbias.pdf" "Plot_corrected_fbias.png"
+convert -density 200 "Plot_corrected_fbias.pdf" "Plot_corrected_fbias.png"
 
-convert -density 240 -geometry x800 -background white "Plot_corrected_fbias_vs_uncorrected.pdf" "Plot_corrected_fbias_vs_uncorrected.png"
+convert -density 200 "Plot_corrected_fbias_vs_uncorrected.pdf" "Plot_corrected_fbias_vs_uncorrected.png"
 
-convert -density 240 -geometry x800 -background white "Plot_corrected_fbias_histogram.pdf" "Plot_corrected_fbias_histogram.png"
+convert -density 200 "Plot_corrected_fbias_histogram.pdf" "Plot_corrected_fbias_histogram.png"
 
 
 

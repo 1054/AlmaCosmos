@@ -1,0 +1,124 @@
+#!/bin/bash
+# 
+
+# 
+# take one sci image
+# 
+SciImage_fullpath="GOODS_S_MIPS_Photo/s_mips_1_s1_v0.30_sci_BS.fits"
+RmsImage_fullpath="GOODS_S_MIPS_Photo/s_mips_1_s1_v0_30_rms_ED.fits"
+PsfImage_fullpath="GOODS_S_MIPS_Photo/hdfn_dao_mipspsf.fits"
+
+
+# 
+# set OutputDir
+# 
+OutputDir="Prior_Extraction_Simulation"
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir -p "$OutputDir"
+fi
+
+
+# 
+# randomly cut box
+# 
+InputBoxSize=(40)
+CutSizeM=$(awk "BEGIN {print int(${InputBoxSize[0]}*1.4);}")
+CutSizeS=${InputBoxSize[0]}
+UserCutBuffer=5
+SciNAXIS1=$(gethead "$SciImage_fullpath" NAXIS1)
+SciNAXIS2=$(gethead "$SciImage_fullpath" NAXIS2)
+CutNumbX=$(awk "BEGIN {print int(($SciNAXIS1)/$CutSizeS/2.0)*2+1}") # ~3
+CutNumbY=$(awk "BEGIN {print int(($SciNAXIS2)/$CutSizeS/2.0)*2+1}") # ~3
+CutSizeX=$(awk "BEGIN {print int(($SciNAXIS1)/$CutNumbX)}") # ~301
+CutSizeY=$(awk "BEGIN {print int(($SciNAXIS2)/$CutNumbY)}") # ~301
+CutBuffer=$UserCutBuffer
+
+function make_cutout() {
+    CutImage_fullpath="cutout.fits"
+    CutScript_fullpath=$(echo $CutImage_fullpath | perl -p -e 's/.fits$//g')
+    CutScriptLog_fullpath=$(echo $CutImage_fullpath | perl -p -e 's/.fits$//g')
+    echo "#!/bin/bash" > "$CutScript_fullpath"
+    echo "CrabFitsImageCrop \"$SciImage_fullpath\" -rect $CutPos1X $CutPos1Y $CutPos2X $CutPos2Y -out \"$CutImage_fullpath\"" >> "$CutScript_fullpath"
+    echo "$CutPos1X $CutPos1Y $CutPos2X $CutPos2Y" >> "$SciImage_cut_rect"
+    chmod +x "$CutScript_fullpath"
+    "$CutScript_fullpath" > "$CutScriptLog_fullpath"
+    if [[ ! -f "$CutImage_fullpath" ]]; then
+        echo ""; echo "Error! Failed to run \"$CutScript_fullpath\" and create \"$CutImage_fullpath\"!"
+        echo ""; cat "$CutScriptLog_fullpath"
+        exit 1
+    fi
+}
+
+for (( icut_y=0; icut_y<$CutNumbY; icut_y++ )); do
+    for (( icut_x=0; icut_x<$CutNumbX; icut_x++ )); do
+        # define cut x1,y1 x2,y2
+        CutPos1X=$(awk "BEGIN {print ($CutSizeX)*($icut_x)-($CutBuffer)}")
+        CutPos1Y=$(awk "BEGIN {print ($CutSizeY)*($icut_y)-($CutBuffer)}")
+        CutPos2X=$(awk "BEGIN {print ($CutSizeX)*($icut_x+1)+($CutBuffer)}")
+        CutPos2Y=$(awk "BEGIN {print ($CutSizeY)*($icut_y+1)+($CutBuffer)}")
+        
+        # cut SciImage
+        CutImage_fullpath="$OutputDir/" # $(echo "$SciImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.fits/g")
+        CutScript_fullpath=$(echo "$SciImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.sh/g")
+        CutScriptLog_fullpath=$(echo "$SciImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.sh.log/g")
+        echo "#!/bin/bash" > "$CutScript_fullpath"
+        echo "CrabFitsImageCrop \"$SciImage_fullpath\" -rect $CutPos1X $CutPos1Y $CutPos2X $CutPos2Y -out \"$CutImage_fullpath\"" >> "$CutScript_fullpath"
+        echo "$CutPos1X $CutPos1Y $CutPos2X $CutPos2Y" >> "$SciImage_cut_rect"
+        chmod +x "$CutScript_fullpath"
+        "$CutScript_fullpath" > "$CutScriptLog_fullpath"
+        if [[ ! -f "$CutImage_fullpath" ]]; then
+            echo ""; echo "Error! Failed to run \"$CutScript_fullpath\" and create \"$CutImage_fullpath\"!"
+            echo ""; cat "$CutScriptLog_fullpath"
+            exit 1
+        fi
+        # write to OutputDir/List_of_Input_*_Images.txt
+        echo "$CutImage_fullpath" >> "$OutputDir/List_of_Input_Sci_Images.txt"
+        
+        # cut RmsImage
+        CutImage_fullpath=$(echo "$RmsImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.fits/g")
+        CutScript_fullpath=$(echo "$RmsImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.sh/g")
+        CutScriptLog_fullpath=$(echo "$RmsImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.sh.log/g")
+        echo "#!/bin/bash" > "$CutScript_fullpath"
+        echo "CrabFitsImageCrop \"$RmsImage_fullpath\" -rect $CutPos1X $CutPos1Y $CutPos2X $CutPos2Y -out \"$CutImage_fullpath\"" >> "$CutScript_fullpath"
+        echo "$CutPos1X $CutPos1Y $CutPos2X $CutPos2Y" >> "$RmsImage_cut_rect"
+        chmod +x "$CutScript_fullpath"
+        "$CutScript_fullpath" > "$CutScriptLog_fullpath"
+        if [[ ! -f "$CutImage_fullpath" ]]; then
+            echo ""; echo "Error! Failed to run \"$CutScript_fullpath\" and create \"$CutImage_fullpath\"!"
+            echo ""; cat "$CutScriptLog_fullpath"
+            exit 1
+        fi
+        # write to OutputDir/List_of_Input_*_Images.txt
+        echo "$CutImage_fullpath" >> "$OutputDir/List_of_Input_Rms_Images.txt"
+        
+        # cut PbaImage
+        CutImage_fullpath=$(echo "$PbaImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.fits/g")
+        CutScript_fullpath=$(echo "$PbaImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.sh/g")
+        CutScriptLog_fullpath=$(echo "$PbaImage_fullpath" | sed -e "s/\.fits$/.cut_${CutPos1X}_${CutPos1Y}_${CutPos2X}_${CutPos2Y}.sh.log/g")
+        echo "#!/bin/bash" > "$CutScript_fullpath"
+        echo "CrabFitsImageCrop \"$PbaImage_fullpath\" -rect $CutPos1X $CutPos1Y $CutPos2X $CutPos2Y -out \"$CutImage_fullpath\"" >> "$CutScript_fullpath"
+        echo "$CutPos1X $CutPos1Y $CutPos2X $CutPos2Y" >> "$PbaImage_cut_rect"
+        chmod +x "$CutScript_fullpath"
+        "$CutScript_fullpath" > "$CutScriptLog_fullpath"
+        if [[ ! -f "$CutImage_fullpath" ]]; then
+            echo ""; echo "Error! Failed to run \"$CutScript_fullpath\" and create \"$CutImage_fullpath\"!"
+            echo ""; cat "$CutScriptLog_fullpath"
+            exit 1
+        fi
+        # write to OutputDir/List_of_Input_*_Images.txt
+        echo "$CutImage_fullpath" >> "$OutputDir/List_of_Input_Pba_Images.txt"
+        
+        # for Psf image, 
+        # write to OutputDir/List_of_Input_*_Images.txt
+        echo "$PsfImage_fullpath" >> "$OutputDir/List_of_Input_Psf_Images.txt"
+    done
+done
+
+
+
+
+
+
+
+
+

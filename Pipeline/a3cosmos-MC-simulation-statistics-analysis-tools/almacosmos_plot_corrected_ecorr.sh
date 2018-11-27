@@ -4,11 +4,11 @@
 if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     Data_type="PHYS-GALFIT"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]] || [[ $(pwd) == *"Aravena"* ]]; then
-    Data_type="PHYS-PYBDSM"
+    Data_type="PHYS-PYBDSF" # "PHYS-PYBDSM"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
     Data_type="FULL-GALFIT"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSM"* ]]; then
-    Data_type="FULL-PYBDSM"
+    Data_type="FULL-PYBDSF" # "FULL-PYBDSM"
 fi
 
 
@@ -73,7 +73,7 @@ topcat -stilts plot2plane \
                 # leglabel5="\small Condon 1997 \, error \ {\footnotesize \Theta_{beam}} \mathtt{=} 5 {\scriptsize (red)}, 2 {\scriptsize (cyan)}, 1 {\scriptsize (blue)}" \
                 # 
 echo "Output to \"Plot_corrected_ecorr.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr.pdf" "Plot_corrected_ecorr.png"
+convert -density 200 "Plot_corrected_ecorr.pdf" "Plot_corrected_ecorr.png"
 #exit
 
 
@@ -124,7 +124,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_SNR.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_SNR.pdf" "Plot_corrected_ecorr_SNR.png"
+convert -density 200 "Plot_corrected_ecorr_SNR.pdf" "Plot_corrected_ecorr_SNR.png"
 
 
 topcat -stilts plot2plane \
@@ -161,7 +161,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_SNR_ratio.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_SNR_ratio.pdf" "Plot_corrected_ecorr_SNR_ratio.png"
+convert -density 200 "Plot_corrected_ecorr_SNR_ratio.pdf" "Plot_corrected_ecorr_SNR_ratio.png"
 
 
 topcat -stilts plot2plane \
@@ -195,14 +195,14 @@ topcat -stilts plot2plane \
                 legborder=false \
                 legopaque=false \
                 legpos=0.04,0.98 \
-                fontsize=16 \
+                fontsize=18 \
                 texttype=latex \
                 omode=out \
                 out='Plot_corrected_ecorr_vs_uncorrected_ecorr.pdf'
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_vs_uncorrected_ecorr.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr.png"
+convert -density 200 "Plot_corrected_ecorr_vs_uncorrected_ecorr.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr.png"
 #exit
 
 
@@ -240,7 +240,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.png"
+convert -density 200 "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Maj_out.png"
 
 
 topcat -stilts plot2plane \
@@ -276,7 +276,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Min_out.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Min_out.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Min_out.png"
+convert -density 200 "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Min_out.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_Min_out.png"
 
 
 topcat -stilts plot2plane \
@@ -312,7 +312,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_S_peak.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_S_peak.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_S_peak.png"
+convert -density 200 "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_S_peak.pdf" "Plot_corrected_ecorr_vs_uncorrected_ecorr_colored_by_S_peak.png"
 
 
 topcat -stilts plot2plane \
@@ -348,7 +348,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_vs_x2_colored_by_x1.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_x2_colored_by_x1.pdf" "Plot_corrected_ecorr_vs_x2_colored_by_x1.png"
+convert -density 200 "Plot_corrected_ecorr_vs_x2_colored_by_x1.pdf" "Plot_corrected_ecorr_vs_x2_colored_by_x1.png"
 
 
 topcat -stilts plot2plane \
@@ -384,7 +384,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_uncorrected_ecorr_vs_x2_colored_by_x1.pdf\"!"
-convert -density 240 -geometry x800 "Plot_uncorrected_ecorr_vs_x2_colored_by_x1.pdf" "Plot_uncorrected_ecorr_vs_x2_colored_by_x1.png"
+convert -density 200 "Plot_uncorrected_ecorr_vs_x2_colored_by_x1.pdf" "Plot_uncorrected_ecorr_vs_x2_colored_by_x1.png"
 
 
 topcat -stilts plot2plane \
@@ -420,7 +420,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_corrected_ecorr_vs_x1_colored_by_x2.pdf\"!"
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_vs_x1_colored_by_x2.pdf" "Plot_corrected_ecorr_vs_x1_colored_by_x2.png"
+convert -density 200 "Plot_corrected_ecorr_vs_x1_colored_by_x2.pdf" "Plot_corrected_ecorr_vs_x1_colored_by_x2.png"
 
 
 topcat -stilts plot2plane \
@@ -456,7 +456,7 @@ topcat -stilts plot2plane \
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
 echo "Output to \"Plot_uncorrected_ecorr_vs_x1_colored_by_x2.pdf\"!"
-convert -density 240 -geometry x800 "Plot_uncorrected_ecorr_vs_x1_colored_by_x2.pdf" "Plot_uncorrected_ecorr_vs_x1_colored_by_x2.png"
+convert -density 200 "Plot_uncorrected_ecorr_vs_x1_colored_by_x2.pdf" "Plot_uncorrected_ecorr_vs_x1_colored_by_x2.png"
 
 
 
@@ -661,7 +661,7 @@ fi
 
 echo "Output to \"Plot_corrected_ecorr_histogram.pdf\"!"
 
-convert -density 240 -geometry x800 "Plot_corrected_ecorr_histogram.pdf" "Plot_corrected_ecorr_histogram.png"
+convert -density 200 "Plot_corrected_ecorr_histogram.pdf" "Plot_corrected_ecorr_histogram.png"
 
 
 

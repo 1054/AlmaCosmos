@@ -3,6 +3,14 @@
 # 
 # Last update:
 #     2017-12-06 dzliu: rename functions
+#     2018-11-27 dzliu: added more options: -galfit-prior-*
+# 
+# 
+# Description:
+#     THe aim of this code is to perform prior-based source fitting photometry in a big image. 
+#     This code will automatically cut the big image into small boxes and do the photometry in each box. Boxes are extended to have buffer area. 
+#     This code will call galfit iteratively to fit prior sources to the cutout data. 
+# 
 
 
 # 
@@ -75,6 +83,12 @@ InputPba=()
 InputBoxSize=()
 InputGalfitPriorPeakSNR=()
 InputGalfitPriorTotalSNR=()
+InputGalfitVaryMagErr=()
+InputGalfitVaryTotRMS=()
+InputGalfitFitGaussianMagErr=()
+InputGalfitFitGaussianTotRMS=()
+InputGalfitFitSersicMagErr=()
+InputGalfitFitSersicTotRMS=()
 OutputDir="Prior_Extraction_Photometry_v"$(date +"%Y%m%d")
 OutputSubDir="astrodepth_prior_extraction_photometry"
 while [[ "$#" -gt 0 ]]; do
@@ -82,74 +96,78 @@ while [[ "$#" -gt 0 ]]; do
     TempStr=$(echo "$1" | tr '[:upper:]' '[:lower:]')
     #echo $TempStr
     case "$TempStr" in
-                       "-start") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="start";;
-                         "-end") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="end";;
-                         "-cat") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="catalog";;
-                     "-catalog") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="catalog";;
-                         "-inp") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
-                         "-sci") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
-                        "-fits") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
-                       "-image") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
-                         "-psf") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-psf";;
-                         "-rms") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-rms";;
-                         "-pba") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
-                         "-pbc") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
-                          "-pb") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
-                   "-image-sci") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
-                   "-image-psf") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-psf";;
-                   "-image-rms") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-rms";;
-                   "-image-pba") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
-                   "-image-pbc") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
-                    "-image-pb") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
-                   "-overwrite") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="user-overwrite";;
-                        "-step") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="user-steps";;
-                       "-steps") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="user-steps";;
-                      "-unlock") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="user-unlock";;
-                         "-out") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-dir";;
-                      "-output") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-dir";;
-                   "-outputdir") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-dir";;
-                  "-output-dir") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-dir";;
-                 "-output-name") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-name";;
-               "-output-subdir") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-name";;
-              "-output-sub-dir") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-name";;
-                         "-box") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="box-size";;
-                    "-box-size") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="box-size";;
-                         "-yes") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="yes";;
-                       "-clean") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="clean";;
-                    "-galfit30") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="galfit30";;
-                   "-galfit255") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="galfit255";;
-                     "-fit-sky") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="fit-sky";;
-                 "-no-galfit30") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="no-galfit30";;
-                "-no-galfit255") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="no-galfit255";;
-              "-do-not-fit-sky") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="do-not-fit-sky";;
-       "-galfit-prior-peak-snr") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-peak-snr";;
-      "-galfit-prior-total-snr") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-total-snr";;
+                                          "-start") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="start";;
+                                            "-end") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="end";;
+                                            "-cat") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="catalog";;
+                                        "-catalog") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="catalog";;
+                                            "-inp") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
+                                            "-sci") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
+                                           "-fits") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
+                                          "-image") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
+                                            "-psf") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-psf";;
+                                            "-rms") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-rms";;
+                                            "-pba") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
+                                            "-pbc") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
+                                             "-pb") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
+                                      "-image-sci") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-sci";;
+                                      "-image-psf") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-psf";;
+                                      "-image-rms") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-rms";;
+                                      "-image-pba") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
+                                      "-image-pbc") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
+                                       "-image-pb") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="list-image-pba";; # primary beam attenuation file
+                                      "-overwrite") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="user-overwrite";;
+                                           "-step") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="user-steps";;
+                                          "-steps") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="user-steps";;
+                                         "-unlock") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="user-unlock";;
+                                            "-out") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-dir";;
+                                         "-output") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-dir";;
+                                      "-outputdir") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-dir";;
+                                     "-output-dir") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-dir";;
+                                    "-output-name") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-name";;
+                                  "-output-subdir") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-name";;
+                                 "-output-sub-dir") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="output-name";;
+                                            "-box") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="box-size";;
+                                       "-box-size") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="box-size";;
+                                            "-yes") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="yes";;
+                                          "-clean") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="clean";;
+                                       "-galfit30") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="galfit30";;
+                                      "-galfit255") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="galfit255";;
+                                        "-fit-sky") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="fit-sky";;
+                                    "-no-galfit30") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="no-galfit30";;
+                                   "-no-galfit255") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="no-galfit255";;
+                                 "-do-not-fit-sky") CAAP_CMD_TEXT="$1";        CAAP_CMD_TYPE="do-not-fit-sky";;
+                          "-galfit-prior-peak-snr") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-peak-snr";;
+                         "-galfit-prior-total-snr") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-total-snr";;
+    "-galfit-prior-vary-position-threshold-magerr") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-vary-position-threshold-magerr";;
+    "-galfit-prior-vary-position-threshold-totrms") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-vary-position-threshold-totrms";;
     esac
     #echo "$CAAP_CMD_TYPE"
     case "$CAAP_CMD_TYPE" in
-                        "start") if [[ $# -gt 0 ]]; then UserFitStart="$1"; fi;;
-                          "end") if [[ $# -gt 0 ]]; then UserFitEnd="$1"; fi;;
-                      "catalog") if [[ $# -gt 0 ]]; then InputCat+=("$1"); fi;;
-               "list-image-sci") if [[ $# -gt 0 ]]; then InputSci+=("$1"); fi;;
-               "list-image-psf") if [[ $# -gt 0 ]]; then InputPsf+=("$1"); fi;;
-               "list-image-rms") if [[ $# -gt 0 ]]; then InputRms+=("$1"); fi;;
-               "list-image-pba") if [[ $# -gt 0 ]]; then InputPba+=("$1"); fi;;
-                     "box-size") if [[ $# -gt 0 ]]; then InputBoxSize+=("$1"); fi;;
-                   "output-dir") if [[ $# -gt 0 ]]; then OutputDir="$1"; fi;;
-                  "output-name") if [[ $# -gt 0 ]]; then OutputSubDir="$1"; fi;;
-                   "user-steps") if [[ $# -gt 0 ]]; then UserSteps+=("$1"); fi;;
-                  "user-unlock") if [[ $# -gt 0 ]]; then UserUnlock+=("$1"); fi;;
-               "user-overwrite") if [[ $# -gt 0 ]]; then UserOverwrite+=("$1"); fi;;
-                     "galfit30")                         UserFitWithGalfit30=1;; #<20170919># added to allow use galfit30, which is more useful for IRAC images.
-                    "galfit255")                         UserFitWithGalfit255=1;; #<20170919># added to allow use galfit255, which is more useful for IRAC images.
-                      "fit-sky")                         UserFitSkyBackground=1;; #<20170919># added to allow fit sky background, which is important for IRAC images. 
-                  "no-galfit30")                         UserFitWithGalfit30=-1;; #<20170919># added to allow to not use galfit30, which is more useful for IRAC images.
-                 "no-galfit255")                         UserFitWithGalfit255=-1;; #<20170919># added to allow to not use galfit255, which is more useful for IRAC images.
-               "do-not-fit-sky")                         UserFitSkyBackground=-1;; #<20170919># added to allow to not fit sky background, which is important for IRAC images. 
-        "galfit-prior-peak-snr") if [[ $# -gt 0 ]]; then InputGalfitPriorPeakSNR+=("$1"); fi;; #<20170923># allow to set the peak snr threshold for selecting galfit prior
-       "galfit-prior-total-snr") if [[ $# -gt 0 ]]; then InputGalfitPriorTotalSNR+=("$1"); fi;; #<20170923># allow to set the total snr threshold for selecting galfit prior
-                          "yes")                         UserYes=1;;
-                        "clean")                         UserClean=$((UserClean+1));;
+                                           "start") if [[ $# -gt 0 ]]; then UserFitStart="$1"; fi;;
+                                             "end") if [[ $# -gt 0 ]]; then UserFitEnd="$1"; fi;;
+                                         "catalog") if [[ $# -gt 0 ]]; then InputCat+=("$1"); fi;;
+                                  "list-image-sci") if [[ $# -gt 0 ]]; then InputSci+=("$1"); fi;;
+                                  "list-image-psf") if [[ $# -gt 0 ]]; then InputPsf+=("$1"); fi;;
+                                  "list-image-rms") if [[ $# -gt 0 ]]; then InputRms+=("$1"); fi;;
+                                  "list-image-pba") if [[ $# -gt 0 ]]; then InputPba+=("$1"); fi;;
+                                        "box-size") if [[ $# -gt 0 ]]; then InputBoxSize+=("$1"); fi;;
+                                      "output-dir") if [[ $# -gt 0 ]]; then OutputDir="$1"; fi;;
+                                     "output-name") if [[ $# -gt 0 ]]; then OutputSubDir="$1"; fi;;
+                                      "user-steps") if [[ $# -gt 0 ]]; then UserSteps+=("$1"); fi;;
+                                     "user-unlock") if [[ $# -gt 0 ]]; then UserUnlock+=("$1"); fi;;
+                                  "user-overwrite") if [[ $# -gt 0 ]]; then UserOverwrite+=("$1"); fi;;
+                                        "galfit30")                         UserFitWithGalfit30=1;; #<20170919># added to allow use galfit30, which is more useful for IRAC images.
+                                       "galfit255")                         UserFitWithGalfit255=1;; #<20170919># added to allow use galfit255, which is more useful for IRAC images.
+                                         "fit-sky")                         UserFitSkyBackground=1;; #<20170919># added to allow fit sky background, which is important for IRAC images. 
+                                     "no-galfit30")                         UserFitWithGalfit30=-1;; #<20170919># added to allow to not use galfit30, which is more useful for IRAC images.
+                                    "no-galfit255")                         UserFitWithGalfit255=-1;; #<20170919># added to allow to not use galfit255, which is more useful for IRAC images.
+                                  "do-not-fit-sky")                         UserFitSkyBackground=-1;; #<20170919># added to allow to not fit sky background, which is important for IRAC images. 
+                           "galfit-prior-peak-snr") if [[ $# -gt 0 ]]; then InputGalfitPriorPeakSNR+=("$1"); fi;; #<20170923># allow to set the peak snr threshold for selecting galfit prior from getpix candidates
+                          "galfit-prior-total-snr") if [[ $# -gt 0 ]]; then InputGalfitPriorTotalSNR+=("$1"); fi;; #<20170923># allow to set the total snr threshold for selecting galfit prior from getpix candidates
+     "galfit-prior-vary-position-threshold-magerr") if [[ $# -gt 0 ]]; then InputGalfitVaryMagErr+=("$1"); fi;; #<20171127># allow to set the threshold for varying prior position
+     "galfit-prior-vary-position-threshold-totrms") if [[ $# -gt 0 ]]; then InputGalfitVaryTotRMS+=("$1"); fi;; #<20171127># allow to set the threshold for varying prior position
+                                             "yes")                         UserYes=1;;
+                                           "clean")                         UserClean=$((UserClean+1));;
     esac
     #
     if [[ $# -gt 0 ]]; then shift; fi
@@ -869,6 +887,24 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
     fi
     if [[ ${#InputGalfitPriorTotalSNR[@]} -gt 0 ]]; then
     echo  "                                       -galfit-prior-total-snr ${InputGalfitPriorTotalSNR} \\"           >> "$SourceDir/$SourceName.run.bash"
+    fi
+    if [[ ${#InputGalfitVaryMagErr[@]} -gt 0 ]]; then
+    echo  "                                       -galfit-prior-vary-position-threshold-magerr ${InputGalfitVaryMagErr} \\" >> "$SourceDir/$SourceName.run.bash"
+    fi
+    if [[ ${#InputGalfitVaryTotRMS[@]} -gt 0 ]]; then
+    echo  "                                       -galfit-prior-vary-position-threshold-totrms ${InputGalfitVaryTotRMS} \\" >> "$SourceDir/$SourceName.run.bash"
+    fi
+    if [[ ${#InputGalfitFitGaussianMagErr[@]} -gt 0 ]]; then
+    echo  "                                       -galfit-prior-fit-gaussian-threshold-magerr ${InputGalfitFitGaussianMagErr} \\" >> "$SourceDir/$SourceName.run.bash"
+    fi
+    if [[ ${#InputGalfitFitGaussianTotRMS[@]} -gt 0 ]]; then
+    echo  "                                       -galfit-prior-fit-gaussian-threshold-totrms ${InputGalfitFitGaussianTotRMS} \\" >> "$SourceDir/$SourceName.run.bash"
+    fi
+    if [[ ${#InputGalfitFitSersicMagErr[@]} -gt 0 ]]; then
+    echo  "                                       -galfit-prior-fit-sersic-threshold-magerr ${InputGalfitFitSersicMagErr} \\" >> "$SourceDir/$SourceName.run.bash"
+    fi
+    if [[ ${#InputGalfitFitSersicTotRMS[@]} -gt 0 ]]; then
+    echo  "                                       -galfit-prior-fit-sersic-threshold-totrms ${InputGalfitFitSersicTotRMS} \\" >> "$SourceDir/$SourceName.run.bash"
     fi
     echo  "                                       -steps getpix galfit gaussian sersic ${UserSteps[@]} final \\"    >> "$SourceDir/$SourceName.run.bash"
     echo  "                                       -unlock ${UserUnlock[@]} \\"                                      >> "$SourceDir/$SourceName.run.bash"

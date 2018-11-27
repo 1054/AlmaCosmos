@@ -50,16 +50,17 @@ warnings.filterwarnings("ignore",".*following header keyword is invalid.*")
 warnings.filterwarnings("ignore",".*File may have been truncated.*")
 warnings.filterwarnings("ignore",".*astropy.wcs.wcs.*")
 warnings.filterwarnings("ignore",".*not a valid region tag.*")
+warnings.filterwarnings("ignore",".*FITSFixedWarning*")
 
 import matplotlib
 import platform
 
-matplotlib.use('TkAgg')
+#matplotlib.use('TkAgg')
 
-#if platform.system() == 'Darwin':
-#    matplotlib.use('Qt5Agg')
-#else:
-#    matplotlib.use('TkAgg')
+if platform.system() == 'Darwin':
+    matplotlib.use('Qt5Agg')
+else:
+    matplotlib.use('TkAgg')
 
 from matplotlib import pyplot
 from matplotlib.colors import hex2color, rgb2hex
@@ -346,14 +347,14 @@ class CrossMatch_Identifier(object):
                     )
                 # 
                 # add annotation at top-left
-                self.RefImage.text('%s %s'%(StrTelescope,StrInstrument), fontsize=15, color=hex2color('#00CC00'), align_top_left=True, horizontalalignment='left', zorder=13)
-                self.RefImage.text('FoV %.1f arcsec'%(self.RefImage.ZoomSize[1]*self.RefImage.PixScale[1]), fontsize=14, color=hex2color('#00CC00'), align_top_left=True, horizontalalignment='left', zorder=13)
+                self.RefImage.text('%s %s'%(StrTelescope,StrInstrument), fontsize=17, color=hex2color('#000000'), align_top_left=True, horizontalalignment='left', zorder=13)
+                self.RefImage.text('FoV %.1f arcsec'%(self.RefImage.ZoomSize[1]*self.RefImage.PixScale[1]), fontsize=16, color=hex2color('#000000'), align_top_left=True, horizontalalignment='left', zorder=13)
                 # 
                 # add annotation at top-right
-                self.RefImage.text('%s--%s--%s'%(self.Source.Field,str(self.Source.Name),str(self.Source.SubID)), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
+                self.RefImage.text('%s--%s--%s'%(self.Source.Field,str(self.Source.Name),str(self.Source.SubID)), color=hex2color('#00AA00'), fontsize=17, align_top_right=True, horizontalalignment='right', zorder=13)
                 for refname in self.RefSource.Names.keys():
-                    self.RefImage.text('%s ID %s'%(refname,str(self.RefSource.Names.get(refname))), color=hex2color('#FF0000'), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
-                self.RefImage.text('counterpart z = %.3f'%(self.Source.Redshifts['zphot_1']), color=hex2color('#FF0000'), fontsize=14, align_top_right=True, horizontalalignment='right', zorder=13)
+                    self.RefImage.text('%s ID %s'%(refname,str(self.RefSource.Names.get(refname))), color=hex2color('#FF0000'), fontsize=17, align_top_right=True, horizontalalignment='right', zorder=13)
+                self.RefImage.text('counterpart z = %.3f'%(self.Source.Redshifts['zphot_1']), color=hex2color('#FF0000'), fontsize=16, align_top_right=True, horizontalalignment='right', zorder=13)
                 # 
                 # 
                 # create source_aperture and refsource_aperture
@@ -654,8 +655,10 @@ class CrossMatch_Identifier(object):
                 self.Morphology['Angle'] = numpy.min( [ numpy.abs(SepAngle-PosAngle),numpy.abs(SepAngle-PosAngle-360.0), numpy.abs(SepAngle-PosAngle+360.0) ] ) # value ranges from 0 to 180.0
                 #<DEBUG>#self.Morphology['Separation'] = self.Source.Morphology['Major Axis'] / 2.0
                 #<DEBUG>#self.Morphology['Angle'] = 0.0
-                self.Morphology['Projected_Source_Radius'] = numpy.abs( self.Source.Morphology['Major Axis'] * numpy.cos(numpy.deg2rad(self.Morphology['Angle'])) ) + \
-                                                             numpy.abs( self.Source.Morphology['Minor Axis'] * numpy.sin(numpy.deg2rad(self.Morphology['Angle'])) )
+                #<BUGGY><20181126>#self.Morphology['Projected_Source_Radius'] = numpy.abs( self.Source.Morphology['Major Axis'] * numpy.cos(numpy.deg2rad(self.Morphology['Angle'])) ) + \
+                #<BUGGY><20181126>#                                             numpy.abs( self.Source.Morphology['Minor Axis'] * numpy.sin(numpy.deg2rad(self.Morphology['Angle'])) )
+                self.Morphology['Projected_Source_Radius'] = ( self.Source.Morphology['Major Axis'] / 2.0 * numpy.cos(numpy.deg2rad(self.Morphology['Angle'])) ) + \
+                                                             ( self.Source.Morphology['Minor Axis'] / 2.0 * numpy.sin(numpy.deg2rad(self.Morphology['Angle'])) )
                 self.Morphology['Score'] = 100.0 * \
                                                     ( 1.0 - 
                                                       offset_down_weighting * (
@@ -692,35 +695,42 @@ class CrossMatch_Identifier(object):
                 # 
                 # 
                 # plot annotation
-                self.RefImage.text('Sep. = %.3f [arcsec]'%(self.Morphology['Separation']), 
-                                    color=hex2color('#FF0000'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                #self.RefImage.text('Sep. = %.3f [arcsec]'%(self.Morphology['Separation']), 
+                #                    color=hex2color('#FF0000'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 #self.RefImage.text('Ang. = %.1f [degree]'%(self.Morphology['Angle']), 
                 #                    color=hex2color('#FF0000'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                self.RefImage.text('Sep. = %.3f'%(self.Morphology['Separation']/self.Morphology['Projected_Source_Radius']), 
+                                    color=hex2color('#222222'), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
+                #self.RefImage.text('Ang. = %.1f'%(self.Morphology['Angle']), 
+                #                    color=hex2color('#222222'), fontsize=14, align_top_right=True, horizontalalignment='right', zorder=13)
                 # 
                 # plot annotation
-                self.RefImage.text('M. Score = %.1f [%%]'%(self.Morphology['Score']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                #self.RefImage.text('M. Score = %.1f [%%]'%(self.Morphology['Score']), 
+                #                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
-                self.RefImage.text('P. Score = %.1f [%%]'%(self.Photometry['Score']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                #self.RefImage.text('P. Score = %.1f [%%]'%(self.Photometry['Score']), 
+                #                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
-                self.RefImage.text('Extended = %.1f [%%]'%(self.Morphology['Extended']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                #self.RefImage.text('Ext. = %.1f [%%]'%(self.Morphology['Extended']), 
+                #                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
-                self.RefImage.text('Downweight = %.2f'%(offset_down_weighting), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                #self.RefImage.text('Downweight = %.2f'%(offset_down_weighting), 
+                #                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
-                self.RefImage.text('ALMA S/N = %.3f'%(self.Source.Photometry['SNR_1']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                self.RefImage.text('S/N$_{\mathrm{ALMA}}$ = %.3f'%(self.Source.Photometry['SNR_1']), 
+                                    color=hex2color('#00AA00'), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
-                self.RefImage.text('Image S/N = %.3f'%(self.Photometry['S/N']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                self.RefImage.text('S/N$_{\mathrm{Src.}}$ = %.3f'%(self.Photometry['S/N']), 
+                                    color=hex2color('#222222'), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
-                self.RefImage.text('Image S/Ref = %.2f'%(self.Photometry['Source/RefSource']), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                self.RefImage.text('Src./Ref. = %.2f'%(self.Photometry['Source/RefSource']), 
+                                    color=hex2color('#222222'), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
                 # plot annotation
-                self.RefImage.text('Score = %.1f [%%]'%(self.MatchScore), 
-                                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
+                self.RefImage.text('Ext. = %.3f'%(self.Morphology['Extended']/100.0), 
+                                    color=hex2color('#222222'), fontsize=15, align_top_right=True, horizontalalignment='right', zorder=13)
+                # plot annotation
+                #self.RefImage.text('Score = %.1f [%%]'%(self.MatchScore), 
+                #                    color=hex2color('#00CC00'), fontsize=13, align_top_right=True, horizontalalignment='right', zorder=13)
                 # 
                 # 
                 # 
@@ -750,6 +760,9 @@ class CrossMatch_Identifier(object):
                 #TextFilePtr.write("Source.ID = %ld\n"%(self.Source.ID))
                 TextFilePtr.write("Source.SubID = %ld\n"%(self.Source.SubID))
                 TextFilePtr.write("Source.ALMA.S/N = %.3f\n"%(self.Source.Photometry['SNR_1']))
+                TextFilePtr.write("Source.Morphology.MajorAxis = %.3f\n"%(self.Source.Morphology['Major Axis']))
+                TextFilePtr.write("Source.Morphology.MinorAxis = %.3f\n"%(self.Source.Morphology['Minor Axis']))
+                TextFilePtr.write("Source.Morphology.PosAngle = %.3f\n"%(self.Source.Morphology['Pos Angle']))
                 TextFilePtr.write("RefSource.ID = %ld\n"%(self.RefSource.ID))
                 TextFilePtr.write("RefSource.Position = [%.10f, %.10f]\n"%(self.RefSource.RA, self.RefSource.Dec))
                 TextFilePtr.write("Crowdedness = %.5f\n"%(self.Crowdedness))
@@ -816,6 +829,8 @@ Output_Suffix = ''
 Output_Sep = '_'
 Http_User_Name = ''
 Http_User_Pass = ''
+ALMA_meta_table = ''
+ALMA_data_dir = ''
 
 # Print Usage
 if len(sys.argv) <= 1:
@@ -854,7 +869,7 @@ while i < len(sys.argv):
             print('Setting refcat %s'%(Input_RefCat))
             i = i + 1
     elif tmp_arg == '-filter' or tmp_arg == '-filters' or tmp_arg == '-select' or tmp_arg == '-sel':
-        # must be dict
+        # 
         if i+1 < len(sys.argv):
             Input_Filter = json.loads(sys.argv[i+1].replace("\'", "\""))
             Input_Filters.append(Input_Filter)
@@ -863,25 +878,39 @@ while i < len(sys.argv):
                 print('Error! Filter should be a Python dict object! For example: {"ID":3,"ALMA_IMAGE":"aaaaa.fits"}')
                 sys.exit()
             i = i + 1
+    elif tmp_arg == '-meta' or tmp_arg == '-meta-table':
+        # 
+        if i+1 < len(sys.argv):
+            ALMA_meta_table = sys.argv[i+1]
+            if not os.path.isfile(ALMA_meta_table):
+                print('Error! The input ALMA meta table "%s" was not found!'%(ALMA_meta_table))
+            i = i + 1
+    elif tmp_arg == '-data' or tmp_arg == '-data-dir':
+        # 
+        if i+1 < len(sys.argv):
+            ALMA_data_dir = sys.argv[i+1]
+            if not os.path.isdir(ALMA_data_dir):
+                print('Error! The input ALMA data dir "%s" does not exist!'%(ALMA_data_dir))
+            i = i + 1
     elif tmp_arg == '-out' or tmp_arg == '-output':
-        # must be dict
+        # 
         if i+1 < len(sys.argv):
             Output_Dir = sys.argv[i+1]
             if not os.path.isdir(Output_Dir):
                 os.makedirs(Output_Dir)
             i = i + 1
     elif tmp_arg == '-output-prefix':
-        # must be dict
+        # 
         if i+1 < len(sys.argv):
             Output_Prefix = sys.argv[i+1]
             i = i + 1
     elif tmp_arg == '-output-sep':
-        # must be dict
+        # 
         if i+1 < len(sys.argv):
             Output_Sep = sys.argv[i+1]
             i = i + 1
     elif tmp_arg == '-output-suffix':
-        # must be dict
+        # 
         if i+1 < len(sys.argv):
             Output_Suffix = sys.argv[i+1]
             i = i + 1
@@ -904,7 +933,15 @@ while i < len(sys.argv):
 
 # Check User Input
 if Input_Catalog == '':
-    print('Please input valid catalog!')
+    print('Please input valid catalog with the option -cat!')
+    sys.exit()
+if ALMA_meta_table == '':
+    print('Please input valid ALMA_meta_table with the option -meta!')
+    sys.exit()
+if ALMA_data_dir.endswith(os.sep):
+    ALMA_data_dir = re.sub(r'[%s]$'%(os.sep), r'', ALMA_data_dir)
+if ALMA_data_dir == '':
+    print('Please input valid ALMA_data_dir with the option -data!')
     sys.exit()
 
 # Read 'ref_catalog.fits'
@@ -1423,14 +1460,19 @@ for i in range(len(Cat.TableData)):
     # Prepare ALMA cutouts and copy to Cutout_Dir
     # 
     #ALMA_meta_table = '/Users/dzliu/Work/AlmaCosmos/Catalogs/A3COSMOS/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
-    if os.path.isdir('/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/'):
-        ALMA_meta_table = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
-        ALMA_data_dir = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_cont_I_image'
-    elif os.path.isdir('/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102'):
-        ALMA_meta_table = '/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
-        ALMA_data_dir = '/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102/fits_cont_I_image'
-    else:
+    #if os.path.isdir('/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/'):
+    #    ALMA_meta_table = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
+    #    ALMA_data_dir = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_cont_I_image'
+    #elif os.path.isdir('/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102'):
+    #    ALMA_meta_table = '/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
+    #    ALMA_data_dir = '/disk1/ALMA_COSMOS/A3COSMOS/imaging_files_v20180102/fits_cont_I_image'
+    #ALMA_meta_table = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_meta_table_for_dataset_v20180102_with_pbeam.fits'
+    #ALMA_data_dir = '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_cont_I_image'
+    if (not os.path.isfile(ALMA_meta_table)) or (not os.path.isdir(ALMA_data_dir)):
         print('Error! Could not find ALMA data directory! *** TODO ***')
+        print('Please check the following: *** TODO ***')
+        print('ALMA_meta_table = %s'%(ALMA_meta_table))
+        print('ALMA_data_dir = %s'%(ALMA_data_dir))
         sys.exit()
     
     #if not os.path.isfile(Cutout_Dir + os.sep + 'ALMA_image_list.txt'):

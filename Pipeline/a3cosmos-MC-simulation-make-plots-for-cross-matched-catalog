@@ -123,11 +123,11 @@ leglabel_1="flux comparison"
 if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     leglabel_1="PHYS \ sim., \ GALFIT"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"blind"* ]]; then
-    leglabel_1="PHYS \ sim., \ PYBDSM"
+    leglabel_1="PHYS \ sim., \ PYBDSF"
 elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"GALFIT"* ]]; then
     leglabel_1="FULL \ sim., \ GALFIT"
-elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSM"* ]]; then
-    leglabel_1="FULL \ sim., \ PYBDSM"
+elif [[ $(pwd) == *"Monte_Carlo_Simulation_Parameter_Sampled"*"PyBDSF"* ]]; then
+    leglabel_1="FULL \ sim., \ PYBDSF"
 fi
 
 
@@ -725,7 +725,8 @@ fi
 # convert to PNG images
 # 
 echo ""
-find "$output_dir" -name "Plot_*.pdf" -print0 | xargs -0 -I pdf_name bash -c "image_name=pdf_name; echo \$image_name; convert -format png -density 240 -geometry x800 -background white \$image_name \$(echo \$image_name | sed -e 's/.pdf$/.png/g')"
+find "$output_dir" -name "Plot_*.pdf" -print0 | xargs -0 -I pdf_name bash -c "image_name=pdf_name; echo \$image_name; convert -format png -density 200 -background white \$image_name \$(echo \$image_name | sed -e 's/.pdf$/.png/g')"
+#can not set -geometry x800 
 
 echo ""
 echo "Output to \"$(pwd)/$output_dir/\"!"
