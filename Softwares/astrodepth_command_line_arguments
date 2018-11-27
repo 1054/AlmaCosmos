@@ -64,8 +64,14 @@ AstroDepth_INP_UNLOCK=()
 AstroDepth_INP_FIT_WITH_GALFIT30=0 #<20170919># added to allow the use of galfit30, which is more useful for IRAC images.
 AstroDepth_INP_FIT_WITH_GALFIT255=0 #<20170919># added to allow the use of galfit255, which is more useful for IRAC images.
 AstroDepth_INP_FIT_SKY_BACKGROUND=0 #<20170919># added to allow fitting sky background, which is important to fitting the IRAC images. 
-AstroDepth_INP_GALFIT_PRIOR_PEAK_SNR=() #<20170923># allow to set the peak snr threshold for selecting galfit prior
-AstroDepth_INP_GALFIT_PRIOR_TOTAL_SNR=() #<20170923># allow to set the total snr threshold for selecting galfit prior
+AstroDepth_INP_GALFIT_PRIOR_PEAK_SNR=() #<20170923># allow to set the peak snr threshold for selecting galfit prior from the getpix candidates
+AstroDepth_INP_GALFIT_PRIOR_TOTAL_SNR=() #<20170923># allow to set the total snr threshold for selecting galfit prior from the getpix candidates
+AstroDepth_INP_galfit_prior_vary_position_threshold_magerr=() #<20181127># allow to set the threshold for selecting sources whose positions are allowed to vary during galfit fitting.
+AstroDepth_INP_galfit_prior_vary_position_threshold_totrms=() #<20181127># allow to set the threshold for selecting sources whose positions are allowed to vary during galfit fitting.
+AstroDepth_INP_galfit_prior_fit_gaussian_threshold_magerr=() #<20181127># allow to set the threshold for selecting sources fitted with Gaussian models in galfit fitting.
+AstroDepth_INP_galfit_prior_fit_gaussian_threshold_totrms=() #<20181127># allow to set the threshold for selecting sources fitted with Gaussian models in galfit fitting.
+AstroDepth_INP_galfit_prior_fit_sersic_threshold_magerr=() #<20181127># allow to set the threshold for selecting sources fitted with Sersic models in galfit fitting.
+AstroDepth_INP_galfit_prior_fit_sersic_threshold_totrms=() #<20181127># allow to set the threshold for selecting sources fitted with Sersic models in galfit fitting.
 AstroDepth_CMD_TYPE="n/a"
 
 if [[ $AstroDepth_INP_DEBUG -eq 1 ]]; then
@@ -77,76 +83,88 @@ while [[ "$#" -gt 0 ]]; do
     TempStr=$(echo "$1" | tr '[:upper:]' '[:lower:]')
     # echo $TempStr
     case "$TempStr" in
-                 "-image") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-sci";;
-                   "-sci") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-sci";;
-             "-image-sci") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-sci";;
-                   "-psf") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-psf";;
-             "-image-psf") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-psf";;
-                   "-rms") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-rms";;
-             "-image-rms") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-rms";;
-             "-rms-value") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="value-rms";;
-                    "-pb") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-pba";;
-                   "-pba") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-pba";;
-             "-image-pba") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-pba";;
-                "-buffer") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="buffer";;
-                 "-prior") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog";;
-                   "-cat") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog";;
-               "-catalog") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog";;
-            "-catalog-id") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog-id";;
-            "-catalog-ra") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog-ra";;
-           "-catalog-dec") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog-dec";;
-          "-catalog-mask") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog-mask";;
-                   "-out") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
-                "-outdir") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
-               "-out-dir") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
-                "-output") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
-            "-output-dir") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
-           "-output-name") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-name";;
-              "-out-name") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-name";;
-               "-outname") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-name";;
-                  "-step") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="steps";;
-                 "-steps") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="steps";;
-             "-overwrite") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="overwrite";;
-            "-overwrites") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="overwrite";;
-                "-unlock") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="unlock";;
-              "-galfit30") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="galfit30";;
-             "-galfit255") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="galfit255";;
-               "-fit-sky") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="fit-sky";;
-           "-no-galfit30") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="no-galfit30";;
-          "-no-galfit255") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="no-galfit255";;
-        "-do-not-fit-sky") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="do-not-fit-sky";;
- "-galfit-prior-peak-snr") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-peak-snr";;
-"-galfit-prior-total-snr") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-total-snr";;
-                   "-yes") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="yes";;
-                    "-no") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="no";;
+                                          "-image") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-sci";;
+                                            "-sci") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-sci";;
+                                      "-image-sci") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-sci";;
+                                            "-psf") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-psf";;
+                                      "-image-psf") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-psf";;
+                                            "-rms") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-rms";;
+                                      "-image-rms") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-rms";;
+                                      "-rms-value") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="value-rms";;
+                                             "-pb") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-pba";;
+                                            "-pba") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-pba";;
+                                      "-image-pba") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="image-pba";;
+                                         "-buffer") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="buffer";;
+                                          "-prior") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog";;
+                                            "-cat") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog";;
+                                        "-catalog") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog";;
+                                     "-catalog-id") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog-id";;
+                                     "-catalog-ra") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog-ra";;
+                                    "-catalog-dec") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog-dec";;
+                                   "-catalog-mask") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="catalog-mask";;
+                                            "-out") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
+                                         "-outdir") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
+                                        "-out-dir") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
+                                         "-output") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
+                                     "-output-dir") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-dir";;
+                                    "-output-name") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-name";;
+                                       "-out-name") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-name";;
+                                        "-outname") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="output-name";;
+                                           "-step") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="steps";;
+                                          "-steps") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="steps";;
+                                      "-overwrite") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="overwrite";;
+                                     "-overwrites") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="overwrite";;
+                                         "-unlock") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="unlock";;
+                                       "-galfit30") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="galfit30";;
+                                      "-galfit255") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="galfit255";;
+                                        "-fit-sky") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="fit-sky";;
+                                    "-no-galfit30") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="no-galfit30";;
+                                   "-no-galfit255") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="no-galfit255";;
+                                 "-do-not-fit-sky") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="do-not-fit-sky";;
+                          "-galfit-prior-peak-snr") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-peak-snr";;
+                         "-galfit-prior-total-snr") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-total-snr";;
+    "-galfit-prior-vary-position-threshold-magerr") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-vary-position-threshold-magerr";;
+    "-galfit-prior-vary-position-threshold-totrms") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-vary-position-threshold-totrms";;
+     "-galfit-prior-fit-gaussian-threshold-magerr") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-fit-gaussian-threshold-magerr";;
+     "-galfit-prior-fit-gaussian-threshold-totrms") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-fit-gaussian-threshold-totrms";;
+       "-galfit-prior-fit-sersic-threshold-magerr") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-fit-sersic-threshold-magerr";;
+       "-galfit-prior-fit-sersic-threshold-totrms") AstroDepth_CMD_TEXT="$1"; shift; AstroDepth_CMD_TYPE="galfit-prior-fit-sersic-threshold-totrms";;
+                                            "-yes") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="yes";;
+                                             "-no") AstroDepth_CMD_TEXT="$1";        AstroDepth_CMD_TYPE="no";;
     esac
     # echo "$AstroDepth_CMD_TYPE"
     case "$AstroDepth_CMD_TYPE" in 
-              "image-sci") if [[ $# -gt 0 ]]; then AstroDepth_INP_IMAGE_SCI+=("$1"); fi;;
-              "image-psf") if [[ $# -gt 0 ]]; then AstroDepth_INP_IMAGE_PSF+=("$1"); fi;;
-              "image-rms") if [[ $# -gt 0 ]]; then AstroDepth_INP_IMAGE_RMS+=("$1"); fi;;
-              "value-rms") if [[ $# -gt 0 ]]; then AstroDepth_INP_VALUE_RMS+=("$1"); fi;;
-              "image-pba") if [[ $# -gt 0 ]]; then AstroDepth_INP_IMAGE_PBA+=("$1"); fi;;
-                 "buffer") if [[ $# -gt 0 ]]; then AstroDepth_INP_BUFFER+=("$1"); fi;;
-                "catalog") if [[ $# -gt 0 ]]; then AstroDepth_INP_CATALOG+=("$1"); fi;;
-             "catalog-ra") if [[ $# -gt 0 ]]; then AstroDepth_INP_CATALOG_RA+=("$1"); fi;;
-            "catalog-dec") if [[ $# -gt 0 ]]; then AstroDepth_INP_CATALOG_DEC+=("$1"); fi;;
-           "catalog-mask") if [[ $# -gt 0 ]]; then AstroDepth_INP_CATALOG_MASK+=("$1"); fi;;
-             "output-dir") if [[ $# -gt 0 ]]; then AstroDepth_INP_OUTPUT_DIR+=("$1"); fi;;
-            "output-name") if [[ $# -gt 0 ]]; then AstroDepth_INP_OUTPUT_NAME+=("$1"); fi;;
-                  "steps") if [[ $# -gt 0 ]]; then AstroDepth_INP_STEPS+=($(echo "$1" | tr '[:upper:]' '[:lower:]')); fi;;
-                 "unlock") if [[ $# -gt 0 ]]; then AstroDepth_INP_UNLOCK+=($(echo "$1" | tr '[:upper:]' '[:lower:]')); fi;;
-              "overwrite") if [[ $# -gt 0 ]]; then AstroDepth_INP_OVERWRITE+=($(echo "$1" | tr '[:upper:]' '[:lower:]')); fi;;
-               "galfit30")                         AstroDepth_INP_FIT_WITH_GALFIT30=1;;
-              "galfit255")                         AstroDepth_INP_FIT_WITH_GALFIT255=1;;
-                "fit-sky")                         AstroDepth_INP_FIT_SKY_BACKGROUND=1;;
-            "no-galfit30")                         AstroDepth_INP_FIT_WITH_GALFIT30=-1;;
-           "no-galfit255")                         AstroDepth_INP_FIT_WITH_GALFIT255=-1;;
-         "do-not-fit-sky")                         AstroDepth_INP_FIT_SKY_BACKGROUND=-1;;
-  "galfit-prior-peak-snr") if [[ $# -gt 0 ]]; then AstroDepth_INP_GALFIT_PRIOR_PEAK_SNR+=("$1"); fi;;
- "galfit-prior-total-snr") if [[ $# -gt 0 ]]; then AstroDepth_INP_GALFIT_PRIOR_TOTAL_SNR+=("$1"); fi;;
-                    "yes")                         AstroDepth_INP_YES=1;;
-                     "no")                         AstroDepth_INP_NO=1;;
+                                      "image-sci") if [[ $# -gt 0 ]]; then AstroDepth_INP_IMAGE_SCI+=("$1"); fi;;
+                                      "image-psf") if [[ $# -gt 0 ]]; then AstroDepth_INP_IMAGE_PSF+=("$1"); fi;;
+                                      "image-rms") if [[ $# -gt 0 ]]; then AstroDepth_INP_IMAGE_RMS+=("$1"); fi;;
+                                      "value-rms") if [[ $# -gt 0 ]]; then AstroDepth_INP_VALUE_RMS+=("$1"); fi;;
+                                      "image-pba") if [[ $# -gt 0 ]]; then AstroDepth_INP_IMAGE_PBA+=("$1"); fi;;
+                                         "buffer") if [[ $# -gt 0 ]]; then AstroDepth_INP_BUFFER+=("$1"); fi;;
+                                        "catalog") if [[ $# -gt 0 ]]; then AstroDepth_INP_CATALOG+=("$1"); fi;;
+                                     "catalog-ra") if [[ $# -gt 0 ]]; then AstroDepth_INP_CATALOG_RA+=("$1"); fi;;
+                                    "catalog-dec") if [[ $# -gt 0 ]]; then AstroDepth_INP_CATALOG_DEC+=("$1"); fi;;
+                                   "catalog-mask") if [[ $# -gt 0 ]]; then AstroDepth_INP_CATALOG_MASK+=("$1"); fi;;
+                                     "output-dir") if [[ $# -gt 0 ]]; then AstroDepth_INP_OUTPUT_DIR+=("$1"); fi;;
+                                    "output-name") if [[ $# -gt 0 ]]; then AstroDepth_INP_OUTPUT_NAME+=("$1"); fi;;
+                                          "steps") if [[ $# -gt 0 ]]; then AstroDepth_INP_STEPS+=($(echo "$1" | tr '[:upper:]' '[:lower:]')); fi;;
+                                         "unlock") if [[ $# -gt 0 ]]; then AstroDepth_INP_UNLOCK+=($(echo "$1" | tr '[:upper:]' '[:lower:]')); fi;;
+                                      "overwrite") if [[ $# -gt 0 ]]; then AstroDepth_INP_OVERWRITE+=($(echo "$1" | tr '[:upper:]' '[:lower:]')); fi;;
+                                       "galfit30")                         AstroDepth_INP_FIT_WITH_GALFIT30=1;;
+                                      "galfit255")                         AstroDepth_INP_FIT_WITH_GALFIT255=1;;
+                                        "fit-sky")                         AstroDepth_INP_FIT_SKY_BACKGROUND=1;;
+                                    "no-galfit30")                         AstroDepth_INP_FIT_WITH_GALFIT30=-1;;
+                                   "no-galfit255")                         AstroDepth_INP_FIT_WITH_GALFIT255=-1;;
+                                 "do-not-fit-sky")                         AstroDepth_INP_FIT_SKY_BACKGROUND=-1;;
+                          "galfit-prior-peak-snr") if [[ $# -gt 0 ]]; then AstroDepth_INP_GALFIT_PRIOR_PEAK_SNR+=("$1"); fi;;
+                         "galfit-prior-total-snr") if [[ $# -gt 0 ]]; then AstroDepth_INP_GALFIT_PRIOR_TOTAL_SNR+=("$1"); fi;;
+    "galfit-prior-vary-position-threshold-magerr") if [[ $# -gt 0 ]]; then AstroDepth_INP_galfit_prior_vary_position_threshold_magerr+=("$1"); fi;;
+    "galfit-prior-vary-position-threshold-totrms") if [[ $# -gt 0 ]]; then AstroDepth_INP_galfit_prior_vary_position_threshold_totrms+=("$1"); fi;;
+     "galfit-prior-fit-gaussian-threshold-magerr") if [[ $# -gt 0 ]]; then AstroDepth_INP_galfit_prior_fit_gaussian_threshold_magerr+=("$1"); fi;;
+     "galfit-prior-fit-gaussian-threshold-totrms") if [[ $# -gt 0 ]]; then AstroDepth_INP_galfit_prior_fit_gaussian_threshold_totrms+=("$1"); fi;;
+       "galfit-prior-fit-sersic-threshold-magerr") if [[ $# -gt 0 ]]; then AstroDepth_INP_galfit_prior_fit_sersic_threshold_magerr+=("$1"); fi;;
+       "galfit-prior-fit-sersic-threshold-totrms") if [[ $# -gt 0 ]]; then AstroDepth_INP_galfit_prior_fit_sersic_threshold_totrms+=("$1"); fi;;
+                                            "yes")                         AstroDepth_INP_YES=1;;
+                                             "no")                         AstroDepth_INP_NO=1;;
     esac
     
     if [[ "$AstroDepth_CMD_TYPE" == "n/a" ]];  then 
