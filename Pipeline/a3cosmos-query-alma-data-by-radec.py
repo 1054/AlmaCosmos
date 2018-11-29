@@ -107,6 +107,7 @@ for i in range(len(input_ra_list)):
         print('#'+'-'*100)
         for k in range(len(meta_table_output)):
             #print(meta_table_output[['project','source','image_name','freq_support']])
+            if k>0: print('')
             print('project = "%s"'%(meta_table_output['project'][k]))
             print('source = "%s"'%(meta_table_output['source'][k]))
             print('ra = %s'%(input_ra_list[i]))
