@@ -2,6 +2,11 @@
 # 
 
 import os, sys, re
+for i in range(len(sys.path)):
+    if sys.path[i].find('GILDAS') >= 0:
+        sys.path[i] = ''
+    if sys.path[i].find('CASA') >= 0:
+        sys.path[i] = ''
 
 if len(sys.argv) <= 1:
     print('Usage: ')
