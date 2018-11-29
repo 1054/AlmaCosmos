@@ -69,6 +69,7 @@ if len(freq_support) != len(meta_table):
     print('Error! The input freq support file does not match the meta table! This is the software problem! Let the developer know and fix this!')
     sys.exit()
 freq_support_simple = [re.findall(r'([0-9.]+)\.\.([0-9.]+)GHz', t) for t in freq_support]
+#freq_support_simple = [np.array(re.findall(r'([0-9.]+)\.\.([0-9.]+)GHz', t)).astype(np.float) for t in freq_support]
 meta_table['freq_support'] = freq_support_simple
 
 
@@ -94,13 +95,19 @@ for i in range(len(input_ra_list)):
     mask = mask_radius
     # 
     # then print the query result
-    print('-'*100)
+    print('#'+'-'*100)
     if np.count_nonzero(mask) > 0:
         meta_table_output = meta_table[mask]
         print('# Found %d image(s) matching the input ra dec %s %s (%d/%d)'%(len(meta_table_output), input_ra_list[i], input_dec_list[i], i+1, len(input_ra_list)))
-        print('-'*100)
+        print('#'+'-'*100)
         for k in range(len(meta_table_output)):
-            print(meta_table_output[['project','source','image_name','freq_support']])
+            #print(meta_table_output[['project','source','image_name','freq_support']])
+            print('project = "%s"'%(meta_table_output['project'][k]))
+            print('source = "%s"'%(meta_table_output['source'][k]))
+            print('ra = %s'%(input_ra_list[i]))
+            print('dec = %s'%(input_dec_list[i]))
+            print('image_name = "%s"'%(meta_table_output['image_name'][k]))
+            print('freq_support = %s'%(meta_table_output['freq_support'][k]))
         print('')
     else:
         print('Sorry! No image found matching the input ra dec %s %s (%d/%d)!'%(input_ra_list[i], input_dec_list[i], i+1, len(input_ra_list)))
