@@ -128,6 +128,9 @@ if output_figure_name.endswith('.pdf'):
 import astropy.io.ascii as asciitable
 data_table = asciitable.read(input_data_table) # any data table with two columns 
 bin_centres = numpy.arange(input_range_min,input_range_max,input_bin_width) # <TODO> tune the bin width
+print('numpy.mean: %s'%(numpy.mean(data_table.field(data_table.colnames[0]) - data_table.field(data_table.colnames[1]))))
+print('numpy.median: %s'%(numpy.median(data_table.field(data_table.colnames[0]) - data_table.field(data_table.colnames[1]))))
+print('numpy.std: %s'%(numpy.std(data_table.field(data_table.colnames[0]) - data_table.field(data_table.colnames[1]))))
 bin_hists, bin_edges = numpy.histogram(data_table.field(data_table.colnames[0]) - data_table.field(data_table.colnames[1]), bins=bin_centres)
 bin_centres = (bin_edges[:-1] + bin_edges[1:]) / 2.0
 print(numpy.column_stack((bin_edges[0:-1],bin_edges[1:],bin_hists)))
@@ -135,11 +138,13 @@ print(numpy.column_stack((bin_edges[0:-1],bin_edges[1:],bin_hists)))
 
 # 
 # do the fit
-fit_curve, fit_params = fit_Gaussian_1D(bin_centres, bin_hists)
+initial_fit_params = [1.0, 0.0, 0.5]
+fit_curve, fit_params = fit_Gaussian_1D(bin_centres, bin_hists, initial_fit_params)
 sys.stdout.write('fit_params = ')
 print(fit_params)
 
-fit_curve_sigma_one, fit_params_sigma_one = fit_Gaussian_1D_sigma_one(bin_centres, bin_hists)
+initial_fit_params = [1.0, 0.0]
+fit_curve_sigma_one, fit_params_sigma_one = fit_Gaussian_1D_sigma_one(bin_centres, bin_hists, initial_fit_params)
 sys.stdout.write('fit_params_sigma_one = ')
 print(fit_params_sigma_one)
 

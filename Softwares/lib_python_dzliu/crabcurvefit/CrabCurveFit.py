@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # 
 
 #####################################
@@ -9,6 +9,8 @@
 #            20180102, initialized
 # 
 #####################################
+
+from __future__ import print_function
 
 try:
     import pkg_resources
@@ -58,8 +60,8 @@ def fit_func_gravity_energy_field(x, y_obs, y_err=None, initial_guess=None):
         else:
             popt, pcov = scipy.optimize.curve_fit(fit_func_gravity_energy_field_func, x, y_obs, sigma=y_err, p0=initial_guess, bounds=boundary, max_nfev=100000)
         valid = True
-    except Exception,e:
-        print str(e)
+    except Exception as e:
+        print(str(e))
         popt = initial_guess
         pcov = []
         try:
@@ -70,8 +72,8 @@ def fit_func_gravity_energy_field(x, y_obs, y_err=None, initial_guess=None):
             else:
                 popt, pcov = scipy.optimize.curve_fit(fit_func_gravity_energy_field_func, x, y_obs, p0=initial_guess, bounds=boundary)
             valid = True
-        except Exception,e:
-            print str(e)
+        except Exception as e:
+            print(str(e))
             popt = initial_guess
             pcov = []
     # 
@@ -201,8 +203,8 @@ def fit_func_spoon_shape_45_degree_xylog(x, y_obs, y_err=None, initial_guess=Non
         else:
             popt, pcov = scipy.optimize.curve_fit(fit_func_spoon_shape_45_degree_func, numpy.log10(x), numpy.log10(y_obs), sigma=y_err/y_obs, p0=initial_guess, maxfev=100000)
         valid = True
-    except Exception,e:
-        print str(e)
+    except Exception as e:
+        print(str(e))
         popt = initial_guess
         pcov = []
     # 

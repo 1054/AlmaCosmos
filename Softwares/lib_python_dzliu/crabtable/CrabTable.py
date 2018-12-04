@@ -189,7 +189,7 @@ class CrabTable(object):
         if type(ColNameOrNumb) is str or type(ColNameOrNumb) is numpy.string_ or type(ColNameOrNumb) is numpy.str_:
             if ColNameOrNumb in self.TableHeaders:
                 GotDataColumn = self.TableData.field(ColNameOrNumb)
-                if type(GotDataColumn) is astropy.table.Column:
+                if type(GotDataColumn) is astropy.table.Column or type(GotDataColumn) is astropy.table.column.MaskedColumn:
                     return GotDataColumn.data
                 else:
                     return GotDataColumn
@@ -199,7 +199,7 @@ class CrabTable(object):
         else:
             if ColNameOrNumb >= 1 and ColNameOrNumb <= len(self.TableHeaders):
                 GotDataColumn = self.TableData.field(self.TableHeaders[int(ColNameOrNumb)-1])
-                if type(GotDataColumn) is astropy.table.Column:
+                if type(GotDataColumn) is astropy.table.Column or type(GotDataColumn) is astropy.table.column.MaskedColumn:
                     return GotDataColumn.data
                 else:
                     return GotDataColumn

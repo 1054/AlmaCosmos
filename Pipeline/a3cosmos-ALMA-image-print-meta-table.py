@@ -244,7 +244,7 @@ if __name__ == '__main__':
     k='beam_angle'  ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'degree'; output_table[k].format = '%0.6f'
     k='frequency'   ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'GHz';    output_table[k].format = '%0.6f'
     k='wavelength'  ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'um';     output_table[k].format = '%0.6f'
-    k='primary_beam'; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'arcmin^2'; output_table[k].format = '%0.6f'
+    k='primary_beam'; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'arcsec'; output_table[k].format = '%0.6f'
     k='mem_ous_id'  ; output_table[k] = [t[k] for t in output_dicts]
     k='image_dir'   ; output_table[k] = [t[k] for t in output_dicts]
     k='image_file'  ; output_table[k] = [t[k] for t in output_dicts]

@@ -7,13 +7,13 @@ if [[ $(type topcat | wc -l) -eq 0 ]]; then
 fi
 
 # Usage
-if [[ $# -lt 1 ]]; then
+if [[ $# -lt 2 ]]; then
     echo "Usage: "
     echo "  This code will combine the input catalog and the meta table."
     echo "  To run this code, please input the catalog file path and the meta table file path:"
     echo "  e.g., $(basename ${BASH_SOURCE[0]}) cat_pybdsm_concatenated_141117.fits '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/v20170604/fits_meta_table_for_dataset_v20170604_with_pbeam.fits'"
     echo ""
-    echo "  Note that the meta table should be a txt file, and the first row should be #-commented header line, and the second row the data."
+    echo "  Note that the meta table should be either a fits file or a text file with the first row being #-commented header line, and the second row the data."
     echo ""
     exit
 fi
@@ -77,8 +77,9 @@ topcat -stilts tmatchn \
                 multimode=pairs \
                 fixcols=dups \
                 iref=1 \
-                join1=always \
+                join1=match \
                 ocmd="delcols \"image_file_meta_table\"" \
+                ocmd="replacecol primary_beam -units \"arcsec\" primary_beam" \
                 out="${cat_input}_with_meta.fits"
                 # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
 
