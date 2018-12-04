@@ -47,9 +47,9 @@ fi
 # 
 if [[ $(hostname) == "aida40110" ]]; then
     InputDir_original="/disk1/dzliu/Works/AlmaCosmos/Photometry/ALMA_Calibrated_Images_by_Magnelli/20180801/fits"
-    InputDir_model="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/model_images_221118"
-    InputDir_residual="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/residual_images_221118"
-    InputCat_pybdsm="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Extraction_by_Benjamin/cat_pybdsm_concatenated_221118.fits"
+    InputDir_model="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Blind_Extraction_by_Benjamin/model_images_221118"
+    InputDir_residual="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Blind_Extraction_by_Benjamin/residual_images_221118"
+    InputCat_pybdsm="/disk1/dzliu/Works/AlmaCosmos/Photometry/Source_Blind_Extraction_by_Benjamin/cat_pybdsm_concatenated_221118.fits"
 else
     if [[ $# -lt 3 ]]; then
         usage
