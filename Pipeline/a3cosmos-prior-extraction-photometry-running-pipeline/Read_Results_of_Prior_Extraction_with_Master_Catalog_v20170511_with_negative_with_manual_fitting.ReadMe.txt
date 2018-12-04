@@ -1,0 +1,27 @@
+
+2017-05-11
+
+Fixed the image rms problem by re-running new version of caap-analyze-fits-image-pixel-histogram for
+
+    2013.1.00118.S_SB1_GB1_MB1_AzTECC69_sci.spw0_1_2_3.cont.I.image
+    2012.1.00978.S_SB2_GB1_MB1_AzTEC-1_sci.spw0_1_2_3.cont.I.image.cut_-20_-20_580_580
+
+Checked that only these 3 out of the 1460 cont.I.images.fits have this problem, the rest one is
+    2013.1.01258.S_SB1_GB1_MB1_aztec3-pcluster_sci.spw0_1_2_3.cont.I.image
+
+Manually fitted with galfit255 for 
+
+    2012.1.00978.S_SB2_GB1_MB1_AzTEC-1_sci.spw0_1_2_3.cont.I.image.cut_-20_-20_580_580/fit_2.fits
+
+
+
+
+2017-05-14
+
+Manually fitted with galfit255 for
+
+    2011.0.00064.S_SB1_GB1_MB1_AzTEC-3_sci.spw0_1_2_3.cont.I.image/fit_2.fits
+
+
+
+

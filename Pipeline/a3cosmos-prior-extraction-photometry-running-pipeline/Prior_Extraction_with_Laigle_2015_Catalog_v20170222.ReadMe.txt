@@ -1,0 +1,8 @@
+
+# 20170225 dzliu
+# We run prior extraction with Laigle 2015 catalog ()
+# on the ALMA calibrated images provided by Magnelli. 
+# 
+# Howto:
+# ./Prior_Extraction_with_Laigle_2015_Catalog_v20170222.sh
+# 
