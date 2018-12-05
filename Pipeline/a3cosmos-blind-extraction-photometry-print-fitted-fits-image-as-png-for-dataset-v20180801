@@ -128,13 +128,17 @@ for (( i=0; i<${#Image_input[@]}; i++ )); do
     # check model image
     if [[ ! -f "$InputDir_model/$Image_name.cont.I.model.fits" ]]; then
         echo "Error! \"$InputDir_model/$Image_name.cont.I.model.fits\" was not found!"
-        exit
+        echo "Error! \"$InputDir_model/$Image_name.cont.I.model.fits\" was not found!" >> "errors_during_printing_fitted_fits_image_as_png.txt"
+        echo "" >> "errors_during_printing_fitted_fits_image_as_png.txt"
+        continue
     fi
     # 
     # check residual image
     if [[ ! -f "$InputDir_residual/$Image_name.cont.I.residual.fits" ]]; then
         echo "Error! \"$InputDir_residual/$Image_name.cont.I.residual.fits\" was not found!"
-        exit
+        echo "Error! \"$InputDir_residual/$Image_name.cont.I.residual.fits\" was not found!" >> "errors_during_printing_fitted_fits_image_as_png.txt"
+        echo "" >> "errors_during_printing_fitted_fits_image_as_png.txt"
+        continue
     fi
     # 
     # check fits image rms file (which should be already prepared)
