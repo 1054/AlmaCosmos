@@ -145,7 +145,8 @@ for (( i=0; i<${#Image_input[@]}; i++ )); do
     Image_rms_file="${InputDir_original}/${Image_name}.cont.I.image.fits.pixel.statistics.txt"
     if [[ ! -f "${Image_rms_file}" ]]; then
         echo "Error! \"${Image_rms_file}\" was not found!"
-        echo "Error! \"${Image_rms_file}\" was not found!" >> "errors_during_printing_fitted_fits_image_as_png.txt"
+        echo "Error! \"${Image_rms_file}\" was not found!" >> "errors_during_printing_fitted_fits_image_as_png.txt" 
+        echo "" >> "errors_during_printing_fitted_fits_image_as_png.txt"
         continue
     fi
     # 
