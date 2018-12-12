@@ -1,0 +1,162 @@
+#!/bin/bash
+# 
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+# Usage
+#if [[ $# -lt 2 ]]; then
+#    echo "Aim: "
+#    echo "  This code will crossmatch."
+#    echo ""
+#    echo "Usage: "
+#    echo "  $(basename ${BASH_SOURCE[0]}) \\"
+#    echo "    cat_pybdsm_concatenated_141117.fits \\"
+#    echo "    A-COSMOS_prior_2018-06-01a_Gaussian_with_meta_without_very_high_res_projects_corrected_within_Pbcor_0.1.fits"
+#    echo ""
+#    echo "Notes: "
+#    echo "  "
+#    echo ""
+#    exit
+#fi
+
+
+#if [[ "$1" != *".fits" ]]; then
+#    echo "Error! The input \"$1\" is not a *.fits file!"
+#    exit 255
+#fi
+#if [[ "$2" != *".fits" ]]; then
+#    echo "Error! The input \"$2\" is not a *.fits file!"
+#    exit 255
+#fi
+
+
+#cd '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Catalogs/A3COSMOS/'
+
+
+input_cat_blind="cat_pybdsm_concatenated_290318_mJy_within_cosmos_without_very_high_res_projects_with_meta_corrected.fits"
+input_cat_prior="A-COSMOS_prior_2018-06-01a_Gaussian_with_meta_without_very_high_res_projects_corrected_within_Pbcor_0.1.fits"
+input_cat_xmatch='/Volumes/GoogleDrive/Team Drives/A3COSMOS/Photometry/ALMA_full_archive/Prior_Fitting_by_Daizhong/20180106/compare_prior_vs_pybdsm_20180925/datatable_CrossMatched_pybdsm_to_prior_best.fits'
+input_cat_master='/Volumes/GoogleDrive/Team Drives/A3COSMOS/Catalogs/A3COSMOS_Master_Catalog_20170426/master_catalog_single_entry_with_Flag_Outlier_with_ZPDF_with_MASS_v20180325a.fits'
+output_cat_blind="A-COSMOS_blind_2018-06-01b.fits"
+output_cat_prior="A-COSMOS_prior_2018-06-01b.fits"
+output_list_of_alma_programs="A-COSMOS_meta_data_alma_programs_2018-06-01b.txt"
+
+
+if [[ ! -f "$input_cat_blind" ]] && [[ ! -L "$input_cat_blind" ]]; then
+    echo "Error! The input \"$input_cat_blind\" does not exist!"
+    exit 255
+fi
+if [[ ! -f "$input_cat_prior" ]] && [[ ! -L "$input_cat_prior" ]]; then
+    echo "Error! The input \"$input_cat_prior\" does not exist!"
+    exit 255
+fi
+
+
+# 
+# Cross-match blind catalog with the blind-prior-xmatched catalog and prepare Flag_inconsistent_flux
+# 
+topcat -stilts tmatchn nin=2 \
+                in1="${input_cat_blind}" \
+                icmd1="select \"!NULL_Total_flux_pbcor\"" \
+                in2="${input_cat_xmatch}" \
+                icmd2="select \"abs(log10(Total_flux_prior)-log10(Total_flux_pybdsm))>=log10(3.12)\"" \
+                values1="RA Dec Image_file" \
+                values2="RA_pybdsm Dec_pybdsm Image_pybdsm" \
+                suffix1="" \
+                suffix2="_FROM_ANOTHER_CATALOG" \
+                matcher="sky+exact" \
+                params=1.0 \
+                fixcols=all \
+                multimode=pairs \
+                iref=1 \
+                join1=always \
+                ocmd="addcol Flag_inconsistent_flux \"(!NULL_Image_pybdsm_FROM_ANOTHER_CATALOG) ? 1 : 0\"" \
+                ocmd="addcol ID_prior_inconsistent_flux \"ID_prior_FROM_ANOTHER_CATALOG\"" \
+                ocmd="addcol Peak_flux -units \"mJy/beam\" \"x1 * rms_noise\"" \
+                ocmd="replacecol rms_noise -name RMS_noise -units \"mJy/beam\" \"rms_noise\"" \
+                ocmd="addcol Obs_frequency -units \"GHz\" \"2.99792458e5/Obs_wavelength\"" \
+                ocmd="delcols \"*_FROM_ANOTHER_CATALOG\"" \
+                ocmd="keepcols \"RA Dec Total_flux_pbcor E_Total_flux_pbcor E_Total_flux_sim_pbcor Pbcor Primary_beam Peak_flux RMS_noise Obs_frequency Obs_wavelength Maj_beam Min_beam PA_beam Image_file Flag_multi Flag_inconsistent_flux\"" \
+                out="${output_cat_blind}"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
+echo ""
+echo "Output to \"${output_cat_blind}\"!"
+echo ""
+echo "Produced by the code \"${BASH_SOURCE[0]}\" on $(date '+%Y%m%d %Hh%Mm%Ss %Z')" > "${output_cat_blind}.log"
+
+
+# 
+# Cross-match prior catalog with the blind-prior-xmatched catalog and prepare Flag_inconsistent_flux, then also cross-match prior catalog with master catalog to get the ID_PriorCat and Ref_ID_PriorCat
+# 
+topcat -stilts tmatchn nin=2 \
+                in1="${input_cat_prior}" \
+                in2="${input_cat_xmatch}" \
+                icmd2="select \"abs(log10(Total_flux_prior)-log10(Total_flux_pybdsm))>=log10(3.12)\"" \
+                values1="ID Image_file" \
+                values2="ID_prior Image_prior" \
+                suffix1="" \
+                suffix2="_FROM_ANOTHER_CATALOG" \
+                matcher="exact+exact" \
+                fixcols=all \
+                multimode=pairs \
+                iref=1 \
+                join1=always \
+                ocmd="addcol Flag_inconsistent_flux \"(!NULL_Image_pybdsm_FROM_ANOTHER_CATALOG) ? 1 : 0\"" \
+                ocmd="addcol RA_inconsistent_flux \"RA_pybdsm_FROM_ANOTHER_CATALOG\"" \
+                ocmd="addcol Dec_inconsistent_flux \"Dec_pybdsm_FROM_ANOTHER_CATALOG\"" \
+                ocmd="addcol Peak_flux -units \"mJy/beam\" \"x1 * rms_noise\"" \
+                ocmd="addcol Obs_frequency -units \"GHz\" \"2.99792458e5/Obs_wavelength\"" \
+                ocmd="replacecol Flag_size_upper_boundary \"Flag_size_upper_boundary ? 1 : 0\"" \
+                ocmd="delcols \"*_FROM_ANOTHER_CATALOG\"" \
+                ocmd="keepcols \"ID RA Dec Total_flux_pbcor E_Total_flux_pbcor E_Total_flux_sim_pbcor Pbcor Primary_beam Peak_flux RMS_noise Obs_frequency Obs_wavelength Maj_beam Min_beam PA_beam Image_file Galfit_reduced_chi_square Flag_size_upper_boundary Flag_inconsistent_flux\"" \
+                out="tmp_output_cat_prior.fits"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
+topcat -stilts tmatchn nin=2 \
+                in1="tmp_output_cat_prior.fits" \
+                in2="${input_cat_master}" \
+                suffix1="" \
+                suffix2="_FROM_ANOTHER_CATALOG" \
+                values1="ID" \
+                values2="ID" \
+                matcher="exact" \
+                fixcols=all \
+                multimode=pairs \
+                iref=1 \
+                join1=always \
+                ocmd="replacecol Origin_FROM_ANOTHER_CATALOG -name \"Ref_ID_PriorCat\" \"Origin_FROM_ANOTHER_CATALOG\"" \
+                ocmd="replacecol ID_Origin_FROM_ANOTHER_CATALOG -name \"ID_PriorCat\" \"ID_Origin_FROM_ANOTHER_CATALOG\"" \
+                ocmd="delcols \"*_FROM_ANOTHER_CATALOG\"" \
+                ocmd="keepcols \"ID ID_PriorCat Ref_ID_PriorCat RA Dec Total_flux_pbcor E_Total_flux_pbcor E_Total_flux_sim_pbcor Pbcor Primary_beam Peak_flux RMS_noise Obs_frequency Obs_wavelength Maj_beam Min_beam PA_beam Image_file Galfit_reduced_chi_square Flag_size_upper_boundary Flag_inconsistent_flux\"" \
+                out="${output_cat_prior}"
+rm tmp_output_cat_prior.fits
+echo ""
+echo "Output to \"${output_cat_prior}\"!"
+echo ""
+echo "Produced by the code \"${BASH_SOURCE[0]}\" on $(date '+%Y%m%d %Hh%Mm%Ss %Z')" > "${output_cat_prior}.log"
+
+
+
+
+topcat -stilts tcatn nin=2 \
+                in1="${output_cat_prior}" \
+                icmd1="addcol ALMA_project_code \"substring(Image_file,0,14)\"" \
+                icmd1="keepcols \"ALMA_project_code\"" \
+                in2="${output_cat_blind}" \
+                icmd2="addcol ALMA_project_code \"substring(Image_file,0,14)\"" \
+                icmd2="keepcols \"ALMA_project_code\"" \
+                ocmd="sort \"ALMA_project_code\"" \
+                ofmt=ascii \
+                out="tmp_output_list_of_alma_programs.txt"
+cat "tmp_output_list_of_alma_programs.txt" | grep -v '^#' | sed -e 's/ *//g' | uniq > "${output_list_of_alma_programs}" 
+rm "tmp_output_list_of_alma_programs.txt"
+echo ""
+echo "Output to \"${output_list_of_alma_programs}\"!"
+echo ""
+echo "Produced by the code \"${BASH_SOURCE[0]}\" on $(date '+%Y%m%d %Hh%Mm%Ss %Z')" > "${output_list_of_alma_programs}.log"
+
+
+
+

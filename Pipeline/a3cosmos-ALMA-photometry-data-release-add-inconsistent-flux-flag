@@ -1,0 +1,105 @@
+#!/bin/bash
+# 
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+# Usage
+#if [[ $# -lt 2 ]]; then
+#    echo "Aim: "
+#    echo "  This code will crossmatch."
+#    echo ""
+#    echo "Usage: "
+#    echo "  $(basename ${BASH_SOURCE[0]}) \\"
+#    echo "    cat_pybdsm_concatenated_141117.fits \\"
+#    echo "    A-COSMOS_prior_2018-06-01a_Gaussian_with_meta_without_very_high_res_projects_corrected_within_Pbcor_0.1.fits"
+#    echo ""
+#    echo "Notes: "
+#    echo "  "
+#    echo ""
+#    exit
+#fi
+
+
+#if [[ "$1" != *".fits" ]]; then
+#    echo "Error! The input \"$1\" is not a *.fits file!"
+#    exit 255
+#fi
+#if [[ "$2" != *".fits" ]]; then
+#    echo "Error! The input \"$2\" is not a *.fits file!"
+#    exit 255
+#fi
+
+
+#cd '/Volumes/GoogleDrive/Team Drives/A3COSMOS/Catalogs/A3COSMOS/'
+
+
+input_cat_blind="cat_pybdsm_concatenated_290318_mJy_within_cosmos_without_very_high_res_projects_with_meta_corrected.fits"
+input_cat_prior="A-COSMOS_prior_2018-06-01a_Gaussian_with_meta_without_very_high_res_projects_corrected_within_Pbcor_0.1.fits"
+input_cat_match='/Volumes/GoogleDrive/Team Drives/A3COSMOS/Photometry/ALMA_full_archive/Prior_Fitting_by_Daizhong/20180106/compare_prior_vs_pybdsm_20180925/datatable_CrossMatched_pybdsm_to_prior_best.fits'
+output_cat_blind="A-COSMOS_blind_2018-06-01b.fits"
+output_cat_prior="A-COSMOS_prior_2018-06-01b.fits"
+
+
+if [[ ! -f "$input_cat_blind" ]] && [[ ! -L "$input_cat_blind" ]]; then
+    echo "Error! The input \"$input_cat_blind\" does not exist!"
+    exit 255
+fi
+if [[ ! -f "$input_cat_prior" ]] && [[ ! -L "$input_cat_prior" ]]; then
+    echo "Error! The input \"$input_cat_prior\" does not exist!"
+    exit 255
+fi
+
+
+# 
+# Cross-match
+# 
+topcat -stilts tmatchn nin=2 \
+                in1="${input_cat_blind}" \
+                in2="${input_cat_match}" \
+                icmd2="select \"abs(log10(Total_flux_prior)-log10(Total_flux_pybdsm))>=log10(3.12)\"" \
+                values1="RA Dec Image_file" \
+                values2="RA_pybdsm Dec_pybdsm Image_pybdsm" \
+                suffix1="" \
+                suffix2="_FROM_ANOTHER_CATALOG" \
+                matcher="sky+exact" \
+                params=1.0 \
+                fixcols=all \
+                multimode=pairs \
+                iref=1 \
+                join1=always \
+                ocmd="addcol Flag_inconsistent_flux \"!NULL_Image_pybdsm_FROM_ANOTHER_CATALOG\"" \
+                ocmd="addcol ID_prior_inconsistent_flux \"ID_prior_FROM_ANOTHER_CATALOG\"" \
+                ocmd="delcols \"*_FROM_ANOTHER_CATALOG\"" \
+                out="${output_cat_blind}"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
+
+
+# 
+# Cross-match
+# 
+topcat -stilts tmatchn nin=2 \
+                in1="${input_cat_prior}" \
+                in2="${input_cat_match}" \
+                icmd2="select \"abs(log10(Total_flux_prior)-log10(Total_flux_pybdsm))>=log10(3.12)\"" \
+                values1="ID Image_file" \
+                values2="ID_prior Image_prior" \
+                suffix1="" \
+                suffix2="_FROM_ANOTHER_CATALOG" \
+                matcher="exact+exact" \
+                fixcols=all \
+                multimode=pairs \
+                iref=1 \
+                join1=always \
+                ocmd="addcol Flag_inconsistent_flux \"!NULL_Image_prior_FROM_ANOTHER_CATALOG\"" \
+                ocmd="addcol RA_inconsistent_flux \"RA_pybdsm_FROM_ANOTHER_CATALOG\"" \
+                ocmd="addcol Dec_inconsistent_flux \"Dec_pybdsm_FROM_ANOTHER_CATALOG\"" \
+                ocmd="delcols \"*_FROM_ANOTHER_CATALOG\"" \
+                out="${output_cat_prior}"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
+
+
+
+

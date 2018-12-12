@@ -620,8 +620,8 @@ if [[ ! -f "$OutputDir/List_of_Input_Sci_Images.txt" || ! -f "$OutputDir/List_of
         # 
         # check SciImage and RmsImage dimension, make sure they have a size of about 300 pixel (below 450 pixel). 
         if [[ ${#InputBoxSize[@]} -gt 0 ]]; then
-            CutSizeM=$(awk "BEGIN {print int(${InputBoxSize[0]}*1.4);}") #<TODO># 450
-            CutSizeS=${InputBoxSize[0]} #<TODO># 300
+            CutSizeM=$(awk "BEGIN {print int(${InputBoxSize[0]}*1.4);}") #<TODO># 450, we only cut images with more than this pixels along any side.
+            CutSizeS=${InputBoxSize[0]} #<TODO># 300, we will cut into box with this pixel size if possible
         else
             CutSizeM=450 #<TODO># 450
             CutSizeS=300 #<TODO># 300
@@ -636,11 +636,17 @@ if [[ ! -f "$OutputDir/List_of_Input_Sci_Images.txt" || ! -f "$OutputDir/List_of
             RmsImage_cut_rect=$(echo "$RmsImage_fullpath" | sed -e "s/\.fits$/.cut.rect.txt/g")
             PbaImage_cut_rect=$(echo "$PbaImage_fullpath" | sed -e "s/\.fits$/.cut.rect.txt/g")
             if [[ ! -f "$SciImage_cut_rect" ]] || [[ ! -f "$RmsImage_cut_rect" ]] || [[ ! -f "$PbaImage_cut_rect" ]]; then
-                CutNumbX=$(awk "BEGIN {print int(($SciNAXIS1)/$CutSizeS/2.0)*2+1}") # ~3
-                CutNumbY=$(awk "BEGIN {print int(($SciNAXIS2)/$CutSizeS/2.0)*2+1}") # ~3
+                CutNumbX=$(awk "BEGIN {print int(($SciNAXIS1)/$CutSizeS/2.0)*2+1}") # cut into odd number of slices along X
+                CutNumbY=$(awk "BEGIN {print int(($SciNAXIS2)/$CutSizeS/2.0)*2+1}") # cut into odd number of slices along Y
+                if [[ $(awk "BEGIN {if($CutNumbX<3) print 1; else print 0;}") -eq 1 ]]; then
+                    CutNumbX=3 # cut into at least ~3 slices along X
+                fi
+                if [[ $(awk "BEGIN {if($CutNumbY<3) print 1; else print 0;}") -eq 1 ]]; then
+                    CutNumbY=3 # cut into at least ~3 slices along Y
+                fi
                 CutSizeX=$(awk "BEGIN {print int(($SciNAXIS1)/$CutNumbX)}") # ~301
                 CutSizeY=$(awk "BEGIN {print int(($SciNAXIS2)/$CutNumbY)}") # ~301
-                CutBuffer=$UserCutBuffer
+                CutBuffer=$UserCutBuffer # add a buffer region, with about 20 pixels
                 for (( icut_y=0; icut_y<$CutNumbY; icut_y++ )); do
                     for (( icut_x=0; icut_x<$CutNumbX; icut_x++ )); do
                         # define cut x1,y1 x2,y2
