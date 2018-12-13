@@ -155,7 +155,7 @@ for i in range(len(output_table)):
         # 
         # try to find unpacked raw data dirs
         if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-            t_found_files = list(formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name).files())
+            t_found_dirs = list(formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name).files())
         else:
             t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
         if len(t_found_dirs) > 1:
