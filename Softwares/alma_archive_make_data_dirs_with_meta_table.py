@@ -147,7 +147,7 @@ for i in range(len(output_table)):
         if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
             t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name+'.tar')
             t_found_files = []
-            for t_found_fileitem in t_found_fileset:
+            for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
                 t_found_files.append(t_found_fileitem)
         else:
             t_found_files = glob.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar', recursive=True)
@@ -162,7 +162,7 @@ for i in range(len(output_table)):
         if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
             t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name)
             t_found_dirs = []
-            for t_found_fileitem in t_found_fileset:
+            for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
                 t_found_dirs.append(t_found_fileitem)
         else:
             t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
