@@ -145,7 +145,10 @@ for i in range(len(output_table)):
         # 
         # try to find downloaded tar files
         if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-            t_found_files = list(formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name+'.tar').files())
+            t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name+'.tar')
+            t_found_files = []
+            for t_found_fileitem in t_found_fileset:
+                t_found_files.append(t_found_fileitem)
         else:
             t_found_files = glob.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar', recursive=True)
         print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name+'.tar')
@@ -157,11 +160,14 @@ for i in range(len(output_table)):
         # 
         # try to find unpacked raw data dirs
         if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-            t_found_dirs = list(formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name).files())
+            t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name)
+            t_found_dirs = []
+            for t_found_fileitem in t_found_fileset:
+                t_found_dirs.append(t_found_fileitem)
         else:
             t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
         print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name)
-        print(t_found_dirs, formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name))
+        print(t_found_dirs)
         if len(t_found_dirs) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'"!')
         if len(t_found_dirs) > 0:
