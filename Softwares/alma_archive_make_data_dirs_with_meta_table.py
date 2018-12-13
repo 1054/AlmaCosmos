@@ -32,6 +32,7 @@ if len(sys.argv) <= 1:
 meta_table_file = ''
 some_option = ''
 output_full_table = True
+verbose = 0
 i = 1
 while i < len(sys.argv):
     tmp_arg = re.sub(r'^-+', r'', sys.argv[i].lower())
@@ -103,7 +104,7 @@ if Project_code is None or \
 
 
 
-def my_function_to_make_symbolic_link(src, dst):
+def my_function_to_make_symbolic_link(src, dst, verbose = 0):
     if os.path.islink(dst):
         #print(os.readlink(dst))
         #print(os.path.exists(dst))
@@ -115,7 +116,8 @@ def my_function_to_make_symbolic_link(src, dst):
     if not os.path.islink(dst):
         if not os.path.isdir(os.path.dirname(dst)):
             os.makedirs(os.path.dirname(dst))
-        print('Linking "%s" to "%s".'%(dst, src))
+        if verbose >= 1 :
+            print('Linking "%s" to "%s".'%(dst, src))
         os.symlink(src, dst)
         #print('ln -fsT "%s" "%s"'%(src, dst))
         #os.system('ln -fsT "%s" "%s"'%(src, dst))
@@ -154,8 +156,9 @@ for i in range(len(output_table)):
             t_found_files = glob2.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar')
         else:
             t_found_files = glob.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar', recursive=True)
-        print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name+'.tar')
-        print(t_found_files)
+        if verbose >= 1 :
+            print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name+'.tar')
+            print(t_found_files)
         if len(t_found_files) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'.tar"!')
         if len(t_found_files) > 0:
@@ -170,8 +173,9 @@ for i in range(len(output_table)):
             t_found_dirs = glob2.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
         else:
             t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
-        print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name)
-        print(t_found_dirs)
+        if verbose >= 1 :
+            print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name)
+            print(t_found_dirs)
         if len(t_found_dirs) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'"!')
         if len(t_found_dirs) > 0:
@@ -198,12 +202,12 @@ for i in range(len(output_table)):
                     t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname+'/raw'
                     t_Dataset_link2 = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+os.path.basename(t_found_dir)
                     # make link (including parenet dirs)
-                    my_function_to_make_symbolic_link('../../'+t_found_dir, t_Dataset_link)
-                    my_function_to_make_symbolic_link('../../../'+t_found_dir, t_Dataset_link2)
+                    my_function_to_make_symbolic_link('../../'+t_found_dir, t_Dataset_link, verbose=verbose)
+                    my_function_to_make_symbolic_link('../../../'+t_found_dir, t_Dataset_link2, verbose=verbose)
                 else:
                     t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname
                     # make link (including parenet dirs)
-                    my_function_to_make_symbolic_link('../../'+t_found_dir, t_Dataset_link)
+                    my_function_to_make_symbolic_link('../../'+t_found_dir, t_Dataset_link, verbose=verbose)
                 # 
                 # check Dataset link
                 #print(t_Dataset_link)
