@@ -16,8 +16,10 @@ from operator import itemgetter, attrgetter
 import glob
 import numpy as np
 
+# try to overcome glob.glob recursive search issue
 if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-    import formic
+    #import formic
+    import glob2
 
 
 # 
@@ -145,10 +147,11 @@ for i in range(len(output_table)):
         # 
         # try to find downloaded tar files
         if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-            t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name+'.tar')
-            t_found_files = []
-            for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
-                t_found_files.append(t_found_fileitem)
+            #t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name+'.tar')
+            #t_found_files = []
+            #for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
+            #    t_found_files.append(t_found_fileitem)
+            t_found_files = glob2.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar')
         else:
             t_found_files = glob.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar', recursive=True)
         print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name+'.tar')
@@ -160,14 +163,15 @@ for i in range(len(output_table)):
         # 
         # try to find unpacked raw data dirs
         if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-            t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name)
-            t_found_dirs = []
-            for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
-                t_found_dirs.append(t_found_fileitem)
+            #t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name)
+            #t_found_dirs = []
+            #for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
+            #    t_found_dirs.append(t_found_fileitem)
+            t_found_dirs = glob2.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
         else:
             t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
         print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name)
-        print(t_found_dirs, t_found_fileset)
+        print(t_found_dirs)
         if len(t_found_dirs) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'"!')
         if len(t_found_dirs) > 0:
