@@ -2,7 +2,8 @@
 # 
 
 from __future__ import print_function
-import os, sys, re, time, json, pkg_resources
+import os, sys, re, time, json 
+# pkg_resources
 #pkg_resources.require('astroquery')
 #pkg_resources.require('keyrings.alt')
 import astroquery
