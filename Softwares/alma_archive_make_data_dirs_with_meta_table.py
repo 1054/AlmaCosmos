@@ -161,7 +161,7 @@ for i in range(len(output_table)):
         else:
             t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
         print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name)
-        print(t_found_dirs)
+        print(t_found_dirs, formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name))
         if len(t_found_dirs) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'"!')
         if len(t_found_dirs) > 0:
