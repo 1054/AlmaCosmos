@@ -148,6 +148,8 @@ for i in range(len(output_table)):
             t_found_files = list(formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name+'.tar').files())
         else:
             t_found_files = glob.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar', recursive=True)
+        print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name+'.tar')
+        print(t_found_files)
         if len(t_found_files) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'.tar"!')
         if len(t_found_files) > 0:
@@ -158,6 +160,8 @@ for i in range(len(output_table)):
             t_found_dirs = list(formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name).files())
         else:
             t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
+        print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name)
+        print(t_found_dirs)
         if len(t_found_dirs) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'"!')
         if len(t_found_dirs) > 0:
