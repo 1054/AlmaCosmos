@@ -36,10 +36,12 @@ verbose = 0
 i = 1
 while i < len(sys.argv):
     tmp_arg = re.sub(r'^-+', r'', sys.argv[i].lower())
-    if sys.argv[i].lower() == 'some-option': 
+    if tmp_arg == 'some-option': 
         i = i+1
         if i < len(sys.argv):
             some_option = sys.argv[i]
+    elif tmp_arg == 'verbose': 
+        verbose = verbose + 1
     else:
         meta_table_file = sys.argv[i]
     i = i+1
