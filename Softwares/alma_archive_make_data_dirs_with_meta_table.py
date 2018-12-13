@@ -16,6 +16,9 @@ from operator import itemgetter, attrgetter
 import glob
 import numpy as np
 
+if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
+    import formic
+
 
 # 
 # read input argument, which should be Member_ous_id
@@ -141,14 +144,20 @@ for i in range(len(output_table)):
     if os.path.isdir('Level_1_Raw'):
         # 
         # try to find downloaded tar files
-        t_found_files = glob.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar', recursive=True)
+        if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
+            t_found_files = formic.FileSet(include='**/*'+t_Dataset_name+'.tar', directory='Level_1_Raw/')
+        else:
+            t_found_files = glob.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar', recursive=True)
         if len(t_found_files) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'.tar"!')
         if len(t_found_files) > 0:
             output_table['Downloaded'][i] = True
         # 
         # try to find unpacked raw data dirs
-        t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
+        if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
+            t_found_files = formic.FileSet(include='**/*'+t_Dataset_name, directory='Level_1_Raw/')
+        else:
+            t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
         if len(t_found_dirs) > 1:
             print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'"!')
         if len(t_found_dirs) > 0:
