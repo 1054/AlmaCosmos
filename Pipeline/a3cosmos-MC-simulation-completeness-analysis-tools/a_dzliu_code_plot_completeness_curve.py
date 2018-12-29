@@ -66,9 +66,9 @@ plt.legend(bbox_to_anchor=(0.72,0.02), loc='lower center', fontsize=14, handlete
 # Show more label
 print(os.getcwd())
 if os.getcwd().find('blind')>=0 and os.getcwd().find('Physically_Motivated')>=0:
-    ax.text(0.95, 0.45, 'PHYS$\,-\,$PYBDSM', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
+    ax.text(0.95, 0.45, 'PHYS$\,-\,$PYBDSF', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
 elif os.getcwd().find('blind')>=0 and os.getcwd().find('Parameter_Sampled')>=0:
-    ax.text(0.95, 0.45, 'FULL$\,-\,$PYBDSM', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
+    ax.text(0.95, 0.45, 'FULL$\,-\,$PYBDSF', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
 elif os.getcwd().find('GALFIT')>=0 and os.getcwd().find('Parameter_Sampled')>=0:
     ax.text(0.95, 0.45, 'FULL$\,-\,$GALFIT', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
 

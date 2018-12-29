@@ -76,8 +76,8 @@ plt.xticks(numpy.arange(-0.5,len(x_array)-0.5,1), rotation=45)
 plt.yticks(numpy.arange(-0.5,len(y_array)-0.5,1))
 ax.set_xticklabels(format_axis_tick_values(x_array))
 ax.set_yticklabels(format_axis_tick_values(y_array))
-ax.set_xlabel('$S_{peak,sim.}\,/\,rms\,noise$', fontsize=15)
-ax.set_ylabel('$\Theta_{beam,sim.,convol.}$', fontsize=15)
+ax.set_xlabel(r'$S_{\mathrm{peak,sim.}}\,/\,\mathrm{rms\,noise}$', fontsize=15)
+ax.set_ylabel(r'$\Theta_{\mathrm{beam,sim.,convol.}}$', fontsize=15)
 ax.yaxis.labelpad = 10
 ax.tick_params(axis='x', direction='in')
 ax.tick_params(axis='y', direction='in')
@@ -85,7 +85,7 @@ ax.tick_params(axis='y', direction='in')
 
 
 # Show more label
-ax.text(1.00, 1.04, 'FULL$\,-\,$PYBDSM', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
+ax.text(1.00, 1.04, r'FULL$\,-\,$PYBDSF', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
 
 
 # Now adding the colorbar

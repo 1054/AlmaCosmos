@@ -96,11 +96,11 @@ plt.legend(bbox_to_anchor=(0.72,0.02), loc='lower center', fontsize=14, handlete
 # Now adding the colorbar
 cax = fig.add_axes([0.85, 0.25, 0.03, 0.65]) # l,b,w,h
 cbar = matplotlib.colorbar.ColorbarBase(cax, cmap=cmap, norm=normalize)
-ax.text(1.19, 0.5, '$\Theta_{beam,sim.,convol.}$', transform=ax.transAxes, rotation=90, va='center', ha='center', fontsize=15)
+ax.text(1.19, 0.5, '$\Theta_{\mathrm{beam,sim.,convol.}}$', transform=ax.transAxes, rotation=90, va='center', ha='center', fontsize=15)
 
 
 # Show more label
-ax.text(0.95, 0.45, 'FULL$\,-\,$PYBDSM', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
+ax.text(0.95, 0.45, 'FULL$\,-\,$PYBDSF', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
 
 
 # Save figure
