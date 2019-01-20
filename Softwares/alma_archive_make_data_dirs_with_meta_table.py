@@ -93,6 +93,10 @@ Source_name = None
 if 'Source_name' in meta_table.colnames:
     Source_name = meta_table['Source_name']
 
+DataSet_name = None
+if 'DataSet_name' in meta_table.colnames:
+    DataSet_name = meta_table['DataSet_name']
+
 Array = None
 if 'Array' in meta_table.colnames:
     Array = meta_table['Array']
@@ -129,6 +133,7 @@ def my_function_to_make_symbolic_link(src, dst, verbose = 0):
 
 
 output_table = meta_table.copy()
+output_table['DataSet_name'] = ['']*len(output_table)
 output_table['Downloaded'] = [False]*len(output_table)
 output_table['Unpacked'] = [False]*len(output_table)
 output_table['Calibrated'] = [False]*len(output_table)
@@ -145,6 +150,12 @@ for i in range(len(output_table)):
         t_Galaxy_name = t_Source_name
     else:
         t_Galaxy_name = t_Source_name
+    # 
+    # set DataSet_name if it exists in the meta table
+    if len(DataSet_name) > i:
+        if DataSet_name[i] != '':
+            t_Dataset_name = DataSet_name[i]
+    output_table['DataSet_name'][i] = t_Dataset_name
     # 
     # check Level_1_Raw dir
     if os.path.isdir('Level_1_Raw'):
