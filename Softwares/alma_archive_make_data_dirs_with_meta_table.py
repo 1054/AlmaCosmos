@@ -152,9 +152,10 @@ for i in range(len(output_table)):
         t_Galaxy_name = t_Source_name
     # 
     # set DataSet_name if it exists in the meta table
-    if len(DataSet_name) > i:
-        if DataSet_name[i] != '':
-            t_Dataset_name = DataSet_name[i]
+    if DataSet_name is not None:
+        if len(DataSet_name) > i:
+            if DataSet_name[i] != '':
+                t_Dataset_name = DataSet_name[i]
     output_table['DataSet_name'][i] = t_Dataset_name
     # 
     # check Level_1_Raw dir
