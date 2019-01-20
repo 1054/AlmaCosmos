@@ -221,6 +221,32 @@ for i in range(len(output_table)):
                     # make link (including parenet dirs)
                     my_function_to_make_symbolic_link('../../'+t_found_dir, t_Dataset_link, verbose=verbose)
                     my_function_to_make_symbolic_link('../../../'+t_found_dir, t_Dataset_link2, verbose=verbose)
+                    # 
+                    # check calibration script
+                    t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+'scriptForDatasetRecalibration.py'
+                    if not os.path.isfile(t_Dataset_calib_script):
+                        t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py'
+                        t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
+                        t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
+                        t_CASA_version = '5.0.0'
+                        if os.path.isfile(t_EVLA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
+                            if verbose >= 1:
+                                print('Writing calibration script "%s"'%(t_Dataset_calib_script))
+                            with open(t_Dataset_calib_script, 'w') as fp:
+                                fp.write('#!/usr/bin/env python\n')
+                                fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
+                                fp.write('mymodel = \'y\'\n')
+                                fp.write('myHanning = \'n\'\n')
+                                fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
+                                fp.write('')
+                            with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
+                                fp.write('\n')
+                                fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
+                                fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
+                                fp.write('pwd\n')
+                                fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
+                                fp.write('')
+                            os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
                 else:
                     t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname
                     # make link (including parenet dirs)
