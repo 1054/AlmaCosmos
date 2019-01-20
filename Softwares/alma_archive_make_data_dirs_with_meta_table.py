@@ -215,10 +215,14 @@ for i in range(len(output_table)):
                 #print(t_Dataset_link)
                 # 
                 # check Dataset raw dir
+                if verbose >= 2:
+                    print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
                 if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
                     output_table['Unpacked'][i] = False
                 # 
                 # check Dataset calibrated dir
+                if verbose >= 2:
+                    print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
                 if os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/calibrated'):
                     t_found_ms = glob.glob('Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
                     if len(t_found_ms) > 0:

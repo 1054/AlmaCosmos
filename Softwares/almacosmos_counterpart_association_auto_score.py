@@ -1417,8 +1417,10 @@ for i in range(len(Cat.TableData)):
     
     Cutout_Bands = ['UVISTA_K', 'ACS_i', 'VLA_3GHz', 'IRAC_ch1'] # []
     
-    for Cutout_Band in Cutout_Bands:
+    Cutout_Index = 0
+    while Cutout_Index < len(Cutout_Bands):
         
+        Cutout_Band = Cutout_Bands[Cutout_Index]
         Cutout_Name = Cutout_Band
         Cutout_File = Cutout_Dir + os.sep + Cutout_Name + '.cutout.fits'
         
@@ -1440,6 +1442,27 @@ for i in range(len(Cat.TableData)):
             Cutout_downloading_errcode = Cutout_downloading_subprocess.wait()
             #shutil.copy2()
         
+        #<20190115># check whether the downloaded file is corrupted or not
+        if os.path.isfile(Cutout_File):
+            print('')
+            sys.stdout.write('Checking Cutout_File "%s" ...'%(Cutout_File))
+            sys.stdout.flush()
+            try:
+                hdulist = fits.open(Cutout_File)
+                hdu0 = hdulist[0]
+                sys.stdout.write(' '+str(hdu0.data.shape))
+                sys.stdout.flush()
+                hdulist.close()
+                sys.stdout.write(' OK!\n')
+                sys.stdout.flush()
+            except:
+                sys.stdout.write(' FAILED! Re-downloading!\n')
+                sys.stdout.flush()
+                os.remove(Cutout_File)
+                continue # continue without increasing Cutout_Index, so that the code will try to re-download current band cutout
+        
+        Cutout_Index += 1
+        
         if os.path.isfile(Cutout_File):
             print('')
             print('Cutout_Files.append("%s")'%(Cutout_File))
@@ -1455,6 +1478,7 @@ for i in range(len(Cat.TableData)):
             else:
                 sys.exit()
     
+    print('')
     
     # 
     # Prepare ALMA cutouts and copy to Cutout_Dir
