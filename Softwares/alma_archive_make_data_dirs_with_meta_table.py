@@ -133,7 +133,7 @@ def my_function_to_make_symbolic_link(src, dst, verbose = 0):
 
 
 output_table = meta_table.copy()
-output_table['DataSet_name'] = ['']*len(output_table)
+output_table['DataSet_name'] = np.array(['']*len(output_table), dtype="object")
 output_table['Downloaded'] = [False]*len(output_table)
 output_table['Unpacked'] = [False]*len(output_table)
 output_table['Calibrated'] = [False]*len(output_table)
