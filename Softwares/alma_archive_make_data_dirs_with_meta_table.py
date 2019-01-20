@@ -93,9 +93,9 @@ Source_name = None
 if 'Source_name' in meta_table.colnames:
     Source_name = meta_table['Source_name']
 
-DataSet_name = None
-if 'DataSet_name' in meta_table.colnames:
-    DataSet_name = meta_table['DataSet_name']
+Dataset_dirname = None
+if 'Dataset_dirname' in meta_table.colnames:
+    Dataset_dirname = meta_table['Dataset_dirname']
 
 Array = None
 if 'Array' in meta_table.colnames:
@@ -133,7 +133,7 @@ def my_function_to_make_symbolic_link(src, dst, verbose = 0):
 
 
 output_table = meta_table.copy()
-output_table['DataSet_name'] = np.array(['']*len(output_table), dtype="object")
+output_table['Dataset_dirname'] = np.array(['']*len(output_table), dtype="object")
 output_table['Downloaded'] = [False]*len(output_table)
 output_table['Unpacked'] = [False]*len(output_table)
 output_table['Calibrated'] = [False]*len(output_table)
@@ -150,13 +150,6 @@ for i in range(len(output_table)):
         t_Galaxy_name = t_Source_name
     else:
         t_Galaxy_name = t_Source_name
-    # 
-    # set DataSet_name if it exists in the meta table
-    if DataSet_name is not None:
-        if len(DataSet_name) > i:
-            if DataSet_name[i] != '':
-                t_Dataset_name = DataSet_name[i]
-    output_table['DataSet_name'][i] = t_Dataset_name
     # 
     # check Level_1_Raw dir
     if os.path.isdir('Level_1_Raw'):
@@ -206,11 +199,21 @@ for i in range(len(output_table)):
                 # prepare Dataset dirname
                 # -- if there are multiple dirs for each t_Dataset_name
                 t_Dataset_ID_digits = min(np.ceil(np.log10(len(output_table))), 2) # count digits and format the ID of each DataSet. 
+                # 
+                # set Dataset_dirname
                 if t_Dataset_ID_digits < 2: t_Dataset_ID_digits = 2
                 if len(t_found_dirs) > 1:
                     t_Dataset_dirname = ('DataSet_%%0%dd_%d'%(t_Dataset_ID_digits, t_found_dirs.index(t_found_dir)+1))%(i+1)
                 else:
                     t_Dataset_dirname = ('DataSet_%%0%dd'%(t_Dataset_ID_digits))%(i+1)
+                # 
+                # set Dataset_dirname if it exists in the meta table
+                if Dataset_dirname is not None:
+                    if len(Dataset_dirname) > i:
+                        if Dataset_dirname[i] != '':
+                            t_Dataset_dirname = Dataset_dirname[i]
+                output_table['Dataset_dirname'][i] = t_Dataset_dirname
+                # 
                 # -- if the project is VLA or ALMA
                 if t_Project_code.startswith('VLA'):
                     t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname+'/raw'
