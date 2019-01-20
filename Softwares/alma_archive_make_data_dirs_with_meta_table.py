@@ -193,7 +193,7 @@ for i in range(len(output_table)):
                 # 
                 # prepare Dataset dirname
                 # -- if there are multiple dirs for each t_Dataset_name
-                t_Dataset_ID_digits = np.ceil(np.log10(1.0*len(output_table))+1.0)
+                t_Dataset_ID_digits = min(np.ceil(np.log10(len(output_table))), 2) # count digits and format the ID of each DataSet. 
                 if t_Dataset_ID_digits < 2: t_Dataset_ID_digits = 2
                 if len(t_found_dirs) > 1:
                     t_Dataset_dirname = ('DataSet_%%0%dd_%d'%(t_Dataset_ID_digits, t_found_dirs.index(t_found_dir)+1))%(i+1)
