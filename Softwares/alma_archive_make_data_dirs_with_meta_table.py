@@ -251,7 +251,7 @@ for i in range(len(output_table)):
                 else:
                     t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname
                     # make link (including parenet dirs)
-                    my_function_to_make_symbolic_link('../../'+t_found_dir, t_Dataset_link, verbose=verbose)
+                    my_function_to_make_symbolic_link('../'+t_found_dir, t_Dataset_link, verbose=verbose)
                 # 
                 # check Dataset link
                 #print(t_Dataset_link)
