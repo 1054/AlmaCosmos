@@ -43,35 +43,42 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     DataSet_ms="calibrated.ms"
     DataSet_dir=$(basename ${list_of_datasets[i]})
     
-    # run CASA split
+    # print message
     echo "Now running CASA split for \"${DataSet_dir}\""
     
+    # check Level_2_Calib DataSet_dir
+    if [[ ! -d ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms ]]; then
+        echo "Error! \"../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms\" was not found! Please run Level_2_Calib first! We will skip this dataset for now."
+        continue
+    fi
+    
+    # prepare Level_3_Split DataSet_dir
     if [[ ! -d $DataSet_dir ]]; then
         mkdir $DataSet_dir
     fi
     echo cd $DataSet_dir
     cd $DataSet_dir
     
-    if [[ ! -d ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms ]]; then
-        echo "Error! \"../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms\" was not found! Please run Level_2_Calib first! We will skip this dataset for now."
-        continue
-    fi
-    
+    # link Level_2_Calib calibrated.ms to Level_3_Split calibrated.ms
     ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms
     
+    # run CASA listobs
     if [[ ! -f calibrated.ms.listobs.txt ]]; then
         casa-ms-listobs -vis calibrated.ms
     fi
     
+    # run CASA split
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width2_SP.uvt" | wc -l) -eq 0 ]]; then
         casa-ms-split -vis calibrated.ms -width 2 -timebin 30 -step split exportuvfits gildas
     else
         echo "Warning! Found split_*_width2_SP.uvt files! Will not re-run casa-ms-split!"
     fi
     
+    # cd back
     echo cd ../
     cd ../
     
+    # print message
     if [[ $i -gt 0 ]]; then
         echo ""
         echo ""
