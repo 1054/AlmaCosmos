@@ -21,6 +21,25 @@ if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_in
     #import formic
     import glob2
 
+# define functions
+def find_items_in_folder_with_name_pattern(name_pattern, recursive=True, verbose=0):
+    if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
+        #t_found_fileset = formic.FileSet(include=name_pattern)
+        #t_found_items = []
+        #for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
+        #    t_found_items.append(t_found_fileitem)
+        t_found_items = glob2.glob(name_pattern, recursive=recursive)
+    else:
+        t_found_items = glob.glob(name_pattern, recursive=recursive)
+    # 
+    if verbose >= 1 :
+        print('Searching with the name pattern '+name_pattern)
+        print(t_found_items)
+    # 
+    return t_found_items
+
+
+
 
 # 
 # read input argument, which should be Member_ous_id
@@ -141,7 +160,7 @@ output_table['Imaged'] = [False]*len(output_table)
 
 for i in range(len(output_table)):
     t_Project_code = Project_code[i]
-    t_Dataset_name = re.sub(r'[^a-zA-Z0-9._]', r'_', Member_ous_id[i])
+    t_Data_name = re.sub(r'[^a-zA-Z0-9._]', r'_', Member_ous_id[i])
     t_Source_name = re.sub(r'[^a-zA-Z0-9._+-]', r'_', Source_name[i])
     t_Source_name = re.sub(r'^_*(.*?)_*$', r'\1', t_Source_name)
     t_Array = Array[i]
@@ -151,40 +170,50 @@ for i in range(len(output_table)):
     else:
         t_Galaxy_name = t_Source_name
     # 
-    # check Level_1_Raw dir
-    if os.path.isdir('Level_1_Raw'):
+    # determine t_Dataset_dirname
+    t_Dataset_digits = min(np.ceil(np.log10(len(output_table))), 2) # count digits and format the ID of each DataSet. 
+    if t_Dataset_digits < 2: 
+        t_Dataset_digits = 2
+    t_Dataset_dirname = ('DataSet_%%0%dd'%(t_Dataset_digits))%(i+1)
+    output_table['Dataset_dirname'][i] = t_Dataset_dirname
+    # 
+    # prepare Level_1_Raw dir
+    if not os.path.isdir('Level_1_Raw'):
+        os.mkdir('Level_1_Raw')
+        if verbose >= 1:
+            print('Created "Level_1_Raw" folder')
+    # 
+    # check Level_1_Raw
+    t_found_items = find_items_in_folder_with_name_pattern('Level_1_Raw/[^.]*', verbose=verbose)
+    if len(t_found_items) == 0:
+        # 
+        print('Warning! "Level_1_Raw" folder is empty! Please download the raw ALMA data into this directory (any subdirectory is fine)!')
+        # 
+        # prepare download scripts
+        with open('Level_1_Raw/download_%s_via_Mem_ous_id.bash'%(t_Dataset_dirname), 'w') as fp:
+            fp.write('#!/bin/bash\n#\n')
+            if os.path.isfile('meta_user_info.txt'):
+                fp.write('user_info=($(cat $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/meta_user_info.txt))')
+            else:
+                fp.write('user_info=()')
+            fp.write('%s/alma_archive_download_data_by_Mem_ous_id.py "%s" ${user_info[@]}\n'%(os.path.dirname(__file__), Member_ous_id[i]))
+            fp.write('\n')
+        os.system('chmod +x "Level_1_Raw/download_%s_via_Mem_ous_id.bash"'%(t_Dataset_dirname))
+        print('Created "Level_1_Raw/download_%s_via_Mem_ous_id.bash" script'%(t_Dataset_dirname))
+        # 
+    else:
         # 
         # try to find downloaded tar files
-        if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-            #t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name+'.tar')
-            #t_found_files = []
-            #for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
-            #    t_found_files.append(t_found_fileitem)
-            t_found_files = glob2.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar')
-        else:
-            t_found_files = glob.glob('Level_1_Raw/**/*'+t_Dataset_name+'.tar', recursive=True)
-        if verbose >= 1 :
-            print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name+'.tar')
-            print(t_found_files)
+        t_found_files = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Data_name+'.tar', verbose=verbose)
         if len(t_found_files) > 1:
-            print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'.tar"!')
+            print('Warning! Found multiple data files with the name pattern "Level_1_Raw/**/*'+t_Data_name+'.tar"!')
         if len(t_found_files) > 0:
             output_table['Downloaded'][i] = True
         # 
         # try to find unpacked raw data dirs
-        if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-            #t_found_fileset = formic.FileSet(include='Level_1_Raw/**/*'+t_Dataset_name)
-            #t_found_dirs = []
-            #for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
-            #    t_found_dirs.append(t_found_fileitem)
-            t_found_dirs = glob2.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
-        else:
-            t_found_dirs = glob.glob('Level_1_Raw/**/*'+t_Dataset_name, recursive=True)
-        if verbose >= 1 :
-            print('Searching for '+'Level_1_Raw/**/*'+t_Dataset_name)
-            print(t_found_dirs)
+        t_found_dirs = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Data_name, verbose=verbose)
         if len(t_found_dirs) > 1:
-            print('Warning! Found multiple dataset dirs for "Level_1_Raw/**/*'+t_Dataset_name+'"!')
+            print('Warning! Found multiple data folders with the name pattern "Level_1_Raw/**/*'+t_Data_name+'"!')
         if len(t_found_dirs) > 0:
             output_table['Downloaded'][i] = True
             output_table['Unpacked'] = True
@@ -192,26 +221,24 @@ for i in range(len(output_table)):
             # check Level_2_Calib dir
             if not os.path.isdir('Level_2_Calib'):
                 os.mkdir('Level_2_Calib')
+                if verbose >= 1:
+                    print('Created "Level_2_Calib" folder')
             # 
             # loop Level_2_Calib dirs
             for t_found_dir in t_found_dirs:
                 # 
-                # prepare Dataset dirname
-                # -- if there are multiple dirs for each t_Dataset_name
-                t_Dataset_ID_digits = min(np.ceil(np.log10(len(output_table))), 2) # count digits and format the ID of each DataSet. 
-                # 
                 # set Dataset_dirname
-                if t_Dataset_ID_digits < 2: t_Dataset_ID_digits = 2
+                # -- if there are multiple dirs for each t_Data_name
                 if len(t_found_dirs) > 1:
-                    t_Dataset_dirname = ('DataSet_%%0%dd_%d'%(t_Dataset_ID_digits, t_found_dirs.index(t_found_dir)+1))%(i+1)
-                else:
-                    t_Dataset_dirname = ('DataSet_%%0%dd'%(t_Dataset_ID_digits))%(i+1)
+                    t_Dataset_dirname = ('DataSet_%%0%dd_%d'%(t_Dataset_digits, t_found_dirs.index(t_found_dir)+1))%(i+1)
                 # 
                 # set Dataset_dirname if it exists in the meta table
                 if Dataset_dirname is not None:
                     if len(Dataset_dirname) > i:
                         if Dataset_dirname[i] != '':
                             t_Dataset_dirname = Dataset_dirname[i]
+                # 
+                # update output_table['Dataset_dirname'][i]
                 output_table['Dataset_dirname'][i] = t_Dataset_dirname
                 # 
                 # -- if the project is VLA or ALMA
@@ -223,6 +250,7 @@ for i in range(len(output_table)):
                     my_function_to_make_symbolic_link('../../../'+t_found_dir, t_Dataset_link2, verbose=verbose)
                     # 
                     # make calibration script
+                    # <TODO> EVLA pipeline CASA version ??
                     t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+'scriptForDatasetRecalibration.py'
                     Overwrite_calib_scripts = True
                     if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
@@ -254,14 +282,15 @@ for i in range(len(output_table)):
                     my_function_to_make_symbolic_link('../'+t_found_dir, t_Dataset_link, verbose=verbose)
                     # 
                     # make calibration script
+                    # <TODO> ALMA pipeline mode or ??
                     t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/script/'+'scriptForDatasetRecalibration.py'
                     Overwrite_calib_scripts = True
                     if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
-                        t_EVLA_calib_script = 'scriptForPI.py'
+                        t_ALMA_calib_script = 'scriptForPI.py'
                         t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
                         t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
                         t_CASA_version = '5.0.0'
-                        if os.path.isfile(t_EVLA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
+                        if os.path.isfile(t_ALMA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
                             if verbose >= 1:
                                 print('Writing calibration script "%s"'%(t_Dataset_calib_script))
                             with open(t_Dataset_calib_script, 'w') as fp:
@@ -298,7 +327,7 @@ for i in range(len(output_table)):
                         output_table['Calibrated'][i] = True
                 ## 
                 ## check calibrated dir
-                #t_found_dirs3 = glob.glob(Project_code+'/science_goal.*/group.*/member.'+t_Dataset_name+'/'+'calibrated'+'/'+'*.ms')
+                #t_found_dirs3 = glob.glob(Project_code+'/science_goal.*/group.*/member.'+t_Data_name+'/'+'calibrated'+'/'+'*.ms')
                 #if len(t_found_dirs3) > 0:
                 #    output_table['Calibrated'][i] = True
                 ## check imaged fits files

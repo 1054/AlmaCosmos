@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # 
+# 20190506: adjusted plotting range
+# 
 
 import os, sys, numpy
 
@@ -80,8 +82,10 @@ ax.fill_between(differential_curve_ref['snr'], (1.0-differential_curve_ref['inco
 ax.set_xlabel(r'$S_{\mathrm{peak,sim.}}\,/\,\mathrm{rms\,noise}$', fontsize=15)
 ax.set_ylabel('Completeness', fontsize=15)
 ax.set_xscale('log')
-ax.set_xlim([1,500])
-ax.set_ylim([0,1.1])
+#ax.set_xlim([1,500]) #<20190506>#
+ax.set_xlim([2.0, 50.0]) #<20190506>#
+ax.set_ylim([0, 1.1])
+ax.xaxis.set_major_locator(matplotlib.ticker.LogLocator(base=10, subs=(1.0,2.0,3.0,4.0,5.0,6.0,7.0))) #<20190506>#
 ax.xaxis.set_major_formatter(ScalarFormatter())
 ax.yaxis.set_major_formatter(my_yaxis_formatter)
 ax.yaxis.labelpad = 3
@@ -96,11 +100,11 @@ plt.legend(bbox_to_anchor=(0.72,0.02), loc='lower center', fontsize=14, handlete
 # Now adding the colorbar
 cax = fig.add_axes([0.85, 0.25, 0.03, 0.65]) # l,b,w,h
 cbar = matplotlib.colorbar.ColorbarBase(cax, cmap=cmap, norm=normalize)
-ax.text(1.19, 0.5, '$\Theta_{\mathrm{beam,sim.,convol.}}$', transform=ax.transAxes, rotation=90, va='center', ha='center', fontsize=15)
+ax.text(1.19, 0.5, r'$\Theta_{\mathrm{beam,sim.,convol.}}$', transform=ax.transAxes, rotation=90, va='center', ha='center', fontsize=15)
 
 
 # Show more label
-ax.text(0.95, 0.45, 'FULL$\,-\,$PYBDSF', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
+ax.text(0.95, 0.45, r'FULL$\,-\,$PYBDSF', transform=ax.transAxes, va='center', ha='right', fontsize=13.5)
 
 
 # Save figure

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # 
+# 20190506: focusing on SNRpeak 3-10, plotting range 1-20
+# 
 
 import os, sys, numpy
 
@@ -39,12 +41,13 @@ ax.plot(differential_curve['snr'], differential_curve['spur'], color=color_curve
 ax.plot(cumulative_curve['snr'], cumulative_curve['spur'], markerfacecolor='none', markeredgecolor=color_curve, marker='o', markersize=4, linestyle='none', label='Cumulative')
 ax.plot(cumulative_curve['snr'], cumulative_curve['spur'], color=color_curve, marker='.', markersize=1, linestyle='dotted', lw=1, label='_nolegend_')
 # 
-ax.set_xlabel('$S_{peak,rec.}\,/\,rms\,noise$', fontsize=15)
+ax.set_xlabel(r'$\mathrm{S/N_{peak}} \equiv S_{\mathrm{peak,rec.}}\,/\,\mathrm{rms\,noise}$', fontsize=15)
 ax.set_ylabel('Spurious', fontsize=15)
 ax.set_xscale('log')
-ax.set_xlim([1,200])
-ax.set_ylim([-0.1,1.0])
-ax.xaxis.set_major_locator(matplotlib.ticker.LogLocator(base=10, subs=(1.0,5.0)))
+#ax.set_xlim([1,200]) #<20190506>#
+ax.set_xlim([2.0,30]) #<20190506>#
+ax.set_ylim([-0.02,1.02])
+ax.xaxis.set_major_locator(matplotlib.ticker.LogLocator(base=10, subs=(1.0,2.0,3.0,4.0,5.0,6.0,7.0)))
 ax.xaxis.set_major_formatter(ScalarFormatter())
 ax.yaxis.set_major_formatter(my_yaxis_formatter)
 ax.yaxis.labelpad = 3

@@ -1,5 +1,7 @@
 #!/usr/bin/env python2.7
 # 
+# 20190506: adjusted plotting range
+# 
 
 import os, sys, json, numpy, astropy, scipy
 import astropy.io.ascii as asciitable
@@ -11,6 +13,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+o
 from CrabPlot import *
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(sys.argv[0])))+os.sep+'Softwares'+os.sep+'lib_python_dzliu'+os.sep+'crabcurvefit')
 from CrabCurveFit import *
+
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter, FuncFormatter, NullFormatter, LogLocator
 
 
 # Print usage
@@ -52,6 +58,11 @@ x1_interval = x1_grid[1:len(x1_grid)] - x1_grid[0:len(x1_grid)-1]
 x2_interval = x2_grid[1:len(x2_grid)] - x2_grid[0:len(x2_grid)-1]
 
 
+# set a SNRpeak limit
+SNRpeak_limit = 3.0
+SNRpeak_threshold = 5.40 # our photometry catalog to galaxy catalog SNRpeak threshold, determined in a3cosmos paper I Sect.~4.1
+
+
 # Plot subplots
 fig = pyplot.figure()
 fig.set_size_inches(13.0,11.5)
@@ -63,7 +74,7 @@ for i2 in range(n2):
     
     
     
-    i1 = 0
+    i1 = 0 # panel column 0
     
     
     
@@ -73,21 +84,28 @@ for i2 in range(n2):
     ax = fig.add_subplot(n2, 2, 2*i2+i1+1)
     # 
     # set axis
-    ax.set_xlim([1,1000.0])
+    #ax.set_xlim([1,1000.0]) #<20190506>#
+    ax.set_xlim([SNRpeak_limit,30.0]) #<20190506>#
     ax.set_xscale('log')
     ax.set_ylim([-2.5,2.5])
+    ax.xaxis.set_major_locator(matplotlib.ticker.LogLocator(base=10, subs=(1.0,2.0,3.0,4.0,5.0,6.0,7.0))) #<20190506>#
+    ax.xaxis.set_major_formatter(ScalarFormatter()) #<20190506>#
+    ax.xaxis.set_minor_formatter(NullFormatter()) #<20190506>#
     # 
     # print x2 value
-    plot_text(ax, 0, 0.7, r' $\Theta_{beam}$: %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
-                NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='left', zorder=4)
+    plot_text(ax, 0.96, 0.7, r' $\Theta_{beam}$: %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
+                NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='right', zorder=4)
     #plot_text(ax, 0, 0.5, r' %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
     #            NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='left', zorder=4)
     # 
     # print a line at Y=0
-    plot_line(ax, 0, 0.0, 1000.0, 0.0, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1, zorder=1)
+    plot_line(ax, ax.get_xlim()[0], 0.0, ax.get_xlim()[1], 0.0, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1, zorder=1)
+    # 
+    # plot a line at X=SNRpeak_threshold
+    plot_line(ax, SNRpeak_threshold, -2.1, SNRpeak_threshold, 2.1, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1.5, zorder=2)
     # 
     # select data in x2 bin
-    imask = (x1_obs>=3.0) & (x2_obs >= x2_grid[i2]) & (x2_obs < x2_grid[i2]+x2_interval[i2])
+    imask = (x1_obs>=SNRpeak_limit) & (x2_obs >= x2_grid[i2]) & (x2_obs < x2_grid[i2]+x2_interval[i2])
     iselect = numpy.argwhere(imask)
     if len(iselect) > 0:
         x1_bin = x1_obs[imask]
@@ -107,7 +125,10 @@ for i2 in range(n2):
         spline_table_x = []
         spline_table_y = []
         for spline_table_i in range(len(spline_table['y'])):
-            if (spline_table['x'][spline_table_i][1] >= x2_grid[i2]) and (spline_table['x'][spline_table_i][1] < x2_grid[i2]+x2_interval[i2]):
+            if (spline_table['x'][spline_table_i][0]) >= numpy.min(x1_bin) and \
+               (spline_table['x'][spline_table_i][0]) <= numpy.max(x1_bin) and \
+               (spline_table['x'][spline_table_i][1] >= x2_grid[i2]) and \
+               (spline_table['x'][spline_table_i][1] < x2_grid[i2]+x2_interval[i2]):
                 spline_table_x.append(spline_table['x'][spline_table_i][0])
                 spline_table_y.append(spline_table['y'][spline_table_i])
         if len(spline_table_x)>0:
@@ -147,9 +168,9 @@ for i2 in range(n2):
     if i2==0:
         plot_text(ax, 0.5, 1.15, r'Flux Bias Analysis', NormalizedCoordinate=True, fontdict=font, fontsize=18, verticalalignment='bottom', horizontalalignment='center', color='black')
     elif i2==n2-1:
-        ax.set_xlabel('$S/N_{peak}$', fontdict=font, fontsize=18)
+        ax.set_xlabel(r'$\mathrm{S/N_{peak}}$', fontdict=font, fontsize=18, labelpad=5)
     elif i2==int((n2-1)/2):
-        ax.set_ylabel('Median (Mean) of  $(S_{sim.} - S_{rec.}) / S_{sim.}$', fontdict=font, fontsize=18, labelpad=15)
+        ax.set_ylabel(r'Median (Mean) of  $(S_{sim.} - S_{rec.}) \,/\, S_{sim.}$', fontdict=font, fontsize=18, labelpad=15)
     # 
     # show or hide xyticks
     if i2!=n2-1:
@@ -159,7 +180,7 @@ for i2 in range(n2):
     
     
     
-    i1 = 1
+    i1 = 1 # panel column 1
     
     
     
@@ -169,13 +190,17 @@ for i2 in range(n2):
     ax = fig.add_subplot(n2, 2, 2*i2+i1+1)
     # 
     # set axis
-    ax.set_xlim([1,1000.0])
+    #ax.set_xlim([1,1000.0]) #<20190506>#
+    ax.set_xlim([SNRpeak_limit,30.0]) #<20190506>#
     ax.set_xscale('log')
     ax.set_ylim([0.0,25.0])
+    ax.xaxis.set_major_locator(matplotlib.ticker.LogLocator(base=10, subs=(1.0,2.0,3.0,4.0,5.0,6.0,7.0))) #<20190506>#
+    ax.xaxis.set_major_formatter(ScalarFormatter()) #<20190506>#
+    ax.xaxis.set_minor_formatter(NullFormatter()) #<20190506>#
     # 
     # print x2 value
-    plot_text(ax, 0, 0.7, r' $\Theta_{beam}$: %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
-                NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='left', zorder=4)
+    plot_text(ax, 0.96, 0.7, r' $\Theta_{beam}$: %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
+                NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='right', zorder=4)
     #plot_text(ax, 0, 0.5, r' %0.2f - %0.2f '%(x2_grid[i2], x2_grid[i2]+x2_interval[i2]), 
     #            NormalizedCoordinate=True, fontdict=font, verticalalignment='bottom', horizontalalignment='left', zorder=4)
     # 
@@ -183,7 +208,7 @@ for i2 in range(n2):
     #plot_line(ax, 0, 1.0, 1000.0, 1.0, NormalizedCoordinate=False, color='k', linestyle='dashed', lw=1, zorder=1)
     # 
     # select data in x2 bin
-    imask = (x1_obs>=3.0) & (x2_obs >= x2_grid[i2]) & (x2_obs < x2_grid[i2]+x2_interval[i2])
+    imask = (x1_obs>=SNRpeak_limit) & (x2_obs >= x2_grid[i2]) & (x2_obs < x2_grid[i2]+x2_interval[i2])
     iselect = numpy.argwhere(imask)
     if len(iselect) > 0:
         x1_bin = x1_obs[imask]
@@ -242,9 +267,9 @@ for i2 in range(n2):
     if i2==0:
         plot_text(ax, 0.5, 1.15, r'Flux Error Analysis', NormalizedCoordinate=True, fontdict=font, fontsize=18, verticalalignment='bottom', horizontalalignment='center', color='black')
     elif i2==n2-1:
-        ax.set_xlabel('$S/N_{peak}$', fontdict=font, fontsize=18)
+        ax.set_xlabel(r'$\mathrm{S/N_{peak}}$', fontdict=font, fontsize=18, labelpad=5)
     elif i2==int((n2-1)/2):
-        ax.set_ylabel('Scatter (Percentile) of  $(S_{sim.} - S_{rec.}) / {rms\,noise}$', fontdict=font, fontsize=18, labelpad=15)
+        ax.set_ylabel(r'Scatter (Percentile) of  $(S_{sim.} - S_{rec.}) \,/\, \mathrm{rms\,noise}$', fontdict=font, fontsize=18, labelpad=15)
     # 
     # show or hide xyticks
     if i2!=n2-1:

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # 
+# 20190506: adjusted plotting range
+# 
 
 import os, sys, numpy
 
@@ -61,7 +63,8 @@ print((1.0-differential_curve_1p0_1p5['incomp']).data)
 print(differential_cube.T)
 print(differential_cube.shape)
 print(len(differential_curve_1p0_1p5['snr'].data))
-x_array = numpy.power(10, numpy.linspace(numpy.log10(1.0),numpy.log10(1000.0),16)) # differential_curve_1p0_1p5['snr'].data
+#x_array = numpy.power(10, numpy.linspace(numpy.log10(1.0),numpy.log10(1000.0),16)) # differential_curve_1p0_1p5['snr'].data #<20190506>#
+x_array = numpy.power(10, numpy.linspace(numpy.log10(2.0),numpy.log10(100.0),16)) # differential_curve_1p0_1p5['snr'].data #<20190506>#
 y_array = numpy.linspace(1.0,5.0,9)
 print(x_array)
 print(y_array)
@@ -71,11 +74,11 @@ print(y_array)
 # make plot
 fig = plt.figure(figsize=(5.5,3.0))
 ax = fig.add_subplot(1,1,1)
-ax.imshow(differential_cube.T, cmap=cmap, norm=normalize, aspect=1.0, origin='lower') # , extent=[-0.5, len(x_array)-0.5, 1.0, 5.0]
-plt.xticks(numpy.arange(-0.5,len(x_array)-0.5,1), rotation=45)
-plt.yticks(numpy.arange(-0.5,len(y_array)-0.5,1))
-ax.set_xticklabels(format_axis_tick_values(x_array))
-ax.set_yticklabels(format_axis_tick_values(y_array))
+ax.imshow(differential_cube.T, cmap=cmap, norm=normalize, aspect=1.0, origin='lower', extent=[np.log10(2.0), np.log10(100.0), 1.0, 5.0]) # , extent=[-0.5, len(x_array)-0.5, 1.0, 5.0]
+#plt.xticks(numpy.arange(-0.5,len(x_array)-0.5,1), rotation=45)
+#plt.yticks(numpy.arange(-0.5,len(y_array)-0.5,1))
+#ax.set_xticklabels(format_axis_tick_values(x_array))
+#ax.set_yticklabels(format_axis_tick_values(y_array))
 ax.set_xlabel(r'$S_{\mathrm{peak,sim.}}\,/\,\mathrm{rms\,noise}$', fontsize=15)
 ax.set_ylabel(r'$\Theta_{\mathrm{beam,sim.,convol.}}$', fontsize=15)
 ax.yaxis.labelpad = 10

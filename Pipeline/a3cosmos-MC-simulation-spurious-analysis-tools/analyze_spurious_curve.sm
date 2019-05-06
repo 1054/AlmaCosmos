@@ -3,6 +3,10 @@ analyze_spurious_curve
     # Usage:
     #   echo "macro read analyze_spurious_curve.sm analyze_spurious_curve" | sm
     # 
+    # Updates:
+    #   20190506: more sampling within SNR 3-10
+    # 
+    # 
     load crabPlot.sm
     load vecSNR.sm
     load rfile.sm
@@ -61,10 +65,20 @@ analyze_spurious_curve
     #set snr_fit_n2_count = snr_fit_n2_count / dimen(snr_fit_n2) * dimen(snr_fit_2)
     #set snr_fit_n2_count = int(snr_fit_n2_count)
     
-    #set snr_value = snr_fit_2_value
-    #set snr_bins = {1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 12.0 15.0 20.0 30.0 50.0}
-    #set snr_bins = lg(snr_bins)
-    set snr_bins = $(lg(1.0)),$(lg(1000.0)),0.15
+    ##set snr_value = snr_fit_2_value
+    ##set snr_bins = {1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 12.0 15.0 20.0 30.0 50.0}
+    ##set snr_bins = lg(snr_bins)
+    #set snr_bins = $(lg(1.0)),$(lg(1000.0)),0.15               #<20190506>#
+    set snr_bins_part1 = $(lg(1.0)),$(lg(3.5)),0.03             #<20190506>#
+    set snr_bins_part2 = $(lg(3.5)+0.03),$(lg(10.0)),0.05       #<20190506>#
+    set snr_bins_part3 = $(lg(10.0)+0.05),$(lg(100.0)),0.10     #<20190506>#
+    set snr_bins_part4 = $(lg(100.0)+0.20),$(lg(1000.0)),0.20   #<20190506>#
+    set snr_bins =                 snr_bins_part1               #<20190506>#
+    set snr_bins = snr_bins concat snr_bins_part2               #<20190506>#
+    set snr_bins = snr_bins concat snr_bins_part3               #<20190506>#
+    set snr_bins = snr_bins concat snr_bins_part4               #<20190506>#
+    #set snr_bins_pow10 = 10**snr_bins                          #<20190506>#
+    #print {snr_bins_pow10}                                     #<20190506>#
     
     declare snr_bin_value 0.f
     declare snr_fit_2_count 0.f
@@ -95,16 +109,16 @@ analyze_spurious_curve
             set fake_rate_differential = fake_rate_differential concat $(sum(snr_fit_n2_is_in_the_bin) / (sum(snr_fit_2_is_in_the_bin)) )
         }
         # 
-        set snr_fit_2_is_in_the_bin = (snr_fit_2>=snr_bins[$i])
-        set snr_fit_n2_is_in_the_bin = (snr_fit_n2>=snr_bins[$i])
-        if(sum(snr_fit_2_is_in_the_bin)>0) {
+        set snr_fit_2_is_greater_than_the_bin = (snr_fit_2>=snr_bins[$i])
+        set snr_fit_n2_is_greater_than_the_bin = (snr_fit_n2>=snr_bins[$i])
+        if(sum(snr_fit_2_is_in_the_bin)>0 && sum(snr_fit_2_is_greater_than_the_bin)>0) {
             set snr_bin_mean = (snr_bins[$i])
             # 
-            set true_count_cumulative = true_count_cumulative concat $(sum(snr_fit_2_is_in_the_bin))
-            set spurious_count_cumulative = spurious_count_cumulative concat $(sum(snr_fit_n2_is_in_the_bin))
+            set true_count_cumulative = true_count_cumulative concat $(sum(snr_fit_2_is_greater_than_the_bin))
+            set spurious_count_cumulative = spurious_count_cumulative concat $(sum(snr_fit_n2_is_greater_than_the_bin))
             # 
             set snr_value_cumulative = snr_value_cumulative concat snr_bin_mean
-            set fake_rate_cumulative = fake_rate_cumulative concat $(sum(snr_fit_n2_is_in_the_bin) / (sum(snr_fit_2_is_in_the_bin)) )
+            set fake_rate_cumulative = fake_rate_cumulative concat $(sum(snr_fit_n2_is_greater_than_the_bin) / (sum(snr_fit_2_is_greater_than_the_bin)) )
         }
     }
     
@@ -176,7 +190,8 @@ plot_spurious_curve
         ctype royalblue ltype 1
         connect snr_spline spline_rate
     } else {
-        set snr_spline = $fx1,$fx2,0.02
+        vecminmax snr_value_cumulative snr_min snr_max
+        set snr_spline = $snr_min,$snr_max,0.02
         spline snr_value_cumulative fake_rate_cumulative snr_spline spline_rate
         ctype royalblue ltype 1
         connect snr_spline spline_rate
