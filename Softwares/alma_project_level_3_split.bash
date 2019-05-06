@@ -47,8 +47,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     echo "Now running CASA split for \"${DataSet_dir}\""
     
     # check Level_2_Calib DataSet_dir
-    if [[ ! -d ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms ]]; then
-        echo "Error! \"../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms\" was not found! Please run Level_2_Calib first! We will skip this dataset for now."
+    if [[ ! -d ../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms ]]; then
+        echo "Error! \"../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms\" was not found! Please run Level_2_Calib first! We will skip this dataset for now."
         continue
     fi
     
