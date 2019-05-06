@@ -16,27 +16,66 @@ from operator import itemgetter, attrgetter
 import glob
 import numpy as np
 
+
+
 # try to overcome glob.glob recursive search issue
-if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-    #import formic
-    import glob2
+#if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
+#    #import formic
+#    import glob2
+
+
 
 # define functions
-def find_items_in_folder_with_name_pattern(name_pattern, recursive=True, verbose=0):
+def find_items_in_folder_with_name_pattern(name_pattern, recursive=True, verbose=0, search_dir='.'):
     if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 5):
-        #t_found_fileset = formic.FileSet(include=name_pattern)
-        #t_found_items = []
-        #for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
-        #    t_found_items.append(t_found_fileitem)
-        t_found_items = glob2.glob(name_pattern, recursive=recursive)
+        ##t_found_fileset = formic.FileSet(include=name_pattern)
+        ##t_found_items = []
+        ##for t_found_fileitem in t_found_fileset.qualified_files(absolute=False):
+        ##    t_found_items.append(t_found_fileitem)
+        #t_found_items = glob2.glob(name_pattern, recursive=recursive) # could not solve symbolic link
+        t_found_items = []
+        for m_root, m_dirs, m_files in os.walk(search_dir, followlinks = True):
+            for m_file in m_files:
+                if verbose >= 3:
+                    print('Searching with the name pattern "%s": checking "%s"'%(name_pattern, m_file))
+                if re.match('^'+name_pattern.replace('*','.*')+'$', m_root+os.sep+m_file):
+                    t_found_items.append(m_root+os.sep+m_file)
+                else:
+                    if recursive == True:
+                        if os.path.islink(m_file):
+                            if verbose >= 3:
+                                print('Searching with the name pattern "%s": searching inside "%s" (symlink)'%(name_pattern, m_file))
+                            t_found_items_in_subdir = find_items_in_folder_with_name_pattern(name_pattern, recursive=recursive, verbose=verbose, search_dir=m_file)
+                            if len(t_found_items_in_subdir) > 0:
+                                t_found_items.extend(t_found_items_in_subdir)
+            # 
+            for m_dir in m_dirs:
+                if verbose >= 3:
+                    print('Searching with the name pattern "%s": checking "%s" (dir)'%(name_pattern, m_dir))
+                if re.match('^'+name_pattern.replace('*','.*')+'$', m_root+os.sep+m_dir):
+                    t_found_items.append(m_root+os.sep+m_dir)
+                elif re.match('^'+name_pattern.replace('*','.*')+'$', m_root+os.sep+m_dir+os.sep):
+                    t_found_items.append(m_root+os.sep+m_dir+os.sep)
+                else:
+                    if recursive == True:
+                        if os.path.isdir(m_dir):
+                            if verbose >= 3:
+                                print('Searching with the name pattern "%s": searching inside "%s" (dir)'%(name_pattern, m_dir))
+                            t_found_items_in_subdir = find_items_in_folder_with_name_pattern(name_pattern, recursive=recursive, verbose=verbose, search_dir=m_dir)
+                            if len(t_found_items_in_subdir) > 0:
+                                t_found_items.extend(t_found_items_in_subdir)
+            # 
     else:
         t_found_items = glob.glob(name_pattern, recursive=recursive)
     # 
     if verbose >= 1 :
-        print('Searching with the name pattern '+name_pattern)
-        print(t_found_items)
+        print('Searching with the name pattern "%s": found %s'%(name_pattern, t_found_items))
+        #print(t_found_items)
     # 
     return t_found_items
+
+
+
 
 
 
@@ -54,12 +93,12 @@ output_full_table = True
 verbose = 0
 i = 1
 while i < len(sys.argv):
-    tmp_arg = re.sub(r'^-+', r'', sys.argv[i].lower())
-    if tmp_arg == 'some-option': 
+    tmp_arg = re.sub(r'^[-]+', r'-', sys.argv[i].lower())
+    if tmp_arg == '-some-option': 
         i = i+1
         if i < len(sys.argv):
             some_option = sys.argv[i]
-    elif tmp_arg == 'verbose': 
+    elif tmp_arg == '-verbose': 
         verbose = verbose + 1
     else:
         meta_table_file = sys.argv[i]
@@ -182,12 +221,19 @@ for i in range(len(output_table)):
         os.mkdir('Level_1_Raw')
         if verbose >= 1:
             print('Created "Level_1_Raw" folder')
+    
     # 
-    # check Level_1_Raw
-    t_found_items = find_items_in_folder_with_name_pattern('Level_1_Raw/[^.]*', verbose=verbose)
-    if len(t_found_items) == 0:
+    # try to find downloaded tar files
+    t_found_files = find_items_in_folder_with_name_pattern('Level_1_Raw/*'+t_Data_name+'*.tar', verbose=verbose)
+    if len(t_found_files) == 0:
+        t_found_files = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Data_name+'*.tar', verbose=verbose)
+    if len(t_found_files) > 1:
+        print('Warning! Found multiple data files with the name pattern "Level_1_Raw/**/*'+t_Data_name+'*.tar"!')
+    if len(t_found_files) > 0:
+        output_table['Downloaded'][i] = True
+    else:
         # 
-        print('Warning! "Level_1_Raw" folder is empty! Please download the raw ALMA data into this directory (any subdirectory is fine)!')
+        print('Warning! "Level_1_Raw" folder does not contain "*%s*.tar" files! Please download the raw ALMA data into this directory (any subdirectory is fine)!'%(t_Data_name))
         # 
         # prepare download scripts
         with open('Level_1_Raw/download_%s_via_Mem_ous_id.bash'%(t_Dataset_dirname), 'w') as fp:
@@ -199,141 +245,144 @@ for i in range(len(output_table)):
             fp.write('%s/alma_archive_download_data_by_Mem_ous_id.py "%s" ${user_info[@]}\n'%(os.path.dirname(__file__), Member_ous_id[i]))
             fp.write('\n')
         os.system('chmod +x "Level_1_Raw/download_%s_via_Mem_ous_id.bash"'%(t_Dataset_dirname))
-        print('Created "Level_1_Raw/download_%s_via_Mem_ous_id.bash" script'%(t_Dataset_dirname))
+        print('We created a "Level_1_Raw/download_%s_via_Mem_ous_id.bash" script for the downloading.'%(t_Dataset_dirname))
         # 
-    else:
-        # 
-        # try to find downloaded tar files
-        t_found_files = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Data_name+'.tar', verbose=verbose)
-        if len(t_found_files) > 1:
-            print('Warning! Found multiple data files with the name pattern "Level_1_Raw/**/*'+t_Data_name+'.tar"!')
-        if len(t_found_files) > 0:
-            output_table['Downloaded'][i] = True
-        # 
-        # try to find unpacked raw data dirs
+        # continue
+        continue
+    
+    # 
+    # try to find unpacked raw data dirs
+    t_found_dirs = find_items_in_folder_with_name_pattern('Level_1_Raw/*'+t_Data_name, verbose=verbose)
+    if len(t_found_dirs) == 0:
         t_found_dirs = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Data_name, verbose=verbose)
+    if len(t_found_dirs) > 1:
+        print('Warning! Found multiple data folders with the name pattern "Level_1_Raw/**/*'+t_Data_name+'"!')
+    if len(t_found_dirs) > 0:
+        output_table['Downloaded'][i] = True
+        output_table['Unpacked'] = True
+    else:
+        print('Warning! "Level_1_Raw" folder does not contain "*%s*" folders! Please unpack the raw ALMA data into this directory (any subdirectory is fine)!'%(t_Data_name))
+        # 
+        # continue
+        continue
+    
+    # 
+    # check Level_2_Calib dir
+    if not os.path.isdir('Level_2_Calib'):
+        os.mkdir('Level_2_Calib')
+        if verbose >= 1:
+            print('Created "Level_2_Calib" folder')
+    # 
+    # loop Level_2_Calib dirs
+    for t_found_dir in t_found_dirs:
+        # 
+        # set Dataset_dirname
+        # -- if there are multiple dirs for each t_Data_name
         if len(t_found_dirs) > 1:
-            print('Warning! Found multiple data folders with the name pattern "Level_1_Raw/**/*'+t_Data_name+'"!')
-        if len(t_found_dirs) > 0:
-            output_table['Downloaded'][i] = True
-            output_table['Unpacked'] = True
+            t_Dataset_dirname = ('DataSet_%%0%dd_%d'%(t_Dataset_digits, t_found_dirs.index(t_found_dir)+1))%(i+1)
+        # 
+        # set Dataset_dirname if it exists in the meta table
+        if Dataset_dirname is not None:
+            if len(Dataset_dirname) > i:
+                if Dataset_dirname[i] != '':
+                    t_Dataset_dirname = Dataset_dirname[i]
+        # 
+        # update output_table['Dataset_dirname'][i]
+        output_table['Dataset_dirname'][i] = t_Dataset_dirname
+        # 
+        # -- if the project is VLA or ALMA
+        if t_Project_code.startswith('VLA'):
+            t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname+'/raw'
+            t_Dataset_link2 = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+os.path.basename(t_found_dir)
+            # make link (including parenet dirs)
+            my_function_to_make_symbolic_link('../../'+t_found_dir, t_Dataset_link, verbose=verbose)
+            my_function_to_make_symbolic_link('../../../'+t_found_dir, t_Dataset_link2, verbose=verbose)
             # 
-            # check Level_2_Calib dir
-            if not os.path.isdir('Level_2_Calib'):
-                os.mkdir('Level_2_Calib')
-                if verbose >= 1:
-                    print('Created "Level_2_Calib" folder')
+            # make calibration script
+            # <TODO> EVLA pipeline CASA version ??
+            t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+'scriptForDatasetRecalibration.py'
+            Overwrite_calib_scripts = True
+            if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
+                t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py'
+                t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
+                t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
+                t_CASA_version = '5.0.0'
+                if os.path.isfile(t_EVLA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
+                    if verbose >= 1:
+                        print('Writing calibration script "%s"'%(t_Dataset_calib_script))
+                    with open(t_Dataset_calib_script, 'w') as fp:
+                        fp.write('#!/usr/bin/env python\n')
+                        fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
+                        fp.write('mymodel = \'y\'\n')
+                        fp.write('myHanning = \'n\'\n')
+                        fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
+                        fp.write('')
+                    with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
+                        fp.write('#!/bin/bash\n')
+                        fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
+                        fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
+                        fp.write('pwd\n')
+                        fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
+                        fp.write('')
+                    os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
+        else:
+            t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname
+            # make link (including parenet dirs)
+            my_function_to_make_symbolic_link('../'+t_found_dir, t_Dataset_link, verbose=verbose)
             # 
-            # loop Level_2_Calib dirs
-            for t_found_dir in t_found_dirs:
-                # 
-                # set Dataset_dirname
-                # -- if there are multiple dirs for each t_Data_name
-                if len(t_found_dirs) > 1:
-                    t_Dataset_dirname = ('DataSet_%%0%dd_%d'%(t_Dataset_digits, t_found_dirs.index(t_found_dir)+1))%(i+1)
-                # 
-                # set Dataset_dirname if it exists in the meta table
-                if Dataset_dirname is not None:
-                    if len(Dataset_dirname) > i:
-                        if Dataset_dirname[i] != '':
-                            t_Dataset_dirname = Dataset_dirname[i]
-                # 
-                # update output_table['Dataset_dirname'][i]
-                output_table['Dataset_dirname'][i] = t_Dataset_dirname
-                # 
-                # -- if the project is VLA or ALMA
-                if t_Project_code.startswith('VLA'):
-                    t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname+'/raw'
-                    t_Dataset_link2 = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+os.path.basename(t_found_dir)
-                    # make link (including parenet dirs)
-                    my_function_to_make_symbolic_link('../../'+t_found_dir, t_Dataset_link, verbose=verbose)
-                    my_function_to_make_symbolic_link('../../../'+t_found_dir, t_Dataset_link2, verbose=verbose)
-                    # 
-                    # make calibration script
-                    # <TODO> EVLA pipeline CASA version ??
-                    t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+'scriptForDatasetRecalibration.py'
-                    Overwrite_calib_scripts = True
-                    if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
-                        t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py'
-                        t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
-                        t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
-                        t_CASA_version = '5.0.0'
-                        if os.path.isfile(t_EVLA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
-                            if verbose >= 1:
-                                print('Writing calibration script "%s"'%(t_Dataset_calib_script))
-                            with open(t_Dataset_calib_script, 'w') as fp:
-                                fp.write('#!/usr/bin/env python\n')
-                                fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
-                                fp.write('mymodel = \'y\'\n')
-                                fp.write('myHanning = \'n\'\n')
-                                fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
-                                fp.write('')
-                            with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
-                                fp.write('#!/bin/bash\n')
-                                fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
-                                fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
-                                fp.write('pwd\n')
-                                fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
-                                fp.write('')
-                            os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
-                else:
-                    t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname
-                    # make link (including parenet dirs)
-                    my_function_to_make_symbolic_link('../'+t_found_dir, t_Dataset_link, verbose=verbose)
-                    # 
-                    # make calibration script
-                    # <TODO> ALMA pipeline mode or ??
-                    t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/script/'+'scriptForDatasetRecalibration.py'
-                    Overwrite_calib_scripts = True
-                    if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
-                        t_ALMA_calib_script = 'scriptForPI.py'
-                        t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
-                        t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
-                        t_CASA_version = '5.0.0'
-                        if os.path.isfile(t_ALMA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
-                            if verbose >= 1:
-                                print('Writing calibration script "%s"'%(t_Dataset_calib_script))
-                            with open(t_Dataset_calib_script, 'w') as fp:
-                                fp.write('#!/usr/bin/env python\n')
-                                fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
-                                fp.write('mymodel = \'y\'\n')
-                                fp.write('myHanning = \'n\'\n')
-                                fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
-                                fp.write('')
-                            with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
-                                fp.write('#!/bin/bash\n')
-                                fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
-                                fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
-                                fp.write('pwd\n')
-                                fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
-                                fp.write('')
-                            os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
-                # 
-                # check Dataset link
-                #print(t_Dataset_link)
-                # 
-                # check Dataset raw dir
-                if verbose >= 2:
-                    print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
-                if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
-                    output_table['Unpacked'][i] = False
-                # 
-                # check Dataset calibrated dir
-                if verbose >= 2:
-                    print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
-                if os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/calibrated'):
-                    t_found_ms = glob.glob('Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
-                    if len(t_found_ms) > 0:
-                        output_table['Calibrated'][i] = True
-                ## 
-                ## check calibrated dir
-                #t_found_dirs3 = glob.glob(Project_code+'/science_goal.*/group.*/member.'+t_Data_name+'/'+'calibrated'+'/'+'*.ms')
-                #if len(t_found_dirs3) > 0:
-                #    output_table['Calibrated'][i] = True
-                ## check imaged fits files
-                #t_found_dirs3 = glob.glob('imaging/'+t_Galaxy_name.lower()+'/'+t_Galaxy_name+'_'+t_Array+'_*.fits')
-                #if len(t_found_dirs3) > 0:
-                #    output_table['Calibrated'][i] = True
+            # make calibration script
+            # <TODO> ALMA pipeline mode or ??
+            t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/script/'+'scriptForDatasetRecalibration.py'
+            Overwrite_calib_scripts = True
+            if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
+                t_ALMA_calib_script = 'scriptForPI.py'
+                t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
+                t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
+                t_CASA_version = '5.0.0'
+                if os.path.isfile(t_ALMA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
+                    if verbose >= 1:
+                        print('Writing calibration script "%s"'%(t_Dataset_calib_script))
+                    with open(t_Dataset_calib_script, 'w') as fp:
+                        fp.write('#!/usr/bin/env python\n')
+                        fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
+                        fp.write('mymodel = \'y\'\n')
+                        fp.write('myHanning = \'n\'\n')
+                        fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
+                        fp.write('')
+                    with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
+                        fp.write('#!/bin/bash\n')
+                        fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
+                        fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
+                        fp.write('pwd\n')
+                        fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
+                        fp.write('')
+                    os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
+        # 
+        # check Dataset link
+        #print(t_Dataset_link)
+        # 
+        # check Dataset raw dir
+        if verbose >= 2:
+            print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
+        if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
+            output_table['Unpacked'][i] = False
+        # 
+        # check Dataset calibrated dir
+        if verbose >= 2:
+            print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
+        if os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/calibrated'):
+            t_found_ms = glob.glob('Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
+            if len(t_found_ms) > 0:
+                output_table['Calibrated'][i] = True
+        ## 
+        ## check calibrated dir
+        #t_found_dirs3 = glob.glob(Project_code+'/science_goal.*/group.*/member.'+t_Data_name+'/'+'calibrated'+'/'+'*.ms')
+        #if len(t_found_dirs3) > 0:
+        #    output_table['Calibrated'][i] = True
+        ## check imaged fits files
+        #t_found_dirs3 = glob.glob('imaging/'+t_Galaxy_name.lower()+'/'+t_Galaxy_name+'_'+t_Array+'_*.fits')
+        #if len(t_found_dirs3) > 0:
+        #    output_table['Calibrated'][i] = True
     
         
         
