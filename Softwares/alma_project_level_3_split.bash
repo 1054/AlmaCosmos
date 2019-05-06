@@ -41,7 +41,7 @@ cd Level_3_Split
 for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     
     DataSet_ms="calibrated.ms"
-    DataSet_dir=${list_of_datasets[i]}
+    DataSet_dir=$(basename ${list_of_datasets[i]})
     
     # run CASA split
     echo "Now running CASA split for \"${DataSet_dir}\""
