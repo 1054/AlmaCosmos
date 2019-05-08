@@ -1,9 +1,9 @@
 #!/bin/bash
 # 
 
-source ~/Softwares/CASA/SETUP.bash 5.4.0
-source ~/Softwares/GILDAS/SETUP.bash
-source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
+#source ~/Softwares/CASA/SETUP.bash 5.4.0
+#source ~/Softwares/GILDAS/SETUP.bash
+#source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
 
 
 # read input Project_code
@@ -19,6 +19,43 @@ if [[ $# -eq 0 ]]; then
 fi
 
 Project_code="$1"
+
+# check CASA
+if [[ ! -d "$HOME/Softwares/CASA" ]]; then
+    echo "Error! \"$HOME/Softwares/CASA\" was not found!"
+    echo "Sorry, we need to put all versions of CASA under \"$HOME/Softwares/CASA/Portable/\" directory!"
+    exit 1
+fi
+if [[ ! -f "$HOME/Softwares/CASA/SETUP.bash" ]]; then
+    echo "Error! \"$HOME/Softwares/CASA/SETUP.bash\" was not found!"
+    echo "Sorry, please ask Daizhong by emailing dzliu@mpia.de!"
+    exit 1
+fi
+casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
+
+# check GILDAS
+if [[ $(type mapping 2>/dev/null | wc -l) -eq 0 ]]; then
+    # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
+    if [[ -d "$HOME/Softwares/GILDAS" ]] && [[ -f "$HOME/Softwares/GILDAS/SETUP.bash" ]]; then
+        source "$HOME/Softwares/GILDAS/SETUP.bash"
+    else
+        # if not executable in the command line, nor in "$HOME/Softwares/GILDAS/", report error.
+        echo "Error! \"mapping\" is not executable in the command line! Please check your \$PATH!"
+        exit 1
+    fi
+fi
+
+# check Crab.Toolkit.PdBI
+if [[ $(type casa-ms-split 2>/dev/null | wc -l) -eq 0 ]]; then
+    # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
+    if [[ -d "$HOME/Cloud/Github/Crab.Toolkit.PdBI" ]] && [[ -f "$HOME/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash" ]]; then
+        source "$HOME/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash"
+    else
+        # if not executable in the command line, nor in "$HOME/Softwares/GILDAS/", report error.
+        echo "Error! \"casa-ms-split\" is not executable in the command line! Please check your \$PATH!"
+        exit 1
+    fi
+fi
 
 # check meta data table file
 if [[ ! -f "meta_data_table.txt" ]]; then
@@ -54,6 +91,12 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     # print message
     echo "Now running CASA split for \"${DataSet_dir}\""
     
+    # check Level_2_Calib DataSet_dir calibrated calibrated.ms
+    if [[ ! -f ../Level_2_Calib/$DataSet_dir/README_CASA_VERSION ]]; then
+        echo "Error! \"../Level_2_Calib/$DataSet_dir/README_CASA_VERSION\" was not found! Please run Level_2_Calib first! We will skip this dataset for now."
+        continue
+    fi
+    
     # check Level_2_Calib DataSet_dir
     if [[ ! -d ../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms ]]; then
         echo "Error! \"../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms\" was not found! Please run Level_2_Calib first! We will skip this dataset for now."
@@ -69,6 +112,12 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     
     # link Level_2_Calib calibrated.ms to Level_3_Split calibrated.ms
     ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms
+    
+    # copy CASA version readme file
+    cp ../../Level_2_Calib/$DataSet_dir/README_CASA_VERSION README_CASA_VERSION
+    
+    # source CASA version
+    source "$casa_setup_script_path" "README_CASA_VERSION"
     
     # run CASA listobs
     if [[ ! -f calibrated.ms.listobs.txt ]]; then

@@ -1,9 +1,9 @@
 #!/bin/bash
 # 
 
-source ~/Softwares/CASA/SETUP.bash 5.4.0
-source ~/Softwares/GILDAS/SETUP.bash
-source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
+#source ~/Softwares/CASA/SETUP.bash 5.4.0
+#source ~/Softwares/GILDAS/SETUP.bash
+#source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
 
 
 # read input Project_code

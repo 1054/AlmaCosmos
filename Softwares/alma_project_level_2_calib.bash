@@ -20,6 +20,20 @@ fi
 
 Project_code="$1"
 
+# check CASA
+if [[ ! -d "$HOME/Softwares/CASA" ]]; then
+    echo "Error! \"$HOME/Softwares/CASA\" was not found!"
+    echo "Sorry, we need to put all versions of CASA under \"$HOME/Softwares/CASA/Portable/\" directory!"
+    exit 1
+fi
+if [[ ! -f "$HOME/Softwares/CASA/SETUP.bash" ]]; then
+    echo "Error! \"$HOME/Softwares/CASA/SETUP.bash\" was not found!"
+    echo "Sorry, please ask Daizhong by emailing dzliu@mpia.de!"
+    exit 1
+fi
+casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
+
+# check meta table
 if [[ ! -f "meta_data_table.txt" ]]; then
     echo "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"
     exit 255

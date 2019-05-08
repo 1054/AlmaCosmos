@@ -1,9 +1,9 @@
 #!/bin/bash
 # 
 
-source ~/Softwares/CASA/SETUP.bash 5.4.0
-source ~/Softwares/GILDAS/SETUP.bash
-source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
+#source ~/Softwares/CASA/SETUP.bash
+#source ~/Softwares/GILDAS/SETUP.bash
+#source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
 
 
 # read input Project_code
@@ -19,6 +19,12 @@ if [[ $# -eq 0 ]]; then
 fi
 
 Project_code="$1"
+
+# check CASA
+if [[ $(type casa 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! casa is not executable! Please check the \$PATH!"
+    exit 255
+fi
 
 # check meta data table file
 if [[ ! -f "meta_data_table.txt" ]]; then
