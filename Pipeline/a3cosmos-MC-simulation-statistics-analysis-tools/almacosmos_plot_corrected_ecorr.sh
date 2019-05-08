@@ -1,5 +1,7 @@
 #!/bin/bash
 # 
+# 20190506: changed "xmax=100" --> "xmax=60"
+# 
 
 if [[ $(pwd) == *"Monte_Carlo_Simulation_Physically_Motivated"*"prior"* ]]; then
     Data_type="PHYS-GALFIT"
@@ -21,7 +23,7 @@ topcat -stilts plot2plane \
                 ylabel="\Large \sigma_{S_{rec.,\,corr.}} / rms\,noise" \
                 xlog=true \
                 ylog=true \
-                xmin=3 xmax=100 ymin=0.5 ymax=200 \
+                xmin=3 xmax=60 ymin=0.5 ymax=200 \
                 \
                 layer1=mark \
                 shape1=open_circle \

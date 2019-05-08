@@ -1,5 +1,7 @@
 #!/bin/bash
 # 
+# 20190506: changed "xmax=100" --> "xmax=60"
+# 
 
 set -e
 
@@ -39,7 +41,7 @@ topcat -stilts plot2plane \
                 ylabel="\Large (S_{sim.}-S_{rec.})/S_{sim.}" \
                 xlog=true \
                 ylog=false \
-                xmin=3 xmax=100 ymin=-1.25 ymax=1.25 \
+                xmin=3 xmax=60 ymin=-1.25 ymax=1.25 \
                 \
                 layer1=mark \
                 shape1=filled_circle \

@@ -3,6 +3,9 @@ analyze_completeness_curve
     # Usage:
     #   echo "macro read analyze_completeness_curve.sm analyze_completeness_curve" | sm
     # 
+    # Notes:
+    #   20190506: more sampling within SNR 3-10
+    # 
     
     #chdir "CrossMatched"
     
@@ -50,7 +53,19 @@ analyze_completeness_curve
     #set snr_bins = {1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 20.0 30.0 40.0 50.0 100.0 500.0 1000.0}
     #set snr_bins = {1.0 2.0 3.0 4.0 5.0 7.0 9.0 12.0 15.0 20.0 30.0 40.0 50.0 100.0 500.0 1000.0}
     #set snr_bins = lg(snr_bins)
-    set snr_bins = $(lg(1.0)),$(lg(1000.0)),0.2
+    #set snr_bins = $(lg(1.0)),$(lg(1000.0)),0.15               #<20190506>#
+    set snr_bins_part1 = $(lg(1.0)),$(lg(3.5)),0.033             #<20190506>#
+    set snr_bins_part2 = $(lg(3.5)+0.033),$(lg(5.0)),0.05        #<20190506>#
+    set snr_bins_part3 = $(lg(5.0)+0.05),$(lg(10.0)),0.10       #<20190506>#
+    set snr_bins_part4 = $(lg(10.0)+0.10),$(lg(100.0)),0.15     #<20190506>#
+    set snr_bins_part5 = $(lg(100.0)+0.15),$(lg(1000.0)),0.20   #<20190506>#
+    set snr_bins =                 snr_bins_part1               #<20190506>#
+    set snr_bins = snr_bins concat snr_bins_part2               #<20190506>#
+    set snr_bins = snr_bins concat snr_bins_part3               #<20190506>#
+    set snr_bins = snr_bins concat snr_bins_part4               #<20190506>#
+    set snr_bins = snr_bins concat snr_bins_part5               #<20190506>#
+    #set snr_bins_pow10 = 10**snr_bins                          #<20190506>#
+    #print {snr_bins_pow10}                                     #<20190506>#
     #set snr_bins = lg(1.0),lg(1000.0),0.3
     
     declare snr_bin_value 0.f
@@ -91,16 +106,16 @@ analyze_completeness_curve
             set fake_rate_differential = fake_rate_differential concat -99
         }
         # 
-        set snr_fit_2_is_in_the_bin = (snr_fit_2>=snr_bins[$i])
-        set snr_fit_n2_is_in_the_bin = (snr_fit_n2>=snr_bins[$i])
-        if(sum(snr_fit_2_is_in_the_bin)>0) {
+        set snr_fit_2_is_greater_than_the_bin = (snr_fit_2>=snr_bins[$i])
+        set snr_fit_n2_is_greater_than_the_bin = (snr_fit_n2>=snr_bins[$i])
+        if(sum(snr_fit_2_is_greater_than_the_bin)>0) {
             set snr_bin_mean = (snr_bins[$i])
             # 
-            set recovered_count_cumulative = recovered_count_cumulative concat $(sum(snr_fit_2_is_in_the_bin))
-            set missed_count_cumulative = missed_count_cumulative concat $(sum(snr_fit_n2_is_in_the_bin))
+            set recovered_count_cumulative = recovered_count_cumulative concat $(sum(snr_fit_2_is_greater_than_the_bin))
+            set missed_count_cumulative = missed_count_cumulative concat $(sum(snr_fit_n2_is_greater_than_the_bin))
             # 
             set snr_value_cumulative = snr_value_cumulative concat snr_bin_mean
-            set fake_rate_cumulative = fake_rate_cumulative concat $(sum(snr_fit_n2_is_in_the_bin) / (sum(snr_fit_2_is_in_the_bin) + sum(snr_fit_n2_is_in_the_bin)) )
+            set fake_rate_cumulative = fake_rate_cumulative concat $(sum(snr_fit_n2_is_greater_than_the_bin) / (sum(snr_fit_2_is_greater_than_the_bin) + sum(snr_fit_n2_is_greater_than_the_bin)) )
         } else {
             set snr_bin_mean = (snr_bins[$i])
             # 

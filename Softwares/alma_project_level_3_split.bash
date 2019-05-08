@@ -10,9 +10,9 @@ source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
 
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
-    echo "    alma_project_level_2_calib.bash Project_code"
+    echo "    alma_project_level_3_split.bash Project_code"
     echo "Example: "
-    echo "    alma_project_level_2_calib.bash 2013.1.00034.S"
+    echo "    alma_project_level_3_split.bash 2013.1.00034.S"
     echo "Notes: "
     echo "    "
     exit
@@ -20,8 +20,16 @@ fi
 
 Project_code="$1"
 
+# check meta data table file
 if [[ ! -f "meta_data_table.txt" ]]; then
     echo "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"
+    exit 255
+fi
+
+# check Level_2_Calib folder
+if [[ ! -d Level_2_Calib ]]; then 
+    echo "Error! \"Level_2_Calib\" does not exist! Please run previous steps first!"
+    exit 255
 fi
 
 

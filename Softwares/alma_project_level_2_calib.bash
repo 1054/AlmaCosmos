@@ -22,6 +22,13 @@ Project_code="$1"
 
 if [[ ! -f "meta_data_table.txt" ]]; then
     echo "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"
+    exit 255
+fi
+
+# check Level_2_Calib folder
+if [[ ! -d Level_2_Calib ]]; then 
+    echo "Error! \"Level_2_Calib\" does not exist! Please run previous steps first!"
+    exit 255
 fi
 
 # read Level_2_Calib/DataSet_*
