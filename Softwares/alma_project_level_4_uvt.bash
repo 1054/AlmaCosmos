@@ -73,9 +73,9 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     cd $DataSet_dir
     
     # read source names
-    list_of_unique_source_names=($(ls ../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+_SP.uvt$%\1%g' | sort -V))
+    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+_SP.uvt$%\1%g' | sort -V))
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
-        echo "Error! Failed to find \"../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt\" and get unique source names!"
+        echo "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt\" and get unique source names!"
         exit 255
     fi
     
@@ -86,8 +86,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             echo mkdir "${source_name}"
             mkdir "${source_name}"
         fi
-        echo cp ../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
-        cp ../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
+        echo cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
+        cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
     done
     
     # cd back
