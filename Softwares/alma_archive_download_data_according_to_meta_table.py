@@ -2,14 +2,19 @@
 # 
 
 from __future__ import print_function
-import os, sys, re, pkg_resources
-pkg_resources.require('astroquery')
-pkg_resources.require('keyrings.alt')
+import os, sys, re, time, json 
+# pkg_resources
+#pkg_resources.require('astroquery')
+#pkg_resources.require('keyrings.alt')
 import astroquery
 import requests
 from astroquery.alma.core import Alma
 import astropy.io.ascii as asciitable
+from astropy.table import Table, Column
+from datetime import datetime
 from operator import itemgetter, attrgetter
+import glob
+import numpy as np
 
 
 
