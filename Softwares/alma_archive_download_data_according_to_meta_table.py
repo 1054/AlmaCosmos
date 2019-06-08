@@ -109,6 +109,8 @@ for i in range(len(meta_table)):
         output_dir_path = meta_table['Project_code'][i]+'.cache'
     else:
         output_dir_path = output_dir
+    if not os.path.isdir(output_dir_path):
+        os.makedirs(output_dir_path)
     # 
     # change dir
     # 
