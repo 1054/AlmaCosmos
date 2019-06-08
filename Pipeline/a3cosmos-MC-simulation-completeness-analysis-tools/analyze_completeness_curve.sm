@@ -74,19 +74,32 @@ analyze_completeness_curve
     #set snr_bins = {1.0 2.0 3.0 4.0 5.0 7.0 9.0 12.0 15.0 20.0 30.0 40.0 50.0 100.0 500.0 1000.0}
     #set snr_bins = lg(snr_bins)
     #set snr_bins = $(lg(1.0)),$(lg(1000.0)),0.15               #<20190506>#
-    set snr_bins_part1 = $(lg(1.0)),$(lg(3.5)),0.033             #<20190506>#
-    set snr_bins_part2 = $(lg(3.5)+0.033),$(lg(5.0)),0.05        #<20190506>#
-    set snr_bins_part3 = $(lg(5.0)+0.05),$(lg(10.0)),0.10       #<20190506>#
-    set snr_bins_part4 = $(lg(10.0)+0.10),$(lg(100.0)),0.15     #<20190506>#
-    set snr_bins_part5 = $(lg(100.0)+0.15),$(lg(1000.0)),0.20   #<20190506>#
-    set snr_bins =                 snr_bins_part1               #<20190506>#
-    set snr_bins = snr_bins concat snr_bins_part2               #<20190506>#
-    set snr_bins = snr_bins concat snr_bins_part3               #<20190506>#
-    set snr_bins = snr_bins concat snr_bins_part4               #<20190506>#
-    set snr_bins = snr_bins concat snr_bins_part5               #<20190506>#
-    #set snr_bins_pow10 = 10**snr_bins                          #<20190506>#
-    #print {snr_bins_pow10}                                     #<20190506>#
-    #set snr_bins = lg(1.0),lg(1000.0),0.3
+    !pwd | grep -q "Monte_Carlo_Simulation_Parameter_Sampled"
+    if($exit_status == 0) {
+        set snr_bins_part1 = $(lg(1.0)),$(lg(3.5)),0.033            #<20190511>#
+        set snr_bins_part2 = $(lg(3.5)+0.033),$(lg(5.0)),0.05       #<20190511>#
+        set snr_bins_part3 = $(lg(5.0)+0.05),$(lg(10.0)),0.10       #<20190511>#
+        set snr_bins_part4 = $(lg(10.0)+0.10),$(lg(30.0)),0.15      #<20190511>#
+        set snr_bins_part5 = $(lg(30.0)+0.15),$(lg(100.0)),0.25     #<20190511>#
+        set snr_bins_part6 = $(lg(100.0)+0.25),$(lg(1000.0)),0.25   #<20190511># -- broader bins at high S/N
+        set snr_bins =                 snr_bins_part1               #<20190511>#
+        set snr_bins = snr_bins concat snr_bins_part2               #<20190511>#
+        set snr_bins = snr_bins concat snr_bins_part3               #<20190511>#
+        set snr_bins = snr_bins concat snr_bins_part4               #<20190511>#
+        set snr_bins = snr_bins concat snr_bins_part5               #<20190511>#
+        set snr_bins = snr_bins concat snr_bins_part6               #<20190511>#
+    } else {
+        set snr_bins_part1 = $(lg(1.0)),$(lg(3.5)),0.033            #<20190506>#
+        set snr_bins_part2 = $(lg(3.5)+0.033),$(lg(5.0)),0.05       #<20190506>#
+        set snr_bins_part3 = $(lg(5.0)+0.05),$(lg(10.0)),0.10       #<20190506>#
+        set snr_bins_part4 = $(lg(10.0)+0.10),$(lg(100.0)),0.15     #<20190506>#
+        set snr_bins_part5 = $(lg(100.0)+0.15),$(lg(1000.0)),0.20   #<20190506>#
+        set snr_bins =                 snr_bins_part1               #<20190506>#
+        set snr_bins = snr_bins concat snr_bins_part2               #<20190506>#
+        set snr_bins = snr_bins concat snr_bins_part3               #<20190506>#
+        set snr_bins = snr_bins concat snr_bins_part4               #<20190506>#
+        set snr_bins = snr_bins concat snr_bins_part5               #<20190506>#
+    }
     
     declare snr_bin_value 0.f
     declare snr_fit_2_count 0.f

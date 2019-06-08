@@ -1,5 +1,8 @@
 #!/bin/bash
 # 
+# Input files: output_*.txt
+# Output file: concat_sim_rec_data_table.fits
+# 
 
 set -e 
 

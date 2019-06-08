@@ -9,7 +9,9 @@ if [[ $(type xy2sky 2>/dev/null | wc -l) -eq 0 ]]; then echo "Error! xy2sky was 
 if [[ ! -f "$1" ]]; then echo "Error! The input fits file \"$1\" does not exist!" >&2; exit 1; fi
 
 tmp_naxis=($(gethead "$1" NAXIS1 NAXIS2))
+#echo "${tmp_naxis[@]}"
 tmp_radec=($(xy2sky -d -n 7 "$1" 1 1 ${tmp_naxis[0]} ${tmp_naxis[1]} | sed -e 's/^ *//g' | tr -s ' '))
+#echo "${tmp_radec[@]}"
 if [[ "$*" == *"-verbose"* ]]; then
     echo "NAXIS1 = ${tmp_naxis[0]}"
     echo "NAXIS2 = ${tmp_naxis[1]}"
