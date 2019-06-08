@@ -80,7 +80,7 @@ if meta_table is None:
     sys.exit()
 
 #print(meta_table)
-#print(meta_table.colnames)
+print(meta_table.colnames)
 
 if not ('Project_code' in meta_table.colnames) or \
    not ('Member_ous_id' in meta_table.colnames) or \
