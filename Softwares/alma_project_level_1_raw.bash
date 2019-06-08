@@ -29,6 +29,11 @@ if [[ ! -f "alma_archive_query_by_project_code_${Project_code}.txt" ]]; then
     $(dirname ${BASH_SOURCE[0]})/alma_archive_query_by_project_code.py "$Project_code" $@
 fi
 
+if [[ ! -f "alma_archive_query_by_project_code_${Project_code}.txt" ]]; then
+    echo "Error! Sorry! Failed to run the code! Maybe you do not have the Python package \"astroquery\" or \"keyrings.alt\"?"
+    exit 255
+fi
+
 if [[ ! -f "meta_data_table.txt" ]]; then
     cp "alma_archive_query_by_project_code_${Project_code}.txt" \
        "meta_data_table.txt"
