@@ -24,10 +24,9 @@ if len(sys.argv) <= 1:
 
 meta_table_file = ''
 some_option = ''
-login_user_name = ''
-use_alma_site = 'nrao'
+Login_user_name = ''
+Use_alma_site = 'nrao'
 output_dir = ''
-output_full_table = True
 verbose = 0
 i = 1
 while i < len(sys.argv):
@@ -39,13 +38,13 @@ while i < len(sys.argv):
     elif tmp_arg == '-user': 
         i = i+1
         if i < len(sys.argv):
-            login_user_name = sys.argv[i]
+            Login_user_name = sys.argv[i]
     elif tmp_arg == '-out': 
         i = i+1
         if i < len(sys.argv):
             output_dir = sys.argv[i]
     elif tmp_arg == '-eso': 
-        use_alma_site = 'eso'
+        Use_alma_site = 'eso'
     elif tmp_arg == '-verbose': 
         verbose = verbose + 1
     else:
@@ -131,6 +130,12 @@ for i in range(len(meta_table)):
             os.system('echo "" >> %s.log'%(Output_name))
             print('%s.sh >> %s.log'%(Output_name,Output_name))
             os.system('%s.sh >> %s.log'%(Output_name,Output_name))
+        # 
+        # cd back and continue
+        # 
+        print('os.chdir("%s")' % (current_dir_path) )
+        os.chdir(current_dir_path)
+        print('os.getcwd()', os.getcwd())
         continue
     
     # archive url
@@ -183,7 +188,7 @@ for i in range(len(meta_table)):
     print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
     print('Running "%s.sh >> %s.log" in terminal!'%(Output_name,Output_name))
     
-    os.system('%s.sh >> %s.log'%(Output_name,Output_name))
+    os.system('%s.sh >> %s.log'%(Output_name, Output_name))
     
     #cache_location = os.getcwd() + os.path.sep + 'cache'
     #if not os.path.isdir(cache_location):
@@ -192,5 +197,14 @@ for i in range(len(meta_table)):
     #myAlma = Alma()
     #myAlma.cache_location = os.getcwd() + os.path.sep + 'cache'
     #myAlma.download_files(uid_url_table['URL'], cache=True)
+    
+    
+    # 
+    # cd back
+    # 
+    print('os.chdir("%s")' % (current_dir_path) )
+    os.chdir(current_dir_path)
+    print('os.getcwd()', os.getcwd())
+    
 
 
