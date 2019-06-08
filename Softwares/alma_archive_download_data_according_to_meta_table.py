@@ -80,12 +80,15 @@ if meta_table is None:
     sys.exit()
 
 #print(meta_table)
-print(meta_table.colnames)
+#print(meta_table.colnames)
+
+for t in meta_table.colnames:
+    if t.find(' ')>=0:
+        meta_table.rename_column(t, t.replace(' ','_')) # replace white space in column name
 
 if not ('Project_code' in meta_table.colnames) or \
    not ('Member_ous_id' in meta_table.colnames) or \
    not ('Source_name' in meta_table.colnames) or \
-   not ('Dataset_dirname' in meta_table.colnames) or \
    not ('Array' in meta_table.colnames):
     print('Error! The input meta data table should contain at least the following four columns: "Project_code" "Member_ous_id" "Source_name" "Array"!')
     sys.exit()
