@@ -177,20 +177,19 @@ for i in range(len(meta_table)):
     
     for i in range(len(uid_url_table)):
         if i == 0:
-            os.system('echo "#!/bin/bash" > %s.sh'%(Output_name))
+            os.system('echo "#!/bin/bash" > %s.sh'%(Output_name)) # creating new file
             os.system('echo "" >> %s.sh'%(Output_name))
             os.system('echo "set -e" >> %s.sh'%(Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))
             os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]),Output_name))
+            os.system('echo "" >> %s.sh'%(Output_name))
+            os.system('echo "alma_archive_download_data_via_http_link.sh \\\\" >> %s.sh'%(Output_name))
             if Login_user_name != '':
-                os.system('echo "export ALMA_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name,Output_name))
-            else:
-                os.system('echo "export ALMA_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
-        os.system('echo "" >> %s.sh'%(Output_name))
-        os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
-        #os.system('echo "wget --no-check-certificate --auth-no-challenge --server-response --user dzliu --password  -c \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
-        #os.system('echo "wget -c \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
+                os.system('echo "    --user %s \\\\" >> %s.sh'%(Login_user_name,Output_name))
+        os.system('echo "    \"%s\" \\\\" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
         if i == len(uid_url_table)-1:
+            os.system('echo "    " >> %s.sh'%(Output_name))
+            os.system('echo "" >> %s.sh'%(Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))
             os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name,Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))

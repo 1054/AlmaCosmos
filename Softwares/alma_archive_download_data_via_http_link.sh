@@ -13,13 +13,16 @@ fi
 
 function start_session {
   if [[ $# -ge 1 ]]; then export USERNAME="$1"; else export USERNAME="anonymous"; fi #<Added><dzliu># 
+  if [[ $# -ge 2 ]]; then export PASSWORD="$2"; else export PASSWORD="invalid"; fi #<Added><dzliu># 
   export AUTHENTICATION_STATUS=0
   if [ "${USERNAME}" != "anonymous" ]; then
-    echo ""
-    echo -n "Please enter the password for ALMA account ${USERNAME}: "
-    read -s PASSWORD
-    echo ""
-    export PASSWORD
+    if [ "${PASSWORD}" == "invalid" ]; then
+      echo ""
+      echo -n "Please enter the password for ALMA account ${USERNAME}: "
+      read -s PASSWORD
+      echo ""
+      export PASSWORD
+    fi
     
     if command -v "wget" > /dev/null 2>&1; then
       LOGINCOMMAND=(wget --quiet --delete-after --no-check-certificate --auth-no-challenge --keep-session-cookies --save-cookies alma-rh-cookie.txt "--http-user=${USERNAME}" "--http-password=${PASSWORD}")
@@ -77,7 +80,23 @@ if [[ $# -eq 0 ]]; then
     exit
 fi
 
-USERNAME="anonymous"
+
+
+# check system variable INPUT_USERNAME and INPUT_PASSWORD
+if [[ -z "${INPUT_USERNAME}" ]]; then
+    USERNAME="anonymous"
+else
+    USERNAME="${INPUT_USERNAME}"
+fi
+
+if [[ -z "${INPUT_PASSWORD}" ]]; then
+    PASSWORD="invalid"
+else
+    PASSWORD="${INPUT_PASSWORD}"
+fi
+
+
+# read from commandline input
 for (( i=1; i<=$#; i++ )); do
     if [[ "${!i}" == "--user" ]]; then
         if [[ i -lt $# ]]; then
@@ -87,9 +106,13 @@ for (( i=1; i<=$#; i++ )); do
     fi
 done
 
-start_session "$USERNAME"
 
-if [ $AUTHENTICATION_STATUS -eq 0 ]; then
+# start session
+start_session "$USERNAME" "$PASSWORD"
+
+
+# if failed, check USERNAME in URL
+if [[ $AUTHENTICATION_STATUS -eq 0 ]]; then
 	#echo "your downloads will start shortly...."
 	#echo ${LIST} | tr \  \\n | xargs -P1 -n1 -I '{}' bash -c 'download {};'
   for (( i=1; i<=$#; i++ )); do
@@ -107,7 +130,12 @@ if [ $AUTHENTICATION_STATUS -eq 0 ]; then
                   fi
                   end_session
                   start_session "$USERNAME_FROM_URL"
-                  USERNAME="$USERNAME_FROM_URL"
+                  if [[ $AUTHENTICATION_STATUS -eq 0 ]]; then
+                      echo "Error! Failed authentication!"
+                      exit 255
+                  else
+                      USERNAME="$USERNAME_FROM_URL"
+                  fi
               fi
           fi
           
