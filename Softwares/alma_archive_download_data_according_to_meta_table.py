@@ -173,7 +173,7 @@ for i in range(len(meta_table)):
     
     asciitable.write(uid_url_table, '%s.txt'%(Output_name), Writer=asciitable.FixedWidthTwoLine)
     os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s.log'%(Output_name))
-    os.system('echo "%s %s" >> %s.log'%(sys.argv[0],sys.argv[1],Output_name))
+    os.system('echo "%s %s" >> %s.log'%(sys.argv[0], sys.argv[1], Output_name))
     
     for i in range(len(uid_url_table)):
         if i == 0:
@@ -181,21 +181,30 @@ for i in range(len(meta_table)):
             os.system('echo "" >> %s.sh'%(Output_name))
             os.system('echo "set -e" >> %s.sh'%(Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]),Output_name))
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo "alma_archive_download_data_via_http_link.sh \\\\" >> %s.sh'%(Output_name))
+            os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]), Output_name))
             if Login_user_name != '':
-                os.system('echo "    --user %s \\\\" >> %s.sh'%(Login_user_name,Output_name))
-        os.system('echo "    \"%s\" \\\\" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
+                os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
+                os.system('echo "echo \"\"" >> %s.sh'%(Output_name))
+                os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \"" >> %s.sh'%(Output_name))
+                os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
+                os.system('echo "echo \"\"" >> %s.sh'%(Output_name))
+                os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Login_user_name,Output_name))
+            else:
+                os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
+                os.system('echo "export INPUT_PASSWORD=\\\"\\\"" >> %s.sh'%(Output_name))
+        # 
+        os.system('echo "" >> %s.sh'%(Output_name))
+        # 
+        os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'], Output_name))
+        # 
         if i == len(uid_url_table)-1:
-            os.system('echo "    " >> %s.sh'%(Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name,Output_name))
+            os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name, Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))
             os.system('chmod +x %s.sh'%(Output_name))
+        # 
     print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
-    print('Running "%s.sh >> %s.log" in terminal!'%(Output_name,Output_name))
+    print('Running "%s.sh >> %s.log" in terminal!'%(Output_name, Output_name))
     
     os.system('%s.sh >> %s.log'%(Output_name, Output_name))
     

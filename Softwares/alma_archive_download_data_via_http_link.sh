@@ -104,6 +104,12 @@ for (( i=1; i<=$#; i++ )); do
             USERNAME="${!j}"
         fi
     fi
+    if [[ "${!i}" == "--password" ]]; then
+        if [[ i -lt $# ]]; then
+            j=$((i+1))
+            PASSWORD="${!j}"
+        fi
+    fi
 done
 
 
