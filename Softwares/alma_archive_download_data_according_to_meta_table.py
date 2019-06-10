@@ -185,10 +185,10 @@ for i in range(len(meta_table)):
             if Login_user_name != '':
                 os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
                 os.system('echo "echo \"\"" >> %s.sh'%(Output_name))
-                os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \"" >> %s.sh'%(Output_name))
+                os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \"" >> %s.sh'%(Login_user_name, Output_name))
                 os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
                 os.system('echo "echo \"\"" >> %s.sh'%(Output_name))
-                os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Login_user_name,Output_name))
+                os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Output_name))
             else:
                 os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
                 os.system('echo "export INPUT_PASSWORD=\\\"\\\"" >> %s.sh'%(Output_name))
