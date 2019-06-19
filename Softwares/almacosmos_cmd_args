@@ -97,7 +97,7 @@ while [[ iarg_iarg -le $# ]]; do
                 almacosmos_cmd_misc_opts+=("$iarg_text_prev") # record misc opts without arg value, if its next input is also an option.
             fi
         fi
-        iarg_name=$(echo "${!iarg_iarg}" | sed -e 's/^--/^-/g' | sed -e 's/^-/almacosmos_cmd_/g' | sed -e 's/[^a-zA-Z_0-9]/_/g')
+        iarg_name=$(echo "${!iarg_iarg}" | sed -e 's/^--/-/g' | sed -e 's/^-/almacosmos_cmd_/g' | sed -e 's/[^a-zA-Z_0-9]/_/g' | tr '[:upper:]' '[:lower:]')
         iarg_text="${!iarg_iarg}"
         echo "declare -a $iarg_name"
         declare -a $iarg_name
@@ -106,11 +106,13 @@ while [[ iarg_iarg -le $# ]]; do
         fi
         #echo "almacosmos_cmd_main_opts+=(\"$iarg_text\")"
         almacosmos_cmd_main_opts+=("$iarg_text") # all the opts. An opt is an input string starting with "-" or "--". 
+    # 
     elif [[ ! -z "$iarg_name" ]]; then
         eval "$iarg_name+=(\"${!iarg_iarg}\")"
         eval "almacosmos_cmd_main_args+=(\"${!iarg_iarg}\")"
         iarg_numb=$(eval "echo \${#$iarg_name[@]}")
         #eval "echo $iarg_name[$((iarg_numb-1))]=\${$iarg_name[$((iarg_numb-1))]}"
+    # 
     else
         almacosmos_cmd_misc_args+=("${!iarg_iarg}")
         #echo "almacosmos_cmd_misc_args[$((${#almacosmos_cmd_misc_args[@]}-1))]=${!iarg_iarg}"

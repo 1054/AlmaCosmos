@@ -17,7 +17,7 @@ function Usage() {
     echo "                                          input_catalog.fits \\"
     echo "                                          input_fits_image.fits \\"
     echo "                                          output_catalog.fits \\"
-    echo "                                          [-radec ra_column_name dec_column_name]"
+    echo "                                          [-ra ra_column_name -dec dec_column_name]"
     echo ""
 }
 
@@ -80,18 +80,61 @@ fi
 
 
 
-
-# the RA Dec columns in the two input catalogs
+# 
+# Allow the user to input the RA Dec column names in the two input catalogs
+# 
 cat_ra="RA"
 cat_dec="Dec"
-if [[ ! -z "$almacosmos_cmd_radec" ]]; then
-    if [[ "${#almacosmos_cmd_radec[@]}" -ge 2 ]]; then
-        cat_ra="${almacosmos_cmd_radec[0]}"
-        cat_dec="${almacosmos_cmd_radec[1]}"
+#if [[ ! -z "$almacosmos_cmd_radec" ]]; then
+#    if [[ "${#almacosmos_cmd_radec[@]}" -ge 2 ]]; then
+#        cat_ra="${almacosmos_cmd_radec[0]}"
+#        cat_dec="${almacosmos_cmd_radec[1]}"
+#    fi
+#fi
+if [[ ! -z "$almacosmos_cmd_ra" ]]; then
+    if [[ "${#almacosmos_cmd_ra[@]}" -ge 1 ]]; then
+        cat_ra="${almacosmos_cmd_ra[0]}"
+    fi
+fi
+if [[ ! -z "$almacosmos_cmd_dec" ]]; then
+    if [[ "${#almacosmos_cmd_dec[@]}" -ge 1 ]]; then
+        cat_dec="${almacosmos_cmd_dec[0]}"
     fi
 fi
 echo "cat_ra = ${cat_ra}"
 echo "cat_dec = ${cat_dec}"
+
+
+
+# 
+# Allow the user to input "keepcols" option so that only these columns will be kept in the output catalog
+# 
+ocmd_keepcols=()
+if [[ ! -z "$almacosmos_cmd_keepcols" ]]; then
+    if [[ "${#almacosmos_cmd_keepcols[@]}" -ge 1 ]]; then
+        ocmd_keepcols=(cmd="keepcols \"${almacosmos_cmd_keepcols[@]}\"")
+    fi
+    echo "ocmd_keepcols = ${ocmd_keepcols[@]}"
+fi
+
+
+
+# 
+# Allow the user to input "renameradec" option so that RA Dec columns are renamed to "RA" and "Dec" in the output catalog
+# 
+ocmd_renamera=()
+ocmd_renamedec=()
+if [[ ! -z "$almacosmos_cmd_misc_opts" ]]; then
+    if [[ "${#almacosmos_cmd_misc_opts[@]}" -ge 1 ]]; then
+        if [[ "${almacosmos_cmd_misc_opts[@]}" == *"-rename-ra-dec"* ]]; then
+            ocmd_renamera=(cmd="replacecol \"${cat_ra}\" -name \"RA\" \"${cat_ra}\"")
+            ocmd_renamedec=(cmd="replacecol \"${cat_dec}\" -name \"Dec\" \"${cat_dec}\"")
+        fi
+    fi
+    echo "ocmd_renamera = ${ocmd_renamera[@]}"
+    echo "ocmd_renamedec = ${ocmd_renamedec[@]}"
+fi
+
 
 
 # 
@@ -119,6 +162,9 @@ topcat -stilts tpipe \
                 in="$InputCat" \
                 ifmt="$cat_in_fmt" \
                 cmd="select \"(${cat_ra}>=${fits_rect[0]}) && (${cat_ra}<=${fits_rect[1]}) && (${cat_dec}>=${fits_rect[2]}) && (${cat_dec}<=${fits_rect[3]})\"" \
+                "${ocmd_renamera[@]}" \
+                "${ocmd_renamedec[@]}" \
+                "${ocmd_keepcols[@]}" \
                 ofmt="$cat_out_fmt" \
                 out="$OutputCat" \
                 | tee  "$OutputCat.stilts.log"

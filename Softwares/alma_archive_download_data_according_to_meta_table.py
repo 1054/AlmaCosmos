@@ -184,10 +184,10 @@ for i in range(len(meta_table)):
             os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]), Output_name))
             if Login_user_name != '':
                 os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
-                os.system('echo "echo \"\"" >> %s.sh'%(Output_name))
-                os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \"" >> %s.sh'%(Login_user_name, Output_name))
+                os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
+                os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \" > /dev/tty" >> %s.sh'%(Login_user_name, Output_name))
                 os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
-                os.system('echo "echo \"\"" >> %s.sh'%(Output_name))
+                os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
                 os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Output_name))
             else:
                 os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
@@ -207,6 +207,12 @@ for i in range(len(meta_table)):
     print('Running "%s.sh >> %s.log" in terminal!'%(Output_name, Output_name))
     
     os.system('%s.sh >> %s.log'%(Output_name, Output_name))
+    
+    # check log file <TODO>
+    #with open('%s.log'%(Output_name), 'r') as fp:
+    #    for fpline in fp.readlines():
+    #        if fpline.find('OK: credentials accepted.'):
+    #            ok
     
     #cache_location = os.getcwd() + os.path.sep + 'cache'
     #if not os.path.isdir(cache_location):
