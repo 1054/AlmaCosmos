@@ -197,23 +197,40 @@ output_table['Unpacked'] = [False]*len(output_table)
 output_table['Calibrated'] = [False]*len(output_table)
 output_table['Imaged'] = [False]*len(output_table)
 
+t_Dataset_dict = {}
+t_Dataset_id = 0
+
 for i in range(len(output_table)):
     t_Project_code = Project_code[i]
     t_Data_name = re.sub(r'[^a-zA-Z0-9._]', r'_', Member_ous_id[i])
     t_Source_name = re.sub(r'[^a-zA-Z0-9._+-]', r'_', Source_name[i])
     t_Source_name = re.sub(r'^_*(.*?)_*$', r'\1', t_Source_name)
     t_Array = Array[i]
-    # reformat Source_name
+    # 
+    # reformat Source_name <TODO>
     if re.match(r'[0-9]$', t_Source_name):
         t_Galaxy_name = t_Source_name
     else:
         t_Galaxy_name = t_Source_name
     # 
-    # determine t_Dataset_dirname
-    t_Dataset_digits = min(np.ceil(np.log10(len(output_table))), 2) # count digits and format the ID of each DataSet. 
-    if t_Dataset_digits < 2: 
-        t_Dataset_digits = 2
-    t_Dataset_dirname = ('DataSet_%%0%dd'%(t_Dataset_digits))%(i+1)
+    # determine t_Dataset_id, check t_Dataset_dict
+    if t_Data_name in t_Dataset_dict:
+        t_Dataset_dirname = t_Dataset_dict[t_Data_name]
+    else:
+        # 
+        # got a new dataset not in previous t_Dataset_dict
+        t_Dataset_id += 1
+        # 
+        # determine t_Dataset_dirname
+        t_Dataset_digits = min(np.ceil(np.log10(len(output_table))), 2) # count digits and format the ID of each DataSet. 
+        if t_Dataset_digits < 2: 
+            t_Dataset_digits = 2
+        t_Dataset_dirname = ('DataSet_%%0%dd'%(t_Dataset_digits))%(t_Dataset_id)
+        # 
+        # append to t_Dataset_dict
+        t_Dataset_dict[t_Data_name] = t_Dataset_dirname
+    # 
+    # store into output table
     output_table['Dataset_dirname'][i] = t_Dataset_dirname
     # 
     # prepare Level_1_Raw dir
