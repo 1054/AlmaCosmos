@@ -2,7 +2,7 @@
 # 
 
 from __future__ import print_function
-import os, sys, re, time, json 
+import os, sys, re, time, json, shutil
 # pkg_resources
 #pkg_resources.require('astroquery')
 #pkg_resources.require('keyrings.alt')
@@ -90,6 +90,7 @@ if len(sys.argv) <= 1:
 meta_table_file = ''
 some_option = ''
 output_full_table = True
+output_table_file = ''
 verbose = 0
 i = 1
 while i < len(sys.argv):
@@ -98,6 +99,10 @@ while i < len(sys.argv):
         i = i+1
         if i < len(sys.argv):
             some_option = sys.argv[i]
+    elif tmp_arg == '-out': 
+        i = i+1
+        if i < len(sys.argv):
+            output_table_file = sys.argv[i]
     elif tmp_arg == '-verbose': 
         verbose = verbose + 1
     else:
@@ -408,7 +413,17 @@ for i in range(len(output_table)):
         
 print(output_table)
 
-
+if output_table_file != '':
+    if os.path.isfile(output_table_file):
+        print('Backing up "%s" as "%s"!'%(output_table_file, output_table_file+'.backup'))
+        shutil.move(output_table_file, output_table_file+'.backup')
+    if not os.path.isdir(os.path.dirname(output_table_file)):
+        os.makedirs(os.path.dirname(output_table_file))
+    output_table.write(output_table_file, format='ascii.fixed_width', delimeter='  ', bookend=True)
+    with open(output_table_file, 'r+') as fp:
+        fp.seek(0)
+        fp.write('#')
+    print('Output to "%s"!'%(output_table_file))
 
 
 
