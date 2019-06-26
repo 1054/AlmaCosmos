@@ -417,8 +417,9 @@ if output_table_file != '':
     if os.path.isfile(output_table_file):
         print('Backing up "%s" as "%s"!'%(output_table_file, output_table_file+'.backup'))
         shutil.move(output_table_file, output_table_file+'.backup')
-    if not os.path.isdir(os.path.dirname(output_table_file)):
-        os.makedirs(os.path.dirname(output_table_file))
+    if output_table_file.find(os.sep) >= 0:
+        if not os.path.isdir(os.path.dirname(output_table_file)):
+            os.makedirs(os.path.dirname(output_table_file))
     output_table.write(output_table_file, format='ascii.fixed_width', delimeter='  ', bookend=True)
     with open(output_table_file, 'r+') as fp:
         fp.seek(0)
