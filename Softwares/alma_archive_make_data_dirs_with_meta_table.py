@@ -296,7 +296,10 @@ for i in range(len(output_table)):
         # set Dataset_dirname
         # -- if there are multiple dirs for each t_Data_name
         if len(t_found_dirs) > 1:
-            t_Dataset_dirname = ('DataSet_%%0%dd_%d'%(t_Dataset_digits, t_found_dirs.index(t_found_dir)+1))%(i+1)
+            t_found_dir_index = t_found_dirs.index(t_found_dir)
+            if t_found_dir_index == 0:
+                t_Dataset_dirname0 = t_Dataset_dirname
+            t_Dataset_dirname = '%s_%d'%(t_Dataset_dirname0, t_found_dirs.index(t_found_dir)+1)
         # 
         # set Dataset_dirname if it exists in the meta table
         if Dataset_dirname is not None:
