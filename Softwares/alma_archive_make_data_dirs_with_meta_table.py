@@ -84,7 +84,7 @@ def find_items_in_folder_with_name_pattern(name_pattern, recursive=True, verbose
 # read input argument, which should be Member_ous_id
 # 
 if len(sys.argv) <= 1:
-    print('Usage: alma_archive_make_data_dirs_with_meta_table.py "meta_table_file.txt"')
+    print('Usage: alma_archive_make_data_dirs_with_meta_table.py "meta_table_file.txt" [-out "meta_table_with_dataset.txt"]')
     sys.exit()
 
 meta_table_file = ''
