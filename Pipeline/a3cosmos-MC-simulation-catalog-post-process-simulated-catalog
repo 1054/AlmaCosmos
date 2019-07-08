@@ -1,0 +1,87 @@
+#!/bin/bash
+# 
+
+set -e # set exit on error
+
+
+# Check software dependency
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat is not found! Please install Topcat from\"http://www.star.bris.ac.uk/~mbt/topcat/\" first!"
+    exit
+fi
+
+
+# Check simulation simulated catalog
+simulated_catalog_file="Output_catalogs/Output_Prior_Simulation_Catalog.txt"
+if [[ ! -f "$simulated_catalog_file" ]]; then
+    echo "Error! The initial simulated catalog file \"$simulated_catalog_file\" was not found!"
+    exit
+fi
+
+
+# Check meta table file
+meta_table_file="$HOME/Cloud/GoogleTeamDrive/A3COSMOS/Data/ALMA_full_archive/Calibrated_Images_by_Benjamin/20180102/fits_meta_table_for_dataset_v20180102_with_pbeam_within_COSMOS_no_high_res_projects.fits"
+if [[ ! -f "$meta_table_file" ]]; then
+    echo "Error! The meta table file \"$meta_table_file\" was not found!"
+    exit
+fi
+
+
+# First cross-match with the meta table to get beam size and phase center ra dec info
+topcat -stilts tmatchn nin=2 \
+                in1=$simulated_catalog_file \
+                ifmt1=ascii \
+                icmd1='addcol image_file "Image+\".cont.I.image.fits\""' \
+                in2=$meta_table_file \
+                ifmt2=fits \
+                icmd2='keepcols "image_file rms beam_maj beam_min beam_PA wavelength primary_beam cen_ra cen_dec"' \
+                matcher=exact \
+                values1='image_file' \
+                values2='image_file' \
+                suffix1='' \
+                fixcols=dups \
+                join1=always \
+                out=catalog_simulated_with_meta.fits
+
+
+# Then calculate primary beam attenuation (pb_attenu)
+~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-catalog-calc-primary-beam-attenuation.py \
+    catalog_simulated_with_meta.fits
+
+
+# Then calculate beam-convolved source sizes
+~/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-catalog-calc-Gaussian-convolved-sizes \
+    catalog_simulated_with_meta_with_pb_attenu.fits
+
+
+gzip catalog_simulated_with_meta.fits
+gzip catalog_simulated_with_meta_with_pb_attenu.fits
+gzip catalog_simulated_with_meta_with_pb_attenu_with_convolved_sizes.fits
+
+rm simu_data_input.txt simu_data_input.convolved_sizes.txt
+
+
+echo "Produced by: "                        >  catalog_simulated_with_meta_with_pb_attenu_with_convolved_sizes.readme.txt
+echo "    ${BASH_SOURCE[0]}"                >> catalog_simulated_with_meta_with_pb_attenu_with_convolved_sizes.readme.txt
+echo ""                                     >> catalog_simulated_with_meta_with_pb_attenu_with_convolved_sizes.readme.txt
+echo "at"                                   >> catalog_simulated_with_meta_with_pb_attenu_with_convolved_sizes.readme.txt
+echo "    "$(date +"%Y%m%d %Hh%Mm%Ss %Z")   >> catalog_simulated_with_meta_with_pb_attenu_with_convolved_sizes.readme.txt
+echo ""                                     >> catalog_simulated_with_meta_with_pb_attenu_with_convolved_sizes.readme.txt
+
+#topcat catalog_simulated_with_meta.fits
+#keepcols "sim_Maj sim_Min sim_PA sim_beam_maj sim_beam_min sim_beam_pa"
+#save as catalog_simulated_with_meta.Maj.Min.PA.txt
+
+
+#cp /Users/dzliu/Cloud/Github/AlmaCosmos/Pipeline/a3cosmos-MC-simulation-statistics-analysis-tools/a_dzliu_code_calc_Gaussian_convolved_sizes_for_any_data_input.sm  .
+
+
+#echo "macro read a_dzliu_code_calc_Gaussian_convolved_sizes_for_any_data_input.sm a_dzliu_code_calc_Gaussian_convolved_sizes catalog_simulated_with_meta.Maj.Min.PA" | sm
+
+
+#then topcat column_stack 'concat_sim_rec_data_table.fits' and 'catalog_simulated_with_meta.Maj.Min.PA.convolved_sizes.txt'. 
+
+
+
+
+

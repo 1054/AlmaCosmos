@@ -11,12 +11,12 @@ usage() {
     echo "    a3cosmos-MC-simulation-catalog-cross-match \\"
     echo "        -simulation-catalog \"sim_cat.fits\" \\"
     echo "        -recovery-catalog \"rec_cat.fits\" \\"
-    echo "        -output-directory \"output_dir\""
+    echo "        [-output-directory \"output_dir\"]"
     echo "    "
     echo "    a3cosmos-MC-simulation-catalog-cross-match \\"
     echo "        -sim \"sim_cat.fits\" \\"
     echo "        -rec \"rec_cat.fits\" \\"
-    echo "        -out \"output_dir\""
+    echo "        [-out \"output_dir\"]"
     echo "    "
     echo "    a3cosmos-MC-simulation-catalog-cross-match \\"
     echo "        -sim \"sim_cat.fits\" \\"
@@ -197,7 +197,7 @@ almacosmos_recognize_fits_table_column_names.py "$InputCat1" "${almacosmos_cmd_m
 echo almacosmos_recognize_fits_table_column_names.py "$InputCat2" "${almacosmos_cmd_misc_opts[@]}"
 almacosmos_recognize_fits_table_column_names.py "$InputCat2" "${almacosmos_cmd_misc_opts[@]}" > "$OutputDir/cat_rec_colums.txt"
 
-for col_type in ID RA Dec Flux Flux_error Peak_Flux Residual_Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min beam_PA; do
+for col_type in ID RA Dec Flux Flux_error Peak_Flux Residual_Flux Maj Min PA RMS_noise image_file simu_name beam_Maj beam_Min beam_PA pb_attenu; do
     cat_sim_col_name=$(cat "$OutputDir/cat_sim_colums.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g')
     cat_rec_col_name=$(cat "$OutputDir/cat_rec_colums.txt" | grep "^${col_type}:" | cut -d ':' -f 2 | sed -e 's/^ *//g' | sed -e 's/ *$//g')
     eval "cat_sim_${col_type}=\"${cat_sim_col_name}\""
@@ -205,24 +205,26 @@ for col_type in ID RA Dec Flux Flux_error Peak_Flux Residual_Flux Maj Min PA RMS
     eval "echo cat_sim_${col_type}=\"${cat_sim_col_name}\""
     eval "echo cat_rec_${col_type}=\"${cat_rec_col_name}\""
 done
-#echo "cat_sim_ID = $cat_sim_ID"
-#echo "cat_sim_RA = $cat_sim_RA"
-#echo "cat_sim_Dec = $cat_sim_Dec"
-#echo "cat_sim_z = $cat_sim_z"
-#echo "cat_sim_Flux = $cat_sim_Flux"
-#echo "cat_sim_Flux_error = $cat_sim_Flux_error"
-#echo "cat_sim_Maj = $cat_sim_Maj"
-#echo "cat_sim_Min = $cat_sim_Min"
-#echo "cat_sim_RMS_noise = $cat_sim_RMS_noise"
-#echo "cat_rec_ID = $cat_rec_ID"
-#echo "cat_rec_RA = $cat_rec_RA"
-#echo "cat_rec_Dec = $cat_rec_Dec"
-#echo "cat_rec_z = $cat_rec_z"
-#echo "cat_rec_Flux = $cat_rec_Flux"
-#echo "cat_rec_Flux_error = $cat_rec_Flux_error"
-#echo "cat_rec_Maj = $cat_rec_Maj"
-#echo "cat_rec_Min = $cat_rec_Min"
-#echo "cat_rec_RMS_noise = $cat_rec_RMS_noise"
+echo "cat_sim_ID = $cat_sim_ID"
+echo "cat_sim_RA = $cat_sim_RA"
+echo "cat_sim_Dec = $cat_sim_Dec"
+echo "cat_sim_z = $cat_sim_z"
+echo "cat_sim_Flux = $cat_sim_Flux"
+echo "cat_sim_Flux_error = $cat_sim_Flux_error"
+echo "cat_sim_Maj = $cat_sim_Maj"
+echo "cat_sim_Min = $cat_sim_Min"
+echo "cat_sim_RMS_noise = $cat_sim_RMS_noise"
+echo "cat_sim_pb_attenu = $cat_sim_pb_attenu"
+echo "cat_rec_ID = $cat_rec_ID"
+echo "cat_rec_RA = $cat_rec_RA"
+echo "cat_rec_Dec = $cat_rec_Dec"
+echo "cat_rec_z = $cat_rec_z"
+echo "cat_rec_Flux = $cat_rec_Flux"
+echo "cat_rec_Flux_error = $cat_rec_Flux_error"
+echo "cat_rec_Maj = $cat_rec_Maj"
+echo "cat_rec_Min = $cat_rec_Min"
+echo "cat_rec_RMS_noise = $cat_rec_RMS_noise"
+echo "cat_rec_pb_attenu = $cat_rec_pb_attenu"
 
 # 
 # Check columns
@@ -239,7 +241,7 @@ for col_type in ID RA Dec Flux Flux_error Peak_Flux Maj Min PA image_file simu_n
 done
 
 if [[ "$cat_rec_Residual_Flux" == "__NULL__" ]]; then
-cat_rec_Residual_Flux="0.0*$cat_rec_Peak_Flux"
+    cat_rec_Residual_Flux="0.0*$cat_rec_Peak_Flux"
 fi
 
 
@@ -346,12 +348,13 @@ topcat -stilts tmatchn \
                 ocmd="addcol Maj_beam -units \"arcsec\" -desc \"Clean beam.\" \"${cat_sim_beam_Maj}_from_sim_cat\"" \
                 ocmd="addcol Min_beam -units \"arcsec\" -desc \"Clean beam.\" \"${cat_sim_beam_Min}_from_sim_cat\"" \
                 ocmd="addcol PA_beam -units \"degree\" \"${cat_sim_beam_PA}_from_sim_cat\"" \
+                ocmd="addcol pb_attenu \"(!NULL_${cat_sim_pb_attenu}_from_sim_cat ? ${cat_sim_pb_attenu}_from_sim_cat : ${cat_rec_pb_attenu}_from_rec_cat)\"" \
                 ocmd="addcol flag_matched             \"(!NULL_${cat_sim_image_file}_from_sim_cat && !NULL_${cat_rec_image_file}_from_rec_cat)\"" \
                 ocmd="addcol flag_nonmatched_missed   \"(!NULL_${cat_sim_image_file}_from_sim_cat &&  NULL_${cat_rec_image_file}_from_rec_cat)\"" \
                 ocmd="addcol flag_nonmatched_spurious \"( NULL_${cat_sim_image_file}_from_sim_cat && !NULL_${cat_rec_image_file}_from_rec_cat)\"" \
                 ocmd="addcol flag_null                \"( NULL_${cat_sim_image_file}_from_sim_cat &&  NULL_${cat_rec_image_file}_from_rec_cat)\"" \
-                ocmd="addcol image_file_STR           \"${cat_sim_image_file}_from_sim_cat\"" \
-                ocmd="addcol simu_name_STR            \"${cat_sim_simu_name}_from_sim_cat\"" \
+                ocmd="addcol image_file_STR           \"(!NULL_${cat_sim_image_file}_from_sim_cat ? ${cat_sim_image_file}_from_sim_cat : ${cat_rec_image_file}_from_rec_cat)\"" \
+                ocmd="addcol simu_name_STR            \"(!NULL_${cat_sim_simu_name}_from_sim_cat ? ${cat_sim_simu_name}_from_sim_cat : ${cat_rec_simu_name}_from_rec_cat)\"" \
                 ofmt="fits" \
                 out="$OutputDir/datatable_CrossMatched_all_entries.fits" \
                 | tee "$OutputDir/datatable_CrossMatched_all_entries.stilts.log"
@@ -380,7 +383,7 @@ echo "Output to \"$OutputDir/datatable_CrossMatched_all_entries.fits\"!"
 topcat -stilts tpipe \
                 in="$OutputDir/datatable_CrossMatched_all_entries.fits" \
                 cmd="select \"(flag_matched)\"" \
-                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam image_file_STR simu_name_STR\"" \
+                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam pb_attenu image_file_STR simu_name_STR\"" \
                 ofmt="fits" \
                 out="$OutputDir/datatable_CrossMatched_only_matches.fits" \
                 | tee "$OutputDir/datatable_CrossMatched_only_matches.stilts.log"

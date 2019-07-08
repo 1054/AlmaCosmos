@@ -1,0 +1,339 @@
+analyze_spurious_curve
+    # 
+    # Usage:
+    #   echo "macro read analyze_spurious_curve.sm analyze_spurious_curve" | sm
+    # 
+    # Updates:
+    #   20190506: more sampling within SNR 3-10
+    # 
+    # 
+    load crabPlot.sm
+    load vecSNR.sm
+    load rfile.sm
+    
+    # Read real prior extraction photometry results
+    if(is_file("datatable_original_image_fitting.SNR_peak.txt")) {
+        data "datatable_original_image_fitting.SNR_peak.txt"
+        read {snr_fit_2 1.f}
+        set snr_fit_2 = lg(snr_fit_2)
+    } else {
+        echo "Error! \"datatable_original_image_fitting.SNR_peak.txt\" was not found!"
+    }
+    
+    if(is_file("datatable_original_image_fitting.pb_corr.txt")) {
+        data "datatable_original_image_fitting.pb_corr.txt"
+        read {pb_corr_2 1.f}
+    } else {
+        set pb_corr_2 = snr_fit_2 * 0.0
+    }
+    
+    
+    if(is_file("datatable_inverted_image_fitting.SNR_peak.txt")) {
+        data "datatable_inverted_image_fitting.SNR_peak.txt"
+        read {snr_fit_n2 1.f}
+        set snr_fit_n2 = lg(snr_fit_n2)
+    } else {
+        echo "Error! \"datatable_inverted_image_fitting.SNR_peak.txt\" was not found!"
+    }
+    
+    if(is_file("datatable_inverted_image_fitting.pb_corr.txt")) {
+        data "datatable_inverted_image_fitting.pb_corr.txt"
+        read {pb_corr_n2 1.f}
+    } else {
+        set pb_corr_n2 = snr_fit_n2 * 0.0
+    }
+    
+    # 
+    # Exclude problematic images and fitted results
+    # 
+    set excl_fit_n2 = (pb_corr_n2>5)
+    set excl_fit_2 = (pb_corr_2>5)
+    # 
+    # Further read user defined pb_corr selection
+    # 
+    if(is_file("set_pb_attenu_selection")) {
+        !cat "set_pb_attenu_selection"
+        data "set_pb_attenu_selection"
+        read {pb_attenu_range0 1.f pb_attenu_range1 2.f}
+        set excl_fit_n2 = (pb_corr_n2>=1./pb_attenu_range0 || pb_corr_n2<1./pb_attenu_range1)
+        set excl_fit_2 = (pb_corr_2>=1./pb_attenu_range0 || pb_corr_2<1./pb_attenu_range1)
+    }
+    # 
+    # Further read user defined alma_band selection
+    # 
+    if(is_file("set_alma_band_selection")) {
+        !cat "set_alma_band_selection"
+        data "set_alma_band_selection"
+        read {alma_band 1.f}
+        data "datatable_original_image_fitting.alma_band.txt"
+        read {alma_band_2 1.d}
+        data "datatable_inverted_image_fitting.alma_band.txt"
+        read {alma_band_n2 1.d}
+        if(dimen(alma_band)>1) {
+            set excl_by_alma_band_2 = excl_fit_2 * 0
+            set excl_by_alma_band_n2 = excl_fit_n2 * 0
+            do i=0,dimen(alma_band)-1 {
+                set excl_by_alma_band_2 = excl_by_alma_band_2 + (alma_band_2==alma_band[$i])
+                set excl_by_alma_band_n2 = excl_by_alma_band_n2 + (alma_band_n2==alma_band[$i])
+            }
+            set excl_fit_2 = (excl_fit_n2 || (excl_by_alma_band_2==0))
+            set excl_fit_n2 = (excl_fit_n2 || (excl_by_alma_band_n2==0))
+        } else {
+            set excl_fit_2 = (excl_fit_n2 || (alma_band_2!=alma_band))
+            set excl_fit_n2 = (excl_fit_n2 || (alma_band_n2!=alma_band))
+        }
+    }
+    # 
+    # Filter the data array
+    # 
+    set snr_fit_n2 = snr_fit_n2 if(!excl_fit_n2)
+    set snr_fit_2 = snr_fit_2 if(!excl_fit_2)
+    
+    # 
+    # Get histogram
+    # 
+    #get_hist snr_fit_2 snr_fit_2_value snr_fit_2_count 0.0 60.0 0.025
+    #get_hist snr_fit_n2 snr_fit_n2_value snr_fit_n2_count 0.0 60.0 0.025
+    
+    echo dimen(snr_fit_2) = $(dimen(snr_fit_2))
+    echo dimen(snr_fit_n2) = $(dimen(snr_fit_n2))
+    echo sum(snr_fit_2>lg(5)) = $(sum(snr_fit_2>lg(5)))
+    echo sum(snr_fit_n2>lg(5)) = $(sum(snr_fit_n2>lg(5)))
+    #set snr_fit_n2_count = snr_fit_n2_count / dimen(snr_fit_n2) * dimen(snr_fit_2)
+    #set snr_fit_n2_count = int(snr_fit_n2_count)
+    
+    # 
+    # Bin by S/N, first read user defined file, if it does not exist then set default S/N bins.
+    # 
+    if(is_file("set_snr_bins")) {
+        data "set_snr_bins"
+        read {snr_bins 1.f}
+        set snr_bins = lg(snr_bins) # calculations in this code are done with log10(S/N)
+    } else {
+        ##set snr_value = snr_fit_2_value
+        ##set snr_bins = {1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 12.0 15.0 20.0 30.0 50.0}
+        ##set snr_bins = lg(snr_bins)
+        #set snr_bins = $(lg(1.0)),$(lg(1000.0)),0.15               #<20190506>#
+        set snr_bins_part1 = $(lg(1.0)),$(lg(3.5)),0.03             #<20190506>#
+        set snr_bins_part2 = $(lg(3.5)+0.03),$(lg(10.0)),0.05       #<20190506>#
+        set snr_bins_part3 = $(lg(10.0)+0.05),$(lg(100.0)),0.10     #<20190506>#
+        set snr_bins_part4 = $(lg(100.0)+0.20),$(lg(1000.0)),0.20   #<20190506>#
+        set snr_bins =                 snr_bins_part1               #<20190506>#
+        set snr_bins = snr_bins concat snr_bins_part2               #<20190506>#
+        set snr_bins = snr_bins concat snr_bins_part3               #<20190506>#
+        set snr_bins = snr_bins concat snr_bins_part4               #<20190506>#
+        #set snr_bins_pow10 = 10**snr_bins                          #<20190506>#
+        #print {snr_bins_pow10}                                     #<20190506>#
+    }
+    
+    declare snr_bin_value 0.f
+    declare snr_fit_2_count 0.f
+    declare snr_fit_n2_count 0.f
+    
+    declare snr_value_differential 0.f
+    declare fake_rate_differential 0.f #  = snr_fit_n2_count * 0.0 + 100.0
+    declare true_count_differential 0.f
+    declare spurious_count_differential 0.f
+    
+    declare snr_value_cumulative 0.f
+    declare fake_rate_cumulative 0.f #  = snr_fit_n2_count * 0.0 
+    declare true_count_cumulative 0.f
+    declare spurious_count_cumulative 0.f
+    
+    do i=0,dimen(snr_bins)-2 {
+        # 
+        set snr_fit_2_is_in_the_bin = (snr_fit_2>=snr_bins[$i] && snr_fit_2<snr_bins[$i+1])
+        set snr_fit_n2_is_in_the_bin = (snr_fit_n2>=snr_bins[$i] && snr_fit_n2<snr_bins[$i+1])
+        if(sum(snr_fit_2_is_in_the_bin)>0) {
+            set snr_bin_mean = (snr_bins[$i]+snr_bins[$i+1])/2.0
+            # 
+            set true_count_differential = true_count_differential concat $(sum(snr_fit_2_is_in_the_bin))
+            set spurious_count_differential = spurious_count_differential concat $(sum(snr_fit_n2_is_in_the_bin))
+            # 
+            echo bin $i real $(sum(snr_fit_2_is_in_the_bin)) fake $(sum(snr_fit_n2_is_in_the_bin))
+            set snr_value_differential = snr_value_differential concat snr_bin_mean
+            set fake_rate_differential = fake_rate_differential concat $(sum(snr_fit_n2_is_in_the_bin) / (sum(snr_fit_2_is_in_the_bin)) )
+        }
+        # 
+        set snr_fit_2_is_greater_than_the_bin = (snr_fit_2>=snr_bins[$i])
+        set snr_fit_n2_is_greater_than_the_bin = (snr_fit_n2>=snr_bins[$i])
+        if(sum(snr_fit_2_is_in_the_bin)>0 && sum(snr_fit_2_is_greater_than_the_bin)>0) {
+            set snr_bin_mean = (snr_bins[$i])
+            # 
+            set true_count_cumulative = true_count_cumulative concat $(sum(snr_fit_2_is_greater_than_the_bin))
+            set spurious_count_cumulative = spurious_count_cumulative concat $(sum(snr_fit_n2_is_greater_than_the_bin))
+            # 
+            set snr_value_cumulative = snr_value_cumulative concat snr_bin_mean
+            set fake_rate_cumulative = fake_rate_cumulative concat $(sum(snr_fit_n2_is_greater_than_the_bin) / (sum(snr_fit_2_is_greater_than_the_bin)) )
+        }
+    }
+    
+    set snr_value_differential = 10**snr_value_differential
+    set snr_value_cumulative = 10**snr_value_cumulative
+    print "datatable_spurious_fraction_differential.txt" '%25g %25g %30g %30g\n' {snr_value_differential fake_rate_differential true_count_differential spurious_count_differential}
+    print "datatable_spurious_fraction_cumulative.txt" '%25g %25g %30g %30g\n' {snr_value_cumulative fake_rate_cumulative true_count_cumulative spurious_count_cumulative}
+    
+    if(!is_file("fit_spurious_curve.py")) {
+        echo "Error! \"fit_spurious_curve.py\" was not found!"
+        return
+    }
+    
+    # fit the completeness curve
+    #<TODO><20171217># if(!is_file("function_spurious_fraction_cumulative.txt") || \
+    #<TODO><20171217>#     !is_file("function_spurious_fraction_cumulative.xyfit.txt")) {
+    #<TODO><20171217>#     !chmod +x fit_spurious_curve.py
+    #<TODO><20171217>#     !./fit_spurious_curve.py
+    #<TODO><20171217># }
+    
+    # plot
+    plot_spurious_curve
+
+
+
+
+
+plot_spurious_curve
+    # 
+    data "datatable_spurious_fraction_cumulative.txt"
+    read {snr_value_cumulative 1.f fake_rate_cumulative 2.f}
+    set snr_value_cumulative = lg(snr_value_cumulative)
+    # 
+    data "datatable_spurious_fraction_differential.txt"
+    read {snr_value_differential 1.f fake_rate_differential 2.f}
+    set snr_value_differential = lg(snr_value_differential)
+    # 
+    crabPlotOpenPS "Plot_spurious_fraction.eps"
+    crabPlotDefaultPenForBox
+    location 6500 31000 14500 28000
+    limits $(lg(1)) $(lg(200)) -0.1 1.1
+    ticksize -1 5 0 0
+    box
+    crabPlotDefaultPenForTitle
+    xlabel "S_{peak} / rms noise"
+    ylabel "Spurious Fraction"
+    crabPlotDefaultPenForConnect
+    # 
+    # points
+    ctype royalblue
+    lweight 3.5 expand 1.7 ptype 15 3
+    points snr_value_differential fake_rate_differential
+    ctype royalblue
+    lweight 3.5 expand 1.5 ptype 15 0
+    points snr_value_cumulative fake_rate_cumulative
+    #ctype red
+    #lweight 3.5 expand 1.9 ptype 4 3
+    #points snr_value_differential (1.0-fake_rate_differential)
+    #ctype red
+    #lweight 3.5 expand 1.5 ptype 4 0
+    #points snr_value_cumulative (1.0-fake_rate_cumulative)
+    # 
+    # spline or read from the output fit file with the Python code
+    if(is_file("function_spurious_fraction_cumulative.xyfit.txt")) {
+        data "function_spurious_fraction_cumulative.xyfit.txt"
+        lines 3 0
+        read {snr_spline 1.f spline_rate 2.f}
+        set snr_spline = lg(snr_spline)
+        ctype royalblue ltype 1
+        connect snr_spline spline_rate
+    } else {
+        vecminmax snr_value_cumulative snr_min snr_max
+        set snr_spline = $snr_min,$snr_max,0.02
+        spline snr_value_cumulative fake_rate_cumulative snr_spline spline_rate
+        ctype royalblue ltype 1
+        connect snr_spline spline_rate
+        # 
+        #set real_rate_cumulative = (1.0-fake_rate_cumulative)
+        #spline snr_value_cumulative real_rate_cumulative snr_spline spline_rate
+        #ctype red ltype 1
+        #connect snr_spline spline_rate
+    }
+    # 
+    # spline or read from the output fit file with the Python code
+    if(is_file("function_spurious_fraction_differential.xyfit.txt")) {
+        data "function_spurious_fraction_differential.xyfit.txt"
+        lines 3 0
+        read {snr_spline 1.f spline_rate 2.f}
+        set snr_spline = lg(snr_spline)
+        ctype royalblue ltype 0
+        connect snr_spline spline_rate
+    } else {
+        vecminmax snr_value_differential snr_min snr_max
+        set snr_spline = $snr_min,$snr_max,0.02
+        spline snr_value_differential fake_rate_differential snr_spline spline_rate
+        ctype royalblue ltype 0
+        connect snr_spline spline_rate
+        # 
+        #set real_rate_differential = (1.0-fake_rate_differential)
+        #spline snr_value_differential real_rate_differential snr_spline spline_rate
+        #ctype red ltype 0
+        #connect snr_spline spline_rate
+    }
+    # 
+    # plot
+    crabPlotDefaultPenForLegend
+    set _crabPlot_legend_px = 0.52
+    set _crabPlot_legend_py = 0.80
+    set _crabPlot_legend_pt = 2.5
+    set _crabPlot_legend_ps = 1.20
+    set _crabPlot_legend_dy = 0.08
+    #ctype red       ptype 4 0  crabPlotLegendWithSymbol "Recovered (cumulative)"
+    #ctype red       ptype 4 3  crabPlotLegendWithSymbol "Recovered (differential)"
+    ctype royalblue ptype 15 3 crabPlotLegendWithSymbol "Spurious (differential)"
+    ctype royalblue ptype 15 0 crabPlotLegendWithSymbol "Spurious (cumulative)"
+    
+    # draw horizontal lines
+    ctype default
+    ltype 2 lweight 3.0
+    rel $fx1 $((1)) draw $fx2 $((1))
+    ltype 2 lweight 3.0
+    rel $fx1 $((0)) draw $fx2 $((0))
+    
+    
+    crabPlotClosePS
+    !rm "Plot_spurious_fraction"*".{pdfmarks,pdfconverts,eps}"
+    !open "Plot_spurious_fraction.pdf"
+
+
+
+
+
+calc_spurious
+    # 
+    if(!is_file("function_spurious_fraction_cumulative.txt")) {
+        echo "Warning! \"function_spurious_fraction_cumulative.txt\" was not found!"
+    }
+    if(!is_file("function_spurious_fraction_cumulative.xyfit.txt")) {
+        echo "Warning! \"function_spurious_fraction_cumulative.xyfit.txt\" was not found!"
+    }
+    if(is_file("function_spurious_fraction_cumulative.xyfit.txt")) {
+        set input_comp = 0.10 # spurious fraction 10%
+        data "function_spurious_fraction_cumulative.xyfit.txt"
+        lines 3 0
+        read {x_fit 1 y_fit 2}
+        interp2 y_fit x_fit input_comp output_snr
+        echo "For spurious <= 10%, SNR >= "$(output_snr)
+    } else {
+        data "datatable_spurious_fraction_cumulative.txt"
+        read {list_snr 1 list_spur 2}
+        data "datatable_spurious_fraction_differential.txt"
+        read {list_snr2 1 list_spur2 2}
+        set input_snr = 3.0,6.0,0.01
+        echo "#interp2"
+        interp2 list_snr list_spur input_snr output_spur
+        interp2 list_snr2 list_spur2 input_snr output_spur2
+        do i=0,dimen(output_spur)-1 {
+            echo "When SNR >= "$(sprintf('%0.2f',input_snr[$i]))", spurious <= "$(sprintf('%0.1f',output_spur[$i]*100.0))"%, differential spurious at this SNR is "$(sprintf('%0.1f',output_spur2[$i]*100.0))"%"
+        }
+        echo "#spline"
+        spline list_snr list_spur input_snr output_spur
+        spline list_snr2 list_spur2 input_snr output_spur2
+        do i=0,dimen(output_spur)-1 {
+            echo "When SNR >= "$(sprintf('%0.2f',input_snr[$i]))", spurious <= "$(sprintf('%0.1f',output_spur[$i]*100.0))"%, differential spurious at this SNR is "$(sprintf('%0.1f',output_spur2[$i]*100.0))"%"
+        }
+    }
+
+
+
+
+
+

@@ -1,0 +1,462 @@
+#!/bin/bash
+# 
+
+
+# 
+# Usage
+# 
+usage() {
+    echo ""
+    echo "Usage: "
+    echo "    a3cosmos-inverted-image-spurious-analysis \\"
+    echo "        [-original-fitting] \"catalog_original_image_fitting.fits\" \\"
+    echo "        [-inverted-fitting] \"catalog_inverted_image_fitting.fits\" \\"
+    echo "        [-output-directory] \"output_spurious_analysis\" \\"
+    echo "        [-pb-attenu 0.2 1.0] \\"
+    echo "        [-snr-bins 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5 6.0 6.5 7.0 7.5 8.0 9.0 10.0 20.0 50.0 100.0] \\"
+    echo "        [-alma-band 6] "
+    echo ""
+    echo "Input: "
+    echo "    Two catalogs, the first one is the original image fitting, the second one is the inverted image fitting. Both should contain Peak_flux and E_Peak_flux."
+    echo ""
+    echo "Output: "
+    echo "    We will output figures to the output directory, which is \"output_spurious_analysis\" in default."
+    echo ""
+}
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Supermongo was not installed!"
+    exit 1
+fi
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+    exit 1
+fi
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not installed!"
+    exit 1
+fi
+if [[ ! -f $(dirname "${BASH_SOURCE[0]}")/a3cosmos-inverted-image-spurious-analysis-tools/analyze_spurious_curve.sm ]]; then
+    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-inverted-image-spurious-analysis-tools/analyze_spurious_curve.sm"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+fi
+if [[ $(type almacosmos_cmd_args 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    else
+        echo "Error! The download of this code from \"https://github.com/1054/AlmaCosmos.git\" in incomplete!"
+        exit 1
+    fi
+fi
+
+
+# 
+# Read user input
+# 
+source almacosmos_cmd_args "$@"
+if [[ ! -z "$almacosmos_cmd_original_fitting" ]]; then
+    InputCat1="$almacosmos_cmd_original_fitting"
+else
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 2 ]]; then
+        InputCat1="${almacosmos_cmd_misc_args[0]}"
+    else
+        usage
+        exit
+    fi
+fi
+if [[ ! -z "$almacosmos_cmd_inverted_fitting" ]]; then
+    InputCat2="$almacosmos_cmd_inverted_fitting"
+else
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 2 ]]; then
+        InputCat2="${almacosmos_cmd_misc_args[1]}"
+    else
+        usage
+        exit
+    fi
+fi
+if [[ ! -z "$almacosmos_cmd_output_directory" ]]; then
+    OutputDir="$almacosmos_cmd_output_directory"
+else
+    if [[ ${#almacosmos_cmd_misc_args[@]} -ge 3 ]]; then
+        OutputDir="${almacosmos_cmd_misc_args[2]}"
+    else
+        OutputDir="output_spurious_analysis" # default
+    fi
+fi
+
+echo "InputCat1 = $InputCat1"
+echo "InputCat2 = $InputCat2"
+echo "OutputDir = $OutputDir"
+check_input_file "$InputCat1"
+check_input_file "$InputCat2"
+create_output_dir "$OutputDir"
+
+
+# 
+# Read optional user inputs -- pb-attenu which is a range for data selection
+# 
+if [[ ! -z "$almacosmos_cmd_pb_attenu" ]]; then
+    if [[ ${#almacosmos_cmd_pb_attenu[@]} != 2 ]]; then
+        echo "Error! The input -pb-attenu should have two values indicating its range!"
+        exit
+    fi
+    echo "# pb_attenu_range0 pb_attenu_range1" > "$OutputDir/set_pb_attenu_selection"
+    echo "${almacosmos_cmd_pb_attenu[0]} ${almacosmos_cmd_pb_attenu[1]}" >> "$OutputDir/set_pb_attenu_selection"
+    echo "pb_attenu_selection = ${almacosmos_cmd_pb_attenu[0]} ${almacosmos_cmd_pb_attenu[1]}"
+else
+    if [[ -f "$OutputDir/set_pb_attenu_selection" ]]; then
+        mv "$OutputDir/set_pb_attenu_selection" "$OutputDir/set_pb_attenu_selection.backup"
+    fi
+fi
+
+
+# 
+# Read optional user inputs -- alma-band which is an ALMA Band number
+# 
+if [[ ! -z "$almacosmos_cmd_alma_band" ]]; then
+    if [[ ${#almacosmos_cmd_alma_band[@]} -lt 1 ]]; then
+        echo "Error! The input -alma-band should have at least one value representing the ALMA Band number!"
+        exit
+    fi
+    echo "# alma_band" > "$OutputDir/set_alma_band_selection"
+    for (( i = 0; i < ${#almacosmos_cmd_alma_band[@]}; i++ )); do
+        echo "${almacosmos_cmd_alma_band[i]}" >> "$OutputDir/set_alma_band_selection"
+    done
+else
+    if [[ -f "$OutputDir/set_alma_band_selection" ]]; then
+        mv "$OutputDir/set_alma_band_selection" "$OutputDir/set_alma_band_selection.backup"
+    fi
+fi
+
+
+# 
+# Read optional user inputs -- snr-bins which is a list of bin edges
+# 
+if [[ ! -z "$almacosmos_cmd_snr_bins" ]]; then
+    if [[ ${#almacosmos_cmd_snr_bins[@]} -le 2 ]]; then
+        echo "Error! The input -snr-bins should have at least three values indicating the bin edges!"
+        exit
+    fi
+    echo "# snr_bins" > "$OutputDir/set_snr_bins"
+    for (( i = 0; i < ${#almacosmos_cmd_snr_bins[@]}; i++ )); do
+        echo "${almacosmos_cmd_snr_bins[i]}" >> "$OutputDir/set_snr_bins"
+    done
+else
+    if [[ -f "$OutputDir/set_snr_bins" ]]; then
+        mv "$OutputDir/set_snr_bins" "$OutputDir/set_snr_bins.backup"
+    fi
+fi
+
+
+# 
+# Extract meta
+# 
+if [[ ! -f "$OutputDir/datatable_original_image_fitting.meta.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat1" \
+                ifmt=fits \
+                omode=meta \
+                > "$OutputDir/datatable_original_image_fitting.meta.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_original_image_fitting.meta.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_original_image_fitting.meta.txt\"!"
+    exit
+fi
+if [[ ! -f "$OutputDir/datatable_inverted_image_fitting.meta.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat2" \
+                ifmt=fits \
+                omode=meta \
+                > "$OutputDir/datatable_inverted_image_fitting.meta.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_inverted_image_fitting.meta.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_inverted_image_fitting.meta.txt\"!"
+    exit
+fi
+
+
+# 
+# Extract PBcor
+# 
+if grep -q ": Pbcor(" "$OutputDir/datatable_original_image_fitting.meta.txt"; then
+    topcat -stilts tpipe \
+                in="$InputCat1" \
+                ifmt=fits \
+                cmd="addcol pb_corr \"!NULL_Pbcor ? 1.0/Pbcor : 1e99\"" \
+                cmd="keepcols \"pb_corr\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_original_image_fitting.pb_corr.txt"
+elif grep -q ": pb_corr(" "$OutputDir/datatable_original_image_fitting.meta.txt"; then
+    topcat -stilts tpipe \
+                in="$InputCat1" \
+                ifmt=fits \
+                cmd="keepcols \"pb_corr\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_original_image_fitting.pb_corr.txt"
+fi
+
+if grep -q ": Pbcor(" "$OutputDir/datatable_inverted_image_fitting.meta.txt"; then
+    topcat -stilts tpipe \
+                in="$InputCat2" \
+                ifmt=fits \
+                cmd="addcol pb_corr \"!NULL_Pbcor ? 1.0/Pbcor : 1e99\"" \
+                cmd="keepcols \"pb_corr\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_inverted_image_fitting.pb_corr.txt"
+elif grep -q ": pb_corr(" "$OutputDir/datatable_inverted_image_fitting.meta.txt"; then
+    topcat -stilts tpipe \
+                in="$InputCat2" \
+                ifmt=fits \
+                cmd="keepcols \"pb_corr\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_inverted_image_fitting.pb_corr.txt"
+fi
+
+
+# 
+# Extract ALMA_band
+# 
+if [[ -f "$OutputDir/set_alma_band_selection" ]]; then
+    if grep -q ": ALMA_band(" "$OutputDir/datatable_original_image_fitting.meta.txt"; then
+        topcat -stilts tpipe \
+                in="$InputCat1" \
+                ifmt=fits \
+                cmd="keepcols \"ALMA_band\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_original_image_fitting.alma_band.txt"
+    else
+        echo "Error! The input original image fitting catalog does not have \"ALMA_band\" column!"
+        exit
+    fi
+    if grep -q ": ALMA_band(" "$OutputDir/datatable_inverted_image_fitting.meta.txt"; then
+        topcat -stilts tpipe \
+                in="$InputCat2" \
+                ifmt=fits \
+                cmd="keepcols \"ALMA_band\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_inverted_image_fitting.alma_band.txt"
+    else
+        echo "Error! The input inverted image fitting catalog does not have \"ALMA_band\" column!"
+        exit
+    fi
+fi
+
+
+# 
+# Extract formatted data table
+# 
+if [[ ! -f "$OutputDir/datatable_original_image_fitting.SNR_peak.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat1" \
+                ifmt=fits \
+                cmd="addcol SNR_peak \"E_Peak_flux>0 ? Peak_flux/E_Peak_flux : 0.0\"" \
+                cmd="keepcols \"SNR_peak\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_original_image_fitting.SNR_peak.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_original_image_fitting.SNR_peak.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_original_image_fitting.SNR_peak.txt\"!"
+    exit
+fi
+
+if [[ ! -f "$OutputDir/datatable_inverted_image_fitting.SNR_peak.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat2" \
+                ifmt=fits \
+                cmd="addcol SNR_peak \"E_Peak_flux>0 ? Peak_flux/E_Peak_flux : 0.0\"" \
+                cmd="keepcols \"SNR_peak\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_inverted_image_fitting.SNR_peak.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_inverted_image_fitting.SNR_peak.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_inverted_image_fitting.SNR_peak.txt\"!"
+    exit
+fi
+
+# 
+# Extract SNR_total
+# 
+if [[ ! -f "$OutputDir/datatable_original_image_fitting.SNR_total.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat1" \
+                ifmt=fits \
+                cmd="addcol SNR_total \"E_Total_flux>0 ? Total_flux/E_Total_flux : 0.0\"" \
+                cmd="keepcols \"SNR_total\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_original_image_fitting.SNR_total.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_original_image_fitting.SNR_total.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_original_image_fitting.SNR_total.txt\"!"
+    exit
+fi
+
+if [[ ! -f "$OutputDir/datatable_inverted_image_fitting.SNR_total.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat2" \
+                ifmt=fits \
+                cmd="addcol SNR_total \"E_Total_flux>0 ? Total_flux/E_Total_flux : 0.0\"" \
+                cmd="keepcols \"SNR_total\"" \
+                ofmt=ascii \
+                out="$OutputDir/datatable_inverted_image_fitting.SNR_total.txt"
+fi
+if [[ ! -f "$OutputDir/datatable_inverted_image_fitting.SNR_total.txt" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/datatable_inverted_image_fitting.SNR_total.txt\"!"
+    exit
+fi
+
+
+# 
+# Make histogram
+# 
+if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_spurious.pdf" ]]; then
+    margin=(80 50 20 20) # left, bottom, right, top
+    binsize="+1.20" # "+1.10"
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S_{peak,\,rec.}/{rms\,noise}" \
+                ylabel="\Large N" \
+                xlog=true \
+                ylog=true \
+                ymin=0.6 ymax=2e6 \
+                \
+                layer1=histogram \
+                thick1=1 \
+                barform1=semi_filled \
+                color1="blue" \
+                transparency1=0 \
+                binsize1="$binsize" \
+                in1="$OutputDir/datatable_original_image_fitting.SNR_peak.txt" \
+                ifmt1=ascii \
+                leglabel1='recovered \ in \ original \ images' \
+                x1="SNR_peak" \
+                \
+                layer2=histogram \
+                thick2=1 \
+                barform2=semi_filled \
+                color2="red" \
+                transparency2=0 \
+                binsize2="$binsize" \
+                in2="$OutputDir/datatable_inverted_image_fitting.SNR_peak.txt" \
+                ifmt2=ascii \
+                leglabel2='recovered \ in \ inverted \ images' \
+                x2="SNR_peak" \
+                \
+                legpos=0.08,0.94 \
+                seq='1,2' \
+                fontsize=16 \
+                texttype=latex \
+                aspect=1.0 \
+                omode=out \
+                out="$OutputDir/Plot_SNR_histogram_for_spurious.pdf"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+fi
+if [[ ! -f "$OutputDir/Plot_SNR_histogram_for_spurious.pdf" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/Plot_SNR_histogram_for_spurious.pdf\"!"
+    exit
+fi
+
+
+# 
+# Make histogram
+# 
+if [[ ! -f "$OutputDir/Plot_SNR_total_histogram_for_spurious.pdf" ]]; then
+    margin=(80 50 20 20) # left, bottom, right, top
+    binsize="+1.20" # "+1.10"
+    topcat -stilts plot2plane \
+                xpix=500 ypix=400 \
+                insets="${margin[3]},${margin[0]},${margin[1]},${margin[2]}" \
+                xlabel="\Large S/N_{total,\,rec.}" \
+                ylabel="\Large N" \
+                xlog=true \
+                ylog=true \
+                ymin=0.6 ymax=2e6 \
+                \
+                layer1=histogram \
+                thick1=1 \
+                barform1=semi_filled \
+                color1="blue" \
+                transparency1=0 \
+                binsize1="$binsize" \
+                in1="$OutputDir/datatable_original_image_fitting.SNR_total.txt" \
+                ifmt1=ascii \
+                leglabel1='recovered \ in \ original \ images' \
+                x1="SNR_total" \
+                \
+                layer2=histogram \
+                thick2=1 \
+                barform2=semi_filled \
+                color2="red" \
+                transparency2=0 \
+                binsize2="$binsize" \
+                in2="$OutputDir/datatable_inverted_image_fitting.SNR_total.txt" \
+                ifmt2=ascii \
+                leglabel2='recovered \ in \ inverted \ images' \
+                x2="SNR_total" \
+                \
+                legpos=0.08,0.94 \
+                seq='1,2' \
+                fontsize=16 \
+                texttype=latex \
+                aspect=1.0 \
+                omode=out \
+                out="$OutputDir/Plot_SNR_total_histogram_for_spurious.pdf"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-usage.html
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/plot2plane-examples.html
+fi
+if [[ ! -f "$OutputDir/Plot_SNR_total_histogram_for_spurious.pdf" ]]; then
+    echo "Error! Failed to read the input catalog and output \"$OutputDir/Plot_SNR_total_histogram_for_spurious.pdf\"!"
+    exit
+fi
+
+# 
+# Copy supermongo macro
+# 
+cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-inverted-image-spurious-analysis-tools/analyze_spurious_curve.sm "$OutputDir/"
+cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-inverted-image-spurious-analysis-tools/fit_spurious_curve.py "$OutputDir/"
+
+cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-inverted-image-spurious-analysis-tools/analyze_spurious_curve_with_SNR_total.sm "$OutputDir/"
+cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-inverted-image-spurious-analysis-tools/fit_spurious_curve_with_SNR_total.py "$OutputDir/"
+
+
+# 
+# Change dir to OutputDir
+# 
+cd "$OutputDir"
+
+
+# 
+# Run the code
+# 
+echo "macro read analyze_spurious_curve.sm analyze_spurious_curve" | sm | tee log_analyze_spurious_curve.txt
+echo "macro read analyze_spurious_curve_with_SNR_total.sm analyze_spurious_curve" | sm | tee log_analyze_spurious_curve_with_SNR_total.txt
+# In which, the python code "fit_spurious_curve.py" will be called. 
+
+#if [[ ! -f "datatable_spurious_fraction_cumulative.txt" ]] || \
+#    [[ ! -f "function_spurious_fraction_cumulative.txt" ]] || \
+#    [[ ! -f "function_spurious_fraction_cumulative.xyfit.txt" ]]; then
+#    echo "Error! Failed to run \"analyze_spurious_curve.sm\"! Sorry!"
+#    exit 1
+#fi
+
+echo "************"
+echo "macro read analyze_spurious_curve.sm calc_spurious" | sm | tee log_calc_spurious.txt
+
+echo "************"
+echo "macro read analyze_spurious_curve_with_SNR_total.sm calc_spurious" | sm | tee log_calc_spurious_with_SNR_total.txt
+
+
+# 
+# Print final message
+# 
+echo "************"
+echo "Output to \"$OutputDir\"!"
+#echo "Please then run \"macro read caap_prior_extraction_photometry_read_results.sm read_results\" in Supermongo!"
+#echo "Great! Finally! All done!"
+
+

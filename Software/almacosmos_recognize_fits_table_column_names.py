@@ -242,6 +242,15 @@ def recognize_beam_PA(input_str_list):
                                          )
 
 
+def recognize_pb_attenu(input_str_list):
+    print(input_str_list)
+    return match_str_list_to_pattern_list( input_str_list, 
+                                           [ '^(pb_attenu)$', 
+                                             '^(Pbcor)$', 
+                                           ]
+                                         )
+
+
 
 
 cat_file = ''
@@ -330,6 +339,7 @@ cols['simu_name'] = recognize_simu_name(col_names)
 cols['beam_Maj'] = recognize_beam_Maj(col_names)
 cols['beam_Min'] = recognize_beam_Min(col_names)
 cols['beam_PA'] = recognize_beam_PA(col_names)
+cols['pb_attenu'] = recognize_pb_attenu(col_names)
 #print(cols)
 
 

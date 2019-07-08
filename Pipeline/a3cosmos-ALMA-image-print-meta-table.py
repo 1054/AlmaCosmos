@@ -275,8 +275,8 @@ if __name__ == '__main__':
     k='POS11_DEC'   ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'degree'; output_table[k].format = '%0.8f'
     k='POS01_RA'    ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'degree'; output_table[k].format = '%0.8f'
     k='POS01_DEC'   ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'degree'; output_table[k].format = '%0.8f'
-    k='FoV_RA'      ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'degree'; output_table[k].format = '%0.8f'
-    k='FoV_DEC'     ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'degree'; output_table[k].format = '%0.8f'
+    k='FoV_RA'      ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'arcsec'; output_table[k].format = '%0.8f'
+    k='FoV_DEC'     ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'arcsec'; output_table[k].format = '%0.8f'
     k='PIXSC1'      ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'arcsec'; output_table[k].format = '%0.4f'
     k='PIXSC2'      ; output_table[k] = [t[k] for t in output_dicts]; output_table[k].unit = 'arcsec'; output_table[k].format = '%0.4f'
     print(output_table[['project','source','beam_major','beam_minor','beam_angle']])

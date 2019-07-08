@@ -1,0 +1,123 @@
+#!/bin/bash
+# 
+
+
+# 
+# Usage
+# 
+usage() {
+    echo ""
+    echo "Usage: "
+    echo "    a3cosmos-MC-simulation-spurious-analysis \"datatable_CrossMatched_all_matches.fits\""
+    echo "Input: "
+    echo "    The simulated+recovered catalog which contains \"S_in\", \"S_out\", \"flag_matched\", \"flag_nonmatched_missed\" columns"
+    echo "Output: "
+    echo "    A directory named \"Spurious/\""
+    echo ""
+}
+
+
+# 
+# Check supermongo and necessary files
+# 
+if [[ $(type sm 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Supermongo was not installed!"
+    exit 1
+fi
+if [[ $(echo "load astroSfig.sm" | sm 2>&1 | wc -l) -ne 0 ]]; then
+    echo "Error! Necessary Supermongo macros was not installed! Please download \"https://github.com/1054/DeepFields.SuperDeblending/Softwares/Supermongo_macro/*\" or contact liudz1054@gmail.com!"
+    exit 1
+fi
+if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not installed!"
+    exit 1
+fi
+if [[ ! -d $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools ]]; then
+    echo "Error! \""$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools"\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+    exit 1
+fi
+if [[ $(type almacosmos_cmd_args 2>/dev/null | wc -l) -eq 0 ]]; then
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    else
+        echo "Error! The download of this code from \"https://github.com/1054/AlmaCosmos.git\" in incomplete!"
+        exit 1
+    fi
+fi
+
+
+# 
+# Read Input cat
+# 
+InputCat="$1"
+
+
+# 
+# Set Output dir
+# 
+OutputDir="Spurious"
+if [[ $# -ge 2 ]]; then
+    if [[ x"$2" != x"-"* ]]; then
+        OutputDir="$2"
+    fi
+fi
+
+
+# 
+# Check output dir
+# 
+if [[ ! -d "$OutputDir" ]]; then
+    mkdir -p "$OutputDir"
+fi
+
+
+# 
+# Extract formatted data table
+# 
+if [[ "$InputCat" == *".fits" ]] || [[ "$InputCat" == *".FITS" ]]; then
+    InputFmt="fits"
+else
+    InputFmt="ascii"
+fi
+if [[ ! -f "$OutputDir/simu_data_input.txt" ]]; then
+    topcat -stilts tpipe \
+                in="$InputCat" \
+                ifmt="$InputFmt" \
+                cmd="select \"(S_peak/noise>=3.0)\"" \
+                cmd="keepcols \"ID S_in S_out e_S_out S_peak S_res noise Maj_in Min_in PA_in Maj_out Min_out PA_out Maj_beam Min_beam PA_beam pb_attenu image_file_STR simu_name_STR\"" \
+                ofmt=ascii \
+                out="$OutputDir/simu_data_input.txt"
+fi
+if [[ ! -f "$OutputDir/simu_data_input.txt" ]]; then
+    echo "Error! Failed to output \"$OutputDir/simu_data_input.txt\"!"
+    exit 1
+fi
+
+
+# 
+# Change dir to OutputDir
+# 
+cd "$OutputDir"
+
+
+# 
+# Run Python code
+# 
+echo "TODO"
+###$(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools/
+###cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools/analyze_spurious_curve.sm "$OutputDir/"
+###cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools/fit_spurious_curve.py "$OutputDir/"
+###
+###cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools/analyze_spurious_curve_with_SNR_total.sm "$OutputDir/"
+###cp $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analysis-tools/fit_spurious_curve_with_SNR_total.py "$OutputDir/"
+
+
+# 
+# Print final message
+# 
+echo "************"
+echo "Output to \"$OutputDir\"!"
+#echo "Please then run \"macro read caap_prior_extraction_photometry_read_results.sm read_results\" in Supermongo!"
+#echo "Great! Finally! All done!"
+
+

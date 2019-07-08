@@ -86,7 +86,8 @@ class CrabTable(object):
             # get file path
             self.DataTableFile = data_table
             # check file format
-            if data_table.endswith('.fits') or data_table.endswith('.FITS'):
+            if data_table.endswith('.fits') or data_table.endswith('.FITS') or \
+               data_table.endswith('.fits.gz') or data_table.endswith('.FITS.GZ'):
                 self.DataTableFormat = 'FITS'
             else:
                 self.DataTableFormat = 'ASCII'
