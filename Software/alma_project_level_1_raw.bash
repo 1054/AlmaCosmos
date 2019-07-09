@@ -72,6 +72,8 @@ $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "met
 
 # finish
 echo_output "Finished processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
+echo_output ""
+echo_output ""
 
 # 
 # common data directory structure:

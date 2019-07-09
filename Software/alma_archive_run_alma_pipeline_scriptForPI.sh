@@ -234,7 +234,7 @@ current_dir=$(pwd)
 
 
 # find "scriptForPI.py" files
-for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
+for (( i = 0; i < ${#list_of_input_dirs[@]}; i++ )); do
     # 
     # skip empty input dir
     if [[ x"${list_of_input_dirs[i]}" == x"" ]]; then

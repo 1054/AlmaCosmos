@@ -96,6 +96,8 @@ done
 
 # finish
 echo_output "Finished processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
+echo_output ""
+echo_output ""
 
 # 
 # common data directory structure:
