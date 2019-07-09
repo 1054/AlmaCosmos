@@ -253,7 +253,7 @@ for (( i = 0; i < ${#list_of_input_dirs[@]}; i++ )); do
         list_of_script_files=($(find "${list_of_input_dirs[i]}" -type f -name "member*.scriptForPI.py"))
     fi
     if [[ ${#list_of_script_files[@]} -eq 0 ]]; then
-        echo "Warning! Could not find any \"scriptForPI.py\" or \"member*.scriptForPI.py\"!"
+        echo "Warning! Could not find any \"scriptForPI.py\" or \"member*.scriptForPI.py\" under \"${list_of_input_dirs[i]}\"!"
     fi
     # 
     # loop "scriptForPI.py" file 
