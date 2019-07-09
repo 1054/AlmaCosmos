@@ -81,7 +81,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     $(dirname ${BASH_SOURCE[0]})/alma_archive_run_alma_pipeline_scriptForPI.sh "${dataset_dir}"
     
     # check output
-    if [[ ! -d "${dataset_dir}/calibrated" ]]; then
+    if [[ -d "${dataset_dir}/calibrated" ]]; then
         echo_output "Successfully produced \"${dataset_dir}/calibrated\"!"
     else
         echo_error "Error! Failed to produce \"${dataset_dir}/calibrated\"!"
