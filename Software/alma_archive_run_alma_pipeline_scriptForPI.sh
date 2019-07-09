@@ -241,19 +241,22 @@ for (( i = 0; i < ${#list_of_input_dirs[@]}; i++ )); do
         continue
     fi
     # 
+    # format dir path, remove trailing slash
+    input_dir=$(echo "${list_of_input_dirs[i]}" | perl -p -e 's%/$%%g')
+    # 
     # check input dir existance
-    if [[ ! -d "${list_of_input_dirs[i]}" ]] && [[ ! -L "${list_of_input_dirs[i]}" ]]; then
-        echo "Error! The input direcotry \"${list_of_input_dirs[i]}\" does not exist!"
+    if [[ ! -d "${input_dir}" ]] && [[ ! -L "${input_dir}" ]]; then
+        echo "Error! The input direcotry \"${input_dir}\" does not exist!"
         exit 1
     fi
     # 
     # find "scriptForPI.py" files
-    list_of_script_files=($(find "${list_of_input_dirs[i]}" -type f -name "scriptForPI.py"))
+    list_of_script_files=($(find "${input_dir}/" -type f -name "scriptForPI.py"))
     if [[ ${#list_of_script_files[@]} -eq 0 ]]; then
-        list_of_script_files=($(find "${list_of_input_dirs[i]}" -type f -name "member*.scriptForPI.py"))
+        list_of_script_files=($(find "${input_dir}/" -type f -name "member*.scriptForPI.py"))
     fi
     if [[ ${#list_of_script_files[@]} -eq 0 ]]; then
-        echo "Warning! Could not find any \"scriptForPI.py\" or \"member*.scriptForPI.py\" under \"${list_of_input_dirs[i]}\"!"
+        echo "Warning! Could not find any \"scriptForPI.py\" or \"member*.scriptForPI.py\" under \"${input_dir}/\"!"
     fi
     # 
     # loop "scriptForPI.py" file 
