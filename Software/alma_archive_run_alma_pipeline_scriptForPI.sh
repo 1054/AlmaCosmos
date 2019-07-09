@@ -252,6 +252,9 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
     if [[ ${#list_of_script_files[@]} -eq 0 ]]; then
         list_of_script_files=($(find "${list_of_input_dirs[i]}" -type f -name "member*.scriptForPI.py"))
     fi
+    if [[ ${#list_of_script_files[@]} -eq 0 ]]; then
+        echo "Warning! Could not find any \"scriptForPI.py\" or \"member*.scriptForPI.py\"!"
+    fi
     # 
     # loop "scriptForPI.py" file 
     for (( j = 0; j < ${#list_of_script_files[@]}; j++ )); do
@@ -272,6 +275,7 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
         check_and_extract_casa_version_in_readme_file "$script_dir"
         check_return_code=$?
         if [[ $check_return_code -lt 0 ]]; then
+            echo "check_and_extract_casa_version_in_readme_file FAILED!"
             exit 1 # got error when running the function, exit
         fi
         # 
@@ -280,6 +284,7 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
         check_and_concat_calibrated_ms "$script_dir"
         check_return_code=$?
         if [[ $check_return_code -lt 0 ]]; then
+            echo "check_and_concat_calibrated_ms FAILED!"
             exit 1 # got error when running the function, exit
         elif [[ $check_return_code -gt 0 ]]; then
             # 
@@ -298,9 +303,10 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             cd "$script_dir/script/"
             # 
             # source CASA with the version in README_CASA_VERSION file
+            echo "source \"$casa_setup_script_path\" \"../README_CASA_VERSION\""
             source "$casa_setup_script_path" "../README_CASA_VERSION"
             if [[ $(type casa 2>/dev/null | wc -l) -eq 0 ]]; then
-                echo "Error! CASA was not found!"
+                echo "Error! CASA was not found! source \"$casa_setup_script_path\" \"../README_CASA_VERSION\" FAILED!"
                 exit 1
             fi
             # 
@@ -308,11 +314,11 @@ for (( i=0; i<=${#list_of_input_dirs[@]}; i++ )); do
             # then run CASA
             if [[ $(find . -mindepth 1 -maxdepth 1 -type f -name "*_pipescript.py" | wc -l) -gt 0 ]] || \
                 [[ $(find . -mindepth 1 -maxdepth 1 -type f -name "*_piperestorescript.py" | wc -l) -gt 0 ]]; then
-                echo casa --pipeline -c "execfile('$script_name')"
-                casa --pipeline -c "execfile('$script_name')"
+                echo casa --pipeline --nogui --log2term -c "execfile('$script_name')"
+                casa --pipeline --nogui --log2term -c "execfile('$script_name')"
             else
-                echo casa -c "execfile('$script_name')"
-                casa -c "execfile('$script_name')"
+                echo casa --nogui --log2term -c "execfile('$script_name')"
+                casa --nogui --log2term -c "execfile('$script_name')"
             fi
             # 
             # cd back
