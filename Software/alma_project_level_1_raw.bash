@@ -6,8 +6,7 @@
 #source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
 
 
-# read input Project_code
-
+# read input Project_code and meta user info (see usage)
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
     echo "    alma_project_level_1_raw.bash Project_code"
@@ -17,20 +16,45 @@ if [[ $# -eq 0 ]]; then
     echo "    If the data is proprietary, please input --user XXX"
     exit
 fi
-
 Project_code="$1"
+
 shift
 
 if [[ $# -gt 0 ]]; then
     echo "$@" >> "meta_user_info.txt"
 fi
 
+# define global variables
+error_log_file=".$(basename ${BASH_SOURCE[0]}).err"
+output_log_file=".$(basename ${BASH_SOURCE[0]}).log"
+if [[ -f "$error_log_file" ]]; then mv "$error_log_file" "$error_log_file.2"; fi
+if [[ -f "$output_log_file" ]]; then mv "$output_log_file" "$output_log_file.2"; fi
+
+# define functions
+echo_output()
+{
+    echo "["$(date "+%Y%m%dT%H%M%S")"]" $@ | tee -a "$output_log_file"
+}
+
+echo_error()
+{
+    echo "*************************************************************"
+    echo "["$(date "+%Y%m%dT%H%M%S")"]" $@ | tee -a "$error_log_file"
+    echo "*************************************************************"
+}
+
+# begin
+echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
+
+# query ALMA archive and prepare meta data table
 if [[ ! -f "alma_archive_query_by_project_code_${Project_code}.txt" ]]; then
+    echo_output "Querying ALMA archive by running following command: "
+    echo_output "alma_archive_query_by_project_code.py $Project_code $@"
     $(dirname ${BASH_SOURCE[0]})/alma_archive_query_by_project_code.py "$Project_code" $@
 fi
 
 if [[ ! -f "alma_archive_query_by_project_code_${Project_code}.txt" ]]; then
-    echo "Error! Sorry! Failed to run the code! Maybe you do not have the Python package \"astroquery\" or \"keyrings.alt\"?"
+    echo_error "Error! Sorry! Failed to run the code! Maybe you do not have the Python package \"astroquery\" or \"keyrings.alt\"?"
     exit 255
 fi
 
@@ -40,9 +64,12 @@ if [[ ! -f "meta_data_table.txt" ]]; then
 fi
 
 # now creating data directory structure
-echo "Now creating data directory structure"
+echo_output "Now creating data directory structure"
 echo $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt"
 $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt"
+
+# finish
+echo_output "Finished processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
 
 # 
 # common data directory structure:
