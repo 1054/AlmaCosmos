@@ -33,13 +33,15 @@ if [[ -f "$output_log_file" ]]; then mv "$output_log_file" "$output_log_file.2";
 # define functions
 echo_output()
 {
-    echo "["$(date "+%Y%m%dT%H%M%S")"]" $@ | tee -a "$output_log_file"
+    echo "$@"
+    echo "["$(date "+%Y%m%dT%H%M%S")"]" "$@" >> "$output_log_file"
 }
 
 echo_error()
 {
     echo "*************************************************************"
-    echo "["$(date "+%Y%m%dT%H%M%S")"]" $@ | tee -a "$error_log_file"
+    echo "$@"
+    echo "["$(date "+%Y%m%dT%H%M%S")"]" "$@" >> "$error_log_file"
     echo "*************************************************************"
 }
 
