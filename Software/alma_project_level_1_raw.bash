@@ -24,13 +24,12 @@ if [[ $# -gt 0 ]]; then
     echo "$@" >> "meta_user_info.txt"
 fi
 
-# define global variables
+# define logging files and functions
 error_log_file=".$(basename ${BASH_SOURCE[0]}).err"
 output_log_file=".$(basename ${BASH_SOURCE[0]}).log"
 if [[ -f "$error_log_file" ]]; then mv "$error_log_file" "$error_log_file.2"; fi
 if [[ -f "$output_log_file" ]]; then mv "$output_log_file" "$output_log_file.2"; fi
 
-# define functions
 echo_output()
 {
     echo "$@"
@@ -42,6 +41,7 @@ echo_error()
     echo "*************************************************************"
     echo "$@"
     echo "["$(date "+%Y%m%dT%H%M%S")"]" "$@" >> "$error_log_file"
+    echo "["$(date "+%Y%m%dT%H%M%S")"]" "$@" >> "$output_log_file"
     echo "*************************************************************"
 }
 
@@ -80,6 +80,8 @@ echo_output ""
 # Level_1_Raw
 # Level_2_Calib
 # Level_3_Split
-# Level_4_uvt
-# Level_5_uvfit
-# Level_6_Sci
+# Level_4_Data_uvfits
+# Level_4_Data_uvt
+# Level_4_Run_clean
+# Level_4_Run_uvfit
+# Level_5_Sci

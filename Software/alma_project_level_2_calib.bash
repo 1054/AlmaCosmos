@@ -18,13 +18,12 @@ if [[ $# -eq 0 ]]; then
 fi
 Project_code="$1"
 
-# define global variables
+# define logging files and functions
 error_log_file=".$(basename ${BASH_SOURCE[0]}).err"
 output_log_file=".$(basename ${BASH_SOURCE[0]}).log"
 if [[ -f "$error_log_file" ]]; then mv "$error_log_file" "$error_log_file.2"; fi
 if [[ -f "$output_log_file" ]]; then mv "$output_log_file" "$output_log_file.2"; fi
 
-# define functions
 echo_output()
 {
     echo "$@"
@@ -36,6 +35,7 @@ echo_error()
     echo "*************************************************************"
     echo "$@"
     echo "["$(date "+%Y%m%dT%H%M%S")"]" "$@" >> "$error_log_file"
+    echo "["$(date "+%Y%m%dT%H%M%S")"]" "$@" >> "$output_log_file"
     echo "*************************************************************"
 }
 
@@ -67,6 +67,7 @@ if [[ ! -d Level_2_Calib ]]; then
     exit 255
 fi
 
+
 # read Level_2_Calib/DataSet_*
 list_of_datasets=($(ls -1d Level_2_Calib/DataSet_* | sort -V))
 
@@ -77,8 +78,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     
     # run pipelines
     echo_output "Now running ALMA calibration pipeline for \"${dataset_dir}\""
-    echo_output "$(dirname ${BASH_SOURCE[0]})/alma_archive_run_alma_pipeline_scriptForPI.sh ${dataset_dir} | tee \".alma_archive_run_alma_pipeline_scriptForPI.log\""
-    $(dirname ${BASH_SOURCE[0]})/alma_archive_run_alma_pipeline_scriptForPI.sh "${dataset_dir}" | tee ".alma_archive_run_alma_pipeline_scriptForPI.log"
+    echo_output "$(dirname ${BASH_SOURCE[0]})/alma_archive_run_alma_pipeline_scriptForPI.sh ${dataset_dir} > \".alma_archive_run_alma_pipeline_scriptForPI.log\""
+    $(dirname ${BASH_SOURCE[0]})/alma_archive_run_alma_pipeline_scriptForPI.sh "${dataset_dir}" > ".alma_archive_run_alma_pipeline_scriptForPI.log"
     
     # check output
     if [[ -d "${dataset_dir}/calibrated" ]]; then
@@ -104,6 +105,8 @@ echo_output ""
 # Level_1_Raw
 # Level_2_Calib
 # Level_3_Split
-# Level_4_uvt
-# Level_5_uvfit
-# Level_6_Sci
+# Level_4_Data_uvfits
+# Level_4_Data_uvt
+# Level_4_Run_clean
+# Level_4_Run_uvfit
+# Level_5_Sci
