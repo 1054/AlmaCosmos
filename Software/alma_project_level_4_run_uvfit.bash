@@ -41,8 +41,10 @@ echo_error()
     echo "*************************************************************"
 }
 
+
 # begin
 echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
+
 
 # check CASA
 if [[ $(type casa 2>/dev/null | wc -l) -eq 0 ]]; then
@@ -50,23 +52,13 @@ if [[ $(type casa 2>/dev/null | wc -l) -eq 0 ]]; then
     exit 255
 fi
 
+
 # check meta data table file
 if [[ ! -f "meta_data_table.txt" ]]; then
     echo_error "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"
     exit 255
 fi
 
-# check Level_2_Calib folder
-if [[ ! -d Level_2_Calib ]]; then 
-    echo_error "Error! \"Level_2_Calib\" does not exist! Please run previous steps first!"
-    exit 255
-fi
-
-# check Level_3_Split folder
-if [[ ! -d Level_3_Split ]]; then 
-    echo_error "Error! \"Level_3_Split\" does not exist! Please run previous steps first!"
-    exit 255
-fi
 
 # check Level_4_Data_uvt folder
 if [[ ! -d Level_4_Data_uvt ]]; then 
@@ -75,15 +67,16 @@ if [[ ! -d Level_4_Data_uvt ]]; then
 fi
 
 
-# read Level_2_Calib/DataSet_*
+# read Level_4_Data_uvt/DataSet_*
 list_of_datasets=($(ls -1d Level_4_Data_uvt/DataSet_* | sort -V))
 
 
 # prepare Level_4_Run_uvfit folder
 if [[ ! -d Level_4_Run_uvfit ]]; then 
+    echo_output "mkdir Level_4_Run_uvfit"
     mkdir Level_4_Run_uvfit
 fi
-echo_output cd Level_4_Run_uvfit
+echo_output "cd Level_4_Run_uvfit"
 cd Level_4_Run_uvfit
 
 
@@ -93,41 +86,81 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     DataSet_dir=$(basename ${list_of_datasets[i]})
     
     # print message
-    echo_output "Now sorting out unique sources in \"${DataSet_dir}\" and copying *.uvt"
+    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying *.uvt"
     
-    # check Level_4_Data_uvt DataSet_dir
-    if [[ ! -d ../Level_4_Data_uvt/$DataSet_dir ]]; then
-        echo_error "Error! \"../Level_4_Data_uvt/$DataSet_dir\" was not found! Please run Level_4_Data_uvt first! We will skip this dataset for now."
+    # check Level_4_Data_uvt subdirectories
+    list_of_source_names=($(ls -1d ../Level_4_Data_uvt/$DataSet_dir/* ) )
+    if [[ ${#list_of_source_names[@]} -eq 0 ]]; then
+        echo_error "Error! \"../Level_4_Data_uvt/$DataSet_dir/\" does not contain any subdirectories?! Please run Level_4_Data_uvt first! We will skip this dataset for now."
         continue
     fi
     
     # prepare Level_4_Run_uvfit DataSet_dir
     if [[ ! -d $DataSet_dir ]]; then
+        echo_output "mkdir $DataSet_dir"
         mkdir $DataSet_dir
     fi
-    echo_output cd $DataSet_dir
+    echo_output "cd $DataSet_dir"
     cd $DataSet_dir
     
-    # read source names
-    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+_SP.uvt$%\1%g' | sort -V))
-    if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
-        echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt\" and get unique source names!"
-        exit 255
-    fi
-    
-    # loop list_of_unique_source_names and make dir for each source and copy uvt files
-    for (( j = 0; j < ${#list_of_unique_source_names[@]}; j++ )); do
-        source_name=${list_of_unique_source_names[j]}
+    # loop list_of_source_names and make dir for each source and copy uvt files
+    for (( j = 0; j < ${#list_of_source_names[@]}; j++ )); do
+        
+        # prepare source_name and create source_name directory
+        source_name=${list_of_source_names[j]}
         if [[ ! -d "${source_name}" ]]; then
-            echo_output mkdir "${source_name}"
+            echo_output "mkdir ${source_name}"
             mkdir "${source_name}"
         fi
-        echo_output cp ../../Level_4_Data_uvt/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
-        cp ../../Level_4_Data_uvt/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
+        echo_output "cd ${source_name}"
+        cd "${source_name}"
+        
+        # find and loop uvt files
+        list_of_uvt_files=($(ls -1 ../../../Level_4_Data_uvt/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt))
+        for (( k = 0; k < ${#list_of_uvt_files[@]}; k++ )); do
+            
+            # prepare uvt file name and output name
+            uvt_filepath="${list_of_uvt_files[k]}"
+            uvt_filename=$(basename "${list_of_uvt_files[k]}" | perl -p -e 's/\.(uvt|UVT)$//g')
+            uvt_outdir=$(basename "$uvt_filename" | sed -e 's/^split_/run_uvfit_/g')
+            uvt_outname=$(basename "$uvt_filename" | sed -e 's/^split_/uvfit_/g')
+            
+            # link uvt file
+            echo_output "ln -fsT $uvt_filepath $uvt_filename.uvt"
+            ln -fsT "$uvt_filepath" "$uvt_filename.uvt"
+            
+            # create working directory
+            if [[ ! -d "$uvt_outdir" ]]; then
+                echo_output "mkdir $uvt_outdir"
+                mkdir "$uvt_outdir"
+            fi
+            echo_output "cd $uvt_outdir"
+            cd "$uvt_outdir"
+            
+            # link uvt file with a simpler file name
+            if [[ ! -f "input.uvt" ]] && [[ ! -L "input.uvt" ]]; then
+                echo_output "ln -fsT ../$uvt_filename.uvt input.uvt"
+                ln -fsT "../$uvt_filename.uvt" "input.uvt"
+            fi
+            
+            # run uvfit
+            if [[ ! -f output_point_model_varied_pos ]]; then
+                echo_output "pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos"
+                pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos
+            fi
+            
+            # cd back, out of working dir "$uvt_outdir"
+            echo_output "cd ../"
+            cd ../
+        done
+        
+        # cd back, out of "${source_name}" dir
+        echo_output "cd ../"
+        cd ../
     done
     
     # cd back
-    echo_output cd ../
+    echo_output "cd ../"
     cd ../
     
     # print message
@@ -139,7 +172,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
 done
 
 
-echo_output cd ../
+echo_output "cd ../"
 cd ../
 
 

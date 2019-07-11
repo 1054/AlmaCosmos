@@ -41,8 +41,10 @@ echo_error()
     echo "*************************************************************"
 }
 
+
 # begin
 echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
+
 
 # check CASA
 if [[ ! -d "$HOME/Softwares/CASA" ]]; then
@@ -57,6 +59,7 @@ if [[ ! -f "$HOME/Softwares/CASA/SETUP.bash" ]]; then
 fi
 casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
 
+
 # check GILDAS
 if [[ $(type mapping 2>/dev/null | wc -l) -eq 0 ]]; then
     # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
@@ -68,6 +71,7 @@ if [[ $(type mapping 2>/dev/null | wc -l) -eq 0 ]]; then
         exit 1
     fi
 fi
+
 
 # check Crab.Toolkit.PdBI
 if [[ $(type casa-ms-split 2>/dev/null | wc -l) -eq 0 ]]; then
@@ -81,11 +85,13 @@ if [[ $(type casa-ms-split 2>/dev/null | wc -l) -eq 0 ]]; then
     fi
 fi
 
+
 # check meta table
 if [[ ! -f "meta_data_table.txt" ]]; then
     echo_error "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"
     exit 255
 fi
+
 
 # check Level_2_Calib folder
 if [[ ! -d Level_2_Calib ]]; then 
@@ -197,6 +203,8 @@ echo_output ""
 # Level_1_Raw
 # Level_2_Calib
 # Level_3_Split
-# Level_4_uvt
-# Level_5_uvfit
-# Level_6_Sci
+# Level_4_Data_uvfits
+# Level_4_Data_uvt
+# Level_4_Run_clean
+# Level_4_Run_uvfit
+# Level_5_Sci

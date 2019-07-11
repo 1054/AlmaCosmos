@@ -39,8 +39,10 @@ echo_error()
     echo "*************************************************************"
 }
 
+
 # begin
 echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
+
 
 # check CASA
 if [[ ! -d "$HOME/Softwares/CASA" ]]; then
@@ -55,11 +57,13 @@ if [[ ! -f "$HOME/Softwares/CASA/SETUP.bash" ]]; then
 fi
 casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
 
+
 # check meta table
 if [[ ! -f "meta_data_table.txt" ]]; then
     echo_error "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"
     exit 255
 fi
+
 
 # check Level_2_Calib folder
 if [[ ! -d Level_2_Calib ]]; then 
@@ -95,10 +99,12 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     
 done
 
+
 # finish
 echo_output "Finished processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
 echo_output ""
 echo_output ""
+
 
 # 
 # common data directory structure:

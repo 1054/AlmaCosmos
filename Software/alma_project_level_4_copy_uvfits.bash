@@ -41,17 +41,17 @@ echo_error()
     echo "*************************************************************"
 }
 
+
+# begin
+echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
+
+
 # check meta data table file
 if [[ ! -f "meta_data_table.txt" ]]; then
     echo_error "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"
     exit 255
 fi
 
-# check Level_2_Calib folder
-if [[ ! -d Level_2_Calib ]]; then 
-    echo_error "Error! \"Level_2_Calib\" does not exist! Please run previous steps first!"
-    exit 255
-fi
 
 # check Level_3_Split folder
 if [[ ! -d Level_3_Split ]]; then 
@@ -60,8 +60,8 @@ if [[ ! -d Level_3_Split ]]; then
 fi
 
 
-# read Level_2_Calib/DataSet_*
-list_of_datasets=($(ls -1d Level_2_Calib/DataSet_* | sort -V))
+# read Level_3_Split/DataSet_*
+list_of_datasets=($(ls -1d Level_3_Split/DataSet_* | sort -V))
 
 
 # prepare Level_4_Data_uvfits folder
@@ -78,7 +78,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     DataSet_dir=$(basename ${list_of_datasets[i]})
     
     # print message
-    echo_output "Now sorting out unique sources in \"${DataSet_dir}\" and copying *.uvfits"
+    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying *.uvfits"
     
     # check Level_3_Split DataSet_dir
     if [[ ! -d ../Level_3_Split/$DataSet_dir ]]; then
@@ -94,7 +94,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     cd $DataSet_dir
     
     # read source names
-    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+.uvfits$%\1%g' | sort -V))
+    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+.uvfits$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
         echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits\" and get unique source names!"
         exit 255
@@ -112,7 +112,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     done
     
     # cd back
-    echo_output cd ../
+    echo_output "cd ../"
     cd ../
     
     # print message
@@ -124,7 +124,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
 done
 
 
-echo_output cd ../
+echo_output "cd ../"
 cd ../
 
 

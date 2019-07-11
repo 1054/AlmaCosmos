@@ -45,8 +45,10 @@ echo_error()
     echo "*************************************************************"
 }
 
+
 # begin
 echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
+
 
 # query ALMA archive and prepare meta data table
 if [[ ! -f "alma_archive_query_by_project_code_${Project_code}.txt" ]]; then
@@ -65,15 +67,18 @@ if [[ ! -f "meta_data_table.txt" ]]; then
        "meta_data_table.txt"
 fi
 
+
 # now creating data directory structure
 echo_output "Now creating data directory structure"
 echo $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt"
 $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt"
 
+
 # finish
 echo_output "Finished processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
 echo_output ""
 echo_output ""
+
 
 # 
 # common data directory structure:
