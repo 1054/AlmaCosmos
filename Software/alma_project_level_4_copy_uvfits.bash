@@ -14,7 +14,7 @@ if [[ $# -eq 0 ]]; then
     echo "Example: "
     echo "    alma_project_level_4_copy_uvfits.bash 2013.1.00034.S"
     echo "Notes: "
-    echo "    This code will copy uvfits files from Level_3_Split to Level_4_Data_uvfits"
+    echo "    This code will copy uvfits files from \"Level_3_Split\" to \"Level_4_Data_uvfits\" classified by source names."
     exit
 fi
 

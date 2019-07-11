@@ -13,7 +13,7 @@ if [[ $# -eq 0 ]]; then
     echo "Example: "
     echo "    alma_project_level_2_calib.bash 2013.1.00034.S"
     echo "Notes: "
-    echo "    "
+    echo "    This code will call CASA to apply the ALMA pipeline calibration for all datasets in the meta data table."
     exit
 fi
 Project_code="$1"

@@ -46,13 +46,6 @@ echo_error()
 echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
 
 
-# check CASA
-if [[ $(type casa 2>/dev/null | wc -l) -eq 0 ]]; then
-    echo_error "Error! casa is not executable! Please check the \$PATH!"
-    exit 255
-fi
-
-
 # check meta data table file
 if [[ ! -f "meta_data_table.txt" ]]; then
     echo_error "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"

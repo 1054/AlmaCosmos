@@ -14,7 +14,7 @@ if [[ $# -eq 0 ]]; then
     echo "Example: "
     echo "    alma_project_level_3_split.bash 2013.1.00034.S"
     echo "Notes: "
-    echo "    "
+    echo "    This code will call CASA to split each observing source into an individual measurement set for all datasets in the meta data table."
     exit
 fi
 

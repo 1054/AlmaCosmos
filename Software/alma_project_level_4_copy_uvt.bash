@@ -14,7 +14,7 @@ if [[ $# -eq 0 ]]; then
     echo "Example: "
     echo "    alma_project_level_4_copy_uvt.bash 2013.1.00034.S"
     echo "Notes: "
-    echo "    This code will copy uvt files from Level_3_Split to Level_4_Data_uvt"
+    echo "    This code will copy uvt files from \"Level_3_Split\" to \"Level_4_Data_uvt\" classified by source names."
     exit
 fi
 
@@ -44,13 +44,6 @@ echo_error()
 
 # begin
 echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
-
-
-# check CASA
-if [[ $(type casa 2>/dev/null | wc -l) -eq 0 ]]; then
-    echo_error "Error! casa is not executable! Please check the \$PATH!"
-    exit 255
-fi
 
 
 # check meta data table file

@@ -13,6 +13,7 @@ if [[ $# -eq 0 ]]; then
     echo "Example: "
     echo "    alma_project_level_1_raw.bash 2013.1.00034.S"
     echo "Notes: "
+    echo "    This code will use astroquery to query and download raw ALMA data for the input project code."
     echo "    If the data is proprietary, please input --user XXX"
     exit
 fi
