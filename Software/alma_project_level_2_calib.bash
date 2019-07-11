@@ -19,8 +19,8 @@ fi
 Project_code="$1"
 
 # define logging files and functions
-error_log_file=".$(basename ${BASH_SOURCE[0]}).err"
-output_log_file=".$(basename ${BASH_SOURCE[0]}).log"
+error_log_file="$(pwd)/.$(basename ${BASH_SOURCE[0]}).err"
+output_log_file="$(pwd)/.$(basename ${BASH_SOURCE[0]}).log"
 if [[ -f "$error_log_file" ]]; then mv "$error_log_file" "$error_log_file.2"; fi
 if [[ -f "$output_log_file" ]]; then mv "$output_log_file" "$output_log_file.2"; fi
 
