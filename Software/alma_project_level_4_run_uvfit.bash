@@ -119,11 +119,11 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     DataSet_dir=$(basename ${list_of_datasets[i]})
     
     # print message
-    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying *.uvt"
+    echo_output "Now looping sources in \"$DataSet_dir\""
     
     # check Level_4_Data_uvt subdirectories
-    list_of_source_names=($(ls -1d ../Level_4_Data_uvt/$DataSet_dir/* ) )
-    if [[ ${#list_of_source_names[@]} -eq 0 ]]; then
+    list_of_source_dirs=($(ls -1d ../Level_4_Data_uvt/$DataSet_dir/* ) )
+    if [[ ${#list_of_source_dirs[@]} -eq 0 ]]; then
         echo_error "Error! \"../Level_4_Data_uvt/$DataSet_dir/\" does not contain any subdirectories?! Please run Level_4_Data_uvt first! We will skip this dataset for now."
         continue
     fi
@@ -136,11 +136,11 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     echo_output "cd $DataSet_dir"
     cd $DataSet_dir
     
-    # loop list_of_source_names and make dir for each source and copy uvt files
-    for (( j = 0; j < ${#list_of_source_names[@]}; j++ )); do
+    # loop list_of_source_dirs and make dir for each source and copy uvt files
+    for (( j = 0; j < ${#list_of_source_dirs[@]}; j++ )); do
         
         # prepare source_name and create source_name directory
-        source_name=${list_of_source_names[j]}
+        source_name=$(basname ${list_of_source_dirs[j]})
         if [[ ! -d "${source_name}" ]]; then
             echo_output "mkdir ${source_name}"
             mkdir "${source_name}"
