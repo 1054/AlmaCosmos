@@ -74,13 +74,13 @@ fi
 
 
 # check Crab.Toolkit.PdBI
-if [[ $(type casa-ms-split 2>/dev/null | wc -l) -eq 0 ]]; then
+if [[ $(type pdbi-uvt-go-uvfit 2>/dev/null | wc -l) -eq 0 ]]; then
     # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
     if [[ -d "$HOME/Cloud/Github/Crab.Toolkit.PdBI" ]] && [[ -f "$HOME/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash" ]]; then
         source "$HOME/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash"
     else
         # if not executable in the command line, nor in "$HOME/Softwares/GILDAS/", report error.
-        echo_error "Error! \"casa-ms-split\" is not executable in the command line! Please check your \$PATH!"
+        echo_error "Error! \"pdbi-uvt-go-uvfit\" is not executable in the command line! Please check your \$PATH!"
         exit 1
     fi
 fi
