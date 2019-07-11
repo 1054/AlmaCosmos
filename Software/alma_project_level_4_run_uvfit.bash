@@ -149,7 +149,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         cd "${source_name}"
         
         # find and loop uvt files
-        list_of_uvt_files=($(ls -1 ../../../Level_4_Data_uvt/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt))
+        list_of_uvt_files=($(ls -1 ../../../Level_4_Data_uvt/"$DataSet_dir"/"${source_name}"/split_"${source_name}"_spw*_width*_SP.uvt))
         for (( k = 0; k < ${#list_of_uvt_files[@]}; k++ )); do
             
             # prepare uvt file name and output name
