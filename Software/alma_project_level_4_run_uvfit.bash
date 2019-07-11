@@ -140,7 +140,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     for (( j = 0; j < ${#list_of_source_dirs[@]}; j++ )); do
         
         # prepare source_name and create source_name directory
-        source_name=$(basname ${list_of_source_dirs[j]})
+        source_name=$(basename ${list_of_source_dirs[j]})
         if [[ ! -d "${source_name}" ]]; then
             echo_output "mkdir ${source_name}"
             mkdir "${source_name}"
