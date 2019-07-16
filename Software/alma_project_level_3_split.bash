@@ -46,6 +46,18 @@ echo_error()
 echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
 
 
+# check GNU coreutils
+if [[ $(uname -s) == "Darwin" ]]; then
+    if [[ $(type gln 2>/dev/null | wc -l) -eq 0 ]]; then
+        echo_error "Error! We need GNU ln! Please install \"coreutils\" via MacPorts or HomeBrew!"
+        exit 1
+    fi
+    cmd_ln=gln
+else
+    cmd_ln=ln
+fi
+
+
 # check CASA
 if [[ ! -d "$HOME/Softwares/CASA" ]]; then
     echo_error "Error! \"$HOME/Softwares/CASA\" was not found!" \
@@ -143,8 +155,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     cd $DataSet_dir
     
     # link Level_2_Calib calibrated.ms to Level_3_Split calibrated.ms
-    echo_output "ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms"
-    ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms
+    echo_output "$cmd_ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms"
+    $cmd_ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms
     
     # copy CASA version readme file
     echo_output "cp ../../Level_2_Calib/$DataSet_dir/README_CASA_VERSION README_CASA_VERSION"

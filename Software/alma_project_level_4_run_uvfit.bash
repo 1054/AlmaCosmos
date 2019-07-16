@@ -60,6 +60,18 @@ echo_output "Began processing ALMA project ${Project_code} with $(basename ${BAS
 #casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
 
 
+# check GNU coreutils
+if [[ $(uname -s) == "Darwin" ]]; then
+    if [[ $(type gln 2>/dev/null | wc -l) -eq 0 ]]; then
+        echo_error "Error! We need GNU ln! Please install \"coreutils\" via MacPorts or HomeBrew!"
+        exit 1
+    fi
+    cmd_ln=gln
+else
+    cmd_ln=ln
+fi
+
+
 # check GILDAS
 if [[ $(type mapping 2>/dev/null | wc -l) -eq 0 ]]; then
     # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
@@ -159,8 +171,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             uvt_outname=$(basename "$uvt_filename" | sed -e 's/^split_/uvfit_/g')
             
             # link uvt file
-            echo_output "ln -fsT $uvt_filepath $uvt_filename.uvt"
-            ln -fsT "$uvt_filepath" "$uvt_filename.uvt"
+            echo_output "$cmd_ln -fsT $uvt_filepath $uvt_filename.uvt"
+            $cmd_ln -fsT "$uvt_filepath" "$uvt_filename.uvt"
             
             # create working directory
             if [[ ! -d "$uvt_outdir" ]]; then
@@ -172,14 +184,28 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             
             # link uvt file with a simpler file name
             if [[ ! -f "input.uvt" ]] && [[ ! -L "input.uvt" ]]; then
-                echo_output "ln -fsT ../$uvt_filename.uvt input.uvt"
-                ln -fsT "../$uvt_filename.uvt" "input.uvt"
+                echo_output "$cmd_ln -fsT ../$uvt_filename.uvt input.uvt"
+                $cmd_ln -fsT "../$uvt_filename.uvt" "input.uvt"
             fi
             
             # run uvfit
-            if [[ ! -f output_point_model_varied_pos ]]; then
-                echo_output "pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos"
-                pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos
+            if [[ ! -f output_point_model_fixed_pos.result.obj_1.txt ]]; then
+                echo_output "pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -fixedpos -out output_point_model_fixed_pos > output_point_model_fixed_pos.run.log"
+                pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -fixedpos -out output_point_model_fixed_pos > output_point_model_fixed_pos.run.log
+                if [[ ! -f output_point_model_fixed_pos.result.obj_1.txt ]]; then
+                    echo_error "Error! Failed to run pdbi-uvt-go-uvfit! Please check $(pwd)/\"output_point_model_fixed_pos.run.log\"!"
+                    exit 2
+                fi
+            fi
+            
+            # run uvfit
+            if [[ ! -f output_point_model_varied_pos.result.obj_1.txt ]]; then
+                echo_output "pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos > output_point_model_varied_pos.run.log"
+                pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos > output_point_model_varied_pos.run.log
+                if [[ ! -f output_point_model_varied_pos.result.obj_1.txt ]]; then
+                    echo_error "Error! Failed to run pdbi-uvt-go-uvfit! Please check $(pwd)/\"output_point_model_varied_pos.run.log\"!"
+                    exit 2
+                fi
             fi
             
             # cd back, out of working dir "$uvt_outdir"
