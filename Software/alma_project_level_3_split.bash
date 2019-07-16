@@ -27,10 +27,10 @@ select_dataset=()
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
     if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
-        iarg=$((iarg+1)); width="${!arg}"
+        iarg=$((iarg+1)); width="${!iarg}"
     fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
-        iarg=$((iarg+1)); select_dataset+=("${!arg}")
+        iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting \"${!iarg}\""
     fi
     iarg=$((iarg+1))
 done
