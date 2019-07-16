@@ -10,7 +10,7 @@
 
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
-    echo "    alma_project_level_3_split.bash Project_code"
+    echo "    alma_project_level_3_split.bash Project_code [-width 2] [-dataset DataSet_01]"
     echo "Example: "
     echo "    alma_project_level_3_split.bash 2013.1.00034.S"
     echo "Notes: "
@@ -19,6 +19,21 @@ if [[ $# -eq 0 ]]; then
 fi
 
 Project_code="$1"
+
+# read user input
+iarg=1
+width=2
+select_dataset=()
+while [[ $iarg -le $# ]]; do
+    istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
+    if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); width="${!arg}"
+    fi
+    if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); select_dataset+=("${!arg}")
+    fi
+    iarg=$((iarg+1))
+done
 
 # define logging files and functions
 error_log_file="$(pwd)/.$(basename ${BASH_SOURCE[0]}).err"
@@ -113,7 +128,19 @@ fi
 
 
 # read Level_2_Calib/DataSet_*
-list_of_datasets=($(ls -1d Level_2_Calib/DataSet_* | sort -V))
+if [[ ${#select_dataset[@]} -eq 0 ]]; then
+    # if user has not input -dataset, then process all datasets
+    list_of_datasets=($(ls -1d Level_2_Calib/DataSet_* | sort -V))
+else
+    list_of_datasets=()
+    for (( i = 0; i < ${#select_dataset[@]}; i++ )); do
+        if [[ ! -d "Level_2_Calib/${select_dataset[i]}" ]]; then
+            echo "Error! \"Level_2_Calib/${select_dataset[i]}\" was not found!"
+            exit
+        fi
+        list_of_datasets+=($(ls -1d "Level_2_Calib/${select_dataset[i]}"))
+    done
+fi
 
 
 # prepare Level_3_Split folder
@@ -177,14 +204,14 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     fi
     
     # run CASA split, this will split each spw for all sources in the data (calibrated measurement set)
-    if [[ $(find . -maxdepth 1 -type f -name "split_*_width2_SP.uvt" | wc -l) -eq 0 ]]; then
-        echo_output "casa-ms-split -vis calibrated.ms -width 2 -timebin 30 -step split exportuvfits gildas | tee .casa-ms-split.log"
-        casa-ms-split -vis calibrated.ms -width 2 -timebin 30 -step split exportuvfits gildas | tee .casa-ms-split.log
+    if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width}_SP.uvt" | wc -l) -eq 0 ]]; then
+        echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -step split exportuvfits gildas | tee .casa-ms-split.log"
+        casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -step split exportuvfits gildas | tee .casa-ms-split.log
     else
-        echo_output "Warning! Found split_*_width2_SP.uvt files! Will not re-run casa-ms-split!"
+        echo_output "Warning! Found split_*_width${width}_SP.uvt files! Will not re-run casa-ms-split!"
     fi
-    if [[ $(find . -maxdepth 1 -type f -name "split_*_width2_SP.uvt" | wc -l) -eq 0 ]]; then
-        echo_error "Error! casa-ms-split -vis calibrated.ms -width 2 -timebin 30 -step split exportuvfits gildas FAILED!"
+    if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width}_SP.uvt" | wc -l) -eq 0 ]]; then
+        echo_error "Error! casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -step split exportuvfits gildas FAILED!"
     fi
     
     # cd back
