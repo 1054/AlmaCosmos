@@ -101,12 +101,12 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         if [[ ! -f "${uvfits_file}.check.blank.channels.txt" ]]; then
             echo_output "casa_uvfits_check_blank_channels.py" "${uvfits_file}" "|" "tee" "${uvfits_file}.check.blank.channels.txt"
             casa_uvfits_check_blank_channels.py "${uvfits_file}" | tee "${uvfits_file}.check.blank.channels.txt"
-            if [[ $(cat "${uvfits_file}.check.blank.channels.txt" | grep "Found * blank channels" | wc -l) -gt 0 ]]; then
-                echo_output "Checked ${uvfits_file}, and found some blank channels."
-            else
-                rm "${uvfits_file}.check.blank.channels.txt" # if no blank channel found then we output nothing
-                echo_output "Checked ${uvfits_file}, no blank channel."
-            fi
+        fi
+        if [[ $(cat "${uvfits_file}.check.blank.channels.txt" | grep "Found * blank channels" | wc -l) -gt 0 ]]; then
+            echo_output "Checked ${uvfits_file}, and found some blank channels."
+        else
+            rm "${uvfits_file}.check.blank.channels.txt" # if no blank channel found then we output nothing
+            echo_output "Checked ${uvfits_file}, no blank channel."
         fi
     done
     
