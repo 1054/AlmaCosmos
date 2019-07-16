@@ -75,7 +75,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     DataSet_dir=$(basename ${list_of_datasets[i]})
     
     # print message
-    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying *.uvfits"
+    echo_output "Now checking *.uvfits files in \"$DataSet_dir\"."
     
     # check Level_3_Split DataSet_dir
     if [[ ! -d $DataSet_dir ]]; then
@@ -97,11 +97,13 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     # loop uvfits files and check blank channels
     for (( j = 0; j < ${#list_of_uvfits_files[@]}; j++ )); do
         uvfits_file=${list_of_uvfits_files[j]}
+        echo_output "Checking ${uvfits_file}"
         if [[ ! -f "${uvfits_file}.check.blank.channels.txt" ]]; then
             echo_output "casa_uvfits_check_blank_channels.py" "${uvfits_file}" "|" "tee" "${uvfits_file}.check.blank.channels.txt"
             casa_uvfits_check_blank_channels.py "${uvfits_file}" | tee "${uvfits_file}.check.blank.channels.txt"
             if [[ $(cat "${uvfits_file}.check.blank.channels.txt" | grep "No blank channel found" | wc -l) -gt 0 ]]; then
                 rm "${uvfits_file}.check.blank.channels.txt" # if no blank channel found then we output nothing
+                echo_output "Checked ${uvfits_file}, no blank channel."
             fi
         fi
     done
