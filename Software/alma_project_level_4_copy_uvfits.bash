@@ -10,7 +10,7 @@
 
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
-    echo "    alma_project_level_4_copy_uvfits.bash Project_code"
+    echo "    alma_project_level_4_copy_uvfits.bash Project_code [-dataset DataSet_01]"
     echo "Example: "
     echo "    alma_project_level_4_copy_uvfits.bash 2013.1.00034.S"
     echo "Notes: "
@@ -18,7 +18,18 @@ if [[ $# -eq 0 ]]; then
     exit
 fi
 
-Project_code="$1"
+Project_code="$1"; shift
+
+# read user input
+iarg=1
+select_dataset=()
+while [[ $iarg -le $# ]]; do
+    istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
+    if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting \"${!iarg}\""
+    fi
+    iarg=$((iarg+1))
+done
 
 # define logging files and functions
 error_log_file="$(pwd)/.$(basename ${BASH_SOURCE[0]}).err"
@@ -61,7 +72,19 @@ fi
 
 
 # read Level_3_Split/DataSet_*
-list_of_datasets=($(ls -1d Level_3_Split/DataSet_* | sort -V))
+if [[ ${#select_dataset[@]} -eq 0 ]]; then
+    # if user has not input -dataset, then process all datasets
+    list_of_datasets=($(ls -1d Level_3_Split/DataSet_* | sort -V))
+else
+    list_of_datasets=()
+    for (( i = 0; i < ${#select_dataset[@]}; i++ )); do
+        if [[ ! -d "Level_3_Split/${select_dataset[i]}" ]]; then
+            echo "Error! \"Level_3_Split/${select_dataset[i]}\" was not found!"
+            exit
+        fi
+        list_of_datasets+=($(ls -1d "Level_3_Split/${select_dataset[i]}"))
+    done
+fi
 
 
 # prepare Level_4_Data_uvfits folder

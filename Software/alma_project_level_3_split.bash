@@ -18,7 +18,7 @@ if [[ $# -eq 0 ]]; then
     exit
 fi
 
-Project_code="$1"
+Project_code="$1"; shift
 
 # read user input
 iarg=1
