@@ -97,7 +97,7 @@ DEC = float(sys.argv[2])
 #<20180314>#else:
 #<20180314>#    FITS_META_TABLE = asciitable.read(sys.argv[len(sys.argv)-1]) # header_start=0, data_start=2
 #<20180314>#    FITS_META_TABLE_COLNAMES = FITS_META_TABLE.colnames
-sys.path.append(os.path.dirname(os.path.abspath(__file__)+os.sep+'lib_python_dzliu'+os.sep+'crabtable'))
+sys.path.append(os.path.dirname(os.path.abspath(__file__))+os.sep+'lib_python_dzliu'+os.sep+'crabtable')
 from CrabTable import CrabTable
 FITS_META_TABLE_STRUCT = CrabTable(sys.argv[len(sys.argv)-1])
 FITS_META_TABLE = FITS_META_TABLE_STRUCT.TableData
@@ -124,6 +124,14 @@ FITS_META_TABLE_COLNAMES = FITS_META_TABLE_STRUCT.TableHeaders
 # 
 # Intersect
 
+if (not ('cen_ra' in FITS_META_TABLE.colnames)) and ('CENRA' in FITS_META_TABLE.colnames):
+    FITS_META_TABLE['cen_ra'] = FITS_META_TABLE['CENRA']
+if (not ('cen_dec' in FITS_META_TABLE.colnames)) and ('CENDEC' in FITS_META_TABLE.colnames):
+    FITS_META_TABLE['cen_dec'] = FITS_META_TABLE['CENDEC']
+if (not ('FoV_ra' in FITS_META_TABLE.colnames)) and ('FoV_RA' in FITS_META_TABLE.colnames):
+    FITS_META_TABLE['FoV_ra'] = FITS_META_TABLE['FoV_RA']
+if (not ('FoV_dec' in FITS_META_TABLE.colnames)) and ('FoV_DEC' in FITS_META_TABLE.colnames):
+    FITS_META_TABLE['FoV_dec'] = FITS_META_TABLE['FoV_DEC']
 
 cen_ra = numpy.array(FITS_META_TABLE['cen_ra']).astype(numpy.float64)
 cen_dec = numpy.array(FITS_META_TABLE['cen_dec']).astype(numpy.float64)

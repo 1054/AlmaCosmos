@@ -24,12 +24,6 @@ fi
 if [[ -f "Output_Prior_Galfit_Gaussian_Condon_errors.txt" ]]; then
     mv "Output_Prior_Galfit_Gaussian_Condon_errors.txt" "Output_Prior_Galfit_Gaussian_Condon_errors.txt.backup"
 fi
-if [[ -f "Output_Prior_Galfit_Sersic_main_result.txt" ]]; then
-    mv "Output_Prior_Galfit_Sersic_main_result.txt" "Output_Prior_Galfit_Sersic_main_result.txt.backup"
-fi
-if [[ -f "Output_Prior_Galfit_Sersic_Condon_errors.txt" ]]; then
-    mv "Output_Prior_Galfit_Sersic_Condon_errors.txt" "Output_Prior_Galfit_Sersic_Condon_errors.txt.backup"
-fi
 if [[ -f "Output_Prior_Getpix_000.txt" ]]; then
     mv "Output_Prior_Getpix_000.txt" "Output_Prior_Getpix_000.txt.backup"
 fi
@@ -143,7 +137,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     cd "Recovered/$FitsName/"
     
     
-    # find Gaussian fitting flux
+    # find
     IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.all.txt"))
     echo "Reading ${#ResultFiles[@]} \"fit_2.result.all.txt\" files"
     
@@ -159,25 +153,7 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
         tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "$OutputPath/Output_Prior_Galfit_Gaussian_main_result.txt"
     done
     
-    
-    # find Sersic n=1 fitting flux
-    IFS=$'\n' ResultFiles=($(find . -name "fit_3.result.all.txt"))
-    echo "Reading ${#ResultFiles[@]} \"fit_3.result.all.txt\" files"
-    
-    # loop
-    for (( k=0; k<${#ResultFiles[@]}; k++ )); do
-        TempRect=$(echo $(basename $(dirname "${ResultFiles[k]}")))
-        TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
-        TempImage="$FitsName"
-        #echo "$TempImage $TempSimu (main_result)"
-        if [[ ! -f "$OutputPath/Output_Prior_Galfit_Sersic_main_result.txt" ]]; then
-            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "$OutputPath/Output_Prior_Galfit_Sersic_main_result.txt"
-        fi
-        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "$OutputPath/Output_Prior_Galfit_Sersic_main_result.txt"
-    done
-    
-    
-    # find Gaussian fitting error
+    # find
     IFS=$'\n' ResultFiles=($(find . -name "fit_2.result.source_err.txt"))
     echo "Reading ${#ResultFiles[@]} \"fit_2.result.source_err.txt\" files"
     
@@ -194,25 +170,8 @@ for (( i=0; i<${#FitsNames[@]}; i++ )); do
     done
     
     
-    # find Sersic n=1 fitting error
-    IFS=$'\n' ResultFiles=($(find . -name "fit_3.result.source_err.txt"))
-    echo "Reading ${#ResultFiles[@]} \"fit_3.result.source_err.txt\" files"
     
-    # loop
-    for (( k=0; k<${#ResultFiles[@]}; k++ )); do
-        TempRect=$(echo $(basename $(dirname "${ResultFiles[k]}")))
-        TempSimu=$(echo $(dirname $(dirname $(dirname "${ResultFiles[k]}"))) | sed -e 's%^\./%%g')
-        TempImage="$FitsName"
-        #echo "$TempImage $TempSimu (Condon_errors)"
-        if [[ ! -f "$OutputPath/Output_Prior_Galfit_Sersic_Condon_errors.txt" ]]; then
-            head -n 1 "${ResultFiles[k]}" | sed -e "s/$/      Rect      Simu      Image/g" >> "$OutputPath/Output_Prior_Galfit_Sersic_Condon_errors.txt"
-        fi
-        tail -n +3 "${ResultFiles[k]}" | sed -e "s/$/      $TempRect      $TempSimu      $TempImage/g" >> "$OutputPath/Output_Prior_Galfit_Sersic_Condon_errors.txt"
-    done
-    
-    
-    
-    # find getpix
+    # find
     IFS=$'\n' ResultFiles=($(find . -name "getpix.txt"))
     echo "Reading ${#ResultFiles[@]} \"getpix.txt\" files"
     
