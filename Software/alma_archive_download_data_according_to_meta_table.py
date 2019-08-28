@@ -125,7 +125,7 @@ for i in range(len(meta_table)):
     # Member_ous_id = result['Member ous id']
     #Member_ous_id = 'uid://A001/X148/X119'
     Member_ous_id = meta_table['Member_ous_id'][i]
-    Member_ous_name = Alma.clean_uid(Member_ous_id) # alternative to: Member_ous_id.replace(':','_').replace('/','_').replace('+','_')
+    Member_ous_name = Member_ous_id.replace(':','_').replace('/','_').replace('+','_') # alternative?: Alma.clean_uid(Member_ous_id)
     Output_name = 'alma_archive_download_tar_files_by_Mem_ous_id_%s'%(Member_ous_name)
     # 
     # check previous runs
