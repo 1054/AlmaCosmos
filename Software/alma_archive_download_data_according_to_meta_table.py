@@ -125,7 +125,7 @@ for i in range(len(meta_table)):
     # Member_ous_id = result['Member ous id']
     #Member_ous_id = 'uid://A001/X148/X119'
     Member_ous_id = meta_table['Member_ous_id'][i]
-    Member_ous_name = Member_ous_id.replace(':','_').replace('/','_').replace('+','_')
+    Member_ous_name = Alma.clean_uid(Member_ous_id) # alternative to: Member_ous_id.replace(':','_').replace('/','_').replace('+','_')
     Output_name = 'alma_archive_download_tar_files_by_Mem_ous_id_%s'%(Member_ous_name)
     # 
     # check previous runs
@@ -162,7 +162,7 @@ for i in range(len(meta_table)):
     # login
     if Login_user_name != '':
         print('Logging in as ALMA User "%s"'%(Login_user_name))
-        Alma.login(Login_user_name, store_password=True)
+        Alma.login(Login_user_name, store_password = True, reenter_password = False)
     
     print('Staging data for Member ObservingUnitSet ID "%s"'%(Member_ous_id))
     uid_url_table = Alma.stage_data(Member_ous_id)
@@ -175,38 +175,50 @@ for i in range(len(meta_table)):
     os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s.log'%(Output_name))
     os.system('echo "%s %s" >> %s.log'%(sys.argv[0], sys.argv[1], Output_name))
     
-    for i in range(len(uid_url_table)):
-        if i == 0:
-            os.system('echo "#!/bin/bash" > %s.sh'%(Output_name)) # creating new file
+    Use_Shell = True
+    if Use_Shell:
+        for i in range(len(uid_url_table)):
+            if i == 0:
+                os.system('echo "#!/bin/bash" > %s.sh'%(Output_name)) # creating new file
+                os.system('echo "" >> %s.sh'%(Output_name))
+                os.system('echo "set -e" >> %s.sh'%(Output_name))
+                os.system('echo "" >> %s.sh'%(Output_name))
+                os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]), Output_name))
+                if Login_user_name != '':
+                    os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
+                    os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
+                    os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \" > /dev/tty" >> %s.sh'%(Login_user_name, Output_name))
+                    os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
+                    os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
+                    os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Output_name))
+                else:
+                    os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
+                    os.system('echo "export INPUT_PASSWORD=\\\"\\\"" >> %s.sh'%(Output_name))
+            # 
             os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo "set -e" >> %s.sh'%(Output_name))
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]), Output_name))
-            if Login_user_name != '':
-                os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
-                os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
-                os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \" > /dev/tty" >> %s.sh'%(Login_user_name, Output_name))
-                os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
-                os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
-                os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Output_name))
-            else:
-                os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
-                os.system('echo "export INPUT_PASSWORD=\\\"\\\"" >> %s.sh'%(Output_name))
-        # 
-        os.system('echo "" >> %s.sh'%(Output_name))
-        # 
-        os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'], Output_name))
-        # 
-        if i == len(uid_url_table)-1:
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name, Output_name))
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('chmod +x %s.sh'%(Output_name))
-        # 
-    print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
-    print('Running "%s.sh >> %s.log" in terminal!'%(Output_name, Output_name))
+            # 
+            os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'], Output_name))
+            # 
+            if i == len(uid_url_table)-1:
+                os.system('echo "" >> %s.sh'%(Output_name))
+                os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name, Output_name))
+                os.system('echo "" >> %s.sh'%(Output_name))
+                os.system('chmod +x %s.sh'%(Output_name))
+            # 
+        print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
+        print('Running "%s.sh >> %s.log" in terminal!'%(Output_name, Output_name))
+        
+        os.system('%s.sh >> %s.log'%(Output_name, Output_name))
+        
+        #--> Calling Alma repeatedly causes cache problem. 
+        
+        Alma.__init__()
     
-    os.system('%s.sh >> %s.log'%(Output_name, Output_name))
+    else:
+        
+        Alma.retrieve_data_from_uid(Member_ous_id, cache = False)
+        
+        
     
     # check log file <TODO>
     #with open('%s.log'%(Output_name), 'r') as fp:

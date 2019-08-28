@@ -32,7 +32,7 @@ if [[ $(type topcat 2>/dev/null | wc -l) -eq 0 ]]; then
     exit 1
 fi
 if [[ $(type almacosmos_convert_ascii_table_to_ds9_region_file 2>/dev/null | wc -l) -eq 0 ]]; then
-    AlmaCosmos_Setup_Script="$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash"
+    AlmaCosmos_Setup_Script="$(dirname $(dirname ${BASH_SOURCE[0]}))/Software/SETUP.bash"
     if [[ -f "$AlmaCosmos_Setup_Script" ]]; then
         source "$AlmaCosmos_Setup_Script"
     else
@@ -94,8 +94,8 @@ export LANG=en_US.UTF-8
 # Software dependency
 # 
 #if [[ $(type almacosmos_get_fits_image_pixel_histogram.py 2>/dev/null | wc -l) -eq 0 ]]; then
-#    if [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash" ]]; then
-#        source "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash"
+#    if [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Software/SETUP.bash" ]]; then
+#        source "$(dirname $(dirname ${BASH_SOURCE[0]}))/Software/SETUP.bash"
 #    else
 #        echo "Error! \"almacosmos_get_fits_image_pixel_histogram.py\" was not found in \$PATH!"
 #        exit

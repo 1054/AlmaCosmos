@@ -21,11 +21,11 @@ fi
 # 
 # Check software dependancies
 # 
-if [[ -f $(dirname "${BASH_SOURCE[0]}")"/../Softwares/SETUP.bash" ]]; then
-    ALMACOSMOS_SETUP_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}")"/../Softwares/"; pwd)"/SETUP.bash"
+if [[ -f $(dirname "${BASH_SOURCE[0]}")"/../Software/SETUP.bash" ]]; then
+    ALMACOSMOS_SETUP_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}")"/../Software/"; pwd)"/SETUP.bash"
     source "$ALMACOSMOS_SETUP_SCRIPT"
 else
-    echo "Error! \"$(dirname "${BASH_SOURCE[0]}")"/../Softwares/SETUP.bash"\" was not found! Please clone the entire package from \"https://github.com/1054/AlmaCosmos\" then re-run this pipeline!"
+    echo "Error! \"$(dirname "${BASH_SOURCE[0]}")"/../Software/SETUP.bash"\" was not found! Please clone the entire package from \"https://github.com/1054/AlmaCosmos\" then re-run this pipeline!"
     exit 1
 fi
 
@@ -832,7 +832,7 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
     # 
     #<20171221> fix negative image fitting mask problem
     echo  "cd \"$SourceDir/$SourceName/\""                                                                                     >> "$SourceDir/$SourceName.run.bash"
-    echo  "cp ~/Cloud/Github/AlmaCosmos/Softwares/astrodepth_prior_extraction_photometry_go_galfit.sm astrodepth_go_galfit.sm" >> "$SourceDir/$SourceName.run.bash"
+    echo  "cp ~/Cloud/Github/AlmaCosmos/Software/astrodepth_prior_extraction_photometry_go_galfit.sm astrodepth_go_galfit.sm" >> "$SourceDir/$SourceName.run.bash"
     echo  "echo \"macro read astrodepth_go_galfit.sm go_fix_bug_20171221\" | sm | tee astrodepth_go_fix_bug_20171221.log"      >> "$SourceDir/$SourceName.run.bash"
     echo  "cd ../../"                                                                                                          >> "$SourceDir/$SourceName.run.bash"
     #

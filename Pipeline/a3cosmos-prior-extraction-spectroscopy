@@ -50,11 +50,11 @@ fi
 # 
 # Check a3cosmos-query-alma-data-by-radec.py
 if [[ $(type a3cosmos-query-alma-data-by-radec.py 2>/dev/null | wc -l) -eq 0 ]]; then
-    if [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash" ]] && [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Pipeline/SETUP.bash" ]]; then
-        source "$(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash"
+    if [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Software/SETUP.bash" ]] && [[ -f "$(dirname $(dirname ${BASH_SOURCE[0]}))/Pipeline/SETUP.bash" ]]; then
+        source "$(dirname $(dirname ${BASH_SOURCE[0]}))/Software/SETUP.bash"
         source "$(dirname $(dirname ${BASH_SOURCE[0]}))/Pipeline/SETUP.bash"
     else
-        echo "Error! $(dirname $(dirname ${BASH_SOURCE[0]}))/Softwares/SETUP.bash was not found?! The package from https://github.com/1054/AlmaCosmos is incomplete!"; exit 1
+        echo "Error! $(dirname $(dirname ${BASH_SOURCE[0]}))/Software/SETUP.bash was not found?! The package from https://github.com/1054/AlmaCosmos is incomplete!"; exit 1
     fi
 fi
 
@@ -364,7 +364,7 @@ for (( i = $((begin_id-1)); i < $end_id; i++ )); do
                     fi
                     temp_radec_deg=($(radec2degree ${temp_radec_str[@]}))
                     if [[ ${#temp_radec_deg[@]} -ne 2 ]]; then
-                        echo "Error! Failed to convert RA Dec ${temp_radec_str[@]} to degrees with the Crab.Toolkit.PdBI/Softwares/radec2degree code!"
+                        echo "Error! Failed to convert RA Dec ${temp_radec_str[@]} to degrees with the Crab.Toolkit.PdBI/bin/radec2degree code!"
                         exit 255
                     fi
                     temp_ra=${temp_radec_deg[0]}

@@ -1,0 +1,201 @@
+#!/bin/bash
+# 
+# Change history:
+#   2018-12-29 When selecting valid rows from "All_Columns" catalog to "Gaussian" or "Sersic" catalog, I was considering only "getpix_pixel_value!=0", but now I also consider "Origin_flux!=nan". 
+#              Note that due to the existence of "-nan" in "f_origin" column, I now express "Origin_flux" as "parseDouble(f_origin)". It was directly expressed as "f_origin" and wrongly being string type. 
+#              To evaluate "Origin_flux!=nan", we need to use the expression "Origin_flux==Origin_flux", because "NAN!=NAN". 
+#   2019-08-18 In cases where there are no "-nan" in "f_origin" column, "parseDouble" cause error... so I removed it now.
+# 
+# 
+
+set -e
+
+if [[ $(type topcat | wc -l) -eq 0 ]]; then
+    echo "Error! Topcat was not found!"
+    exit
+fi
+
+#use_Gaussian=1
+str_Date=$(date +"%Y-%m-%d") # "2017-12-10" # "2018-01-06" # 
+str_Fit="fit_2"
+str_Type="Gaussian"
+
+# Usage
+if [[ $# -eq 0 ]]; then
+    echo "Usage: "
+    echo "  This code will combine \"Read_Results_all_final_*.txt\" files which are produced by our prior fitting pipeline."
+    echo "  To run this code, please choose these options:"
+    echo "  $(basename ${BASH_SOURCE[0]}) -date 2018-01-06 -gaussian"
+    echo "  $(basename ${BASH_SOURCE[0]}) -date 2018-01-06 -gaussian -negative"
+    echo "  $(basename ${BASH_SOURCE[0]}) -date 2018-01-06 -sersic -negative"
+    exit
+fi
+
+# Read user-input date
+i=1
+while [[ i -le $# ]]; do
+    str_Cmd=$(echo "${!i}" | tr '[:upper:]' '[:lower:]' | sed -e 's%^--%-%g')
+    if [[ "${str_Cmd}" == "-date" ]]; then
+        i=$((i+1))
+        if [[ i -le $# ]]; then
+            str_Date="${!i}"
+        fi
+    elif [[ "${str_Cmd}" == "-gaussian" ]]; then
+        str_Fit=$(echo "${str_Fit}" | perl -p -e 's%(fit_)([n]*)([0-9]+)$%${1}${2}2%g')
+        str_Type=$(echo "${str_Type}" | perl -p -e 's%(negative_)*([a-zA-Z]+)$%${1}Gaussian%g')
+    elif [[ "${str_Cmd}" == "-sersic" ]]; then
+        str_Fit=$(echo "${str_Fit}" | perl -p -e 's%(fit_)([n]*)([0-9]+)$%${1}${2}3%g')
+        str_Type=$(echo "${str_Type}" | perl -p -e 's%(negative_)*([a-zA-Z]+)$%${1}Sersic%g')
+    elif [[ "${str_Cmd}" == "-original" ]]; then
+        str_Fit=$(echo "${str_Fit}" | perl -p -e 's%(fit_)([n]*)([0-9]+)$%${1}${3}%g')
+        str_Type=$(echo "${str_Type}" | perl -p -e 's%(negative_)*([a-zA-Z]+)$%${2}%g')
+    elif [[ "${str_Cmd}" == "-negative" ]]; then
+        str_Fit=$(echo "${str_Fit}" | perl -p -e 's%(fit_)([n]*)([0-9]+)$%${1}n${3}%g')
+        str_Type=$(echo "${str_Type}" | perl -p -e 's%(negative_)*([a-zA-Z]+)$%negative_${2}%g')
+    fi
+    i=$((i+1))
+done
+echo "Reading ${str_Fit} results and output ${str_Type}!"
+#exit
+
+# convert the data table, delete columns, convert all flux units to Jy or Jy/beam, and angular size units to degrees.
+#if [[ $use_Gaussian -eq 1 ]]; then
+    topcat -stilts tmatchn \
+                nin=4 \
+                in1="Read_Results_all_final_${str_Fit}.result.all.txt" \
+                icmd1="replacecol pix_noise -name \"pix_noise_1\" pix_noise" \
+                icmd1="replacecol pix_scale -name \"pix_scale_1\" pix_scale" \
+                icmd1="replacecol beam_area -name \"beam_area_1\" beam_area" \
+                icmd1="replacecol image_file -name \"image_file_1\" image_file" \
+                ifmt1=ascii \
+                values1="index" \
+                in2="Read_Results_all_final_${str_Fit}.result.source_err.txt" \
+                icmd2="delcols \"cat_index\"" \
+                icmd2="replacecol cat_id -name \"cat_id_2\" cat_id" \
+                icmd2="replacecol image_file -name \"image_file_2\" image_file" \
+                ifmt2=ascii \
+                values2="index" \
+                in3="Read_Results_all_final_${str_Fit}.result.source_area.txt" \
+                icmd3="delcols \"cat_index\"" \
+                icmd3="replacecol cat_id -name \"cat_id_3\" cat_id" \
+                icmd3="replacecol image_file -name \"image_file_3\" image_file" \
+                ifmt3=ascii \
+                values3="index" \
+                in4="Read_Results_all_final_${str_Fit}.result.flux_origin.txt" \
+                icmd4="delcols \"cat_index\"" \
+                icmd4="replacecol cat_id -name \"cat_id_4\" cat_id" \
+                icmd4="replacecol image_file -name \"image_file_4\" image_file" \
+                ifmt4=ascii \
+                values4="index" \
+                matcher=exact \
+                ofmt=fits \
+                ocmd="select \"(flag_buffer==0)\"" \
+                ocmd="addcol ID \"id_${str_Fit}_str\"" \
+                ocmd="addcol RA \"ra_${str_Fit}\"" \
+                ocmd="addcol Dec \"dec_${str_Fit}\"" \
+                ocmd="addcol Total_flux -units \"Jy\" \"source_total\"" \
+                ocmd="addcol E_Total_flux -units \"Jy\" \"source_total_err\"" \
+                ocmd="addcol Galfit_flux -units \"Jy\" \"f_${str_Fit}/1e3\"" \
+                ocmd="addcol E_Galfit_flux -units \"Jy\" \"df_${str_Fit}/1e3\"" \
+                ocmd="addcol Peak_flux -units \"Jy\" \"source_peak\"" \
+                ocmd="addcol E_Peak_flux -units \"Jy\" \"source_peak_err\"" \
+                ocmd="addcol Residual_flux -units \"Jy\" \"fres_${str_Fit}/1e3\"" \
+                ocmd="addcol Origin_flux -units \"Jy\" \"f_origin\"" \
+                ocmd="addcol Total_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3\"" \
+                ocmd="addcol Peak_RMS -units \"Jy/beam\" \"rms_${str_Fit}/1e3/flux_conv/sqrt(convol_area_in_pix)\"" \
+                ocmd="addcol RMS -units \"Jy/beam\" \"Peak_RMS\"" \
+                ocmd="addcol Total_SNR \"Total_flux/E_Total_flux\"" \
+                ocmd="addcol Peak_SNR \"Peak_flux/Peak_RMS\"" \
+                ocmd="addcol Maj_deconv -units \"degrees\" \"maj_${str_Fit}/3600.0\"" \
+                ocmd="addcol E_Maj_deconv -units \"degrees\" \"maj_err_${str_Fit}/3600.0\"" \
+                ocmd="addcol Min_deconv -units \"degrees\" \"min_${str_Fit}/3600.0\"" \
+                ocmd="addcol E_Min_deconv -units \"degrees\" \"min_err_${str_Fit}/3600.0\"" \
+                ocmd="addcol PA_deconv -units \"degrees\" \"PA_${str_Fit}/3600.0\"" \
+                ocmd="addcol E_PA_deconv -units \"degrees\" \"PA_err_${str_Fit}/3600.0\"" \
+                ocmd="addcol Pixel_noise -units \"Jy/beam\" \"pix_noise_1\"" \
+                ocmd="addcol Pixel_scale -units \"arcsec/pixel\" \"pix_scale_1\"" \
+                ocmd="addcol Beam_area -units \"square-arcsec\" \"beam_area_1\"" \
+                ocmd="addcol Obs_frequency -units \"GHz\" \"obs_freq\"" \
+                ocmd="addcol Obs_wavelength -units \"um\" \"obs_lambda\"" \
+                ocmd="addcol Pb_corr_pb_image \"pbcorr\"" \
+                ocmd="addcol Pb_corr_equation \"pb_corr\"" \
+                ocmd="addcol Galfit_chi_square \"chisq\"" \
+                ocmd="addcol Galfit_reduced_chi_square \"rchisq\"" \
+                ocmd="addcol Galfit_N_aperture_pixel \"n_aperpix\"" \
+                ocmd="addcol Galfit_N_free_parameter \"n_freepar\"" \
+                ocmd="addcol Flag_size_lower_boundary \"(abs(maj_${str_Fit}-1.0*Pixel_scale)<0.02)\"" \
+                ocmd="addcol Flag_size_upper_boundary \"(abs(maj_${str_Fit}-3.0)<0.02)\"" \
+                ocmd="addcol Flag_size_initial_guess \"(abs(maj_${str_Fit}-0.25)<0.02)\"" \
+                ocmd="addcol Flag_zero_galfit_flux_error \"(df_${str_Fit}==0)\"" \
+                ocmd="addcol Flag_zero_galfit_size_error \"(maj_${str_Fit}>0 && maj_err_${str_Fit}==0)\"" \
+                ocmd="addcol Image_file_name \"image_file_1\"" \
+                ocmd="addcol Image \"matches(image_file_1,\\\"(.*).cut_.*_.*_.*_.*\\\") ? matchGroup(image_file_1,\\\"(.*).cut_.*_.*_.*_.*\\\")+\\\".fits\\\" : image_file_1+\\\".fits\\\"\"" \
+                out="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits"
+                # http://www.star.bristol.ac.uk/~mbt/stilts/sun256/tmatchn-usage.html
+                # 
+                # converts all units to Jy, Jy/beam.
+                # 
+                # note: rms = pixnoise * fluxconv
+                # 
+    # 
+    echo "Output to \"A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits\"!"
+    # 
+    # 20180221 and_with_getpix
+    topcat -stilts tmatchn \
+                nin=3 \
+                in1="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns.fits" \
+                values1="ID Image_file_name" \
+                \
+                in2="Read_Results_all_final_getpix.result" ifmt2=ascii \
+                icmd2="keepcols \"cat_id image_file f_peak f_int rms_noise pb_corr\"" \
+                icmd2="replacecol cat_id -name \"cat_id_4\" \"cat_id\"" \
+                icmd2="replacecol image_file -name \"image_file_4\" \"image_file\"" \
+                icmd2="replacecol f_peak -name \"getpix_peak_flux\" -units \"Jy\" \"f_peak\"" \
+                icmd2="replacecol f_int -name \"getpix_total_flux\" -units \"Jy\" \"f_int\"" \
+                icmd2="replacecol rms_noise -name \"getpix_rms_noise\" -units \"Jy\" \"rms_noise\"" \
+                icmd2="replacecol pb_corr -name \"getpix_pb_corr\" \"pb_corr\"" \
+                values2="cat_id_4 image_file_4" \
+                \
+                in3="Read_Results_all_final_getpix.txt" ifmt3=ascii \
+                icmd3="keepcols \"cat_id image_file pix_000 pix_rad pix_scl\"" \
+                icmd3="replacecol cat_id -name \"cat_id_5\" \"cat_id\"" \
+                icmd3="replacecol image_file -name \"image_file_5\" \"image_file\"" \
+                icmd3="replacecol pix_000 -name \"getpix_pixel_value\" -units \"Jy/beam\" \"pix_000\"" \
+                icmd3="replacecol pix_rad -name \"getpix_aperture_radius\" -units \"pixel\" \"pix_rad\"" \
+                icmd3="replacecol pix_scl -name \"getpix_pixel_scale\" -units \"arcsec/pixel\" \"pix_scl\"" \
+                values3="cat_id_5 image_file_5" \
+                \
+                matcher="exact+exact" \
+                multimode=pairs \
+                iref=1 \
+                join1=always \
+                out="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns_and_with_getpix.fits"
+    # 
+    # 
+    topcat -stilts tpipe \
+                in="A-COSMOS_prior_${str_Date}_${str_Type}_All_columns_and_with_getpix.fits" \
+                cmd="select \"(getpix_pixel_value!=0 && Origin_flux==Origin_flux && Origin_flux!=0)\"" \
+                cmd="keepcols \"ID RA Dec Total_flux E_Total_flux Galfit_flux E_Galfit_flux Peak_flux E_Peak_flux Residual_flux Total_RMS Peak_RMS RMS Total_SNR Peak_SNR Maj_deconv E_Maj_deconv Min_deconv E_Min_deconv PA_deconv E_PA_deconv Pixel_noise Pixel_scale Beam_area Obs_frequency Obs_wavelength Pb_corr_pb_image Pb_corr_equation Galfit_chi_square Galfit_reduced_chi_square Galfit_N_aperture_pixel Galfit_N_free_parameter Flag_size_lower_boundary Flag_size_upper_boundary Flag_size_initial_guess Flag_zero_galfit_flux_error Flag_zero_galfit_size_error Image_file_name Image\"" \
+                out="A-COSMOS_prior_${str_Date}_${str_Type}.fits"
+    # 
+    echo "Output to \"A-COSMOS_prior_${str_Date}_${str_Type}.fits\"!"
+    # 
+    topcat -stilts tpipe \
+                in="A-COSMOS_prior_${str_Date}_${str_Type}.fits" \
+                cmd="select (Total_flux/E_Total_flux>=3.0)" \
+                out="A-COSMOS_prior_${str_Date}_${str_Type}_SNR_GE_3.fits"
+    # 
+    echo "Output to \"A-COSMOS_prior_${str_Date}_${str_Type}_SNR_GE_3.fits\"!"
+    # 
+    topcat -stilts tpipe \
+                in="A-COSMOS_prior_${str_Date}_${str_Type}.fits" \
+                cmd="select (Total_flux/E_Total_flux>=5.0)" \
+                out="A-COSMOS_prior_${str_Date}_${str_Type}_SNR_GE_5.fits"
+    # 
+    echo "Output to \"A-COSMOS_prior_${str_Date}_${str_Type}_SNR_GE_5.fits\"!"
+#fi
+
+
+
+
+

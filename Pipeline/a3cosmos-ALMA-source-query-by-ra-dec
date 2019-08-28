@@ -21,10 +21,10 @@ fi
 # Check code and necessary files
 # 
 if [[ $(type almacosmos_recognize_source_in_fits_meta_table.py 2>/dev/null | wc -l) -eq 0 ]]; then
-    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
-        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Software/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Software/SETUP.bash
     else
-        echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash"\" was not found! Please make sure you have downloaded this code from \"https://github.com/1054/AlmaCosmos.git\" completely!"
+        echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))/Software/SETUP.bash"\" was not found! Please make sure you have downloaded this code from \"https://github.com/1054/AlmaCosmos.git\" completely!"
         exit 1
     fi
 fi

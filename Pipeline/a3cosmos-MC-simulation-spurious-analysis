@@ -41,8 +41,8 @@ if [[ ! -f $(dirname "${BASH_SOURCE[0]}")/a3cosmos-MC-simulation-spurious-analys
     exit 1
 fi
 if [[ $(type almacosmos_cmd_args 2>/dev/null | wc -l) -eq 0 ]]; then
-    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash ]]; then
-        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Softwares/SETUP.bash
+    if [[ -f $(dirname $(dirname "${BASH_SOURCE[0]}"))/Software/SETUP.bash ]]; then
+        source $(dirname $(dirname "${BASH_SOURCE[0]}"))/Software/SETUP.bash
     else
         echo "Error! The download of this code from \"https://github.com/1054/AlmaCosmos.git\" in incomplete!"
         exit 1

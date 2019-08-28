@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 import os, sys, re, time, json, pkg_resources
+import numpy as np
 pkg_resources.require('astroquery')
 pkg_resources.require('keyrings.alt')
 import astroquery
@@ -18,14 +19,14 @@ from operator import itemgetter, attrgetter
 # 
 if len(sys.argv) <= 1:
     print('Usage: ')
-    print('    alma_archive_query_by_project_code.py "2013.1.00034.S" [--user yourusername]')
+    print('    alma_archive_query_by_galaxy_name.py "IRAS F17207-0014" [--user yourusername]')
     print('Notes:')
-    print('    The output will be a file named "alma_archive_query_by_project_code_2013.1.00034.S.txt"')
+    print('    The output will be a file named "alma_archive_query_by_galaxy_name.txt"')
     print('    If the data is proprietary, please input --user XXX"')
     print('    If we want to overwrite existing output file, please input --overwrite"')
     sys.exit()
 
-project_codes = []
+Galaxy_name = ''
 ALMA_user_name = ''
 overwrite = False
 output_full_table = True
@@ -40,29 +41,23 @@ while i < len(sys.argv):
     #elif sys.argv[i].lower() == '-full' or sys.argv[i].lower() == '--full': 
     #    output_full_table = True
     else:
-        project_codes.append(sys.argv[i])
+        Galaxy_name = sys.argv[i]
     i = i+1
-if len(project_codes) == 0:
-    print('Error! No project code given!')
+if Galaxy_name == '':
+    print('Error! No galaxy name given!')
     sys.exit()
 
 
-# 
-# deal with sys.path
-# 
-#print(sys.path)
-#sys.path.insert(0,os.path.dirname(os.path.abspath(sys.argv[0]))+'/Python/2.7/site-packages')
-#print(sys.path)
-#sys.exit()
-
-
 
 # 
-# loop inputs
+# <TODO> in the future we will allow multiple galaxy name input
 # 
-for project_code in project_codes:
+if True:
     
-    output_name = 'alma_archive_query_by_project_code_%s' % (project_code)
+    # 
+    # prepare output name and check output file
+    # 
+    output_name = 'alma_archive_query_by_galaxy_name'
     
     if (not os.path.isfile(output_name+'.txt')) or overwrite:
         
@@ -76,12 +71,16 @@ for project_code in project_codes:
             Query_public = False
             Has_login = True
         
+        
         # 
-        # query
+        # query by Galaxy_name
         # 
-        query_result = Alma.query(payload = {'project_code':project_code}, public = Query_public)
+        #query_result = Alma.query_region(orionkl, radius=0.034*u.deg)
+        #query_result = Alma.query_object(Galaxy_name)
+        #query_result = Alma.query_object(Galaxy_name, public=Query_public)
+        query_result = Alma.query(payload = {'source_name_resolver':Galaxy_name}, public = Query_public)
         query_datetime = datetime.today().strftime('%Y-%m-%d %H:%M:%S %Z')
-
+        
         #print(query_result) #<bug><20170926> directly print it can get error like "UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position"
         for colname in query_result.colnames:
             if colname == 'Proposal authors':
@@ -103,9 +102,9 @@ for project_code in project_codes:
         #print(query_result)
         #print(query_result.groups.keys)
         if len(query_result) == 0:
-            print('\nError! No result found for the input project_code %s!\n'% (project_code) )
-            continue
-            #sys.exit()
+            print('\nError! No result found for the input galaxy name %s!\n'% (Galaxy_name) )
+            #continue
+            sys.exit()
         
         # sort
         try:
@@ -129,9 +128,18 @@ for project_code in project_codes:
         
         
         # output selected columns
-        output_table = query_result[['Project code','Member ous id','Source name','Observation date','Integration','Band','Array','Mosaic']]
+        output_table = query_result[['Project code','Member ous id','Source name','Observation date','Integration','Band','Array','Mosaic','Frequency support','Field of view']]
         output_table['Observation date'] = [t.replace(' ','T') for t in output_table['Observation date']]
         output_table['Mosaic'] = [re.sub(r'^$',r'False',t) for t in output_table['Mosaic']]
+        output_table['Field of view'].format = '%.5g'
+        Frequency_list = []
+        for i in range(len(output_table)):
+            freq_support = output_table['Frequency support'][i]
+            freq_list = re.findall(r'\[([0-9.]+)\.\.([0-9.]+).GHz,.*?\]', freq_support)
+            freq_list = np.array(freq_list).flatten()
+            Frequency_list.append('"'+','.join(freq_list)+'"')
+        output_table['Frequency list'] = Frequency_list
+        output_table.remove_column('Frequency support')
         for colname in output_table.colnames:
             output_table.rename_column(colname, colname.replace(' ','_'))
         output_table.meta = None

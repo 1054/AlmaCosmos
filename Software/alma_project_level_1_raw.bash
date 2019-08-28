@@ -69,6 +69,12 @@ if [[ ! -f "meta_data_table.txt" ]]; then
 fi
 
 
+# now downloading raw data
+echo_output "Now downloading raw data (it can take several days!)"
+echo alma_archive_download_data_according_to_meta_table.py "meta_data_table.txt" -out "Level_1_Raw/${Project_code}.cache"
+alma_archive_download_data_according_to_meta_table.py "meta_data_table.txt" -out "Level_1_Raw/${Project_code}.cache"
+
+
 # now creating data directory structure
 echo_output "Now creating data directory structure"
 echo $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt"

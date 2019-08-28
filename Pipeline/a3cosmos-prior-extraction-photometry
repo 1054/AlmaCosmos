@@ -29,11 +29,11 @@ fi
 # 
 # Check software dependancies
 # 
-if [[ -f $(dirname "${BASH_SOURCE[0]}")"/../Softwares/SETUP.bash" ]]; then
-    ALMACOSMOS_SETUP_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}")"/../Softwares/"; pwd)"/SETUP.bash"
+if [[ -f $(dirname "${BASH_SOURCE[0]}")"/../Software/SETUP.bash" ]]; then
+    ALMACOSMOS_SETUP_SCRIPT=$(cd $(dirname "${BASH_SOURCE[0]}")"/../Software/"; pwd)"/SETUP.bash"
     source "$ALMACOSMOS_SETUP_SCRIPT"
 else
-    echo "Error! \"$(dirname "${BASH_SOURCE[0]}")"/../Softwares/SETUP.bash"\" was not found! Please clone the entire package from \"https://github.com/1054/AlmaCosmos\" then re-run this pipeline!"
+    echo "Error! \"$(dirname "${BASH_SOURCE[0]}")"/../Software/SETUP.bash"\" was not found! Please clone the entire package from \"https://github.com/1054/AlmaCosmos\" then re-run this pipeline!"
     exit 1
 fi
 

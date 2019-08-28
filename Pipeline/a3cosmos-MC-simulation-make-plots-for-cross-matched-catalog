@@ -18,15 +18,15 @@ function usage() {
 # 
 # Check necessary files
 # 
-if [[ ! -f $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/SETUP.bash" ]]; then
-    echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/SETUP.bash\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+if [[ ! -f $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Software/SETUP.bash" ]]; then
+    echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))"/Software/SETUP.bash\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 fi
-if [[ ! -f $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/almacosmos_cmd_args" ]]; then
-    echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/almacosmos_cmd_args\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
+if [[ ! -f $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Software/almacosmos_cmd_args" ]]; then
+    echo "Error! \""$(dirname $(dirname "${BASH_SOURCE[0]}"))"/Software/almacosmos_cmd_args\" was not found! Please make sure you have completely downloaded \"https://github.com/1054/AlmaCosmos.git\"!"
     exit 1
 fi
-source $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/SETUP.bash"
+source $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Software/SETUP.bash"
 
 
 # 
@@ -35,7 +35,7 @@ source $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/SETUP.bash"
 # if user input "-XXX YYY ZZZ" then the script will create a bash array 'almacosmos_cmd_XXX' with values (YYY ZZZ).
 # if user input "XXX YYY -ZZZ" then the script will create a bash array 'almacosmos_cmd_misc_args' with content (XXX YYY) and 'almacosmos_cmd_misc_opts' with content (-ZZZ)
 # 
-source $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Softwares/almacosmos_cmd_args" "$@"
+source $(dirname $(dirname "${BASH_SOURCE[0]}"))"/Software/almacosmos_cmd_args" "$@"
 if [[ ${#almacosmos_cmd_misc_args[@]} -eq 0 ]]; then
     usage
     exit
