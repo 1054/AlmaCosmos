@@ -35,7 +35,7 @@ fi
 
 # run CASA
 echo casa -c "import sys; sys.path.append(\"$script_dir\"); from $script_name import $script_name; $script_name(locals())"
-casa -c "import sys; sys.path.append(\"$script_dir\"); from $script_name import $script_name; $script_name(locals())"
+casa --nogui --nologger --log2term --nocrashreport -c "import sys; sys.path.append(\"$script_dir\"); from $script_name import $script_name; $script_name(locals())"
 
 
 # check result
