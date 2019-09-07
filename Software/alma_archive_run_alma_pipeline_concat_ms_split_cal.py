@@ -60,7 +60,7 @@ def alma_archive_run_alma_pipeline_concat_ms_split_cal(locals_dict):
     #    i = i + 1
     
     
-    
+    concat = locals_dict['concat']
     concat(vis = uid_dirs,
            concatvis = concatvis, 
            freqtol = freqtol)
