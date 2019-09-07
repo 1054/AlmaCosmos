@@ -29,7 +29,7 @@ except ImportError:
 # see catalog cross-matching by sky coordinate -- http://docs.astropy.org/en/stable/coordinates/matchsep.html
 
 
-script_to_get_pixel_histogram = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+os.sep+'Softwares'+os.sep+'a3cosmos_get_fits_image_pixel_histogram.py'
+script_to_get_pixel_histogram = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+os.sep+'Software'+os.sep+'a3cosmos_get_fits_image_pixel_histogram.py'
 
 
 

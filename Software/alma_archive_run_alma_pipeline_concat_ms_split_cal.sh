@@ -12,7 +12,8 @@ if [[ $# -eq 0 ]]; then
 fi
 
 
-script_path=$(dirname "${BASH_SOURCE[0]}")"/"$(basename "${BASH_SOURCE[0]}" | sed -e 's/\.sh$/\.py/g')
+script_dir=$(perl -MCwd -e 'print Cwd::abs_path shift' $(dirname "${BASH_SOURCE[0]}"))
+script_name=$(basename "${BASH_SOURCE[0]}" | sed -e 's/\.sh$//g')
 
 
 echo "cd \"$1\""
@@ -32,16 +33,8 @@ if [[ -d "calibrated.ms" ]] || [[ -d "calibrated.ms" ]]; then
 fi
 
 
-# read user input
-freqtol=""
-
-
 # run CASA
-if [[ "x$freqtol" != "x" ]]; then
-    casa -c "freqtol='$freqtol'; execfile('$script_path')"
-else
-    casa -c "execfile('$script_path')"
-fi
+casa -c "import sys; sys.path.append(\"$script_dir\"); from $script_name import $script_name; "
 
 
 # check result

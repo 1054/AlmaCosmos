@@ -6,6 +6,7 @@ import os, sys, re, time, json
 # pkg_resources
 #pkg_resources.require('astroquery')
 #pkg_resources.require('keyrings.alt')
+import keyring
 import astroquery
 import requests
 from astroquery.alma.core import Alma
@@ -177,41 +178,66 @@ for i in range(len(meta_table)):
     
     Use_Shell = True
     if Use_Shell:
-        for i in range(len(uid_url_table)):
-            if i == 0:
-                os.system('echo "#!/bin/bash" > %s.sh'%(Output_name)) # creating new file
-                os.system('echo "" >> %s.sh'%(Output_name))
-                os.system('echo "set -e" >> %s.sh'%(Output_name))
-                os.system('echo "" >> %s.sh'%(Output_name))
-                os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]), Output_name))
-                if Login_user_name != '':
-                    os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
-                    os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
-                    os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \" > /dev/tty" >> %s.sh'%(Login_user_name, Output_name))
-                    os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
-                    os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
-                    os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Output_name))
-                else:
-                    os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
-                    os.system('echo "export INPUT_PASSWORD=\\\"\\\"" >> %s.sh'%(Output_name))
-            # 
-            os.system('echo "" >> %s.sh'%(Output_name))
-            # 
-            os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'], Output_name))
-            # 
-            if i == len(uid_url_table)-1:
-                os.system('echo "" >> %s.sh'%(Output_name))
-                os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name, Output_name))
-                os.system('echo "" >> %s.sh'%(Output_name))
-                os.system('chmod +x %s.sh'%(Output_name))
-            # 
+        with open(Output_name+'.sh', 'w') as fp:
+            fp.write("#!/bin/bash\n")
+            fp.write("#\n")
+            fp.write("\n")
+            fp.write("set -e\n")
+            fp.write("\n")
+            fp.write("export PATH=\"\$PATH:%s\"\n"%(os.path.dirname(sys.argv[0])))
+            fp.write("\n")
+            if Login_user_name != '':
+                fp.write("export INPUT_USERNAME=\"%s\"\n"%(Login_user_name))
+                fp.write("export INPUT_PASSWORD=\$(python -c \"from __future__ import print_function; import keyring; print(keyring.get_password('astroquery:asa.alma.cl','%s'))\")\n"%(Login_user_name))
+                fp.write("\n")
+            else:
+                fp.write("export INPUT_USERNAME=\"\"\n")
+                fp.write("export INPUT_PASSWORD=\"\"\n")
+            for i in range(len(uid_url_table)):
+                fp.write("\n")
+                fp.write("alma_archive_download_data_via_http_link.sh \"%s\"\n"%(uid_url_table[i]['URL']))
+            fp.write("\n")
+            fp.write("date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\" > \"%s.sh.done\"\n"%(Output_name))
+            fp.write("\n")
+        
+        # 
+        # Old method
+        #for i in range(len(uid_url_table)):
+        #    if i == 0:
+        #        os.system('echo "#!/bin/bash" > %s.sh'%(Output_name)) # creating new file
+        #        os.system('echo "" >> %s.sh'%(Output_name))
+        #        os.system('echo "set -e" >> %s.sh'%(Output_name))
+        #        os.system('echo "" >> %s.sh'%(Output_name))
+        #        os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]), Output_name))
+        #        if Login_user_name != '':
+        #            os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
+        #            os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
+        #            
+        #            os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \" > /dev/tty" >> %s.sh'%(Login_user_name, Output_name))
+        #            os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
+        #            os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
+        #            os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Output_name))
+        #        else:
+        #            os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
+        #            os.system('echo "export INPUT_PASSWORD=\\\"\\\"" >> %s.sh'%(Output_name))
+        #    # 
+        #    os.system('echo "" >> %s.sh'%(Output_name))
+        #    # 
+        #    os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'], Output_name))
+        #    # 
+        #    if i == len(uid_url_table)-1:
+        #        os.system('echo "" >> %s.sh'%(Output_name))
+        #        os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name, Output_name))
+        #        os.system('echo "" >> %s.sh'%(Output_name))
+        # 
+        
         print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
         print('Running "%s.sh >> %s.log" in terminal!'%(Output_name, Output_name))
         
+        os.system('chmod +x "%s.sh"'%(Output_name))
         os.system('%s.sh >> %s.log'%(Output_name, Output_name))
         
-        #--> Calling Alma repeatedly causes cache problem. 
-        
+        #--> Re-using Alma repeatedly causes cache problem. Calling Alma.__init__() fixes the problem.  
         Alma.__init__()
     
     else:
