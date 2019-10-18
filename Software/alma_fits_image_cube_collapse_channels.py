@@ -23,6 +23,7 @@ from astropy.coordinates import Angle
 input_fits_file = ''
 output_name = ''
 input_crange = []
+output_notes = []
 overwrite = False
 make_plot = False
 arg_str = ''
