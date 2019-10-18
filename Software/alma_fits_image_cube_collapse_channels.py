@@ -124,7 +124,7 @@ with fits.open(input_fits_file) as hdulist:
         elif i1 > i0:
             mask[i0+1:i1+1+1] = True
     # 
-    output_image = np.sum(hdu0.data[mask, :, :])
+    output_image = np.sum(hdu0.data[mask, :, :], naxis=0)
     
     print('Writing fits file...')
     output_hdu = fits.PrimaryHDU(data = output_image, header = wcs0.to_header())
