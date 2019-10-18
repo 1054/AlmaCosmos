@@ -74,7 +74,6 @@ if input_fits_file == '':
     print('Note:')
     print('    This code will collapse along the channel axis and produce an image.')
     print('    Notice that the input channel number is 1-based, same as ds9.')
-    print('    Input crange 0 0 means collapsing all channels.')
     print('')
     sys.exit()
 
