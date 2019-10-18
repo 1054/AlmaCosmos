@@ -137,7 +137,7 @@ with fits.open(input_fits_file) as hdulist:
         ofp.write('    %s\n'%(input_fits_file))
         ofp.write('\n')
         ofp.write('with channel ranges:\n')
-        ofp.write('    %s\n'%(', '.join(np.array(crange).astype(str))))
+        ofp.write('    %s\n'%(', '.join(np.array(input_crange).astype(str))))
         ofp.write('\n')
         ofp.write('by the code:\n')
         ofp.write('    %s\n'%(os.path.abspath(__file__)))
