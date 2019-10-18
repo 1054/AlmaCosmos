@@ -125,7 +125,7 @@ with fits.open(input_fits_file) as hdulist:
             mask[i0+1:i1+1+1] = True
     # 
     # collapse along channel axis
-    output_image = np.sum(hdu0.data[mask, :, :], naxis=0)
+    output_image = np.sum(hdu0.data[mask, :, :], axis=0)
     # 
     # output fits image
     print('Writing fits file...')
