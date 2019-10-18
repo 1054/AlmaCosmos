@@ -74,6 +74,7 @@ if input_fits_file == '':
     print('Note:')
     print('    This code will collapse along the channel axis and produce an image.')
     print('    Notice that the input channel number is 1-based, same as ds9.')
+    print('    Input crange 0 0 means collapsing all channels.')
     print('')
     sys.exit()
 
@@ -124,10 +125,10 @@ with fits.open(input_fits_file) as hdulist:
     # 
     output_image = np.sum(hdu0.data[mask, :, :])
     
-    print2('Writing fits file...')
+    print('Writing fits file...')
     output_hdu = fits.PrimaryHDU(data = output_image, header = wcs0.to_header())
     output_hdu.writeto(output_name+'.fits', overwrite = overwrite)
-    print2('Output to "%s"!'%(output_name))
+    print('Output to "%s"!'%(output_name))
     
     
     # output readme file
