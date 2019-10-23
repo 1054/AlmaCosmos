@@ -665,10 +665,18 @@ go_galfit 01
             data $previous_fit.result.chisq.txt
             read {ResultFluxRedChisq 2.f}
             # 
+            # 20191223 allow user to tune maximum allowed varied position
+            if(is_file("fit_galfit_prior_vary_position_maximum_arcsec")) {
+                data "fit_galfit_prior_vary_position_maximum_arcsec" read {maximum_vary_arcsec 1.f}
+            } else {
+                set maximum_vary_arcsec = 0.7
+                print "fit_galfit_prior_vary_position_maximum_arcsec" {maximum_vary_arcsec}
+            }
+            # 
             # allow vary
             set Allow_To_Vary = (ResultMagsErr>0 && ResultMagsErr<0.33) || (ResultMags<-2.5*lg(3.0*pixnoise/fluxconv)) #<TODO># 
-            set Vary_X = (Allow_To_Vary) ? 0.7/abs(pixscale) : 0 # maximum 0.7 arcsec #<before><20171123># maximum 0.5 arcsec
-            set Vary_Y = (Allow_To_Vary) ? 0.7/abs(pixscale) : 0 # maximum 0.7 arcsec #<before><20171123># maximum 0.5 arcsec
+            set Vary_X = (Allow_To_Vary) ? maximum_vary_arcsec/abs(pixscale) : 0 # maximum 0.7 arcsec #<before><20171123># maximum 0.5 arcsec
+            set Vary_Y = (Allow_To_Vary) ? maximum_vary_arcsec/abs(pixscale) : 0 # maximum 0.7 arcsec #<before><20171123># maximum 0.5 arcsec
             set Vary_X = (Vary_X>20) ? 20 : Vary_X # maximum 20 pixel, i.e. only valid when pixscale < 0.025 arcsec. #<added><20170607><dzliu>#
             set Vary_Y = (Vary_Y>20) ? 20 : Vary_Y # maximum 20 pixel, i.e. only valid when pixscale < 0.025 arcsec. #<added><20170607><dzliu>#
             initGalfitParam px py Vary_X Vary_Y

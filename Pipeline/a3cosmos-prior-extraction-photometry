@@ -140,6 +140,7 @@ while [[ "$#" -gt 0 ]]; do
                          "-galfit-prior-total-snr") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-total-snr";;
     "-galfit-prior-vary-position-threshold-magerr") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-vary-position-threshold-magerr";;
     "-galfit-prior-vary-position-threshold-totrms") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-vary-position-threshold-totrms";;
+      "-galfit-prior-vary-position-maximum-arcsec") CAAP_CMD_TEXT="$1"; shift; CAAP_CMD_TYPE="galfit-prior-vary-position-maximum-arcsec";;
     esac
     #echo "$CAAP_CMD_TYPE"
     case "$CAAP_CMD_TYPE" in
@@ -166,6 +167,7 @@ while [[ "$#" -gt 0 ]]; do
                           "galfit-prior-total-snr") if [[ $# -gt 0 ]]; then InputGalfitPriorTotalSNR+=("$1"); fi;; #<20170923># allow to set the total snr threshold for selecting galfit prior from getpix candidates
      "galfit-prior-vary-position-threshold-magerr") if [[ $# -gt 0 ]]; then InputGalfitVaryMagErr+=("$1"); fi;; #<20171127># allow to set the threshold for varying prior position
      "galfit-prior-vary-position-threshold-totrms") if [[ $# -gt 0 ]]; then InputGalfitVaryTotRMS+=("$1"); fi;; #<20171127># allow to set the threshold for varying prior position
+       "galfit-prior-vary-position-maximum-arcsec") if [[ $# -gt 0 ]]; then InputGalfitVaryMaxArcsec+=("$1"); fi;; #<20191023># allow to set the maximum angular distance in units of arcsec for varying prior position
                                              "yes")                         UserYes=1;;
                                            "clean")                         UserClean=$((UserClean+1));;
     esac
@@ -899,6 +901,9 @@ for (( i=0; i<${#SciImages[@]}; i++ )); do
     fi
     if [[ ${#InputGalfitVaryTotRMS[@]} -gt 0 ]]; then
     echo  "                                       -galfit-prior-vary-position-threshold-totrms ${InputGalfitVaryTotRMS} \\" >> "$SourceDir/$SourceName.run.bash"
+    fi
+    if [[ ${#InputGalfitVaryMaxArcsec[@]} -gt 0 ]]; then
+    echo  "                                       -galfit-prior-vary-position-maximum-arcsec ${InputGalfitVaryMaxArcsec} \\" >> "$SourceDir/$SourceName.run.bash"
     fi
     if [[ ${#InputGalfitFitGaussianMagErr[@]} -gt 0 ]]; then
     echo  "                                       -galfit-prior-fit-gaussian-threshold-magerr ${InputGalfitFitGaussianMagErr} \\" >> "$SourceDir/$SourceName.run.bash"

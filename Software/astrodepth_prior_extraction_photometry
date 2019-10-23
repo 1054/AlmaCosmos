@@ -40,8 +40,14 @@ usage() {
 #     2018-02-22 now also create "image_negative_input.fits"
 # 
 
-# Check current directory
+# Check script directory
 AstroDepth_ScriptDir=$(dirname ${BASH_SOURCE[0]})
+if [[ "$AstroDepth_ScriptDir" == "../"* ]]; then
+    AstroDepth_ScriptDir=$(cd "$AstroDepth_ScriptDir"; pwd)
+fi
+
+
+# Check current directory
 if [[ $(uname) == "Darwin" ]]; then
 AstroDepth_CurrrentDir=$(pwd)
 else
@@ -436,6 +442,42 @@ for (( j=0; j<${#AstroDepth_INP_IMAGE_SCI[@]}; j++ )); do
     if [[ ${#AstroDepth_INP_GALFIT_PRIOR_TOTAL_SNR[@]} -gt 0 ]]; then
         echo "Fit galfit priors with total SNR > ${AstroDepth_INP_GALFIT_PRIOR_TOTAL_SNR}!"
         echo "${AstroDepth_INP_GALFIT_PRIOR_TOTAL_SNR}" > "fit_galfit_prior_total_snr"
+    fi
+    # 
+    # 
+    # Set fit_galfit_prior_vary_position_threshold_magerr by the input arugment "galfit-prior-vary-position-threshold-magerr"
+    #     fit_galfit_prior_vary_position_threshold_totrms by the input arugment "galfit-prior-vary-position-threshold-totrms"
+    # Set fit_galfit_prior_fit_gaussian_threshold_magerr by the input arugment "galfit-prior-fit-gaussian-threshold-magerr"
+    #     fit_galfit_prior_fit_gaussian_threshold_totrms by the input arugment "galfit-prior-fit-gaussian-threshold-totrms"
+    # Set fit_galfit_prior_fit_sersic_threshold_magerr by the input arugment "galfit-prior-fit-sersic-threshold-magerr"
+    #     fit_galfit_prior_fit_sersic_threshold_totrms by the input arugment "galfit-prior-fit-sersic-threshold-totrms"
+    if [[ ${#AstroDepth_INP_galfit_prior_vary_position_threshold_magerr[@]} -gt 0 ]]; then
+        echo "Fit galfit priors with varied position with the threshold: magerr > ${AstroDepth_INP_galfit_prior_vary_position_threshold_magerr}!"
+        echo "${AstroDepth_INP_galfit_prior_vary_position_threshold_magerr}" > "fit_galfit_prior_vary_position_threshold_magerr"
+    fi
+    if [[ ${#AstroDepth_INP_galfit_prior_vary_position_threshold_totrms[@]} -gt 0 ]]; then
+        echo "Fit galfit priors with varied position with the threshold: totrms > ${AstroDepth_INP_galfit_prior_vary_position_threshold_totrms}!"
+        echo "${AstroDepth_INP_galfit_prior_vary_position_threshold_totrms}" > "fit_galfit_prior_vary_position_threshold_totrms"
+    fi
+    if [[ ${#AstroDepth_INP_galfit_prior_vary_position_maximum_arcsec[@]} -gt 0 ]]; then
+        echo "Fit galfit priors with varied position up to a maximum of angular distance in units of arcsec: > ${AstroDepth_INP_galfit_prior_vary_position_maximum_arcsec}!"
+        echo "${AstroDepth_INP_galfit_prior_vary_position_maximum_arcsec}" > "fit_galfit_prior_vary_position_maximum_arcsec"
+    fi
+    if [[ ${#AstroDepth_INP_galfit_prior_fit_gaussian_threshold_magerr[@]} -gt 0 ]]; then
+        echo "Fit galfit priors with Gaussian models with the threshold: magerr > ${AstroDepth_INP_galfit_prior_fit_gaussian_threshold_magerr}!"
+        echo "${AstroDepth_INP_galfit_prior_fit_gaussian_threshold_magerr}" > "fit_galfit_prior_fit_gaussian_threshold_magerr"
+    fi
+    if [[ ${#AstroDepth_INP_galfit_prior_fit_gaussian_threshold_totrms[@]} -gt 0 ]]; then
+        echo "Fit galfit priors with Gaussian models with the threshold: totrms > ${AstroDepth_INP_galfit_prior_fit_gaussian_threshold_totrms}!"
+        echo "${AstroDepth_INP_galfit_prior_fit_gaussian_threshold_totrms}" > "fit_galfit_prior_fit_gaussian_threshold_totrms"
+    fi
+    if [[ ${#AstroDepth_INP_galfit_prior_fit_sersic_threshold_magerr[@]} -gt 0 ]]; then
+        echo "Fit galfit priors with Sersic models with the threshold: magerr > ${AstroDepth_INP_galfit_prior_fit_sersic_threshold_magerr}!"
+        echo "${AstroDepth_INP_galfit_prior_fit_sersic_threshold_magerr}" > "fit_galfit_prior_fit_sersic_threshold_magerr"
+    fi
+    if [[ ${#AstroDepth_INP_galfit_prior_fit_sersic_threshold_totrms[@]} -gt 0 ]]; then
+        echo "Fit galfit priors with Sersic models with the threshold: totrms > ${AstroDepth_INP_galfit_prior_fit_sersic_threshold_totrms}!"
+        echo "${AstroDepth_INP_galfit_prior_fit_sersic_threshold_totrms}" > "fit_galfit_prior_fit_sersic_threshold_totrms"
     fi
     # 
     # 
