@@ -115,6 +115,10 @@ if [[ x"$root_directory" != x"." ]]; then
 fi
 
 
+# Get abs root directory
+abs_root_dir=$(pwd)
+
+
 # Check Level_2_Calib
 if [[ ! -d "Level_2_Calib" ]]; then
     echo "Error! \"Level_2_Calib\" was not found under \"$(pwd)\"! Please run \"alma_archive_run_dzliu_pipeline_level2_calib.sh\" first!"
@@ -195,7 +199,7 @@ for (( i = 0; i < ${#dataset_dirnames[@]}; i++ )); do
     fi
     
     
-    # if casa-ms-split was successful, move results to ../../../../Level_3_uvfits and ../../../../Level_3_uvt (current dir: Level_2_Calib/DataSet_*/calibrated/run_casa_ms_split/)
+    # if casa-ms-split was successful, move results to ${abs_root_dir}/Level_3_uvfits and ${abs_root_dir}/Level_3_uvt (current dir: Level_2_Calib/DataSet_*/calibrated/run_casa_ms_split/)
     if [[ -f "done_casa_ms_split" ]]; then
         output_measurementsets=($(find . -maxdepth 1 -type d -name "split_*_spw*_width*.ms"))
         output_uvfits=($(find . -maxdepth 1 -type f -name "split_*_spw*_width*.uvfits"))
@@ -209,24 +213,24 @@ for (( i = 0; i < ${#dataset_dirnames[@]}; i++ )); do
         for (( i = 0; i < ${#unique_galaxy_names[@]}; i++ )); do
             # create galaxy_name dir
             galaxy_name=${unique_galaxy_names[i]}
-            if [[ ! -d "../../../../Level_3_uvfits/${galaxy_name}/${dataset_dirname}" ]]; then
-                echo mkdir -p "../../../../Level_3_uvfits/${galaxy_name}/${dataset_dirname}"
-                mkdir -p "../../../../Level_3_uvfits/${galaxy_name}/${dataset_dirname}"
+            if [[ ! -d "${abs_root_dir}/Level_3_uvfits/${galaxy_name}/${dataset_dirname}" ]]; then
+                echo mkdir -p "${abs_root_dir}/Level_3_uvfits/${galaxy_name}/${dataset_dirname}"
+                mkdir -p "${abs_root_dir}/Level_3_uvfits/${galaxy_name}/${dataset_dirname}"
             fi
-            if [[ ! -d "../../../../Level_3_uvt/${galaxy_name}/${dataset_dirname}" ]]; then
-                echo mkdir -p "../../../../Level_3_uvt/${galaxy_name}/${dataset_dirname}"
-                mkdir -p "../../../../Level_3_uvt/${galaxy_name}/${dataset_dirname}"
+            if [[ ! -d "${abs_root_dir}/Level_3_uvt/${galaxy_name}/${dataset_dirname}" ]]; then
+                echo mkdir -p "${abs_root_dir}/Level_3_uvt/${galaxy_name}/${dataset_dirname}"
+                mkdir -p "${abs_root_dir}/Level_3_uvt/${galaxy_name}/${dataset_dirname}"
             fi
-            # move results to ../../../../Level_3_uvfits and ../../../../Level_3_uvt (current dir: Level_2_Calib/DataSet_*/calibrated/run_casa_ms_split/)
+            # move results to ${abs_root_dir}/Level_3_uvfits and ${abs_root_dir}/Level_3_uvt (current dir: Level_2_Calib/DataSet_*/calibrated/run_casa_ms_split/)
             galaxy_uvfits=($(find . -maxdepth 1 -type f -name "split_${galaxy_name}_spw*_width*.uvfits"))
             galaxy_uvtables=($(find . -maxdepth 1 -type f -name "split_${galaxy_name}_spw*_width*_SP.uvt"))
             for (( j = 0; j < ${#galaxy_uvfits[@]}; j++ )); do
-                echo cp "${galaxy_uvfits[j]}" "../../../../Level_3_uvfits/${galaxy_name}/${dataset_dirname}/"
-                cp "${galaxy_uvfits[j]}" "../../../../Level_3_uvfits/${galaxy_name}/${dataset_dirname}/"
+                echo cp "${galaxy_uvfits[j]}" "${abs_root_dir}/Level_3_uvfits/${galaxy_name}/${dataset_dirname}/"
+                cp "${galaxy_uvfits[j]}" "${abs_root_dir}/Level_3_uvfits/${galaxy_name}/${dataset_dirname}/"
             done
             for (( j = 0; j < ${#galaxy_uvtables[@]}; j++ )); do
-                echo cp "${galaxy_uvtables[j]}" "../../../../Level_3_uvt/${galaxy_name}/${dataset_dirname}/"
-                cp "${galaxy_uvtables[j]}" "../../../../Level_3_uvt/${galaxy_name}/${dataset_dirname}/"
+                echo cp "${galaxy_uvtables[j]}" "${abs_root_dir}/Level_3_uvt/${galaxy_name}/${dataset_dirname}/"
+                cp "${galaxy_uvtables[j]}" "${abs_root_dir}/Level_3_uvt/${galaxy_name}/${dataset_dirname}/"
             done
         done
     fi
