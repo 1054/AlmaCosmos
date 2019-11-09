@@ -173,7 +173,9 @@ for (( i = 0; i < ${#dataset_dirnames[@]}; i++ )); do
         fi
         
         log_file="log_casa_ms_split_"$(date +"%Y%m%d_%Hh%Mm%Ss_%Z")".txt"
-        casa-ms-split -vis calibrated.ms -width 10km/s -timebin 30s -steps ${run_steps[@]} > "$log_file"
+        
+        # run casa-ms-split
+        casa-ms-split -vis calibrated.ms -width 10km/s -timebin 30s -steps ${run_steps[@]} > "$log_file" 2>&1
         
         # check output files
         output_measurementsets=($(find . -maxdepth 1 -type d -name "split_*_spw*_width*.ms"))
@@ -194,7 +196,7 @@ for (( i = 0; i < ${#dataset_dirnames[@]}; i++ )); do
     
     
     # if casa-ms-split was successful, move results to ../../../../Level_3_uvfits and ../../../../Level_3_uvt (current dir: Level_2_Calib/DataSet_*/calibrated/run_casa_ms_split/)
-    if [[ ! -f "done_casa_ms_split" ]]; then
+    if [[ -f "done_casa_ms_split" ]]; then
         output_measurementsets=($(find . -maxdepth 1 -type d -name "split_*_spw*_width*.ms"))
         output_uvfits=($(find . -maxdepth 1 -type f -name "split_*_spw*_width*.uvfits"))
         output_uvtables=($(find . -maxdepth 1 -type f -name "split_*_spw*_width*_SP.uvt"))
