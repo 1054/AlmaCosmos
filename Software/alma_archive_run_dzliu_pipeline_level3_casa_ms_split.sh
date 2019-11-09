@@ -148,8 +148,8 @@ for (( i = 0; i < ${#dataset_dirnames[@]}; i++ )); do
         echo "Error! The calibrated directory \"$(pwd)/calibrated\" was not found!"
         exit 255
     fi
-    echo cd "$calibrated"
-    cd "$calibrated"
+    echo cd "calibrated"
+    cd "calibrated"
     
     # check "calibrated.ms" datadir
     if [[ ! -d "calibrated.ms" ]] && [[ ! -L "calibrated.ms" ]]; then
