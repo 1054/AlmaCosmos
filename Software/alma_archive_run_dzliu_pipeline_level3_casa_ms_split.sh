@@ -133,9 +133,9 @@ dataset_dirnames=($(ls -1d DataSet_*))
 
 
 # Loop datasets and run casa-ms-split
-for (( i = 0; i < ${#dataset_dirnames[@]}; i++ )); do
+for (( idataset = 0; idataset < ${#dataset_dirnames[@]}; idataset++ )); do
     
-    dataset_dirname=${dataset_dirnames[i]}
+    dataset_dirname=${dataset_dirnames[idataset]}
     
     echo cd "$dataset_dirname"
     cd "$dataset_dirname"
