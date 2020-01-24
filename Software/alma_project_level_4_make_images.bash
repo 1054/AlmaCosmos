@@ -118,9 +118,9 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     fi
     
     # read source names
-    list_of_unique_source_names=($(ls -1d ../Level_3_Split/$DataSet_dir/split_*_spw*_width*.ms | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+.ms$%\1%g' | sort -V | uniq ) )
+    list_of_unique_source_names=($(ls -1d ../Level_3_Split/$DataSet_dir/split_*_spw*_width2.ms | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+.ms$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
-        echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.ms\" and get unique source names!"
+        echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width2.ms\" and get unique source names!"
         exit 255
     fi
     
@@ -137,7 +137,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         cd "${source_name}/$DataSet_dir"
         
         # find each ms data
-        list_of_ms_data=($(ls -1d ../../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*.ms | sort -V ) )
+        list_of_ms_data=($(ls -1d ../../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width2.ms | sort -V ) )
         
         # loop each ms data
         for (( k = 0; k < ${#list_of_ms_data[@]}; k++ )); do
