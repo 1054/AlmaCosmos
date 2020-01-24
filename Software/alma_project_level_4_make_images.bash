@@ -143,7 +143,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         list_of_ms_data=($(ls -1d ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.ms | sort -V | uniq ) )
         
         for (( k = 0; k < ${#list_of_ms_data[@]}; k++ )); do
-            ms_data="${list_of_ms_data[k]}" # this includes the suffix ".ms"
+            ms_data=$(basename "${list_of_ms_data[k]}") # this includes the suffix ".ms"
             if [[ ! -L "${source_name}/${ms_data}" ]]; then
                 echo_output ln -fsT ../../Level_3_Split/$DataSet_dir/${ms_data} "${source_name}/${ms_data}"
                 ln -fsT ../../Level_3_Split/$DataSet_dir/${ms_data} "${source_name}/${ms_data}"
