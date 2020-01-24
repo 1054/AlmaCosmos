@@ -1717,6 +1717,13 @@ def dzliu_clean(dataset_ms,
         #
         # Compute rms in the dirty image
         result_imstat_dict = imstat(line_dirty_cube+'.image')
+        # 
+        # Check error
+        if len(result_imstat_dict['rms']) == 0:
+            print('Error! Failed to determine rms from "%s"! The image data are problematic! We will skip it!'%(line_dirty_cube+'.image'))
+            continue
+        # 
+        # Set threshold
         threshold = result_imstat_dict['rms'][0] * 3.0 #<TODO># 3-sigma
         # 
         # Make clean image
@@ -1748,6 +1755,13 @@ def dzliu_clean(dataset_ms,
         #
         # Compute rms in the dirty image
         result_imstat_dict = imstat(continuum_dirty_cube+'.image')
+        # 
+        # Check error
+        if len(result_imstat_dict['rms']) == 0:
+            print('Error! Failed to determine rms from "%s"! The image data are problematic! We will skip it!'%(continuum_dirty_cube+'.image'))
+            continue
+        # 
+        # Set threshold
         threshold = result_imstat_dict['rms'][0] * 1.0 #<TODO># 1.0-sigma
         # 
         # Make clean image of the rough continuum 
