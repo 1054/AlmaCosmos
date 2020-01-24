@@ -88,7 +88,7 @@ fi
 
 
 # check python casa lib dir
-lib_python_dzliu_dir=$(dirname $(basename ${BASH_SOURCE[0]}))/lib_python_dzliu/crabcasa
+lib_python_dzliu_dir=$(dirname ${BASH_SOURCE[0]})/lib_python_dzliu/crabcasa
 if [[ ! -d "$lib_python_dzliu_dir" ]]; then
     echo "Error! lib_python_dzliu directory \"$lib_python_dzliu_dir\" was not found! It should be shipped with this code!"
     exit 255
