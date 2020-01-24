@@ -16,3 +16,7 @@ cp ~/Cloud/Github/Crab.Toolkit.Python/lib/crab/crablogger/CrabLogger.py         
 cp ~/Cloud/Github/Crab.Toolkit.Python/lib/crab/crabplot/CrabPlot.py               crabplot/CrabPlot.py
 cp ~/Cloud/Github/Crab.Toolkit.Python/lib/crab/crabtable/CrabTable.py             crabtable/CrabTable.py
 
+
+
+mkdir crabcasa
+cp ~/Cloud/Github/Crab.Toolkit.CASA/lib/python/dzliu_clean.py                     crabcasa/dzliu_clean.py
