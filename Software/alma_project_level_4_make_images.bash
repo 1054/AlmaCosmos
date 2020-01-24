@@ -117,13 +117,6 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         continue
     fi
     
-    # prepare Level_4_Data_Images DataSet_dir
-    if [[ ! -d $DataSet_dir ]]; then
-        mkdir $DataSet_dir
-    fi
-    echo_output cd $DataSet_dir
-    cd $DataSet_dir
-    
     # read source names
     list_of_unique_source_names=($(ls -1d ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.ms | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+.ms$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
@@ -134,19 +127,19 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     # loop list_of_unique_source_names and make dir for each source and link ms files
     for (( j = 0; j < ${#list_of_unique_source_names[@]}; j++ )); do
         source_name=${list_of_unique_source_names[j]}
-        if [[ ! -d "${source_name}" ]]; then
-            echo_output mkdir "${source_name}"
-            mkdir "${source_name}"
+        if [[ ! -d "${source_name}/$DataSet_dir" ]]; then
+            echo_output mkdir -p "${source_name}/$DataSet_dir"
+            mkdir -p "${source_name}/$DataSet_dir"
         fi
         
-        # cd source_name dir
-        echo_output "cd ${source_name}"
-        cd "${source_name}"
+        # cd source_name dataset_dir dir
+        echo_output "cd ${source_name}/$DataSet_dir"
+        cd "${source_name}/$DataSet_dir"
         
         # find each ms data
-        list_of_ms_data=($(ls -1d ../../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.ms | sort -V ) )
+        list_of_ms_data=($(ls -1d ../../../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*.ms | sort -V ) )
         
-        # check existing images
+        # loop each ms data
         for (( k = 0; k < ${#list_of_ms_data[@]}; k++ )); do
             
             ms_data=$(basename "${list_of_ms_data[k]}") # this includes the suffix ".ms"
@@ -191,7 +184,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo ""                                                               >> "${run_script}"
                 echo "casa --nogui --nologger --log2term -c \"${py_script}\" "        >> "${run_script}"
                 echo ""                                                               >> "${run_script}"
-                echo "if [[ $? -eq 0 ]]; then"                                        >> "${run_script}"
+                echo "if [[ \$? -eq 0 ]]; then"                                       >> "${run_script}"
                 echo "    date \"+%Y-%m-%d %Hh%Mm%Ss %Z\" > ${done_script}"           >> "${run_script}"
                 echo "fi"                                                             >> "${run_script}"
                 echo ""                                                               >> "${run_script}"
@@ -221,15 +214,11 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             
         done
         
-        # cd back (out of source_name dir)
-        echo_output "cd ../"
-        cd ../
+        # cd back (out of source_name dataset_dir dir)
+        echo_output "cd ../../"
+        cd ../../
         
     done
-    
-    # cd back
-    echo_output "cd ../"
-    cd ../
     
     # print message
     if [[ $i -gt 0 ]]; then
