@@ -190,12 +190,13 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo ""                                                               >> "${run_script}"
                 chmod +x "${run_script}"
                 # write the python script which will load the 'dzliu_clean.py' library and run cube clean
-                echo "# run this in CASA"                                                                                   >> "${py_script}"
-                echo "sys.path.append(\"${lib_python_dzliu_dir}\")"                                                         >> "${py_script}"
-                echo "import dzliu_clean"                                                                                   >> "${py_script}"
-                echo "reload(dzliu_clean)"                                                                                  >> "${py_script}"
-                echo "dzliu_clean.dzliu_clean(\"${ms_data}\", line_name='cube', line_velocity=-1, line_velocity_width=-1)"  >> "${py_script}"
-                echo ""                                                                                                     >> "${py_script}"
+                echo "# run this in CASA"                                                                                                                              >> "${py_script}"
+                echo "sys.path.append(\"${lib_python_dzliu_dir}\")"                                                                                                    >> "${py_script}"
+                echo "import dzliu_clean"                                                                                                                              >> "${py_script}"
+                echo "reload(dzliu_clean)"                                                                                                                             >> "${py_script}"
+                echo "dzliu_clean.dzliu_clean(\"${ms_data}\", make_line_cube=True, make_continuum=False, line_name='cube', line_velocity=-1, line_velocity_width=-1)"  >> "${py_script}"
+                echo "dzliu_clean.dzliu_clean(\"${ms_data}\", make_line_cube=False, make_continuum=True)"                                                              >> "${py_script}"
+                echo ""                                                                                                                                                >> "${py_script}"
                 chmod +x "${py_script}"
             fi
             if [[ ! -f "${done_script}" ]]; then

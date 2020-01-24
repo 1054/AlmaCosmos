@@ -452,10 +452,13 @@ def split_continuum_visibilities(dataset_ms, output_ms, galaxy_name, galaxy_reds
         # update line info with user input
         if line_name is not None:
             for i in range(len(line_name)):
-                lab_line_name, lab_line_freq = find_lab_line_name_and_freq(line_name)
-                matched_index = (np.argwhere(lab_line_names==lab_line_name)).tolist()[0]
-                all_line_velocity[matched_index] = line_velocity[i]
-                all_line_velocity_width[matched_index] = line_velocity_width[i]
+                if line_name[i] == 'cube' or line_name[i] == 'full_cube':
+                    continue
+                else:
+                    lab_line_name, lab_line_freq = find_lab_line_name_and_freq(line_name[i])
+                    matched_index = (np.argwhere(lab_line_names==lab_line_name)).tolist()[0]
+                    all_line_velocity[matched_index] = line_velocity[i]
+                    all_line_velocity_width[matched_index] = line_velocity_width[i]
         
         # 
         # compute obs-frame line frequency
@@ -1738,7 +1741,6 @@ def dzliu_clean(dataset_ms,
                         os.remove(check_dir+check_type+'.fits')
         # 
         # we need to find out line-free channels
-        print('line_name =', line_name)
         split_continuum_visibilities(dataset_ms, continuum_ms, galaxy_name, galaxy_redshift = galaxy_redshift, line_name = line_name, line_velocity = line_velocity, line_velocity_width = line_velocity_width)
         # 
         # Make continuum
