@@ -155,8 +155,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             if [[ ! -d "processing" ]]; then
                 mkdir "processing"
             fi
-            echo_output "cd ${processing}"
-            cd "${processing}"
+            echo_output "cd processing"
+            cd "processing"
             
             # link ms data for processing
             if [[ ! -L "${ms_data}" ]]; then
