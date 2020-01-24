@@ -202,7 +202,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             if [[ ! -f "${done_script}" ]]; then
                 chmod +x "${run_script}"
                 echo_output "Running ${run_script} > ${log_script}"
-                ./"${run_script}" > "${log_script}"
+                ./"${run_script}" > "${log_script}" 2>&1
                 if [[ ! -f "${done_script}" ]]; then
                     echo "Error! Failed to run the script \"${run_script}\"!"
                     exit 255
