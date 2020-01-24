@@ -139,22 +139,41 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             mkdir "${source_name}"
         fi
         
-        # find each ms file
-        list_of_ms_data=($(ls -1d ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.ms | sort -V | uniq ) )
+        # cd source_name dir
+        echo_output "cd ${source_name}"
+        cd "${source_name}"
         
+        # find each ms data
+        list_of_ms_data=($(ls -1d ../../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.ms | sort -V ) )
+        
+        # check existing images
         for (( k = 0; k < ${#list_of_ms_data[@]}; k++ )); do
+            
             ms_data=$(basename "${list_of_ms_data[k]}") # this includes the suffix ".ms"
-            if [[ ! -L "${source_name}/${ms_data}" ]]; then
-                echo_output ln -fsT ../../Level_3_Split/$DataSet_dir/${ms_data} "${source_name}/${ms_data}"
-                ln -fsT ../../Level_3_Split/$DataSet_dir/${ms_data} "${source_name}/${ms_data}"
+            ms_name=$(echo "${ms_data}" | perl -p -e 's/\.ms$//g')
+            
+            # check existing images
+            if [[ -f "${ms_name}.cube.fits" ]]; then
+                echo "Found image cube \"${ms_name}.cube.fits\". Continue."
+                continue
             fi
             
-            echo_output "cd ${source_name}"
-            cd "${source_name}"
-            run_script="run_tclean_${ms_data}.bash"
-            py_script="run_tclean_${ms_data}.py"
-            log_script="run_tclean_${ms_data}.log"
-            done_script="run_tclean_${ms_data}.done"
+            # make processing dir
+            if [[ ! -d "processing" ]]; then
+                mkdir "processing"
+            fi
+            echo_output "cd ${processing}"
+            cd "${processing}"
+            
+            # link ms data for processing
+            if [[ ! -L "${ms_data}" ]]; then
+                echo_output ln -fsT "../${list_of_ms_data[k]}" "${ms_data}"
+                ln -fsT "../${list_of_ms_data[k]}" "${ms_data}"
+            fi
+            run_script="run_tclean_${ms_name}.bash"
+            py_script="run_tclean_${ms_name}.py"
+            log_script="run_tclean_${ms_name}.log"
+            done_script="run_tclean_${ms_name}.done"
             if [[ ! -f "${run_script}" ]]; then
                 if [[ -f "${done_script}" ]]; then
                     mv "${done_script}" "${done_script}.backup" # remove previous done_script
@@ -195,10 +214,16 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     exit 255
                 fi
             fi
+        
+            # cd back (out of processing dir)
             echo_output "cd ../"
             cd ../
             
         done
+        
+        # cd back (out of source_name dir)
+        echo_output "cd ../"
+        cd ../
         
     done
     
