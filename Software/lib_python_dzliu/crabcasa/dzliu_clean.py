@@ -1738,6 +1738,7 @@ def dzliu_clean(dataset_ms,
                         os.remove(check_dir+check_type+'.fits')
         # 
         # we need to find out line-free channels
+        print('line_name =', line_name)
         split_continuum_visibilities(dataset_ms, continuum_ms, galaxy_name, galaxy_redshift = galaxy_redshift, line_name = line_name, line_velocity = line_velocity, line_velocity_width = line_velocity_width)
         # 
         # Make continuum
