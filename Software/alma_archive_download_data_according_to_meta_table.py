@@ -184,11 +184,11 @@ for i in range(len(meta_table)):
             fp.write("\n")
             fp.write("set -e\n")
             fp.write("\n")
-            fp.write("export PATH=\"\$PATH:%s\"\n"%(os.path.dirname(sys.argv[0])))
+            fp.write("export PATH=\"$PATH:%s\"\n"%(os.path.dirname(sys.argv[0])))
             fp.write("\n")
             if Login_user_name != '':
                 fp.write("export INPUT_USERNAME=\"%s\"\n"%(Login_user_name))
-                fp.write("export INPUT_PASSWORD=\$(python -c \"from __future__ import print_function; import keyring; print(keyring.get_password('astroquery:asa.alma.cl','%s'))\")\n"%(Login_user_name))
+                fp.write("export INPUT_PASSWORD=$(python -c \"from __future__ import print_function; import keyring; print(keyring.get_password('astroquery:asa.alma.cl','%s'))\")\n"%(Login_user_name))
                 fp.write("\n")
             else:
                 fp.write("export INPUT_USERNAME=\"\"\n")
