@@ -34,9 +34,29 @@ fi
 
 
 # run CASA
-echo casa -c "import sys; sys.path.append(\"$script_dir\"); from $script_name import $script_name; $script_name(locals())"
-casa --nogui --nologger --log2term --nocrashreport -c "import sys; sys.path.append(\"$script_dir\"); from $script_name import $script_name; $script_name(locals())"
-
+use_execfile=0
+if [[ -f "../README_CASA_VERSION" ]]; then
+    casa_version_numbers=($(cat "../README_CASA_VERSION" | head -n 1 | perl -p -e 's/^.*: ([0-9]+)\.([0-9]+).*$/\1 \2/g'))
+    casa_version_major=${casa_version_numbers[0]}
+    casa_version_minor=${casa_version_numbers[1]}
+    if [[ $casa_version_major -le 3 ]] || ([[ $casa_version_major -eq 4 ]] && [[ $casa_version_minor -le 2 ]]); then
+        use_execfile=1
+    fi
+fi
+if [[ $use_execfile -eq 0 ]]; then
+    echo "casa -c \"import sys; sys.path.append(\\\"$script_dir\\\"); from $script_name import $script_name; $script_name(locals())\""
+    casa --nogui --nologger --log2term --nocrashreport -c "import sys; sys.path.append(\"$script_dir\"); from $script_name import $script_name; $script_name(locals())"
+else 
+    # fix for very old CASA version
+    cat "$script_dir"/"$script_name.py" > "${script_name}_tmp.py"
+    echo "" >> "${script_name}_tmp.py"
+    echo "$script_name(locals())" >> "${script_name}_tmp.py"
+    echo "" >> "${script_name}_tmp.py"
+    echo "" >> "${script_name}_tmp.py"
+    chmod +x "${script_name}_tmp.py"
+    echo "casa -c \"execfile(\\\"${script_name}_tmp.py\\\")\""
+    casa -c "execfile(\"${script_name}_tmp.py\")"
+fi
 
 # check result
 if [[ ! -d "calibrated.ms" ]]; then

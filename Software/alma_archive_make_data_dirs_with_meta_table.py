@@ -262,9 +262,9 @@ for i in range(len(output_table)):
         with open('Level_1_Raw/download_%s_via_Mem_ous_id.bash'%(t_Dataset_dirname), 'w') as fp:
             fp.write('#!/bin/bash\n#\n')
             if os.path.isfile('meta_user_info.txt'):
-                fp.write('user_info=($(cat $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/meta_user_info.txt))')
+                fp.write('user_info=($(cat $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/meta_user_info.txt))\n')
             else:
-                fp.write('user_info=()')
+                fp.write('user_info=()\n')
             fp.write('%s/alma_archive_download_data_by_Mem_ous_id.py "%s" ${user_info[@]}\n'%(os.path.dirname(__file__), Member_ous_id[i]))
             fp.write('\n')
         os.system('chmod +x "Level_1_Raw/download_%s_via_Mem_ous_id.bash"'%(t_Dataset_dirname))
@@ -342,14 +342,14 @@ for i in range(len(output_table)):
                         fp.write('mymodel = \'y\'\n')
                         fp.write('myHanning = \'n\'\n')
                         fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
-                        fp.write('')
+                        fp.write('\n')
                     with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
                         fp.write('#!/bin/bash\n')
                         fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
                         fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
                         fp.write('pwd\n')
                         fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
-                        fp.write('')
+                        fp.write('\n')
                     os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
         else:
             t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname
@@ -374,14 +374,14 @@ for i in range(len(output_table)):
                         fp.write('mymodel = \'y\'\n')
                         fp.write('myHanning = \'n\'\n')
                         fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
-                        fp.write('')
+                        fp.write('\n')
                     with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
                         fp.write('#!/bin/bash\n')
                         fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
                         fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
                         fp.write('pwd\n')
                         fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
-                        fp.write('')
+                        fp.write('\n')
                     os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
         # 
         # check Dataset link
