@@ -182,12 +182,16 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     cd $DataSet_dir
     
     # link Level_2_Calib calibrated.ms to Level_3_Split calibrated.ms
-    echo_output "$cmd_ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms"
-    $cmd_ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms
+    if [[ ! -d calibrated.ms ]] && [[ ! -L calibrated.ms ]]; then
+        echo_output "$cmd_ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms"
+        $cmd_ln -fsT ../../Level_2_Calib/$DataSet_dir/calibrated/$DataSet_ms calibrated.ms
+    fi
     
     # copy CASA version readme file
-    echo_output "cp ../../Level_2_Calib/$DataSet_dir/README_CASA_VERSION README_CASA_VERSION"
-    cp ../../Level_2_Calib/$DataSet_dir/README_CASA_VERSION README_CASA_VERSION
+    if [[ ! -f README_CASA_VERSION ]] && [[ ! -L README_CASA_VERSION ]]; then
+        echo_output "cp ../../Level_2_Calib/$DataSet_dir/README_CASA_VERSION README_CASA_VERSION"
+        cp ../../Level_2_Calib/$DataSet_dir/README_CASA_VERSION README_CASA_VERSION
+    fi
     
     # source CASA version
     echo_output "source \"$casa_setup_script_path\" \"README_CASA_VERSION\""
