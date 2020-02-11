@@ -210,8 +210,11 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 
                 echo_output "Copying result \"${ms_name}_cube_clean.image.fits\""
                 cp "run_tclean_${ms_name}/${ms_name}_cube_clean.image.fits" ../
+                
+                echo_output "Copying result \"${ms_name}_cont_clean.image.fits\""
+                cp "run_tclean_${ms_name}/${ms_name}_cont_clean.image.fits" ../
             fi
-        
+            
             # cd back (out of processing dir)
             echo_output "cd ../"
             cd ../
