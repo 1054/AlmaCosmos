@@ -266,7 +266,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     echo "import dzliu_clean"                                                                                >> "${py_script}"
                     echo "reload(dzliu_clean)"                                                                               >> "${py_script}"
                     printf "dzliu_concat.dzliu_concat([\""                                                                   >> "${py_script}"
-                    for (( l = 0; l < ${list_of_continuum_ms_data[@]}; l++ )); do
+                    for (( l = 0; l < ${#list_of_continuum_ms_data[@]}; l++ )); do
                         printf "\"${list_of_continuum_ms_data[l]}\", "                                                       >> "${py_script}"
                     done
                     printf "\"], \"${output_concat_ms_data}\")"                                                              >> "${py_script}"
