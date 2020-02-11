@@ -232,10 +232,10 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 output_concat_ms_data=merged_"${source_name}"_spw${output_concat_spw_str}.ms
                 output_concat_ms_name=$(echo "${output_concat_ms_data}" | perl -p -e 's/\.ms$//g')
                 # 
-                run_script="run_continuum_concat_and_tclean_${ms_name}.bash"
-                py_script="run_continuum_concat_and_tclean_${ms_name}.py"
-                log_script="run_continuum_concat_and_tclean_${ms_name}.log"
-                done_script="run_continuum_concat_and_tclean_${ms_name}.done"
+                run_script="run_continuum_concat_and_tclean_${source_name}.bash"
+                py_script="run_continuum_concat_and_tclean_${source_name}.py"
+                log_script="run_continuum_concat_and_tclean_${source_name}.log"
+                done_script="run_continuum_concat_and_tclean_${source_name}.done"
                 if [[ ! -f "${run_script}" ]]; then
                     if [[ -f "${done_script}" ]]; then
                         mv "${done_script}" "${done_script}.backup" # remove previous done_script
@@ -284,9 +284,9 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                         exit 255
                     fi
                 fi
-                if [[ ! -f ../"${ms_name}.cont.I.image.fits" ]]; then
-                    echo_output "Copying result \"${output_concat_ms_name}_cont_clean.image.fits\" as \"${ms_name}.cont.I.image.fits\""
-                    cp "run_tclean_${output_concat_ms_name}/${output_concat_ms_name}_cont_clean.image.fits" ../"${ms_name}.cont.I.image.fits"
+                if [[ ! -f ../"output_${source_name}.cont.I.image.fits" ]]; then
+                    echo_output "Copying result \"${output_concat_ms_name}_cont_clean.image.fits\" as \"output_${source_name}.cont.I.image.fits\""
+                    cp "run_tclean_${output_concat_ms_name}/${output_concat_ms_name}_cont_clean.image.fits" ../"output_${source_name}.cont.I.image.fits"
                 fi
             fi
             
