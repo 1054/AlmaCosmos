@@ -207,10 +207,12 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     echo "Error! Failed to run the script \"${run_script}\"!"
                     exit 255
                 fi
-                
+            fi
+            if [[ ! -f ../"${ms_name}_cube_clean.image.fits" ]]; then
                 echo_output "Copying result \"${ms_name}_cube_clean.image.fits\""
                 cp "run_tclean_${ms_name}/${ms_name}_cube_clean.image.fits" ../
-                
+            fi
+            if [[ ! -f ../"${ms_name}_cont_clean.image.fits" ]]; then
                 echo_output "Copying result \"${ms_name}_cont_clean.image.fits\""
                 cp "run_tclean_${ms_name}/${ms_name}_cont_clean.image.fits" ../
             fi
