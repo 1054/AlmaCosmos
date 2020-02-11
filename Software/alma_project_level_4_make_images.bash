@@ -139,11 +139,16 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         # find each ms data
         list_of_ms_data=($(ls -1d ../../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width2.ms | sort -V ) )
         
+        # prepare to get list of continuum ms data
+        list_of_continuum_ms_data=()
+        list_of_concatenated_spws=()
+        
         # loop each ms data
         for (( k = 0; k < ${#list_of_ms_data[@]}; k++ )); do
             
             ms_data=$(basename "${list_of_ms_data[k]}") # this includes the suffix ".ms"
             ms_name=$(echo "${ms_data}" | perl -p -e 's/\.ms$//g')
+            ms_spw=$(echo "${ms_data}" | perl -p -e 's/split_.*_spw([0-9]+)_.*\.ms$/\1/g')
             
             # check existing images
             if [[ -f "${ms_name}.cube.fits" ]]; then
@@ -172,7 +177,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     mv "${done_script}" "${done_script}.backup" # remove previous done_script
                 fi
                 # write bash script which will launch CASA and run the python script
-                echo "#!/bin/bash"                                                    >> "${run_script}"
+                echo "#!/bin/bash"                                                    >  "${run_script}"
                 echo "#"                                                              >> "${run_script}"
                 echo "if [[ \$(type casa 2>/dev/null | wc -l) -eq 0 ]]; then"         >> "${run_script}"
                 echo "    if [[ -f ~/Softwares/CASA/SETUP.bash ]]; then"              >> "${run_script}"
@@ -190,7 +195,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo ""                                                               >> "${run_script}"
                 chmod +x "${run_script}"
                 # write the python script which will load the 'dzliu_clean.py' library and run cube clean
-                echo "# run this in CASA"                                                                                                                              >> "${py_script}"
+                echo "# run this in CASA"                                                                                                                              >  "${py_script}"
                 echo "sys.path.append(\"${lib_python_dzliu_dir}\")"                                                                                                    >> "${py_script}"
                 echo "import dzliu_clean"                                                                                                                              >> "${py_script}"
                 echo "reload(dzliu_clean)"                                                                                                                             >> "${py_script}"
@@ -212,9 +217,77 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo_output "Copying result \"${ms_name}_cube_clean.image.fits\""
                 cp "run_tclean_${ms_name}/${ms_name}_cube_clean.image.fits" ../
             fi
-            if [[ ! -f ../"${ms_name}_cont_clean.image.fits" ]]; then
-                echo_output "Copying result \"${ms_name}_cont_clean.image.fits\""
-                cp "run_tclean_${ms_name}/${ms_name}_cont_clean.image.fits" ../
+            #if [[ ! -f ../"${ms_name}_cont_clean.image.fits" ]]; then
+            #    echo_output "Copying result \"${ms_name}_cont_clean.image.fits\""
+            #    cp "run_tclean_${ms_name}/${ms_name}_cont_clean.image.fits" ../
+            #fi
+            
+            list_of_continuum_ms_data+=("run_tclean_${ms_name}/${ms_name}_cont.ms")
+            list_of_concatenated_spws+=("$ms_spw")
+            
+            # concatenate continuum ms data
+            if [[ ${#list_of_continuum_ms_data[@]} -eq ${#list_of_ms_data[@]} ]]; then
+                # 
+                output_concat_spw_str=$(echo "${list_of_concatenated_spws[@]}" | sed -e 's/ /_/g')
+                output_concat_ms_data=merged_"${source_name}"_spw${output_concat_spw_str}.ms
+                output_concat_ms_name=$(echo "${output_concat_ms_data}" | perl -p -e 's/\.ms$//g')
+                # 
+                run_script="run_continuum_concat_and_tclean_${ms_name}.bash"
+                py_script="run_continuum_concat_and_tclean_${ms_name}.py"
+                log_script="run_continuum_concat_and_tclean_${ms_name}.log"
+                done_script="run_continuum_concat_and_tclean_${ms_name}.done"
+                if [[ ! -f "${run_script}" ]]; then
+                    if [[ -f "${done_script}" ]]; then
+                        mv "${done_script}" "${done_script}.backup" # remove previous done_script
+                    fi
+                    # write bash script which will launch CASA and run the python script
+                    echo "#!/bin/bash"                                                    >  "${run_script}"
+                    echo "#"                                                              >> "${run_script}"
+                    echo "if [[ \$(type casa 2>/dev/null | wc -l) -eq 0 ]]; then"         >> "${run_script}"
+                    echo "    if [[ -f ~/Softwares/CASA/SETUP.bash ]]; then"              >> "${run_script}"
+                    echo "        source ~/Softwares/CASA/SETUP.bash"                     >> "${run_script}" # here I try to see if we have CASA
+                    echo "    else"                                                       >> "${run_script}"
+                    echo "        echo \"Error! casa command does not exist!\"; exit 255" >> "${run_script}"
+                    echo "    fi"                                                         >> "${run_script}"
+                    echo "fi"                                                             >> "${run_script}"
+                    echo ""                                                               >> "${run_script}"
+                    echo "casa --nogui --nologger --log2term -c \"${py_script}\" "        >> "${run_script}"
+                    echo ""                                                               >> "${run_script}"
+                    echo "if [[ \$? -eq 0 ]]; then"                                       >> "${run_script}"
+                    echo "    date \"+%Y-%m-%d %Hh%Mm%Ss %Z\" > ${done_script}"           >> "${run_script}"
+                    echo "fi"                                                             >> "${run_script}"
+                    echo ""                                                               >> "${run_script}"
+                    chmod +x "${run_script}"
+                    # write the python script which will load the 'dzliu_concat.py' and 'dzliu_clean.py' library and run concat and clean
+                    echo "# run this in CASA"                                                                                >  "${py_script}"
+                    echo "sys.path.append(\"${lib_python_dzliu_dir}\")"                                                      >> "${py_script}"
+                    echo "import dzliu_concat"                                                                               >> "${py_script}"
+                    echo "reload(dzliu_concat)"                                                                              >> "${py_script}"
+                    echo "import dzliu_clean"                                                                                >> "${py_script}"
+                    echo "reload(dzliu_clean)"                                                                               >> "${py_script}"
+                    printf "dzliu_concat.dzliu_concat([\""                                                                   >> "${py_script}"
+                    for (( l = 0; l < ${list_of_continuum_ms_data[@]}; l++ )); do
+                        printf "\"${list_of_continuum_ms_data[l]}\", "                                                       >> "${py_script}"
+                    done
+                    printf "\"], \"${output_concat_ms_data}\")"                                                              >> "${py_script}"
+                    echo ""                                                                                                  >> "${py_script}"
+                    echo "dzliu_clean.dzliu_clean(\"${output_concat_ms_data}\", make_line_cube=False, make_continuum=True)"  >> "${py_script}"
+                    echo ""                                                                                                  >> "${py_script}"
+                    chmod +x "${py_script}"
+                fi
+                if [[ ! -f "${done_script}" ]]; then
+                    chmod +x "${run_script}"
+                    echo_output "Running ${run_script} > ${log_script}"
+                    ./"${run_script}" > "${log_script}" 2>&1
+                    if [[ ! -f "${done_script}" ]]; then
+                        echo "Error! Failed to run the script \"${run_script}\"!"
+                        exit 255
+                    fi
+                fi
+                if [[ ! -f ../"${ms_name}.cont.I.image.fits" ]]; then
+                    echo_output "Copying result \"${output_concat_ms_name}_cont_clean.image.fits\" as \"${ms_name}.cont.I.image.fits\""
+                    cp "run_tclean_${output_concat_ms_name}/${output_concat_ms_name}_cont_clean.image.fits" ../"${ms_name}.cont.I.image.fits"
+                fi
             fi
             
             # cd back (out of processing dir)

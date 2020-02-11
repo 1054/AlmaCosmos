@@ -600,7 +600,7 @@ def split_continuum_visibilities(dataset_ms, output_ms, galaxy_name, galaxy_reds
     concat(**concat_parameters)
     
     if not os.path.isdir(output_ms):
-        raise Exception('Error! Failed to run mstransform and produce "%s"!'%(output_ms))
+        raise Exception('Error! Failed to run concat and produce "%s"!'%(output_ms))
     else:
         print2('Output to "%s"!'%(output_ms))
     
@@ -1628,6 +1628,8 @@ def dzliu_clean(dataset_ms,
                 line_velocity = None, 
                 line_velocity_width = None, 
                 line_velocity_resolution = None, 
+                continuum_clean_threshold = 3.5, 
+                line_clean_threshold = 3.5, 
                 overwrite = False):
     # 
     casalog.origin('dzliu_clean')
@@ -1725,7 +1727,7 @@ def dzliu_clean(dataset_ms,
         else:
             # 
             # Set threshold
-            threshold = result_imstat_dict['rms'][0] * 3.0 #<TODO># 3-sigma
+            threshold = result_imstat_dict['rms'][0] * line_clean_threshold #<TODO># 3-sigma
             # 
             # Make clean image
             make_clean_image(line_ms, line_clean_cube, phasecenter = phasecenter, threshold = threshold, pblimit = 0.05, pbmask = 0.05, beamsize = beamsize)
@@ -1763,7 +1765,7 @@ def dzliu_clean(dataset_ms,
         else:
             # 
             # Set threshold
-            threshold = result_imstat_dict['rms'][0] * 1.0 #<TODO># 1.0-sigma
+            threshold = result_imstat_dict['rms'][0] * continuum_clean_threshold #<TODO># 3.5-sigma
             # 
             # Make clean image of the rough continuum 
             make_clean_image_of_continuum(continuum_ms, continuum_clean_cube, phasecenter = phasecenter, threshold = threshold, pblimit = 0.05, pbmask = 0.05, beamsize = beamsize)
