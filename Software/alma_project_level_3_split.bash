@@ -1,6 +1,8 @@
 #!/bin/bash
 # 
 
+# 20200215 dzliu" -trim-chan?
+
 #source ~/Softwares/CASA/SETUP.bash 5.4.0
 #source ~/Softwares/GILDAS/SETUP.bash
 #source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
@@ -209,13 +211,13 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     
     # run CASA split, this will split each spw for all sources in the data (calibrated measurement set)
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width}_SP.uvt" | wc -l) -eq 0 ]]; then
-        echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -step split exportuvfits gildas | tee .casa-ms-split.log"
-        casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -step split exportuvfits gildas | tee .casa-ms-split.log
+        echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -trim-chan -step split exportuvfits gildas | tee .casa-ms-split.log"
+        casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -trim-chan -step split exportuvfits gildas | tee .casa-ms-split.log
     else
         echo_output "Warning! Found split_*_width${width}_SP.uvt files! Will not re-run casa-ms-split!"
     fi
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width}_SP.uvt" | wc -l) -eq 0 ]]; then
-        echo_error "Error! casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -step split exportuvfits gildas FAILED!"
+        echo_error "Error! casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -trim-chan -step split exportuvfits gildas FAILED!"
     fi
     
     # cd back
