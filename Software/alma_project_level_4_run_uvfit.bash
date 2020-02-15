@@ -191,9 +191,9 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             # run uvfit
             if [[ ! -f output_point_model_fixed_pos.result.obj_1.txt ]]; then
                 echo_output "pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -fixedpos -out output_point_model_fixed_pos > output_point_model_fixed_pos.run.log"
-                pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -fixedpos -out output_point_model_fixed_pos > output_point_model_fixed_pos.run.log
+                pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -fixedpos -keep-in-residual -out output_point_model_fixed_pos > output_point_model_fixed_pos.run.log
                 if [[ ! -f output_point_model_fixed_pos.result.obj_1.txt ]]; then
-                    echo_error "Error! Failed to run pdbi-uvt-go-uvfit! Please check $(pwd)/\"output_point_model_fixed_pos.run.log\"!"
+                    echo_error "Error! Failed to run pdbi-uvt-go-uvfit! Please check \"$(pwd)/output_point_model_fixed_pos.run.log\"!"
                     exit 2
                 fi
             fi
@@ -201,9 +201,9 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             # run uvfit
             if [[ ! -f output_point_model_varied_pos.result.obj_1.txt ]]; then
                 echo_output "pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos > output_point_model_varied_pos.run.log"
-                pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos > output_point_model_varied_pos.run.log
+                pdbi-uvt-go-uvfit -name input.uvt -offset 0 0 -point -variedpos -keep-in-residual -out output_point_model_varied_pos > output_point_model_varied_pos.run.log
                 if [[ ! -f output_point_model_varied_pos.result.obj_1.txt ]]; then
-                    echo_error "Error! Failed to run pdbi-uvt-go-uvfit! Please check $(pwd)/\"output_point_model_varied_pos.run.log\"!"
+                    echo_error "Error! Failed to run pdbi-uvt-go-uvfit! Please check \"$(pwd)/output_point_model_varied_pos.run.log\"!"
                     exit 2
                 fi
             fi
