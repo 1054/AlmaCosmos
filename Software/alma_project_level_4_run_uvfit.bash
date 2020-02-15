@@ -1,6 +1,8 @@
 #!/bin/bash
 # 
 
+# 20200215 dzliu: user input RA Dec list?
+
 #source ~/Softwares/CASA/SETUP.bash
 #source ~/Softwares/GILDAS/SETUP.bash
 #source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash

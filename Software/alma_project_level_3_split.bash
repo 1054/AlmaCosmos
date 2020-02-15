@@ -1,7 +1,7 @@
 #!/bin/bash
 # 
 
-# 20200215 dzliu" -trim-chan?
+# 20200215 dzliu: -trim-chan?
 
 #source ~/Softwares/CASA/SETUP.bash 5.4.0
 #source ~/Softwares/GILDAS/SETUP.bash
