@@ -112,6 +112,10 @@ if [[ ! -d Level_4_Data_uvt ]]; then
 fi
 
 
+# set overwrite
+overwrite=0
+
+
 # read Level_4_Data_uvt/DataSet_*
 list_of_datasets=($(ls -1d Level_4_Data_uvt/DataSet_* | sort -V))
 
@@ -160,6 +164,18 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         echo_output "cd ${source_name}"
         cd "${source_name}"
         
+        # find source RA Dec if the user has put a "list_of_source_ra_dec.txt" under each ${source_name} directory
+        source_ra_dec=(-offset 0 0)
+        if [[ -f "list_of_source_ra_dec.txt" ]]; then
+            source_ra_dec=(-radec)
+            source_ra_dec+=($(cat list_of_source_ra_dec.txt | grep -v '^#' | head -n 1 | sed -e 's/^ *//g' | tr -s ' ' | cut -d 1,2))
+            echo "Found \"list_of_source_ra_dec.txt\", loading source ${source_name} RA Dec ${source_ra_dec[*]}"
+            if [[ ${#source_ra_dec[@]} != 3 ]]; then
+                echo "Error! Failed to read \"list_of_source_ra_dec.txt\" for source source ${source_name}! Current directory \"$(pwd)\"."
+                exit 255
+            fi
+        fi
+        
         # find and loop uvt files
         list_of_uvt_files=($(ls -1 ../../../Level_4_Data_uvt/"$DataSet_dir"/"${source_name}"/split_"${source_name}"_spw*_width*_SP.uvt))
         for (( k = 0; k < ${#list_of_uvt_files[@]}; k++ )); do
@@ -205,9 +221,9 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             fi
             
             # run uvfit
-            if [[ ! -f output_point_model_fixed_pos.result.obj_1.txt ]]; then
-                echo_output "pdbi-uvt-go-uvfit -name continuum.uvt -offset 0 0 -point -fixedpos -out output_point_model_fixed_pos > output_point_model_fixed_pos.run.log"
-                pdbi-uvt-go-uvfit -name continuum.uvt -offset 0 0 -point -fixedpos -keep-in-residual -out output_point_model_fixed_pos > output_point_model_fixed_pos.run.log
+            if [[ ! -f output_point_model_fixed_pos.result.obj_1.txt ]] || [[ $overwrite -gt 0 ]]; then
+                echo_output "pdbi-uvt-go-uvfit -name continuum.uvt -offset 0 0 -point -fixedpos -out output_point_model_fixed_pos -parallel > output_point_model_fixed_pos.run.log"
+                pdbi-uvt-go-uvfit -name continuum.uvt ${source_ra_dec[*]} -point -fixedpos -keep-in-residual -out output_point_model_fixed_pos -parallel > output_point_model_fixed_pos.run.log
                 if [[ ! -f output_point_model_fixed_pos.result.obj_1.txt ]]; then
                     echo_error "Error! Failed to run pdbi-uvt-go-uvfit! Please check \"$(pwd)/output_point_model_fixed_pos.run.log\"!"
                     exit 2
@@ -215,9 +231,9 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             fi
             
             # run uvfit
-            if [[ ! -f output_point_model_varied_pos.result.obj_1.txt ]]; then
-                echo_output "pdbi-uvt-go-uvfit -name continuum.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos > output_point_model_varied_pos.run.log"
-                pdbi-uvt-go-uvfit -name continuum.uvt -offset 0 0 -point -variedpos -keep-in-residual -out output_point_model_varied_pos > output_point_model_varied_pos.run.log
+            if [[ ! -f output_point_model_varied_pos.result.obj_1.txt ]] || [[ $overwrite -gt 0 ]]; then
+                echo_output "pdbi-uvt-go-uvfit -name continuum.uvt -offset 0 0 -point -variedpos -out output_point_model_varied_pos -parallel > output_point_model_varied_pos.run.log"
+                pdbi-uvt-go-uvfit -name continuum.uvt ${source_ra_dec[*]} -point -variedpos -keep-in-residual -out output_point_model_varied_pos -parallel > output_point_model_varied_pos.run.log
                 if [[ ! -f output_point_model_varied_pos.result.obj_1.txt ]]; then
                     echo_error "Error! Failed to run pdbi-uvt-go-uvfit! Please check \"$(pwd)/output_point_model_varied_pos.run.log\"!"
                     exit 2
