@@ -183,14 +183,14 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             # prepare uvt file name and output name
             uvt_filepath="${list_of_uvt_files[k]}"
             uvt_filename=$(basename "${list_of_uvt_files[k]}" | perl -p -e 's/\.(uvt|UVT)$//g')
-            uvt_chanwidth=$(echo "$uvt_filename" | perl -p -e 's/.*_width([0-9]+)_*/\1/g')
+            uvt_chanwidth=$(echo "$uvt_filename" | perl -p -e 's/.*_width([0-9]+)_.*/\1/g')
             uvt_outdir=$(basename "$uvt_filename" | sed -e 's/^split_/run_uvfit_/g')
             uvt_outname=$(basename "$uvt_filename" | sed -e 's/^split_/uvfit_/g')
             
             # we only process uvt_chanwidth > 1 data
-            if [[ $uvt_chanwidth -le 1 ]]; then
-                continue
-            fi
+            #if [[ $uvt_chanwidth -le 1 ]]; then
+            #    continue
+            #fi
             
             # link uvt file
             echo_output "$cmd_ln -fsT $uvt_filepath $uvt_filename.uvt"
