@@ -9,6 +9,7 @@ import astroquery
 import requests
 from astroquery.alma.core import Alma
 import astropy.io.ascii as asciitable
+from astropy.table import unique, Table
 from operator import itemgetter, attrgetter
 
 
@@ -100,11 +101,16 @@ for Member_ous_id in Member_ous_ids:
     #filelist = Alma.download_and_extract_files(uid_url_table['URL'], regex='.*README$')
     #print(filelist)
     
-    asciitable.write(uid_url_table, '%s.txt'%(Output_name), Writer=asciitable.FixedWidthTwoLine)
+    uid_url_table_nodups = unique(uid_url_table, key='URL', keep='first')
+    
+    asciitable.write(uid_url_table_nodups, '%s.txt'%(Output_name), Writer=asciitable.FixedWidthTwoLine)
     os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s.log'%(Output_name))
     os.system('echo "%s %s" >> %s.log'%(sys.argv[0],sys.argv[1],Output_name))
     
-    for i in range(len(uid_url_table)):
+    uid_url_table_nrow = len(uid_url_table_nodups)
+    
+    for i in range(uid_url_table_nrow):
+        uid_url_address = uid_url_table_nodups[i]['URL']
         if i == 0:
             os.system('echo "#!/bin/bash" > %s.sh'%(Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))
@@ -116,10 +122,10 @@ for Member_ous_id in Member_ous_ids:
             else:
                 os.system('echo "export ALMA_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
         os.system('echo "" >> %s.sh'%(Output_name))
-        os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
+        os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_address,Output_name))
         #os.system('echo "wget --no-check-certificate --auth-no-challenge --server-response --user dzliu --password  -c \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
-        #os.system('echo "wget -c \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
-        if i == len(uid_url_table)-1:
+        #os.system('echo "wget -c \"%s\"" >> %s.sh'%(uid_url_address,Output_name))
+        if i == uid_url_table_nrow-1:
             os.system('echo "" >> %s.sh'%(Output_name))
             os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name,Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))
