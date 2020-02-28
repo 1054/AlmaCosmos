@@ -20,20 +20,24 @@ Member_ous_ids = []
 Login_user_name = ''
 Use_alma_site = 'nrao'
 Output_folder = ''
+Only_products = False
 i = 1
 while i < len(sys.argv): 
-    print(sys.argv[i])
-    if sys.argv[i].find("uid")==0:
+    #print(sys.argv[i])
+    arg_str = sys.argv[i].lower().replace('--','-')
+    if arg_str.startswith("uid"):
         Member_ous_ids.append(sys.argv[1])
-    elif sys.argv[i].find("user:")==0:
+    elif arg_str.startswith("user:"):
         Login_user_name = sys.argv[i].replace('user:','')
-    elif sys.argv[i].lower().find("-eso")==0 or sys.argv[i].lower().find("--eso")==0:
+    elif arg_str.startswith("-eso"):
         Use_alma_site = 'eso'
-    elif sys.argv[i].lower()=='-user' or sys.argv[i].lower()=='--user':
+    elif sys.arg_str.startswith("-only-products"):
+        Only_products = True
+    elif arg_str == '-user':
         if i+1 < len(sys.argv):
             i = i+1
             Login_user_name = sys.argv[i]
-    elif sys.argv[i].lower()=='-out' or sys.argv[i].lower()=='--out':
+    elif arg_str.startswith == '-out':
         if i+1 < len(sys.argv):
             i = i+1
             Output_folder = sys.argv[i]
@@ -42,7 +46,7 @@ while i < len(sys.argv):
     i = i+1
 
 if len(Member_ous_ids) == 0:
-    print('Usage: alma_archive_download_data_by_Mem_ous_id.py "uid://A001/X148/X119" [--user dzliu --eso] [--out OUTPUT_FOLDER]')
+    print('Usage: alma_archive_download_data_by_Mem_ous_id.py "uid://A001/X148/X119" [--user dzliu --eso] [--out OUTPUT_FOLDER] [--only-products]')
     sys.exit()
 
 
@@ -101,7 +105,7 @@ for Member_ous_id in Member_ous_ids:
     #filelist = Alma.download_and_extract_files(uid_url_table['URL'], regex='.*README$')
     #print(filelist)
     
-    uid_url_table_nodups = unique(uid_url_table, key='URL', keep='first')
+    uid_url_table_nodups = unique(uid_url_table, keys='URL', keep='first')
     
     asciitable.write(uid_url_table_nodups, '%s.txt'%(Output_name), Writer=asciitable.FixedWidthTwoLine)
     os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s.log'%(Output_name))
@@ -111,6 +115,12 @@ for Member_ous_id in Member_ous_ids:
     
     for i in range(uid_url_table_nrow):
         uid_url_address = uid_url_table_nodups[i]['URL']
+        
+        # if user has input Only_products, then we only download products which contain .fits
+        if Only_products:
+            if not (uid_url_address.find('.fits.') > 0 or uid_url_address.endswith('.fits')):
+                continue
+        
         if i == 0:
             os.system('echo "#!/bin/bash" > %s.sh'%(Output_name))
             os.system('echo "" >> %s.sh'%(Output_name))
