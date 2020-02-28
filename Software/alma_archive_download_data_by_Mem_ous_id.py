@@ -31,13 +31,13 @@ while i < len(sys.argv):
         Login_user_name = sys.argv[i].replace('user:','')
     elif arg_str.startswith("-eso"):
         Use_alma_site = 'eso'
-    elif sys.arg_str.startswith("-only-products"):
+    elif arg_str.startswith("-only-products"):
         Only_products = True
     elif arg_str == '-user':
         if i+1 < len(sys.argv):
             i = i+1
             Login_user_name = sys.argv[i]
-    elif arg_str.startswith == '-out':
+    elif arg_str == '-out':
         if i+1 < len(sys.argv):
             i = i+1
             Output_folder = sys.argv[i]
