@@ -21,6 +21,7 @@ Login_user_name = ''
 Use_alma_site = 'nrao'
 Output_folder = ''
 Only_products = False
+Overwrite_query = False
 i = 1
 while i < len(sys.argv): 
     #print(sys.argv[i])
@@ -33,6 +34,8 @@ while i < len(sys.argv):
         Use_alma_site = 'eso'
     elif arg_str.startswith("-only-products"):
         Only_products = True
+    elif arg_str.startswith("-overwrite-query"):
+        Overwrite_query = True
     elif arg_str == '-user':
         if i+1 < len(sys.argv):
             i = i+1
@@ -82,32 +85,44 @@ for Member_ous_id in Member_ous_ids:
             os.system('%s.sh >> %s.log'%(Output_name,Output_name))
         continue
     
-    # archive url
-    # 'http://almascience.org',
-    # 'https://almascience.eso.org',
-    # 'https://almascience.nrao.edu',
-    # 'https://almascience.nao.ac.jp',
-    # 'https://beta.cadc-ccda.hia-iha.nrc-cnrc.gc.ca'
-    if Use_alma_site == 'eso':
-        Alma.archive_url = u'https://almascience.eso.org'
+    # check previous alma archive queries
+    if os.path.isfile('%s.txt'%(Output_name)) and not Overwrite_query: 
+        print('Found exisiting "%s.txt"! No "-overwrite-query" is set. Using it!'%(Output_name))
+        uid_url_table_nodups = Table.read('%s.txt'%(Output_name), format='fixed_width_two_line')
     else:
-        Alma.archive_url = u'https://almascience.nrao.edu'
+        # 
+        # archive url
+        # 'http://almascience.org',
+        # 'https://almascience.eso.org',
+        # 'https://almascience.nrao.edu',
+        # 'https://almascience.nao.ac.jp',
+        # 'https://beta.cadc-ccda.hia-iha.nrc-cnrc.gc.ca'
+        if Use_alma_site == 'eso':
+            Alma.archive_url = u'https://almascience.eso.org'
+        else:
+            Alma.archive_url = u'https://almascience.nrao.edu'
+        # 
+        # login
+        if Login_user_name != '':
+            print('Logging in as ALMA User "%s"'%(Login_user_name))
+            Alma.login(Login_user_name, store_password=True)
+        
+        print('Staging data for Member ObservingUnitSet ID "%s"'%(Member_ous_id))
+        uid_url_table = Alma.stage_data(Member_ous_id)
+        # 
+        #filelist = Alma.download_and_extract_files(uid_url_table['URL'], regex='.*README$')
+        #print(filelist)
+        # 
+        # remove duplicate URLs
+        uid_url_table_nodups = unique(uid_url_table, keys='URL', keep='first')
+        # 
+        # save to disk
+        asciitable.write(uid_url_table_nodups, '%s.txt'%(Output_name), Writer=asciitable.FixedWidthTwoLine)
     
-    # login
-    if Login_user_name != '':
-        print('Logging in as ALMA User "%s"'%(Login_user_name))
-        Alma.login(Login_user_name, store_password=True)
+    # 
     
-    print('Staging data for Member ObservingUnitSet ID "%s"'%(Member_ous_id))
-    uid_url_table = Alma.stage_data(Member_ous_id)
-    print(uid_url_table)
+    print(uid_url_table_nodups)
     
-    #filelist = Alma.download_and_extract_files(uid_url_table['URL'], regex='.*README$')
-    #print(filelist)
-    
-    uid_url_table_nodups = unique(uid_url_table, keys='URL', keep='first')
-    
-    asciitable.write(uid_url_table_nodups, '%s.txt'%(Output_name), Writer=asciitable.FixedWidthTwoLine)
     os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s.log'%(Output_name))
     os.system('echo "%s %s" >> %s.log'%(sys.argv[0],sys.argv[1],Output_name))
     
