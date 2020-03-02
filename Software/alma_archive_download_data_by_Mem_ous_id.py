@@ -153,11 +153,12 @@ for Member_ous_id in Member_ous_ids:
         os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_address,Output_name))
         #os.system('echo "wget --no-check-certificate --auth-no-challenge --server-response --user dzliu --password  -c \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
         #os.system('echo "wget -c \"%s\"" >> %s.sh'%(uid_url_address,Output_name))
-        if i == uid_url_table_nrow-1:
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name,Output_name))
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('chmod +x %s.sh'%(Output_name))
+    
+    os.system('echo "" >> %s.sh'%(Output_name))
+    os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name,Output_name))
+    os.system('echo "" >> %s.sh'%(Output_name))
+    os.system('chmod +x %s.sh'%(Output_name))
+    
     print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
     print('Running "./%s.sh >> %s.log" in terminal!'%(Output_name,Output_name))
     
