@@ -22,6 +22,7 @@ Use_alma_site = 'nrao'
 Output_folder = ''
 Only_products = False
 Overwrite_query = False
+Overwrite_download = False
 i = 1
 while i < len(sys.argv): 
     #print(sys.argv[i])
@@ -36,6 +37,8 @@ while i < len(sys.argv):
         Only_products = True
     elif arg_str.startswith("-overwrite-query"):
         Overwrite_query = True
+    elif arg_str.startswith("-overwrite-download"):
+        Overwrite_download = True
     elif arg_str == '-user':
         if i+1 < len(sys.argv):
             i = i+1
@@ -73,7 +76,7 @@ for Member_ous_id in Member_ous_ids:
     Output_name = 'alma_archive_download_tar_files_by_Mem_ous_id_%s'%(Member_ous_name)
     
     # check previous runs
-    if os.path.isfile('%s.sh'%(Output_name)): 
+    if os.path.isfile('%s.sh'%(Output_name)) and not Overwrite_download: 
         if os.path.isfile('%s.sh.done'%(Output_name)): 
             print('Found exisiting "%s.sh" and "%s.sh.done"! Will not re-run it!'%(Output_name,Output_name))
         else:
@@ -156,9 +159,9 @@ for Member_ous_id in Member_ous_ids:
             os.system('echo "" >> %s.sh'%(Output_name))
             os.system('chmod +x %s.sh'%(Output_name))
     print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
-    print('Running "%s.sh >> %s.log" in terminal!'%(Output_name,Output_name))
+    print('Running "./%s.sh >> %s.log" in terminal!'%(Output_name,Output_name))
     
-    os.system('%s.sh >> %s.log'%(Output_name,Output_name))
+    os.system('./%s.sh >> %s.log'%(Output_name,Output_name))
     
     #cache_location = os.getcwd() + os.path.sep + 'cache'
     #if not os.path.isdir(cache_location):
