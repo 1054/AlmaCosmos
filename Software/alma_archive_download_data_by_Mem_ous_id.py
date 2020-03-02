@@ -140,16 +140,28 @@ for Member_ous_id in Member_ous_ids:
     os.system('echo "" >> %s'%(Output_sh))
     os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s'%(os.path.dirname(sys.argv[0]), Output_sh))
     
+    has_fits_images = False
+    for i in range(len(uid_url_table_nodups)):
+        uid_url_address = uid_url_table_nodups[i]['URL']
+        if (uid_url_address.find('.fits.') > 0 or uid_url_address.endswith('.fits')):
+            has_fits_images = True
+            break
+    
     uid_url_table_row_indices = []
     for i in range(len(uid_url_table_nodups)):
         uid_url_address = uid_url_table_nodups[i]['URL']
         # if user has input Only_products, then we only download products which contain .fits
         if Only_products:
-            #if (uid_url_address.find('.fits.') > 0 or uid_url_address.endswith('.fits')):
-            #    uid_url_table_row_indices.append(i)
-            if not (uid_url_address.find('.asdm.') >= 0):
-                uid_url_table_row_indices.append(i)
+            if has_fits_images:
+                # if has fits images, then we only download fits image products
+                if (uid_url_address.find('.fits.') > 0 or uid_url_address.endswith('.fits')):
+                    uid_url_table_row_indices.append(i)
+            else:
+                # otherwise we download all non adsm raw data. 
+                if not (uid_url_address.find('.asdm.') >= 0):
+                    uid_url_table_row_indices.append(i)
         else:
+            # if no -only-product is given, we download all data.
             uid_url_table_row_indices.append(i)
         
     for i in uid_url_table_row_indices:
