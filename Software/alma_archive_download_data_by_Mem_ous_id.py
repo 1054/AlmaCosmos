@@ -84,8 +84,9 @@ for Member_ous_id in Member_ous_ids:
             os.system('echo "" >> %s.log'%(Output_name))
             os.system('date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\" >> %s.log'%(Output_name))
             os.system('echo "" >> %s.log'%(Output_name))
-            print('%s.sh >> %s.log'%(Output_name,Output_name))
-            os.system('%s.sh >> %s.log'%(Output_name,Output_name))
+            os.system('chmod +x %s.sh'%(Output_name))
+            print('./%s.sh >> %s.log'%(Output_name,Output_name))
+            os.system('./%s.sh >> %s.log'%(Output_name,Output_name))
         continue
     
     # check previous alma archive queries
