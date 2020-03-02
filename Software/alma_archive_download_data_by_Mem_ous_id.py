@@ -91,7 +91,7 @@ for Member_ous_id in Member_ous_ids:
     # check previous alma archive queries
     if os.path.isfile('%s.txt'%(Output_name)) and not Overwrite_query: 
         print('Found exisiting "%s.txt"! No "-overwrite-query" is set. Using it!'%(Output_name))
-        uid_url_table_nodups = Table.read('%s.txt'%(Output_name), format='fixed_width_two_line')
+        uid_url_table_nodups = Table.read('%s.txt'%(Output_name), format='ascii.fixed_width_two_line')
     else:
         # 
         # archive url
