@@ -74,19 +74,22 @@ if Output_folder != '':
 for Member_ous_id in Member_ous_ids:
     Member_ous_name = Member_ous_id.replace(':','_').replace('/','_').replace('+','_')
     Output_name = 'alma_archive_download_tar_files_by_Mem_ous_id_%s'%(Member_ous_name)
+    Output_log = Output_name+'.log'
+    Output_sh = Output_name+'.sh'
+    Output_done = Output_name+'.sh.done'
     
     # check previous runs
-    if os.path.isfile('%s.sh'%(Output_name)) and not Overwrite_download: 
-        if os.path.isfile('%s.sh.done'%(Output_name)): 
-            print('Found exisiting "%s.sh" and "%s.sh.done"! Will not re-run it!'%(Output_name,Output_name))
+    if os.path.isfile(Output_sh) and not Overwrite_download: 
+        if os.path.isfile(Output_done): 
+            print('Found exisiting "%s" and "%s"! Will not re-run it!'%(Output_sh, Output_done))
         else:
-            print('Found exisiting "%s.sh"! But it seems not finished yet! Will launch it now!'%(Output_name))
-            os.system('echo "" >> %s.log'%(Output_name))
-            os.system('date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\" >> %s.log'%(Output_name))
-            os.system('echo "" >> %s.log'%(Output_name))
-            os.system('chmod +x %s.sh'%(Output_name))
-            print('./%s.sh >> %s.log'%(Output_name,Output_name))
-            os.system('./%s.sh >> %s.log'%(Output_name,Output_name))
+            print('Found exisiting "%s"! But it seems not finished yet! Will launch it now!'%(Output_sh))
+            os.system('echo "" >> %s'%(Output_log))
+            os.system('date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\" >> %s'%(Output_log))
+            os.system('echo "" >> %s'%(Output_log))
+            os.system('chmod +x %s.sh'%(Output_sh))
+            print('./%s.sh >> %s'%(Output_sh, Output_log))
+            os.system('./%s.sh >> %s'%(Output_sh, Output_log))
         continue
     
     # check previous alma archive queries
@@ -127,43 +130,52 @@ for Member_ous_id in Member_ous_ids:
     
     print(uid_url_table_nodups)
     
-    os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s.log'%(Output_name))
-    os.system('echo "%s %s" >> %s.log'%(sys.argv[0],sys.argv[1],Output_name))
     
-    uid_url_table_nrow = len(uid_url_table_nodups)
+    os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s'%(Output_log))
+    os.system('echo "%s %s" >> %s'%(sys.argv[0], sys.argv[1], Output_log))
     
-    for i in range(uid_url_table_nrow):
+    os.system('echo "#!/bin/bash" > %s'%(Output_sh))
+    os.system('echo "" >> %s'%(Output_sh))
+    os.system('echo "set -e" >> %s'%(Output_sh))
+    os.system('echo "" >> %s'%(Output_sh))
+    os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s'%(os.path.dirname(sys.argv[0]), Output_sh))
+    
+    uid_url_table_row_indices = []
+    for i in range(len(uid_url_table_nodups)):
         uid_url_address = uid_url_table_nodups[i]['URL']
-        
         # if user has input Only_products, then we only download products which contain .fits
         if Only_products:
-            if not (uid_url_address.find('.fits.') > 0 or uid_url_address.endswith('.fits')):
-                continue
+            #if (uid_url_address.find('.fits.') > 0 or uid_url_address.endswith('.fits')):
+            #    uid_url_table_row_indices.append(i)
+            if not (uid_url_address.find('.asdm.') >= 0):
+                uid_url_table_row_indices.append(i)
+        else:
+            uid_url_table_row_indices.append(i)
         
-        if i == 0:
-            os.system('echo "#!/bin/bash" > %s.sh'%(Output_name))
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo "set -e" >> %s.sh'%(Output_name))
-            os.system('echo "" >> %s.sh'%(Output_name))
-            os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]),Output_name))
+    for i in uid_url_table_row_indices:
+        uid_url_address = uid_url_table_nodups[i]['URL']
+        
+        if i == uid_url_table_row_indices[0]:
             if Login_user_name != '':
-                os.system('echo "export ALMA_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name,Output_name))
+                os.system('echo "export ALMA_USERNAME=\\\"%s\\\"" >> %s'%(Login_user_name, Output_sh))
             else:
-                os.system('echo "export ALMA_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
-        os.system('echo "" >> %s.sh'%(Output_name))
-        os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_address,Output_name))
+                os.system('echo "export ALMA_USERNAME=\\\"\\\"" >> %s'%(Output_sh))
+        
+        os.system('echo "" >> %s'%(Output_sh))
+        os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s'%(uid_url_address, Output_sh))
         #os.system('echo "wget --no-check-certificate --auth-no-challenge --server-response --user dzliu --password  -c \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'],Output_name))
         #os.system('echo "wget -c \"%s\"" >> %s.sh'%(uid_url_address,Output_name))
+        
+        if i == uid_url_table_row_indices[-1]:
+            os.system('echo "" >> %s'%(Output_sh))
+            os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.done\" >> %s'%(Output_name, Output_sh))
+            os.system('echo "" >> %s'%(Output_sh))
+            os.system('chmod +x %s'%(Output_sh))
     
-    os.system('echo "" >> %s.sh'%(Output_name))
-    os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name,Output_name))
-    os.system('echo "" >> %s.sh'%(Output_name))
-    os.system('chmod +x %s.sh'%(Output_name))
+    print('Now prepared a shell script "%s" to download the Tar files!'%(Output_sh))
+    print('Running "./%s >> %s" in terminal!'%(Output_sh, Output_log))
     
-    print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
-    print('Running "./%s.sh >> %s.log" in terminal!'%(Output_name,Output_name))
-    
-    os.system('./%s.sh >> %s.log'%(Output_name,Output_name))
+    os.system('./%s >> %s'%(Output_sh, Output_log))
     
     #cache_location = os.getcwd() + os.path.sep + 'cache'
     #if not os.path.isdir(cache_location):
