@@ -163,7 +163,7 @@ for Member_ous_id in Member_ous_ids:
         else:
             # if no -only-product is given, we download all data.
             uid_url_table_row_indices.append(i)
-        
+    
     for i in uid_url_table_row_indices:
         uid_url_address = uid_url_table_nodups[i]['URL']
         
@@ -180,7 +180,7 @@ for Member_ous_id in Member_ous_ids:
         
         if i == uid_url_table_row_indices[-1]:
             os.system('echo "" >> %s'%(Output_sh))
-            os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.done\" >> %s'%(Output_name, Output_sh))
+            os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s\" >> %s'%(Output_done, Output_sh))
             os.system('echo "" >> %s'%(Output_sh))
             os.system('chmod +x %s'%(Output_sh))
     
