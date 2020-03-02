@@ -76,7 +76,7 @@ for Member_ous_id in Member_ous_ids:
     Output_name = 'alma_archive_download_tar_files_by_Mem_ous_id_%s'%(Member_ous_name)
     Output_log = Output_name+'.log'
     Output_sh = Output_name+'.sh'
-    Output_done = Output_name+'.sh.done'
+    Output_done = Output_name+'.done'
     
     # check previous runs
     if os.path.isfile(Output_sh) and not Overwrite_download: 
