@@ -2,7 +2,7 @@
 # 
 
 from __future__ import print_function
-import os, sys, re, time, json 
+import os, sys, re, time, datetime, json 
 # pkg_resources
 #pkg_resources.require('astroquery')
 #pkg_resources.require('keyrings.alt')
@@ -33,6 +33,7 @@ some_option = ''
 Login_user_name = ''
 Use_alma_site = 'nrao'
 output_dir = ''
+overwrite = False
 verbose = 0
 i = 1
 while i < len(sys.argv):
@@ -51,6 +52,8 @@ while i < len(sys.argv):
             output_dir = sys.argv[i]
     elif tmp_arg == '-eso': 
         Use_alma_site = 'eso'
+    elif tmp_arg == '-overwrite': 
+        overwrite = True
     elif tmp_arg == '-verbose': 
         verbose = verbose + 1
     else:
@@ -110,8 +113,23 @@ for i in range(len(meta_table)):
         output_dir_path = meta_table['Project_code'][i]+'.cache'
     else:
         output_dir_path = output_dir
+    # 
+    # check exist output and do not overwrite
+    # 
+    if os.path.isdir(output_dir_path) and os.path.isfile(output_dir_path+'.done') and not os.path.isfile(output_dir_path+'.touch') and not overwrite:
+        print('Found existing "%s" and "%s". Will not overwrite!'%(output_dir_path, output_dir_path+'.done'))
+        continue
+    # 
     if not os.path.isdir(output_dir_path):
         os.makedirs(output_dir_path)
+    if os.path.isfile(output_dir_path+'.done'):
+        os.remove(output_dir_path+'.done')
+    # 
+    # touch 
+    # 
+    start_time = datetime.datetime.now()
+    with open(output_dir_path+'.touch', 'w') as fp:
+        fp.write('START: ' + start_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
     # 
     # change dir
     # 
@@ -267,6 +285,18 @@ for i in range(len(meta_table)):
     print('os.chdir("%s")' % (current_dir_path) )
     os.chdir(current_dir_path)
     print('os.getcwd()', os.getcwd())
+    
+    # 
+    # finish
+    # 
+    finish_time = datetime.datetime.now()
+    with open(output_dir_path+'.done', 'w') as fp:
+        fp.write('STARTED: ' + start_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
+        fp.write('FINISHED: ' + finish_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
+        fp.write('ELAPSED: ' + str(finish_time.time()-start_time.time()) + '\n')
+    if os.path.isfile(output_dir_path+'.touch'):
+        os.remove(output_dir_path+'.touch') # delete touch file
+        
     
 
 
