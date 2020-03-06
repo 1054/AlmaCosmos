@@ -12,7 +12,6 @@ import requests
 from astroquery.alma.core import Alma
 import astropy.io.ascii as asciitable
 from astropy.table import Table, Column
-from datetime import datetime
 from operator import itemgetter, attrgetter
 import glob
 import numpy as np
