@@ -22,11 +22,15 @@ Project_code="$1"; shift
 
 # read user input
 iarg=1
+width="25km/s"
 select_dataset=()
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
+    if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); width="${!iarg}"; echo "Setting width=\"${!iarg}\""
+    fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
-        iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting \"${!iarg}\""
+        iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting dataset \"${!iarg}\""
     fi
     iarg=$((iarg+1))
 done
@@ -118,9 +122,15 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     fi
     
     # read source names
-    list_of_unique_source_names=($(ls -1d ../Level_3_Split/$DataSet_dir/split_*_spw*_width2.ms | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+.ms$%\1%g' | sort -V | uniq ) )
+    if [[ x"${width}" == x*"km/s" ]] || [[ x"${width}" == x*"KM/S" ]]; then
+        width_val=$(echo "${width}" | sed -e 's%km/s%%g' | sed -e 's%KM/S%%g')
+        width_str="${width_val}kms"
+    else
+        width_str="${width}"
+    fi
+    list_of_unique_source_names=($(find ../Level_3_Split/$DataSet_dir/ -type d -name "split_*_spw*_width${width_str}.ms" | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kmsKMS]+.ms$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
-        echo_error "Error! Failed to find \"../Level_3_Split/$DataSet_dir/split_*_spw*_width2.ms\" and get unique source names!"
+        echo_error "Error! Failed to find \"../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}.ms\" and get unique source names!"
         exit 255
     fi
     
@@ -137,7 +147,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         cd "${source_name}/$DataSet_dir"
         
         # find each ms data
-        list_of_ms_data=($(ls -1d ../../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width2.ms | sort -V ) )
+        list_of_ms_data=($(find ../../../Level_3_Split/$DataSet_dir/ -type d -name "split_${source_name}_spw*_width${width_str}.ms" | sort -V ) )
         
         # prepare to get list of continuum ms data
         list_of_continuum_ms_data=()

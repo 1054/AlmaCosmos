@@ -29,10 +29,10 @@ select_dataset=()
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
     if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
-        iarg=$((iarg+1)); width="${!iarg}"
+        iarg=$((iarg+1)); width="${!iarg}"; echo "Setting width=\"${!iarg}\""
     fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
-        iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting \"${!iarg}\""
+        iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting dataset \"${!iarg}\""
     fi
     iarg=$((iarg+1))
 done
@@ -220,6 +220,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     if [[ x"${width}" == x*"km/s" ]] || [[ x"${width}" == x*"KM/S" ]]; then
         width_val=$(echo "${width}" | sed -e 's%km/s%%g' | sed -e 's%KM/S%%g')
         width_str="${width_val}kms"
+    else
+        width_str="${width}"
     fi
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
         echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -trim-chan -step split exportuvfits gildas | tee .casa-ms-split.log"
