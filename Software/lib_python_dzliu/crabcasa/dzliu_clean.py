@@ -9,6 +9,9 @@
 #     sys.path.append('/Users/dzliu/Cloud/Github/Crab.Toolkit.CASA/lib/python')
 #     import dzliu_clean; reload(dzliu_clean); dzliu_clean.dzliu_clean(dataset_ms)
 # 
+# Notes:
+#     20200312: numpy too old in CASA 5. np.full not there yet. 
+# 
 from __future__ import print_function
 import os, sys, re, json, copy, timeit, shutil
 import numpy as np
@@ -476,7 +479,7 @@ def split_continuum_visibilities(dataset_ms, output_ms, galaxy_name, galaxy_reds
             spw_ref_freq = spw_ref_freq_col[i]
             print2('spw_%d, ref_freq %.3e Hz, chan_freq %.3e .. %.3e Hz (%d), chan_width %.3e Hz'%(i, spw_ref_freq, np.max(spw_chan_freq_list), np.min(spw_chan_freq_list), len(spw_chan_freq_list), np.min(spw_chan_width_list) ) )
             # find the target line in these spw
-            spw_chan_selection_mask = np.full(len(spw_chan_width_list), True)
+            spw_chan_selection_mask = np.array([True]*len(spw_chan_width_list)) # np.full(len(spw_chan_width_list), True)
             for k in range(len(all_line_frequency)):
                 ref_freq_Hz = spw_chan_freq_list[0]
                 width_freq_Hz = spw_chan_width_list[0]
@@ -523,7 +526,7 @@ def split_continuum_visibilities(dataset_ms, output_ms, galaxy_name, galaxy_reds
             spw_ref_freq = spw_ref_freq_col[i]
             print2('spw_%d, ref_freq %.3e Hz, chan_freq %.3e .. %.3e Hz (%d), chan_width %.3e Hz'%(i, spw_ref_freq, np.max(spw_chan_freq_list), np.min(spw_chan_freq_list), len(spw_chan_freq_list), np.min(spw_chan_width_list) ) )
             # 
-            spw_chan_selection_mask = np.full(len(spw_chan_width_list), True) # select all channels
+            spw_chan_selection_mask = np.array([True]*len(spw_chan_width_list)) # np.full(len(spw_chan_width_list), True) # select all channels
             # 
             all_spw_chan_selection_str += '%d'%(i)
             if i != valid_spw_indicies[-1]:
