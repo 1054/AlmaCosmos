@@ -23,6 +23,7 @@ Project_code="$1"; shift
 # read user input
 iarg=1
 width="25km/s"
+overwrite=0
 select_dataset=()
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
@@ -31,6 +32,9 @@ while [[ $iarg -le $# ]]; do
     fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting dataset \"${!iarg}\""
+    fi
+    if [[ "$istr" == "-dataset" ]]; then
+        overwrite=$((overwrite+1))
     fi
     iarg=$((iarg+1))
 done
@@ -214,7 +218,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo ""                                                                                                                                                >> "${py_script}"
                 chmod +x "${py_script}"
             fi
-            if [[ ! -f "${done_script}" ]]; then
+            if [[ ! -f "${done_script}" ]] || [[ $overwrite -ge 1 ]]; then
                 chmod +x "${run_script}"
                 echo_output "Running ${run_script} > ${log_script}"
                 ./"${run_script}" > "${log_script}" 2>&1
@@ -285,7 +289,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     echo ""                                                                                                  >> "${py_script}"
                     chmod +x "${py_script}"
                 fi
-                if [[ ! -f "${done_script}" ]]; then
+                if [[ ! -f "${done_script}" ]] || [[ $overwrite -ge 1 ]]; then
                     chmod +x "${run_script}"
                     echo_output "Running ${run_script} > ${log_script}"
                     ./"${run_script}" > "${log_script}" 2>&1
