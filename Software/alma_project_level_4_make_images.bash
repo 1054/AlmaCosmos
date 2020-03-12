@@ -161,8 +161,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             ms_spw=$(echo "${ms_data}" | perl -p -e 's/split_.*_spw([0-9]+)_.*\.ms$/\1/g')
             
             # check existing images
-            if [[ -f "${ms_name}.cube.fits" ]]; then
-                echo "Found image cube \"${ms_name}.cube.fits\". Continue."
+            if [[ -f "${ms_name}_cube_clean.image.fits" ]] && [[ -f "${ms_name}_cont_clean.image.fits" ]]; then
+                echo "Found image cube \"${ms_name}_cube_clean.image.fits\". Will not overwrite. Continue."
                 continue
             fi
             
