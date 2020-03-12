@@ -33,7 +33,7 @@ while [[ $iarg -le $# ]]; do
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting dataset \"${!iarg}\""
     fi
-    if [[ "$istr" == "-dataset" ]]; then
+    if [[ "$istr" == "-overwrite" ]]; then
         overwrite=$((overwrite+1))
     fi
     iarg=$((iarg+1))
