@@ -117,7 +117,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     cd $DataSet_dir
     
     # read source names
-    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9]+.uvfits$%\1%g' | sort -V | uniq ) )
+    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kms]+.uvfits$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
         echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits\" and get unique source names!"
         exit 255
