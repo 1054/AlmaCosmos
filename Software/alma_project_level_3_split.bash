@@ -231,6 +231,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         trim_chan_args=(-trim-chan)
     elif [[ x"${trimchan}" != x"0" ]]; then
         trim_chan_args=(-trim-chan-num ${trimchan})
+    else
+        trim_chan_args=()
     fi
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
         echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} -step split exportuvfits gildas | tee .casa-ms-split.log"
