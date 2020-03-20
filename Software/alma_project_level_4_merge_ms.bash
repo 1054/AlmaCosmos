@@ -1,7 +1,7 @@
 #!/bin/bash
 # 
 
-#source ~/Softwares/CASA/SETUP.bash
+#source ~/Softwares/CASA/SETUP.bash 5.4.0
 #source ~/Softwares/GILDAS/SETUP.bash
 #source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
 
@@ -10,11 +10,11 @@
 
 if [[ $# -eq 0 ]]; then
     echo "Usage: "
-    echo "    alma_project_level_4_copy_uvt.bash Project_code [-dataset DataSet_01]"
+    echo "    alma_project_level_4_copy_uvfits.bash Project_code [-dataset DataSet_01]"
     echo "Example: "
-    echo "    alma_project_level_4_copy_uvt.bash 2013.1.00034.S"
+    echo "    alma_project_level_4_copy_uvfits.bash 2013.1.00034.S"
     echo "Notes: "
-    echo "    This code will copy uvt files from \"Level_3_Split\" to \"Level_4_Data_uvt\" classified by source names."
+    echo "    This code will copy uvfits files from \"Level_3_Split\" to \"Level_4_Data_uvfits\" classified by source names."
     exit
 fi
 
@@ -87,12 +87,12 @@ else
 fi
 
 
-# prepare Level_4_Data_uvt folder
-if [[ ! -d Level_4_Data_uvt ]]; then 
-    mkdir Level_4_Data_uvt
+# prepare Level_4_Data_uvfits folder
+if [[ ! -d Level_4_Data_uvfits ]]; then 
+    mkdir Level_4_Data_uvfits
 fi
-echo_output cd Level_4_Data_uvt
-cd Level_4_Data_uvt
+echo_output cd Level_4_Data_uvfits
+cd Level_4_Data_uvfits
 
 
 # loop datasets and run CASA split then GILDAS importuvfits
@@ -101,7 +101,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     DataSet_dir=$(basename ${list_of_datasets[i]})
     
     # print message
-    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying *.uvt"
+    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying *.uvfits"
     
     # check Level_3_Split DataSet_dir
     if [[ ! -d ../Level_3_Split/$DataSet_dir ]]; then
@@ -109,7 +109,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         continue
     fi
     
-    # prepare Level_4_Data_uvt DataSet_dir
+    # prepare Level_4_Data_uvfits DataSet_dir
     if [[ ! -d $DataSet_dir ]]; then
         mkdir $DataSet_dir
     fi
@@ -117,21 +117,21 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     cd $DataSet_dir
     
     # read source names
-    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kms]+_SP.uvt$%\1%g' | sort -V | uniq ) )
+    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kms]+.uvfits$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
-        echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt\" and get unique source names!"
+        echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits\" and get unique source names!"
         exit 255
     fi
     
-    # loop list_of_unique_source_names and make dir for each source and copy uvt files
+    # loop list_of_unique_source_names and make dir for each source and copy uvfits files
     for (( j = 0; j < ${#list_of_unique_source_names[@]}; j++ )); do
         source_name=${list_of_unique_source_names[j]}
         if [[ ! -d "${source_name}" ]]; then
             echo_output mkdir "${source_name}"
             mkdir "${source_name}"
         fi
-        echo_output cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
-        cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
+        echo_output cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*.uvfits "${source_name}/"
+        cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*.uvfits "${source_name}/"
     done
     
     # cd back
