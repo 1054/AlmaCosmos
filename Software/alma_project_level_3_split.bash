@@ -25,11 +25,15 @@ Project_code="$1"; shift
 # read user input
 iarg=1
 width="25km/s"
+trimchan="0"
 select_dataset=()
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
     if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); width="${!iarg}"; echo "Setting width=\"${!iarg}\""
+    fi
+    if [[ "$istr" == "-trim-chan" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); trimchan="${!iarg}"; echo "Setting trimchan=\"${!iarg}\""
     fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting dataset \"${!iarg}\""
@@ -223,14 +227,19 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     else
         width_str="${width}"
     fi
+    if [[ x"${trimchan}" == x"auto" ]]; then
+        trim_chan_args=(-trim-chan)
+    elif [[ x"${trimchan}" != x"0" ]]; then
+        trim_chan_args=(-trim-chan-num ${trimchan})
+    fi
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
-        echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -trim-chan -step split exportuvfits gildas | tee .casa-ms-split.log"
-        casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -trim-chan -step split exportuvfits gildas | tee .casa-ms-split.log
+        echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} -step split exportuvfits gildas | tee .casa-ms-split.log"
+        casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} -step split exportuvfits gildas | tee .casa-ms-split.log
     else
         echo_output "Warning! Found split_*_width${width_str}_SP.uvt files! Will not re-run casa-ms-split!"
     fi
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
-        echo_error "Error! casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 -trim-chan -step split exportuvfits gildas FAILED!"
+        echo_error "Error! casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} -step split exportuvfits gildas FAILED!"
     fi
     
     # cd back
