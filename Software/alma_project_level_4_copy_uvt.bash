@@ -34,7 +34,7 @@ while [[ $iarg -le $# ]]; do
         iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting \"${!iarg}\""
     fi
     if [[ "$istr" == "-out" ]] && [[ $((iarg+1)) -le $# ]]; then
-        iarg=$((iarg+1)); output_folder+=("${!iarg}"); echo "Outputting to \"${!iarg}\""
+        iarg=$((iarg+1)); output_folder="${!iarg}"; echo "Outputting to \"${!iarg}\""
     fi
     iarg=$((iarg+1))
 done
@@ -109,7 +109,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     DataSet_dir=$(basename ${list_of_datasets[i]})
     
     # print message
-    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying *.uvt"
+    echo_output "Checking \"../Level_3_Split/$DataSet_dir\""
     
     # check Level_3_Split DataSet_dir
     if [[ ! -d ../Level_3_Split/$DataSet_dir ]]; then
@@ -132,12 +132,16 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         width_str="${width}"
     fi
     
+    # print message
+    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying split_*_spw*_width${width_str}_SP.uvt"
+    
     # read source names
     list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}_SP.uvt | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kms]+_SP.uvt$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
         echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}_SP.uvt\" and get unique source names!"
         exit 255
     fi
+    echo "Unique source names: ${list_of_unique_source_names[@]} (${#list_of_unique_source_names[@]}"
     
     # loop list_of_unique_source_names and make dir for each source and copy uvt files
     for (( j = 0; j < ${#list_of_unique_source_names[@]}; j++ )); do
