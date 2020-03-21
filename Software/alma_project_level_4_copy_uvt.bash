@@ -22,11 +22,19 @@ Project_code="$1"; shift
 
 # read user input
 iarg=1
+width="25km/s"
 select_dataset=()
+output_folder="Level_4_Data_uvt"
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
+    if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); width="${!iarg}"; echo "Setting width=\"${!iarg}\""
+    fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting \"${!iarg}\""
+    fi
+    if [[ "$istr" == "-out" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); output_folder+=("${!iarg}"); echo "Outputting to \"${!iarg}\""
     fi
     iarg=$((iarg+1))
 done
@@ -87,12 +95,12 @@ else
 fi
 
 
-# prepare Level_4_Data_uvt folder
-if [[ ! -d Level_4_Data_uvt ]]; then 
-    mkdir Level_4_Data_uvt
+# prepare output folder
+if [[ ! -d "${output_folder}" ]]; then 
+    mkdir "${output_folder}"
 fi
-echo_output cd Level_4_Data_uvt
-cd Level_4_Data_uvt
+echo_output cd "${output_folder}"
+cd "${output_folder}"
 
 
 # loop datasets and run CASA split then GILDAS importuvfits
@@ -116,10 +124,18 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     echo_output cd $DataSet_dir
     cd $DataSet_dir
     
+    # select width
+    if [[ x"${width}" == x*"km/s" ]] || [[ x"${width}" == x*"KM/S" ]]; then
+        width_val=$(echo "${width}" | sed -e 's%km/s%%g' | sed -e 's%KM/S%%g')
+        width_str="${width_val}kms"
+    else
+        width_str="${width}"
+    fi
+    
     # read source names
-    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kms]+_SP.uvt$%\1%g' | sort -V | uniq ) )
+    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}_SP.uvt | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kms]+_SP.uvt$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
-        echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*_SP.uvt\" and get unique source names!"
+        echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}_SP.uvt\" and get unique source names!"
         exit 255
     fi
     
@@ -130,8 +146,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             echo_output mkdir "${source_name}"
             mkdir "${source_name}"
         fi
-        echo_output cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
-        cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*_SP.uvt "${source_name}/"
+        echo_output cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width${width_str}_SP.uvt "${source_name}/"
+        cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width${width_str}_SP.uvt "${source_name}/"
     done
     
     # cd back

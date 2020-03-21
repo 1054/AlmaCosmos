@@ -224,7 +224,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         exit 255
     fi
     
-    # run CASA split, this will split each spw for all sources in the data (calibrated measurement set)
+    # select width, trimchan and unflagedgechan
     if [[ x"${width}" == x*"km/s" ]] || [[ x"${width}" == x*"KM/S" ]]; then
         width_val=$(echo "${width}" | sed -e 's%km/s%%g' | sed -e 's%KM/S%%g')
         width_str="${width_val}kms"
@@ -245,6 +245,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     else
         unflag_edge_chan_args=()
     fi
+    
+    # run CASA split, this will split each spw for all sources in the data (calibrated measurement set)
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
         echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas | tee .casa-ms-split.log"
         casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas | tee .casa-ms-split.log
