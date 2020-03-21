@@ -28,6 +28,7 @@ width="25km/s"
 trimchan="0"
 unflagedgechan="0"
 select_dataset=()
+overwrite_args=()
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
     if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
@@ -41,6 +42,10 @@ while [[ $iarg -le $# ]]; do
     fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting dataset \"${!iarg}\""
+    fi
+    if [[ "$istr" == "-overwrite" ]]; then
+        overwrite_args+=(-overwrite split exportuvfits gildas); echo "Allow overwriting"
+        # Note that casa-ms-split will always overwrite the output, but it does a backup.
     fi
     iarg=$((iarg+1))
 done
@@ -248,13 +253,13 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     
     # run CASA split, this will split each spw for all sources in the data (calibrated measurement set)
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
-        echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas | tee .casa-ms-split.log"
-        casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas | tee .casa-ms-split.log
+        echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas ${overwrite_args[*]} | tee .casa-ms-split.log"
+        casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas ${overwrite_args[*]} | tee .casa-ms-split.log
     else
         echo_output "Warning! Found split_*_width${width_str}_SP.uvt files! Will not re-run casa-ms-split!"
     fi
     if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
-        echo_error "Error! casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas FAILED!"
+        echo_error "Error! casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas ${overwrite_args[*]} FAILED!"
     fi
     
     # cd back
