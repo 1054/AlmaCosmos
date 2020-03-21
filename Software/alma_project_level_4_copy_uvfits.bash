@@ -141,7 +141,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}.uvfits\" and get unique source names!"
         exit 255
     fi
-    echo "Unique source names: ${list_of_unique_source_names[@]} (${#list_of_unique_source_names[@]}"
+    echo "Unique source names: ${list_of_unique_source_names[@]} (${#list_of_unique_source_names[@]})"
     
     # loop list_of_unique_source_names and make dir for each source and copy uvfits files
     for (( j = 0; j < ${#list_of_unique_source_names[@]}; j++ )); do

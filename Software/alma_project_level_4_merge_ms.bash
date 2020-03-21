@@ -22,11 +22,19 @@ Project_code="$1"; shift
 
 # read user input
 iarg=1
+width="25km/s"
 select_dataset=()
+output_folder="Level_4_Data_merged_ms"
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
+    if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); width="${!iarg}"; echo "Setting width=\"${!iarg}\""
+    fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting \"${!iarg}\""
+    fi
+    if [[ "$istr" == "-out" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); output_folder="${!iarg}"; echo "Outputting to \"${!iarg}\""
     fi
     iarg=$((iarg+1))
 done
@@ -87,12 +95,12 @@ else
 fi
 
 
-# prepare Level_4_Data_uvfits folder
-if [[ ! -d Level_4_Data_uvfits ]]; then 
-    mkdir Level_4_Data_uvfits
+# prepare output folder
+if [[ ! -d "${output_folder}" ]]; then 
+    mkdir "${output_folder}"
 fi
-echo_output cd Level_4_Data_uvfits
-cd Level_4_Data_uvfits
+echo_output cd "${output_folder}"
+cd "${output_folder}"
 
 
 # loop datasets and run CASA split then GILDAS importuvfits
@@ -101,7 +109,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     DataSet_dir=$(basename ${list_of_datasets[i]})
     
     # print message
-    echo_output "Now sorting out unique sources in \"$DataSet_dir\" and copying *.uvfits"
+    echo_output "Checking \"../Level_3_Split/$DataSet_dir\""
     
     # check Level_3_Split DataSet_dir
     if [[ ! -d ../Level_3_Split/$DataSet_dir ]]; then
@@ -110,16 +118,27 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     fi
     
     # prepare Level_4_Data_uvfits DataSet_dir
-    if [[ ! -d $DataSet_dir ]]; then
-        mkdir $DataSet_dir
+    #if [[ ! -d $DataSet_dir ]]; then
+    #    mkdir $DataSet_dir
+    #fi
+    #echo_output cd $DataSet_dir
+    #cd $DataSet_dir
+    
+    # select width
+    if [[ x"${width}" == x*"km/s" ]] || [[ x"${width}" == x*"KM/S" ]]; then
+        width_val=$(echo "${width}" | sed -e 's%km/s%%g' | sed -e 's%KM/S%%g')
+        width_str="${width_val}kms"
+    else
+        width_str="${width}"
     fi
-    echo_output cd $DataSet_dir
-    cd $DataSet_dir
+    
+    # print message
+    echo_output "Now sorting out unique sources for \"../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}.ms\""
     
     # read source names
-    list_of_unique_source_names=($(ls ../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kms]+.uvfits$%\1%g' | sort -V | uniq ) )
+    list_of_unique_source_names=($(ls -1d ../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}.ms | perl -p -e 's%.*split_(.*?)_spw[0-9]+_width[0-9kms]+.ms$%\1%g' | sort -V | uniq ) )
     if [[ ${#list_of_unique_source_names[@]} -eq 0 ]]; then
-        echo_error "Error! Failed to find \"../../Level_3_Split/$DataSet_dir/split_*_spw*_width*.uvfits\" and get unique source names!"
+        echo_error "Error! Failed to find \"../Level_3_Split/$DataSet_dir/split_*_spw*_width${width_str}.ms\" and get unique source names!"
         exit 255
     fi
     
@@ -130,21 +149,56 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             echo_output mkdir "${source_name}"
             mkdir "${source_name}"
         fi
-        echo_output cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*.uvfits "${source_name}/"
-        cp ../../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width*.uvfits "${source_name}/"
+        list_of_filenames=($(ls -1d ../Level_3_Split/$DataSet_dir/split_"${source_name}"_spw*_width${width_str}.ms))
+        for (( k = 0; k < ${#list_of_filenames[@]}; k++ )); do
+            outfilename="${DataSet_dir}"_$(basename "${list_of_filenames[k]}")
+            echo_output cd "${source_name}"
+            cd "${source_name}"
+            if [[ ! -d "${outfilename}" ]] && [[ ! -L "${outfilename}" ]]; then
+                echo_output ln -fsT ../../Level_3_Split/$DataSet_dir/"${list_of_filenames[k]}" "${outfilename}"
+                ln -fsT ../../Level_3_Split/$DataSet_dir/"${list_of_filenames[k]}" "${outfilename}"
+            fi
+            echo_output cd "../"
+            cd "../"
+        done
     done
     
     # cd back
-    echo_output "cd ../"
-    cd ../
+    #echo_output "cd ../"
+    #cd ../
     
     # print message
     if [[ $i -gt 0 ]]; then
         echo ""
-        echo ""
+        #echo ""
     fi
     
 done
+
+
+
+# loop each source again to combine 
+list_of_sources=($(find . -type d -maxdepth 1 -mindepth 1))
+for (( i = 0; i < ${#list_of_sources[@]}; i++ )); do
+    source_name=$(basename "${list_of_sources[i]}")
+    if [[ "${source_name}" != "."* ]]; then
+        echo_output cd "${source_name}"
+        cd "${source_name}"
+        # 
+        list_of_filenames=($(ls -1d *_split_"${source_name}"_spw*_width${width_str}.ms))
+        if [[ ${#list_of_filenames[@]} -gt 0 ]]; then
+            echo_output "Combining ${#list_of_filenames[@]} ms data..."
+            # 
+            #<TODO><20200321>#
+            # 
+        fi
+        # 
+        echo_output cd "../"
+        cd "../"
+    fi
+done
+
+
 
 
 echo_output "cd ../"
