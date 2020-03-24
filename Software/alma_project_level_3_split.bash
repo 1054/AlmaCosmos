@@ -273,7 +273,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             rm -rf split_*_width${width_str}.uvfits
         fi
         # clear old split output files
-        if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}.ms" | wc -l) -gt 0 ]] && \
+        if [[ $(find . -maxdepth 1 -type d -name "split_*_width${width_str}.ms" | wc -l) -gt 0 ]] && \
            [[ "${overwrite_args[@]}" == *"split"* ]]; then
             echo_output "rm -rf split_*_width${width_str}.ms"
             rm -rf split_*_width${width_str}.ms
