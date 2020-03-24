@@ -267,15 +267,14 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         # clear old exportuvfits output files
         if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}.uvfits" | wc -l) -gt 0 ]] && \
            ([[ "${overwrite_args[@]}" == *"split"* ]] || \
-            [[ "${overwrite_args[@]}" == *"exportuvfits"* ]] || \
+            [[ "${overwrite_args[@]}" == *"exportuvfits"* ]] \
            ); then
             echo_output "rm -rf split_*_width${width_str}.uvfits"
             rm -rf split_*_width${width_str}.uvfits
         fi
         # clear old split output files
         if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}.ms" | wc -l) -gt 0 ]] && \
-           ([[ "${overwrite_args[@]}" == *"split"* ]] || \
-           ); then
+           [[ "${overwrite_args[@]}" == *"split"* ]]; then
             echo_output "rm -rf split_*_width${width_str}.ms"
             rm -rf split_*_width${width_str}.ms
         fi
