@@ -252,13 +252,40 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     fi
     
     # run CASA split, this will split each spw for all sources in the data (calibrated measurement set)
-    if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
+    if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]] || [[ ${#overwrite_args[@]} -gt 0 ]]; then
+        # clear old gildas output files
+        if ([[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -gt 0 ]] || \
+            [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}.uvt*" | wc -l) -gt 0 ]] \
+           ) && \
+           ([[ "${overwrite_args[@]}" == *"split"* ]] || \
+            [[ "${overwrite_args[@]}" == *"exportuvfits"* ]] || \
+            [[ "${overwrite_args[@]}" == *"gildas"* ]] \
+           ); then
+            echo_output "rm -rf split_*_width${width_str}_SP.uvt split_*_width${width_str}.uvt*"
+            rm -rf split_*_width${width_str}_SP.uvt split_*_width${width_str}.uvt*
+        fi
+        # clear old exportuvfits output files
+        if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}.uvfits" | wc -l) -gt 0 ]] && \
+           ([[ "${overwrite_args[@]}" == *"split"* ]] || \
+            [[ "${overwrite_args[@]}" == *"exportuvfits"* ]] || \
+           ); then
+            echo_output "rm -rf split_*_width${width_str}.uvfits"
+            rm -rf split_*_width${width_str}.uvfits
+        fi
+        # clear old split output files
+        if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}.ms" | wc -l) -gt 0 ]] && \
+           ([[ "${overwrite_args[@]}" == *"split"* ]] || \
+           ); then
+            echo_output "rm -rf split_*_width${width_str}.ms"
+            rm -rf split_*_width${width_str}.ms
+        fi
+        # run casa-ms-split
         echo_output "casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas ${overwrite_args[*]} | tee .casa-ms-split.log"
         casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas ${overwrite_args[*]} | tee .casa-ms-split.log
     else
         echo_output "Warning! Found split_*_width${width_str}_SP.uvt files! Will not re-run casa-ms-split!"
     fi
-    if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]]; then
+    if [[ $(find . -maxdepth 1 -type f -name "split_*_width${width_str}_SP.uvt" | wc -l) -eq 0 ]] || [[ ${#overwrite_args[@]} -gt 0 ]]; then
         echo_error "Error! casa-ms-split -vis calibrated.ms -width ${width} -timebin 30 ${trim_chan_args[*]} ${unflag_edge_chan_args[*]} -step split exportuvfits gildas ${overwrite_args[*]} FAILED!"
     fi
     
