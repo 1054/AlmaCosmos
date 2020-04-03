@@ -96,8 +96,8 @@ fi
 
 # now creating data directory structure
 echo_output "Now creating data directory structure"
-echo $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt"
-$(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt"
+echo $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt" -out "meta_data_table.txt"
+$(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt" -out "meta_data_table.txt"
 
 
 # finish

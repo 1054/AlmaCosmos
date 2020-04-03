@@ -23,6 +23,11 @@ import numpy as np
 #    #import formic
 #    import glob2
 
+t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py'
+t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
+t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
+t_CASA_version = '5.0.0'
+
 
 
 # define functions
@@ -205,10 +210,13 @@ output_table['Imaged'] = [False]*len(output_table)
 
 t_Dataset_dict = {}
 t_Dataset_id = 0
+t_Dataset_processed = []
 
+# 
+# loop each meta table row to get dataset id
 for i in range(len(output_table)):
     t_Project_code = Project_code[i]
-    t_Data_name = re.sub(r'[^a-zA-Z0-9._]', r'_', Member_ous_id[i])
+    t_Member_ous_id = re.sub(r'[^a-zA-Z0-9._]', r'_', Member_ous_id[i])
     t_Source_name = re.sub(r'[^a-zA-Z0-9._+-]', r'_', Source_name[i])
     t_Source_name = re.sub(r'^_*(.*?)_*$', r'\1', t_Source_name)
     t_Array = Array[i]
@@ -220,8 +228,8 @@ for i in range(len(output_table)):
         t_Galaxy_name = t_Source_name
     # 
     # determine t_Dataset_id, check t_Dataset_dict
-    if t_Data_name in t_Dataset_dict:
-        t_Dataset_dirname = t_Dataset_dict[t_Data_name]
+    if t_Member_ous_id in t_Dataset_dict:
+        t_Dataset_dirname = t_Dataset_dict[t_Member_ous_id]
     else:
         # 
         # got a new dataset not in previous t_Dataset_dict
@@ -234,29 +242,39 @@ for i in range(len(output_table)):
         t_Dataset_dirname = ('DataSet_%%0%dd'%(t_Dataset_digits))%(t_Dataset_id)
         # 
         # append to t_Dataset_dict
-        t_Dataset_dict[t_Data_name] = t_Dataset_dirname
+        t_Dataset_dict[t_Member_ous_id] = t_Dataset_dirname
     # 
     # store into output table
     output_table['Dataset_dirname'][i] = t_Dataset_dirname
-    # 
-    # prepare Level_1_Raw dir
-    if not os.path.isdir('Level_1_Raw'):
-        os.mkdir('Level_1_Raw')
-        if verbose >= 1:
-            print('Created "Level_1_Raw" folder')
+
+
+# 
+# prepare Level_1_Raw dir
+if not os.path.isdir('Level_1_Raw'):
+    os.mkdir('Level_1_Raw')
+    if verbose >= 1:
+        print('Created "Level_1_Raw" folder')
+
+
+# 
+# loop each unique dataset
+for t_Member_ous_id in t_Dataset_dict:
+    
+    table_mask = (output_table['Dataset_dirname'] == t_Dataset_dict[t_Member_ous_id])
+    t_Dataset_dirname = output_table['Dataset_dirname'][table_mask][0]
     
     # 
     # try to find downloaded tar files
-    t_found_files = find_items_in_folder_with_name_pattern('Level_1_Raw/*'+t_Data_name+'*.tar', verbose=verbose)
+    t_found_files = find_items_in_folder_with_name_pattern('Level_1_Raw/*'+t_Member_ous_id+'*.tar', verbose=verbose)
     if len(t_found_files) == 0:
-        t_found_files = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Data_name+'*.tar', verbose=verbose)
+        t_found_files = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Member_ous_id+'*.tar', verbose=verbose)
     if len(t_found_files) > 1:
-        print('Warning! Found multiple data files with the name pattern "Level_1_Raw/**/*'+t_Data_name+'*.tar"!')
+        print('Warning! Found multiple data files with the name pattern "Level_1_Raw/**/*'+t_Member_ous_id+'*.tar"!')
     if len(t_found_files) > 0:
-        output_table['Downloaded'][i] = True
+        output_table['Downloaded'][table_mask] = True
     else:
         # 
-        print('Warning! "Level_1_Raw" folder does not contain "*%s*.tar" files! Please download the raw ALMA data into this directory (any subdirectory is fine)!'%(t_Data_name))
+        print('Warning! "Level_1_Raw" folder does not contain "*%s*.tar" files! Please download the raw ALMA data into this directory (any subdirectory is fine)!'%(t_Member_ous_id))
         # 
         # prepare download scripts
         with open('Level_1_Raw/download_%s_via_Mem_ous_id.bash'%(t_Dataset_dirname), 'w') as fp:
@@ -265,7 +283,7 @@ for i in range(len(output_table)):
                 fp.write('user_info=($(cat $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/meta_user_info.txt))\n')
             else:
                 fp.write('user_info=()\n')
-            fp.write('%s/alma_archive_download_data_by_Mem_ous_id.py "%s" ${user_info[@]}\n'%(os.path.dirname(__file__), Member_ous_id[i]))
+            fp.write('%s/alma_archive_download_data_by_Mem_ous_id.py "%s" ${user_info[@]}\n'%(os.path.dirname(__file__), t_Member_ous_id))
             fp.write('\n')
         os.system('chmod +x "Level_1_Raw/download_%s_via_Mem_ous_id.bash"'%(t_Dataset_dirname))
         print('We created a "Level_1_Raw/download_%s_via_Mem_ous_id.bash" script for the downloading.'%(t_Dataset_dirname))
@@ -275,16 +293,17 @@ for i in range(len(output_table)):
     
     # 
     # try to find unpacked raw data dirs
-    t_found_dirs = find_items_in_folder_with_name_pattern('Level_1_Raw/*'+t_Data_name, verbose=verbose)
+    t_found_dirs = find_items_in_folder_with_name_pattern('Level_1_Raw/*'+t_Member_ous_id, verbose=verbose)
     if len(t_found_dirs) == 0:
-        t_found_dirs = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Data_name, verbose=verbose)
+        t_found_dirs = find_items_in_folder_with_name_pattern('Level_1_Raw/**/*'+t_Member_ous_id, verbose=verbose)
     if len(t_found_dirs) > 1:
-        print('Warning! Found multiple data folders with the name pattern "Level_1_Raw/**/*'+t_Data_name+'"!')
+        print('Error! Found multiple data folders with the name pattern "Level_1_Raw/**/*'+t_Member_ous_id+'"!')
+        raise Exception('Error! Found multiple data folders with the same name pattern!')
     if len(t_found_dirs) > 0:
-        output_table['Downloaded'][i] = True
-        output_table['Unpacked'] = True
+        output_table['Downloaded'][table_mask] = True
+        output_table['Unpacked'][table_mask] = True
     else:
-        print('Warning! "Level_1_Raw" folder does not contain "*%s*" folders! Please unpack the raw ALMA data into this directory (any subdirectory is fine)!'%(t_Data_name))
+        print('Warning! "Level_1_Raw" folder does not contain "*%s*" folders! Please unpack the raw ALMA data into this directory (any subdirectory is fine)!'%(t_Member_ous_id))
         # 
         # continue
         continue
@@ -295,26 +314,32 @@ for i in range(len(output_table)):
         os.mkdir('Level_2_Calib')
         if verbose >= 1:
             print('Created "Level_2_Calib" folder')
+    
     # 
     # loop Level_2_Calib dirs
-    for t_found_dir in t_found_dirs:
-        # 
-        # set Dataset_dirname
-        # -- if there are multiple dirs for each t_Data_name
-        if len(t_found_dirs) > 1:
-            t_found_dir_index = t_found_dirs.index(t_found_dir)
-            if t_found_dir_index == 0:
-                t_Dataset_dirname0 = t_Dataset_dirname
-            t_Dataset_dirname = '%s_%d'%(t_Dataset_dirname0, t_found_dirs.index(t_found_dir)+1)
-        # 
-        # set Dataset_dirname if it exists in the meta table
-        if Dataset_dirname is not None:
-            if len(Dataset_dirname) > i:
-                if Dataset_dirname[i] != '':
-                    t_Dataset_dirname = Dataset_dirname[i]
-        # 
-        # update output_table['Dataset_dirname'][i]
-        output_table['Dataset_dirname'][i] = t_Dataset_dirname
+    #for t_found_dir in t_found_dirs:
+    #    # 
+    #    # set Dataset_dirname
+    #    # -- if there are multiple dirs for each t_Member_ous_id
+    #    if len(t_found_dirs) > 1:
+    #        t_found_dir_index = t_found_dirs.index(t_found_dir)
+    #        if t_found_dir_index == 0:
+    #            t_Dataset_dirname0 = t_Dataset_dirname
+    #        t_Dataset_dirname = '%s_%d'%(t_Dataset_dirname0, t_found_dirs.index(t_found_dir)+1)
+    #    # 
+    #    # set Dataset_dirname if it exists in the meta table
+    #    if Dataset_dirname is not None:
+    #        if len(Dataset_dirname) > i:
+    #            if t_Dataset_dirname != '':
+    #                t_Dataset_dirname = t_Dataset_dirname
+    #    # 
+    #    # update output_table['Dataset_dirname'][i]
+    #    output_table['Dataset_dirname'][i] = t_Dataset_dirname
+    
+    # 
+    # for each dataset we only have one Level_2_Calib dir
+    if len(t_found_dirs) > 0:
+        t_found_dir = t_found_dirs[0]
         # 
         # -- if the project is VLA or ALMA
         if t_Project_code.startswith('VLA'):
@@ -329,10 +354,6 @@ for i in range(len(output_table)):
             t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+'scriptForDatasetRecalibration.py'
             Overwrite_calib_scripts = True
             if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
-                t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py'
-                t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
-                t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
-                t_CASA_version = '5.0.0'
                 if os.path.isfile(t_EVLA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
                     if verbose >= 1:
                         print('Writing calibration script "%s"'%(t_Dataset_calib_script))
@@ -341,7 +362,7 @@ for i in range(len(output_table)):
                         fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
                         fp.write('mymodel = \'y\'\n')
                         fp.write('myHanning = \'n\'\n')
-                        fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
+                        fp.write('execfile(\'%s\')\n'%(t_EVLA_calib_script))
                         fp.write('\n')
                     with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
                         fp.write('#!/bin/bash\n')
@@ -362,9 +383,6 @@ for i in range(len(output_table)):
             Overwrite_calib_scripts = True
             if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
                 t_ALMA_calib_script = 'scriptForPI.py'
-                t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
-                t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
-                t_CASA_version = '5.0.0'
                 if os.path.isfile(t_ALMA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
                     if verbose >= 1:
                         print('Writing calibration script "%s"'%(t_Dataset_calib_script))
@@ -373,7 +391,7 @@ for i in range(len(output_table)):
                         fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
                         fp.write('mymodel = \'y\'\n')
                         fp.write('myHanning = \'n\'\n')
-                        fp.write('execfile(\'/home/dzliu/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py\')\n')
+                        fp.write('execfile(\'%s\')\n'%(t_EVLA_calib_script))
                         fp.write('\n')
                     with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
                         fp.write('#!/bin/bash\n')
@@ -391,10 +409,10 @@ for i in range(len(output_table)):
         if verbose >= 2:
             print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
         if not os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/raw'):
-            output_table['Unpacked'][i] = False
+            output_table['Unpacked'][table_mask] = False
         else:
             if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
-                output_table['Unpacked'][i] = False
+                output_table['Unpacked'][table_mask] = False
         # 
         # check Dataset calibrated dir
         if verbose >= 2:
@@ -402,20 +420,21 @@ for i in range(len(output_table)):
         if os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/calibrated'):
             t_found_ms = glob.glob('Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
             if len(t_found_ms) > 0:
-                output_table['Calibrated'][i] = True
+                output_table['Calibrated'][table_mask] = True
         ## 
         ## check calibrated dir
-        #t_found_dirs3 = glob.glob(Project_code+'/science_goal.*/group.*/member.'+t_Data_name+'/'+'calibrated'+'/'+'*.ms')
+        #t_found_dirs3 = glob.glob(Project_code+'/science_goal.*/group.*/member.'+t_Member_ous_id+'/'+'calibrated'+'/'+'*.ms')
         #if len(t_found_dirs3) > 0:
-        #    output_table['Calibrated'][i] = True
+        #    output_table['Calibrated'][table_mask] = True
         ## check imaged fits files
         #t_found_dirs3 = glob.glob('imaging/'+t_Galaxy_name.lower()+'/'+t_Galaxy_name+'_'+t_Array+'_*.fits')
         #if len(t_found_dirs3) > 0:
-        #    output_table['Calibrated'][i] = True
+        #    output_table['Calibrated'][table_mask] = True
     
         
         
 print(output_table)
+
 
 if output_table_file != '':
     if os.path.isfile(output_table_file):
