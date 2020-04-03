@@ -401,11 +401,9 @@ for t_Member_ous_id in t_Dataset_dict:
                         fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
                         fp.write('\n')
                     os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
+        
         # 
-        # check Dataset link
-        #print(t_Dataset_link)
-        # 
-        # check Dataset raw dir
+        # recheck Dataset raw dir
         if verbose >= 2:
             print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
         if not os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/raw'):
@@ -413,6 +411,7 @@ for t_Member_ous_id in t_Dataset_dict:
         else:
             if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
                 output_table['Unpacked'][table_mask] = False
+        
         # 
         # check Dataset calibrated dir
         if verbose >= 2:
@@ -421,18 +420,21 @@ for t_Member_ous_id in t_Dataset_dict:
             t_found_ms = glob.glob('Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
             if len(t_found_ms) > 0:
                 output_table['Calibrated'][table_mask] = True
+        
         ## 
         ## check calibrated dir
         #t_found_dirs3 = glob.glob(Project_code+'/science_goal.*/group.*/member.'+t_Member_ous_id+'/'+'calibrated'+'/'+'*.ms')
         #if len(t_found_dirs3) > 0:
         #    output_table['Calibrated'][table_mask] = True
+        
+        ## 
         ## check imaged fits files
         #t_found_dirs3 = glob.glob('imaging/'+t_Galaxy_name.lower()+'/'+t_Galaxy_name+'_'+t_Array+'_*.fits')
         #if len(t_found_dirs3) > 0:
         #    output_table['Calibrated'][table_mask] = True
-    
-        
-        
+
+
+
 print(output_table)
 
 
