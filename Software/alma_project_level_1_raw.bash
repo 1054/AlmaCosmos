@@ -70,19 +70,28 @@ fi
 
 
 # now downloading raw data
-echo_output "Now downloading raw data (it can take several days!)"
-echo alma_archive_download_data_according_to_meta_table.py "meta_data_table.txt" -out "Level_1_Raw/${Project_code}.cache"
-alma_archive_download_data_according_to_meta_table.py "meta_data_table.txt" -out "Level_1_Raw/${Project_code}.cache"
+if [[ ! -f "Level_1_Raw/${Project_code}.cache.done" ]]; then
+    echo_output "Now downloading raw data (it can take several days!)"
+    echo alma_archive_download_data_according_to_meta_table.py "meta_data_table.txt" -out "Level_1_Raw/${Project_code}.cache"
+    alma_archive_download_data_according_to_meta_table.py "meta_data_table.txt" -out "Level_1_Raw/${Project_code}.cache"
+    date +"%Y-%m-%d %Hh%Mm%Ss %Z" > "Level_1_Raw/${Project_code}.cache.done"
+else
+    echo_output "Already downloaded raw data (found \"Level_1_Raw/${Project_code}.cache.done\")"
+fi
 
 
 # now unpacking tar balls
-echo_output "Now unpacking tar balls"
-set -e
-cd Level_1_Raw/
-echo alma_archive_unpack_tar_files_with_verification.sh ${Project_code}.cache/*.tar
-alma_archive_unpack_tar_files_with_verification.sh ${Project_code}.cache/*.tar
-cd ../
-set +e
+if [[ ! -f "Level_1_Raw/${Project_code}.unpack.done" ]]; then
+    echo_output "Now unpacking tar balls"
+    set -e
+    cd Level_1_Raw/
+    echo alma_archive_unpack_tar_files_with_verification.sh ${Project_code}.cache/*.tar
+    alma_archive_unpack_tar_files_with_verification.sh ${Project_code}.cache/*.tar
+    cd ../
+    set +e
+else
+    echo_output "Already unpacked raw data (found \"Level_1_Raw/${Project_code}.unpack.done\")"
+fi
 
 
 # now creating data directory structure
