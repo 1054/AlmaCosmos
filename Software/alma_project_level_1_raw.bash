@@ -89,6 +89,7 @@ if [[ ! -f "Level_1_Raw/${Project_code}.unpack.done" ]]; then
     alma_archive_unpack_tar_files_with_verification.sh ${Project_code}.cache/*.tar
     cd ../
     set +e
+    date +"%Y-%m-%d %Hh%Mm%Ss %Z" > "Level_1_Raw/${Project_code}.unpack.done"
 else
     echo_output "Already unpacked raw data (found \"Level_1_Raw/${Project_code}.unpack.done\")"
 fi
