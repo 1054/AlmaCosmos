@@ -18,6 +18,17 @@ if [[ $# -eq 0 ]]; then
 fi
 Project_code="$1"
 
+# read user input
+iarg=1
+select_dataset=()
+while [[ $iarg -le $# ]]; do
+    istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
+    if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting dataset \"${!iarg}\""
+    fi
+    iarg=$((iarg+1))
+done
+
 # define logging files and functions
 error_log_file="$(pwd)/.$(basename ${BASH_SOURCE[0]}).err"
 output_log_file="$(pwd)/.$(basename ${BASH_SOURCE[0]}).log"
@@ -73,7 +84,19 @@ fi
 
 
 # read Level_2_Calib/DataSet_*
-list_of_datasets=($(ls -1d Level_2_Calib/DataSet_* | sort -V))
+if [[ ${#select_dataset[@]} -eq 0 ]]; then
+    # if user has not input -dataset, then process all datasets
+    list_of_datasets=($(ls -1d Level_2_Calib/DataSet_* | sort -V))
+else
+    list_of_datasets=()
+    for (( i = 0; i < ${#select_dataset[@]}; i++ )); do
+        if [[ ! -d "Level_2_Calib/${select_dataset[i]}" ]]; then
+            echo "Error! \"Level_2_Calib/${select_dataset[i]}\" was not found!"
+            exit
+        fi
+        list_of_datasets+=($(ls -1d "Level_2_Calib/${select_dataset[i]}"))
+    done
+fi
 
 
 # loop datasets and run ALMA calibration pipeline scriptForPI.py
