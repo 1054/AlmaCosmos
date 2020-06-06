@@ -1150,8 +1150,9 @@ def run_tclean_with_clean_parameters(clean_parameters):
         exportfits(imagename+'.psf', imagename+'.psf.fits')
         exportfits(imagename+'.pb', imagename+'.pb.fits')
         exportfits(imagename+'.model', imagename+'.model.fits')
-        exportfits(imagename+'.mask', imagename+'.mask.fits')
         exportfits(imagename+'.residual', imagename+'.residual.fits')
+        if os.path.isdir(imagename+'.mask'):
+            exportfits(imagename+'.mask', imagename+'.mask.fits')
     else:
         raise Exception('Error! tclean failed to produce the output image "%s"!'%(imagename+'.image'))
 
