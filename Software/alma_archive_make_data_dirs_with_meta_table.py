@@ -405,14 +405,15 @@ for t_Member_ous_id in t_Dataset_dict:
                     os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
         
         # 
-        # recheck Dataset raw dir
-        if verbose >= 2:
-            print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
-        if not os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/raw'):
-            output_table['Unpacked'][table_mask] = False
-        else:
-            if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
+        # recheck Dataset raw dir for ALMA data
+        if re.match(r'uid_.*', t_Member_ous_id):
+            if verbose >= 2:
+                print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
+            if not os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/raw'):
                 output_table['Unpacked'][table_mask] = False
+            else:
+                if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
+                    output_table['Unpacked'][table_mask] = False
         
         # 
         # check Dataset calibrated dir
