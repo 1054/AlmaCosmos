@@ -2,7 +2,7 @@
 # 
 
 from __future__ import print_function
-import os, sys, re, time, json 
+import os, sys, re, time, json, shutil
 # pkg_resources
 #pkg_resources.require('astroquery')
 #pkg_resources.require('keyrings.alt')
@@ -33,6 +33,7 @@ meta_table_file = ''
 some_option = ''
 output_full_table = True
 EVLA_pipeline_path = '' # default
+CASA_path = ''
 verbose = 0
 i = 1
 while i < len(sys.argv):
@@ -41,10 +42,14 @@ while i < len(sys.argv):
         i = i+1
         if i < len(sys.argv):
             some_option = sys.argv[i]
-    if tmp_arg == 'vla-pipeline-path': 
+    elif tmp_arg == 'vla-pipeline-path': 
         i = i+1
         if i < len(sys.argv):
             EVLA_pipeline_path = sys.argv[i]
+    elif tmp_arg == 'casa-path': 
+        i = i+1
+        if i < len(sys.argv):
+            CASA_path = sys.argv[i]
     elif tmp_arg == 'verbose': 
         verbose = verbose + 1
     else:
@@ -69,11 +74,21 @@ if meta_table_file == '':
 # check ~/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0
 # 
 if EVLA_pipeline_path == '':
-    if os.path.isdir(os.expanduer('~')+'/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0'):
-        EVLA_pipeline_path = os.expanduer('~')+'/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0'
-    else:
-        print('Error! EVLA_pipeline_path not given! Please input -vla-pipeline-path!')
-        sys.exit()
+    EVLA_pipeline_path = os.expanduer('~')+'/Software/CASA/Portable/EVLA_pipeline1.4.0_CASA5.0.0' # try this path
+    if not os.path.isdir(EVLA_pipeline_path):
+        EVLA_pipeline_path = ''
+if EVLA_pipeline_path == '':
+    print('Error! EVLA_pipeline_path not given! Please input -vla-pipeline-path!')
+    sys.exit(255)
+
+if CASA_path == '':
+    CASA_path = os.expanduer('~')+'/Software/CASA/Portable/casa-release-5.0.0-218.el6' # try this path
+    if not os.path.isdir(CASA_path):
+        CASA_path = ''
+if CASA_path == '':
+    print('Error! CASA_path not given! Please input -casa-path!')
+    sys.exit(255)
+
 
 
 
@@ -114,11 +129,16 @@ Array = None
 if 'Array' in meta_table.colnames:
     Array = meta_table['Array']
 
+Dataset_dirname = None
+if 'Dataset_dirname' in meta_table.colnames:
+    Dataset_dirname = meta_table['Dataset_dirname']
+
 if Project_code is None or \
    Member_ous_id is None or \
    Source_name is None or \
-   Array is None: 
-    print('Error! The input meta data table should contain at least the following four columns: "Project_code" "Member_ous_id" "Source_name" "Array"!')
+   Array is None or \
+   Dataset_dirname is None: 
+    print('Error! The input meta data table should contain at least the following four columns: "Project_code" "Member_ous_id" "Source_name" "Array" "Dataset_dirname"!')
     sys.exit()
 
 
@@ -157,14 +177,14 @@ if not os.path.isdir('Level_2_Calib'):
 # cd Level_2_Calib and run EVLA_pipeline_path+os.sep+'EVLA_pipeline.py'
 # 
 output_table = meta_table.copy()
-output_table['Downloaded'] = [False]*len(output_table)
-output_table['Unpacked'] = [False]*len(output_table)
+#output_table['Downloaded'] = [False]*len(output_table)
+#output_table['Unpacked'] = [False]*len(output_table)
 output_table['Calibrated'] = [False]*len(output_table)
-output_table['Imaged'] = [False]*len(output_table)
+#output_table['Imaged'] = [False]*len(output_table)
 
 for i in range(len(output_table)):
     t_Project_code = Project_code[i]
-    t_Dataset_name = re.sub(r'[^a-zA-Z0-9._]', r'_', Member_ous_id[i])
+    t_Dataset_name = re.sub(r'[^a-zA-Z0-9._+-]', r'_', Member_ous_id[i])
     t_Source_name = re.sub(r'[^a-zA-Z0-9._+-]', r'_', Source_name[i])
     t_Source_name = re.sub(r'^_*(.*?)_*$', r'\1', t_Source_name)
     t_Array = Array[i]
@@ -175,35 +195,75 @@ for i in range(len(output_table)):
         t_Galaxy_name = t_Source_name
     # 
     # prepare Dataset dirname
-    t_Dataset_ID_digits = np.ceil(np.log10(1.0*len(output_table))+1.0)
-    if t_Dataset_ID_digits < 2: t_Dataset_ID_digits = 2
-    t_Dataset_dirname = ('DataSet_%%0%dd'%(t_Dataset_ID_digits))%(i+1)
-    # -- if there are multiple dirs for each t_Dataset_name
-    t_found_dirs = glob.glob('Level_2_Calib/'+t_Dataset_dirname+'_*')
-    if len(t_found_dirs) > 1:
-        for t_found_dir in t_found_dirs:
-            t_Dataset_dirname = ('DataSet_%%0%dd_%d'%(t_Dataset_ID_digits, t_found_dirs.index(t_found_dir)+1))%(i+1)
-            # -- check dir
-            if os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/calibrated'):
-                # 
-                # check Dataset raw dir
-                if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/calibrated')) > 0:
-                    output_table['Unpacked'][i] = True
-                    # 
-                    # check Dataset calibrated dir
-                    if os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/calibrated'):
-                        t_found_ms = glob.glob('Level_2_Calib/'+t_Dataset_dirname+'/calibrated/*.ms')
-                        if len(t_found_ms) > 0:
-                            output_table['Calibrated'][i] = True
-                        else:
-                            print('Ready to run calibration pipeline under "%s"'%('Level_2_Calib/'+t_Dataset_dirname+'/calibrated'))
-                            current_dir = os.getcwd()
-                            target_dir = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated'
-                            #<TODO><20190113># 
-                
+    #t_Dataset_ID_digits = np.ceil(np.log10(1.0*len(output_table))+1.0)
+    #if t_Dataset_ID_digits < 2: t_Dataset_ID_digits = 2
+    #t_Dataset_dirname = ('DataSet_%%0%dd'%(t_Dataset_ID_digits))%(i+1)
+    # 
+    # set Dataset_dirname
+    t_Dataset_dirname = Dataset_dirname[i]
+    # 
+    # check t_Dataset_dirname
+    if not os.path.isdir('Level_2_Calib/'+t_Dataset_dirname):
+        print('Error! Data folder/link not found: %r. Please run previous step "alma_archive_make_data_dirs_with_meta_table.py" first.')
+        sys.exit(255)
+    # 
+    # set t_Dataset_dirpath
+    t_Dataset_dirpath = 'Level_2_Calib/'+t_Dataset_dirname
+    # 
+    # check calibrated/calibrated.ms
+    t_calibrated_dir = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated'
+    t_calibrated_ms = t_calibrated_dir+'/calibrated.ms'
+    print('Checking '+t_calibrated_ms)
+    if os.path.isdir(t_calibrated_ms):
+        if len(os.listdir(t_calibrated_ms)) > 0:
+            print('Found non-empty data folder: %r. Skip calibrating it.'%(t_calibrated_ms))
+            output_table['Calibrated'][i] = True
+            continue
     
-        
+    # 
+    # link raw to calibrated dir
+    t_raw_data_dir = 'Level_1_Raw/'+t_Dataset_name+os.sep+'raw'
+    t_raw_data_link = 'Level_2_Calib/'+t_Dataset_dirname+os.sep+t_Dataset_name
+    if not os.path.isdir(t_raw_data) and not os.path.islink(t_raw_data):
+        os.link(t_raw_data)
     
+    # 
+    # 
+    print('Ready to run VLA calibration pipeline under "%s"'%(t_calibrated_dir))
+    current_dir = os.getcwd()
+    
+    os.chdir(t_calibrated_dir)
+    
+    t_run_script = 'run_vla_pipeline_in_casa.py'
+    if os.path.isfile(t_run_script):
+        shutil.move(t_run_script, t_run_script+'.backup')
+    with open(t_run_script, 'w') as fp:
+        fp.write('# RUN THIS SCRIPT INSIDE CASA AS: \n')
+        fp.write('#     exec(open("%s").read())\n'%(t_run_script))
+        fp.write('# \n')
+        fp.write('\n')
+        fp.write('SDM_name = "%s"\n'%(t_Dataset_name))
+        fp.write('mymodel = "y"\n')
+        fp.write('myHanning = "n"\n')
+        fp.write('\n')
+        fp.write('exec(open("%s").read())\n'%(EVLA_pipeline_path+'/EVLA_pipeline.py'))
+        fp.write('\n')
+        fp.write('\n')
+    
+    t_casa_bin_path = CASA_bin_path+'/bin'
+    
+    os.system('cd "%s"; export PATH="%s:$PATH"; casa --nogui --log2term -c "exec(open(\"%s\").read()) | tee log_run_vla_pipeline_in_casa.txt"'%(\
+                    t_calibrated_dir, \
+                    t_casa_bin_path, \
+                    t_run_script \
+                    ))
+    
+    os.chdir(current_dir)
+                            
+
+
+
+
 print(output_table)
 
 

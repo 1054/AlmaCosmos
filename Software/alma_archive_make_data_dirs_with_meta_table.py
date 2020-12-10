@@ -23,10 +23,12 @@ import numpy as np
 #    #import formic
 #    import glob2
 
-t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Software/CASA/Portable/EVLA_pipeline1.4.0_CASA5.0.0/EVLA_pipeline.py'
-t_CASA_setup_script = os.getenv('HOME')+os.sep+'Software/CASA/SETUP.bash'
-t_CASA_dir = os.getenv('HOME')+os.sep+'Software/CASA/Portable/casa-release-5.0.0-218.el6'
-t_CASA_version = '5.0.0'
+EVLA_pipeline_path = '' # default
+CASA_path = ''
+#t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Software/CASA/Portable/EVLA_pipeline1.4.0_CASA5.0.0/EVLA_pipeline.py' # must first modify it and set the absolute path therein
+#t_CASA_setup_script = os.getenv('HOME')+os.sep+'Software/CASA/SETUP.bash'
+#t_CASA_dir = os.getenv('HOME')+os.sep+'Software/CASA/Portable/casa-release-5.0.0-218.el6'
+#t_CASA_version = '5.0.0'
 
 
 
@@ -96,6 +98,8 @@ meta_table_file = ''
 some_option = ''
 output_full_table = True
 output_table_file = ''
+EVLA_pipeline_path = ''
+CASA_path = ''
 verbose = 0
 i = 1
 while i < len(sys.argv):
@@ -104,6 +108,14 @@ while i < len(sys.argv):
         i = i+1
         if i < len(sys.argv):
             some_option = sys.argv[i]
+    elif tmp_arg == 'vla-pipeline-path': 
+        i = i+1
+        if i < len(sys.argv):
+            EVLA_pipeline_path = sys.argv[i]
+    elif tmp_arg == 'casa-path': 
+        i = i+1
+        if i < len(sys.argv):
+            CASA_path = sys.argv[i]
     elif tmp_arg == '-out': 
         i = i+1
         if i < len(sys.argv):
@@ -126,6 +138,27 @@ if output_table_file == '':
 #sys.path.insert(0,os.path.dirname(os.path.abspath(sys.argv[0]))+'/Python/2.7/site-packages')
 #print(sys.path)
 #sys.exit()
+
+
+
+# 
+# check ~/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0
+# 
+if EVLA_pipeline_path == '':
+    EVLA_pipeline_path = os.expanduer('~')+'/Software/CASA/Portable/EVLA_pipeline1.4.0_CASA5.0.0' # try this path
+    if not os.path.isdir(EVLA_pipeline_path):
+        EVLA_pipeline_path = ''
+if EVLA_pipeline_path == '':
+    print('Error! EVLA_pipeline_path not given! Please input -vla-pipeline-path!')
+    sys.exit(255)
+
+if CASA_path == '':
+    CASA_path = os.expanduer('~')+'/Software/CASA/Portable/casa-release-5.0.0-218.el6' # try this path
+    if not os.path.isdir(CASA_path):
+        CASA_path = ''
+if CASA_path == '':
+    print('Error! CASA_path not given! Please input -casa-path!')
+    sys.exit(255)
 
 
 
@@ -343,6 +376,8 @@ for t_Member_ous_id in t_Dataset_dict:
     if len(t_found_dirs) > 0:
         t_found_dir = t_found_dirs[0]
         # 
+        t_CASA_dir = CASA_path
+        # 
         # -- if the project is VLA or ALMA
         if t_Project_code.startswith('VLA'):
             t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname+'/raw'
@@ -353,10 +388,11 @@ for t_Member_ous_id in t_Dataset_dict:
             # 
             # make calibration script
             # <TODO> EVLA pipeline CASA version ??
+            t_EVLA_calib_script = os.path.join(EVLA_pipeline_path, 'EVLA_pipeline.py')
             t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+'scriptForDatasetRecalibration.py'
             Overwrite_calib_scripts = True
             if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
-                if os.path.isfile(t_EVLA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
+                if os.path.isfile(t_EVLA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_dir+'/bin/casa'):
                     if verbose >= 1:
                         print('Writing calibration script "%s"'%(t_Dataset_calib_script))
                     with open(t_Dataset_calib_script, 'w') as fp:
@@ -364,16 +400,18 @@ for t_Member_ous_id in t_Dataset_dict:
                         fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
                         fp.write('mymodel = \'y\'\n')
                         fp.write('myHanning = \'n\'\n')
-                        fp.write('execfile(\'%s\')\n'%(t_EVLA_calib_script))
+                        fp.write('exec(open(\'%s\').read())\n'%(t_EVLA_calib_script))
                         fp.write('\n')
                     with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
                         fp.write('#!/bin/bash\n')
-                        fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
-                        fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
+                        #fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
+                        fp.write('export PATH=\"%s:$PATH\"\n'%(t_CASA_dir+'/bin'))
+                        fp.write('cd \"%s/\"\n'%(os.path.abspath(os.path.dirname(t_Dataset_calib_script))))
                         fp.write('pwd\n')
-                        fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
+                        fp.write('casa --nogui --log2term -c \"%s\" | tee log_scriptForDatasetRecalibration.txt\n'%(os.path.basename(t_Dataset_calib_script)))
                         fp.write('\n')
                     os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
+                    print('Prepared calibration pipeline to run: %r'%(t_Dataset_calib_script))
         else:
             t_Dataset_link = 'Level_2_Calib/'+t_Dataset_dirname
             # make link (including parenet dirs)
@@ -385,7 +423,7 @@ for t_Member_ous_id in t_Dataset_dict:
             Overwrite_calib_scripts = True
             if not os.path.isfile(t_Dataset_calib_script) or Overwrite_calib_scripts == True:
                 t_ALMA_calib_script = 'scriptForPI.py'
-                if os.path.isfile(t_ALMA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_setup_script):
+                if os.path.isfile(t_ALMA_calib_script) and os.path.isdir(t_CASA_dir) and os.path.isfile(t_CASA_dir+'/bin/casa'):
                     if verbose >= 1:
                         print('Writing calibration script "%s"'%(t_Dataset_calib_script))
                     with open(t_Dataset_calib_script, 'w') as fp:
@@ -397,23 +435,25 @@ for t_Member_ous_id in t_Dataset_dict:
                         fp.write('\n')
                     with open(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script), 'w') as fp:
                         fp.write('#!/bin/bash\n')
-                        fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
+                        #fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
+                        fp.write('export PATH=\"%s:$PATH\"\n'%(t_CASA_dir+'/bin'))
                         fp.write('cd \"%s/%s\"\n'%(os.getcwd(), os.path.dirname(t_Dataset_calib_script)))
                         fp.write('pwd\n')
                         fp.write('casa -c \"%s\"\n'%(os.path.basename(t_Dataset_calib_script)))
                         fp.write('\n')
                     os.system('chmod +x "%s"'%(re.sub(r'\.py$', r'.sh', t_Dataset_calib_script)))
+                    print('Prepared calibration pipeline to run: %r'%(t_Dataset_calib_script))
         
         # 
-        # recheck Dataset raw dir for ALMA data
-        if re.match(r'uid_.*', t_Member_ous_id):
-            if verbose >= 2:
-                print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
-            if not os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/raw'):
-                output_table['Unpacked'][table_mask] = False
-            else:
-                if len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
-                    output_table['Unpacked'][table_mask] = False
+        # recheck Dataset raw dir
+        if verbose >= 2:
+            print('Checking '+'Level_2_Calib/'+t_Dataset_dirname+'/raw')
+        if not os.path.isdir('Level_2_Calib/'+t_Dataset_dirname+'/raw'):
+            output_table['Unpacked'][table_mask] = False
+        elif len(os.listdir('Level_2_Calib/'+t_Dataset_dirname+'/raw')) == 0:
+            output_table['Unpacked'][table_mask] = False
+        else:
+            output_table['Unpacked'][table_mask] = True
         
         # 
         # check Dataset calibrated dir
