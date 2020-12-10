@@ -145,7 +145,7 @@ if output_table_file == '':
 # check ~/Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0
 # 
 if EVLA_pipeline_path == '':
-    EVLA_pipeline_path = os.expanduser('~')+'/Software/CASA/Portable/EVLA_pipeline1.4.0_CASA5.0.0' # try this path
+    EVLA_pipeline_path = os.path.expanduser('~')+'/Software/CASA/Portable/EVLA_pipeline1.4.0_CASA5.0.0' # try this path
     if not os.path.isdir(EVLA_pipeline_path):
         EVLA_pipeline_path = ''
 if EVLA_pipeline_path == '':
@@ -153,7 +153,7 @@ if EVLA_pipeline_path == '':
     sys.exit(255)
 
 if CASA_path == '':
-    CASA_path = os.expanduser('~')+'/Software/CASA/Portable/casa-release-5.0.0-218.el6' # try this path
+    CASA_path = os.path.expanduser('~')+'/Software/CASA/Portable/casa-release-5.0.0-218.el6' # try this path
     if not os.path.isdir(CASA_path):
         CASA_path = ''
 if CASA_path == '':
