@@ -275,22 +275,23 @@ for t_Member_ous_id in t_Dataset_dict:
         output_table['Downloaded'][table_mask] = True
     else:
         # 
-        print('Warning! "Level_1_Raw" folder does not contain "*%s*.tar" files! Please download the raw ALMA data into this directory (any subdirectory is fine)!'%(t_Member_ous_id))
+        print('Warning! "Level_1_Raw" folder does not contain "*%s*.tar" files! Please download the raw data into this directory (any subdirectory is fine)!'%(t_Member_ous_id))
         # 
         # prepare download scripts
-        with open('Level_1_Raw/download_%s_via_Mem_ous_id.bash'%(t_Dataset_dirname), 'w') as fp:
-            fp.write('#!/bin/bash\n#\n')
-            if os.path.isfile('meta_user_info.txt'):
-                fp.write('user_info=($(cat $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/meta_user_info.txt))\n')
-            else:
-                fp.write('user_info=()\n')
-            fp.write('%s/alma_archive_download_data_by_Mem_ous_id.py "%s" ${user_info[@]}\n'%(os.path.dirname(__file__), t_Member_ous_id))
-            fp.write('\n')
-        os.system('chmod +x "Level_1_Raw/download_%s_via_Mem_ous_id.bash"'%(t_Dataset_dirname))
-        print('We created a "Level_1_Raw/download_%s_via_Mem_ous_id.bash" script for the downloading.'%(t_Dataset_dirname))
+        if re.match(r'uid_.*', t_Member_ous_id):
+            with open('Level_1_Raw/download_%s_via_Mem_ous_id.bash'%(t_Dataset_dirname), 'w') as fp:
+                fp.write('#!/bin/bash\n#\n')
+                if os.path.isfile('meta_user_info.txt'):
+                    fp.write('user_info=($(cat $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/meta_user_info.txt))\n')
+                else:
+                    fp.write('user_info=()\n')
+                fp.write('%s/alma_archive_download_data_by_Mem_ous_id.py "%s" ${user_info[@]}\n'%(os.path.dirname(__file__), t_Member_ous_id))
+                fp.write('\n')
+            os.system('chmod +x "Level_1_Raw/download_%s_via_Mem_ous_id.bash"'%(t_Dataset_dirname))
+            print('We created a "Level_1_Raw/download_%s_via_Mem_ous_id.bash" script for easy downloading of ALMA data by Member_ous_id.'%(t_Dataset_dirname))
         # 
         # continue
-        continue
+        #continue # do not continue here, still check the unpacked directories
     
     # 
     # try to find unpacked raw data dirs
