@@ -216,7 +216,8 @@ t_Dataset_processed = []
 # loop each meta table row to get dataset id
 for i in range(len(output_table)):
     t_Project_code = Project_code[i]
-    t_Member_ous_id = re.sub(r'[^a-zA-Z0-9._]', r'_', Member_ous_id[i])
+    t_Member_ous_id = Member_ous_id[i]
+    t_Member_ous_id = re.sub(r'[^a-zA-Z0-9._+-]', r'_', Member_ous_id[i])
     t_Source_name = re.sub(r'[^a-zA-Z0-9._+-]', r'_', Source_name[i])
     t_Source_name = re.sub(r'^_*(.*?)_*$', r'\1', t_Source_name)
     t_Array = Array[i]
