@@ -23,9 +23,9 @@ import numpy as np
 #    #import formic
 #    import glob2
 
-t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/EVLA_pipeline1.4.0_for_CASA_5.0.0/EVLA_pipeline.py'
-t_CASA_setup_script = os.getenv('HOME')+os.sep+'Softwares/CASA/SETUP.bash'
-t_CASA_dir = os.getenv('HOME')+os.sep+'Softwares/CASA/Portable/casa-release-5.0.0-218.el6'
+t_EVLA_calib_script = os.getenv('HOME')+os.sep+'Software/CASA/Portable/EVLA_pipeline1.4.0_CASA5.0.0/EVLA_pipeline.py'
+t_CASA_setup_script = os.getenv('HOME')+os.sep+'Software/CASA/SETUP.bash'
+t_CASA_dir = os.getenv('HOME')+os.sep+'Software/CASA/Portable/casa-release-5.0.0-218.el6'
 t_CASA_version = '5.0.0'
 
 
