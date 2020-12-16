@@ -237,10 +237,13 @@ for i in range(len(output_table)):
     
     # 
     # link raw to calibrated dir
-    t_raw_data_dir = 'Level_1_Raw/'+t_Dataset_name+os.sep+'raw'
-    t_raw_data_link = 'Level_2_Calib/'+t_Dataset_dirname+os.sep+t_Dataset_name
-    if not os.path.isdir(t_raw_data) and not os.path.islink(t_raw_data):
-        os.link(t_raw_data)
+    t_raw_path = 'Level_1_Raw/'+t_Dataset_name
+    t_calib_raw_path = 'Level_2_Calib/'+t_Dataset_dirname+'/raw'
+    t_calib_sdm_path = t_calibrated_dir+os.sep+t_Dataset_name
+    if not os.path.isdir(t_calib_raw_path) and not os.path.islink(t_calib_raw_path):
+        os.symlink('../../'+t_raw_path, t_calib_raw_path)
+    if not os.path.isdir(t_calib_sdm_path) and not os.path.islink(t_calib_sdm_path):
+        os.symlink('../../../'+t_raw_path, t_calib_sdm_path)
     
     # 
     # 

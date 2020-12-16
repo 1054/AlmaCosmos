@@ -152,7 +152,7 @@ check_and_concat_calibrated_ms() {
                         echo "Found \"$script_dir/calibrated\" and one \"uid___*.ms.split.cal\" data therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will make a link."
                         echo bash -c "cd \"$script_dir/calibrated\"; ln -fsT \"$(basename ${list_of_ms_split_cal_dirs[0]})\" \"calibrated.ms\""
                         bash -c "cd \"$script_dir/calibrated\"; ln -fsT \"$(basename ${list_of_ms_split_cal_dirs[0]})\" \"calibrated.ms\""
-                        continue
+                        return 0 # continue # OK, no need to re-make calibrated data
                     elif [[ ${#list_of_ms_split_cal_dirs[@]} -gt 1 ]]; then
                         echo "Found \"$script_dir/calibrated\" and \"uid___*.ms.split.cal\" therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will try to concatenate them."
                         # check README file which contains CASA version and source CASA version
