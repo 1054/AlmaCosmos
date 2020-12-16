@@ -27,6 +27,7 @@ if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_in
 # 
 if len(sys.argv) <= 1:
     print('Usage: alma_archive_run_vla_pipeline_with_meta_table.py "meta_table_file.txt"')
+    print('Options: [-vla-pipeline-path] [-casa-path] [-dataset] [-verbose]')
     sys.exit()
 
 meta_table_file = ''
@@ -34,6 +35,7 @@ some_option = ''
 output_full_table = True
 EVLA_pipeline_path = '' # default
 CASA_path = ''
+Dataset_selection = ''
 verbose = 0
 i = 1
 while i < len(sys.argv):
@@ -50,6 +52,10 @@ while i < len(sys.argv):
         i = i+1
         if i < len(sys.argv):
             CASA_path = sys.argv[i]
+    elif tmp_arg == 'data-set' or tmp_arg == 'dataset': 
+        i = i+1
+        if i < len(sys.argv):
+            Dataset_selection = sys.argv[i]
     elif tmp_arg == 'verbose': 
         verbose = verbose + 1
     else:
@@ -202,6 +208,15 @@ for i in range(len(output_table)):
     # set Dataset_dirname
     t_Dataset_dirname = Dataset_dirname[i]
     # 
+    # select by user input Dataset_selection
+    if Dataset_selection != '':
+        if re.match(r'[0-9]+', Dataset_selection) and re.match(r'.*_([0-9]+)$', t_Dataset_dirname):
+            if int(re.sub(r'.*_([0-9]+)$', r'\1', t_Dataset_dirname)) != int(Dataset_selection):
+                continue
+        else:
+            if t_Dataset_dirname != Dataset_selection:
+                continue
+    # 
     # check t_Dataset_dirname
     if not os.path.isdir('Level_2_Calib/'+t_Dataset_dirname):
         print('Error! Data folder/link not found: %r. Please run previous step "alma_archive_make_data_dirs_with_meta_table.py" first.')
@@ -252,7 +267,8 @@ for i in range(len(output_table)):
     
     t_casa_bin_path = CASA_bin_path+'/bin'
     
-    os.system('cd "%s"; export PATH="%s:$PATH"; casa --nogui --log2term -c "exec(open(\"%s\").read()) | tee log_run_vla_pipeline_in_casa.txt"'%(\
+    # Note: can not use: casa --nogui --log2term : because VLA pipeline needs GUI.
+    os.system('cd "%s"; export PATH="%s:$PATH"; casa -c "exec(open(\"%s\").read()) | tee log_run_vla_pipeline_in_casa.txt"'%(\
                     t_calibrated_dir, \
                     t_casa_bin_path, \
                     t_run_script \

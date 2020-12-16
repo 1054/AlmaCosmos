@@ -121,7 +121,7 @@ while i < len(sys.argv):
         if i < len(sys.argv):
             output_table_file = sys.argv[i]
     elif tmp_arg == '-verbose': 
-        verbose = verbose + 1
+        verbose += 1
     else:
         meta_table_file = sys.argv[i]
     i = i+1
@@ -396,7 +396,10 @@ for t_Member_ous_id in t_Dataset_dict:
                     if verbose >= 1:
                         print('Writing calibration script "%s"'%(t_Dataset_calib_script))
                     with open(t_Dataset_calib_script, 'w') as fp:
-                        fp.write('#!/usr/bin/env python\n')
+                        #fp.write('#!/usr/bin/env python\n')
+                        fp.write('# RUN THIS SCRIPT INSIDE CASA AS: \n')
+                        fp.write('#   exec(open("%s").read())\n'%(os.path.basename(t_Dataset_calib_script)))
+                        fp.write('# \n')
                         fp.write('SDM_name = \'%s\'\n'%(os.path.basename(t_found_dir)))
                         fp.write('mymodel = \'y\'\n')
                         fp.write('myHanning = \'n\'\n')
@@ -406,6 +409,8 @@ for t_Member_ous_id in t_Dataset_dict:
                         fp.write('#!/bin/bash\n')
                         #fp.write('source \"%s\" %s\n'%(t_CASA_setup_script, t_CASA_version))
                         fp.write('export PATH=\"%s:$PATH\"\n'%(t_CASA_dir+'/bin'))
+                        fp.write('export LANG=\"en_US.UTF-8\"\n')
+                        fp.write('export LC_ALL=\"C\"\n')
                         fp.write('cd \"%s/\"\n'%(os.path.abspath(os.path.dirname(t_Dataset_calib_script))))
                         fp.write('pwd\n')
                         fp.write('casa --nogui --log2term -c \"%s\" | tee log_scriptForDatasetRecalibration.txt\n'%(os.path.basename(t_Dataset_calib_script)))
