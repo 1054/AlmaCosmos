@@ -268,7 +268,7 @@ for i in range(len(output_table)):
         fp.write('\n')
         fp.write('\n')
     
-    t_casa_bin_path = CASA_bin_path+'/bin'
+    t_casa_bin_path = CASA_path+'/bin'
     
     # Note: can not use: casa --nogui --log2term : because VLA pipeline needs GUI.
     os.system('cd "%s"; export PATH="%s:$PATH"; casa -c "exec(open(\"%s\").read()) | tee log_run_vla_pipeline_in_casa.txt"'%(\
