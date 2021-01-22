@@ -125,17 +125,24 @@ for project_code in project_codes:
             print('isinstance(query_result[colname][0], bytes)', isinstance(query_result[colname][0], bytes))
             print('isinstance(query_result[colname][0], str)', isinstance(query_result[colname][0], str))
             print('isinstance(query_result[colname][0], unicode)', isinstance(query_result[colname][0], unicode))
-            if isinstance(query_result[colname][0], bytes):
+            if isinstance(query_result[colname][0], unicode):
                 query_result[colname]._sharedmask = False
                 for rownumb in range(len(query_result[colname])):
-                    #print('-------------------------------')
-                    #print(query_result[colname][rownumb])
-                    #print(query_result[colname][rownumb].decode('utf-8'))
+                    query_result[colname][rownumb] = query_result[colname][rownumb].encode('ascii','xmlcharrefreplace')
+            elif isinstance(query_result[colname][0], bytes):
+                query_result[colname]._sharedmask = False
+                for rownumb in range(len(query_result[colname])):
                     query_result[colname][rownumb] = query_result[colname][rownumb].decode('utf-8').encode('ascii','xmlcharrefreplace')
-                    #try:
-                    #    query_result[colname][rownumb] = query_result[colname][rownumb].decode('utf-8').encode('ascii','xmlcharrefreplace')
-                    #except:
-                    #    pass
+            #if isinstance(query_result[colname][0], unicode):
+            #    query_result[colname]._sharedmask = False
+            #    for rownumb in range(len(query_result[colname])):
+            #        #print('-------------------------------')
+            #        #print(query_result[colname][rownumb])
+            #        #print(query_result[colname][rownumb].decode('utf-8'))
+            #        #try:
+            #        #    query_result[colname][rownumb] = query_result[colname][rownumb].decode('utf-8').encode('ascii','xmlcharrefreplace')
+            #        #except:
+            #        #    pass
         
         
         # debug print
