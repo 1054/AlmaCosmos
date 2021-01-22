@@ -4,6 +4,8 @@ from __future__ import print_function
 import os, sys, re, copy, shutil, time, json, pkg_resources
 pkg_resources.require('astroquery')
 pkg_resources.require('keyrings.alt')
+if sys.version_info[0] >= 3:
+    unicode = str
 import numpy as np
 import astroquery
 import requests
