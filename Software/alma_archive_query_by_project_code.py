@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # 
-
 from __future__ import print_function
 import os, sys, re, copy, shutil, time, json, pkg_resources
 pkg_resources.require('astroquery')
@@ -100,22 +99,6 @@ for project_code in project_codes:
         #    'frequency_support', 'frequency', 'velocity_resolution', 'obs_creator_name', 'pub_title', 'first_author', 
         #    'qa2_passed', 'bib_reference', 'science_keyword', 'scientific_category', 'lastModified']
         
-        
-        #print(query_result) #<bug><20170926> directly print it can get error like "UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position"
-        for colname in query_result.colnames:
-            if colname == 'Proposal authors' or \
-               colname == 'proposal_authors' or colname == 'proposal_abstract' or \
-               colname == 'authors' or colname == 'pub_abstract' or colname == 'pub_title':
-                query_result[colname]._sharedmask = False
-                for rownumb in range(len(query_result[colname])):
-                    #print('-------------------------------')
-                    #print(query_result[colname][rownumb])
-                    #print(query_result[colname][rownumb].decode('utf-8'))
-                    try:
-                        query_result[colname][rownumb] = query_result[colname][rownumb].decode('utf-8').encode('ascii','xmlcharrefreplace')
-                    except:
-                        pass
-        
         #query_result_backup = query_result
         #query_result = sorted(query_result_backup, key=itemgetter('Project code'))
         #query_result = query_result.group_by(['Project code', 'Member ous id']) # http://docs.astropy.org/en/stable/table/operations.html#table-operations
@@ -127,6 +110,31 @@ for project_code in project_codes:
             print('\nError! No result found for the input project_code %s!\n'% (project_code) )
             continue
             #sys.exit()
+        
+        
+        #print(query_result) 
+        #<debug><20170926> directly print it can get error like "UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position"
+        #<debug><20210122> check all columns
+        for colname in query_result.colnames:
+            #if colname == 'Proposal authors' or \
+            #   colname == 'proposal_authors' or colname == 'proposal_abstract' or \
+            #   colname == 'authors' or colname == 'pub_abstract' or colname == 'pub_title':
+            print('type(query_result[colname][0])', type(query_result[colname][0]))
+            print('isinstance(query_result[colname][0], bytes)', isinstance(query_result[colname][0], bytes))
+            print('isinstance(query_result[colname][0], str)', isinstance(query_result[colname][0], str))
+            print('isinstance(query_result[colname][0], unicode)', isinstance(query_result[colname][0], unicode))
+            if isinstance(query_result[colname][0], bytes):
+                query_result[colname]._sharedmask = False
+                for rownumb in range(len(query_result[colname])):
+                    #print('-------------------------------')
+                    #print(query_result[colname][rownumb])
+                    #print(query_result[colname][rownumb].decode('utf-8'))
+                    query_result[colname][rownumb] = query_result[colname][rownumb].decode('utf-8').encode('ascii','xmlcharrefreplace')
+                    #try:
+                    #    query_result[colname][rownumb] = query_result[colname][rownumb].decode('utf-8').encode('ascii','xmlcharrefreplace')
+                    #except:
+                    #    pass
+        
         
         # debug print
         #for key in query_result.colnames:
