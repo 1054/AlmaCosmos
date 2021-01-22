@@ -2,13 +2,15 @@
 # 
 
 from __future__ import print_function
-import os, sys, re, time, json, pkg_resources
+import os, sys, re, copy, shutil, time, json, pkg_resources
 pkg_resources.require('astroquery')
 pkg_resources.require('keyrings.alt')
+import numpy as np
 import astroquery
 import requests
 from astroquery.alma.core import Alma
 from astropy.table import Table, Column
+from astropy.time import Time
 from datetime import datetime
 from operator import itemgetter, attrgetter
 
@@ -79,6 +81,7 @@ for project_code in project_codes:
         # 
         # query
         # 
+        print('Querying with project_code %r'%(project_code))
         query_result = Alma.query(payload = {'project_code':project_code}, public = Query_public)
         query_datetime = datetime.today().strftime('%Y-%m-%d %H:%M:%S %Z')
 
@@ -99,13 +102,51 @@ for project_code in project_codes:
         #query_result = sorted(query_result_backup, key=itemgetter('Project code'))
         #query_result = query_result.group_by(['Project code', 'Member ous id']) # http://docs.astropy.org/en/stable/table/operations.html#table-operations
         #print(type(query_result))
+        #print("query_result.colnames:")
         #print(query_result.colnames)
+        #-- new since the end of 2020: 
+        #   ['access_url', 'access_format', 'proposal_id', 'data_rights', 'gal_longitude', 'gal_latitude', 
+        #    'obs_publisher_did', 'obs_collection', 'facility_name', 'instrument_name', 'obs_id', 
+        #    'dataproduct_type', 'calib_level', 'target_name', 's_ra', 's_dec', 's_fov', 's_region', 
+        #    's_resolution', 't_min', 't_max', 't_exptime', 't_resolution', 'em_min', 'em_max', 'em_res_power', 
+        #    'pol_states', 'o_ucd', 'band_list', 'em_resolution', 'authors', 'pub_abstract', 'publication_year', 
+        #    'proposal_abstract', 'schedblock_name', 'proposal_authors', 'sensitivity_10kms', 'cont_sensitivity_bandwidth', 
+        #    'pwv', 'group_ous_uid', 'member_ous_uid', 'asdm_uid', 'obs_title', 'type', 'scan_intent', 'science_observation', 
+        #    'spatial_scale_max', 'bandwidth', 'antenna_arrays', 'is_mosaic', 'obs_release_date', 'spatial_resolution', 
+        #    'frequency_support', 'frequency', 'velocity_resolution', 'obs_creator_name', 'pub_title', 'first_author', 
+        #    'qa2_passed', 'bib_reference', 'science_keyword', 'scientific_category', 'lastModified']
+        # 
         #print(query_result)
         #print(query_result.groups.keys)
+        #print(query_result[['proposal_id','target_name','band_list','t_min','t_max','t_exptime', 't_resolution']])
         if len(query_result) == 0:
             print('\nError! No result found for the input project_code %s!\n'% (project_code) )
             continue
             #sys.exit()
+        
+        # debug print
+        for key in query_result.colnames:
+            print('%s: %s'%(key, query_result[key][0]))
+        
+        # fix colnames
+        # 'Project code','Member ous id','Source name','Observation date','Integration','Band','Array','Mosaic'
+        if 'Project code' in query_result.colnames and 'Observation date' in query_result.colnames and \
+           'Member ous id' in query_result.colnames and 'Source name' in query_result.colnames:
+           pass
+        elif 'proposal_id' in query_result.colnames and 'obs_id' in query_result.colnames:
+            query_result['Project code'] = query_result['proposal_id']
+            query_result['Member ous id'] = query_result['member_ous_uid']
+            query_result['Source name'] = query_result['target_name']
+            query_result['Observation date'] = Time(query_result['t_min'], format='mjd').to_value(format='isot') # MJD to ISO
+            query_result['Integration'] = query_result['t_exptime'] # seconds
+            query_result['Band'] = query_result['band_list']
+            query_result['Array'] = ['7m' if t.split(' ')[0].split(':')[1][0:2] in ['CM'] else '12m' for t in query_result['antenna_arrays']] # 12m DA DV, 7m CM
+            query_result['Mosaic'] = ['True' if (t == 'T' or t == True) else 'False' for t in query_result['is_mosaic']]
+        else:
+            print('Error! query_result columns are not recognized! The souce code needs to be updated!')
+            print('query_result.colnames: ')
+            print(query_result.colnames)
+            raise Exception('Error! query_result columns are not recognized! The souce code needs to be updated!')
         
         # sort
         try:
@@ -124,6 +165,9 @@ for project_code in project_codes:
                 if col.dtype.kind == 'O':
                     output_table[col.name] = Column(col.tolist(), col.name)
             #output_table = Table([Column(col.tolist(),col.name) if col.dtype.kind == 'O' else col for col in query_result.itercols()])
+            if os.path.isfile(output_name+'.fits'):
+                print('Found existing "%s", backing up as "%s".'%(output_name+'.fits', output_name+'.fits.backup'))
+                shutil.move(output_name+'.fits', output_name+'.fits.backup')
             output_table.write(output_name+'.fits', format='fits', overwrite=overwrite)
             print('Output to "%s"!' % (output_name+'.fits'))
         
@@ -151,7 +195,7 @@ for project_code in project_codes:
     
     else:
         
-        print('Using existing file %s'%(output_name))
+        print('Using existing file %s'%(output_name+'.txt'))
     
     table = Table.read(output_name+'.txt', format='ascii.commented_header')
     print(table)
