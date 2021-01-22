@@ -180,23 +180,27 @@ for project_code in project_codes:
             if os.path.isfile(output_name+'.fits'):
                 print('Found existing "%s", backing up as "%s".'%(output_name+'.fits', output_name+'.fits.backup'))
                 shutil.move(output_name+'.fits', output_name+'.fits.backup')
-            try:
-                output_table.write(output_name+'.fits', format='fits', overwrite=overwrite)
-                print('Output to "%s"!' % (output_name+'.fits'))
-            except:
-                print('Error! Failed to save the full table to "%s"!'%(output_name+'.fits'))
-                pass
+            output_table.write(output_name+'.fits', format='fits', overwrite=overwrite)
+            print('Output to "%s"!' % (output_name+'.fits'))
+            #try:
+            #    output_table.write(output_name+'.fits', format='fits', overwrite=overwrite)
+            #    print('Output to "%s"!' % (output_name+'.fits'))
+            #except:
+            #    print('Error! Failed to save the full table to "%s"!'%(output_name+'.fits'))
+            #    pass
             
             # 
             if os.path.isfile(output_name+'.csv'):
                 print('Found existing "%s", backing up as "%s".'%(output_name+'.csv', output_name+'.csv.backup'))
                 shutil.move(output_name+'.csv', output_name+'.csv.backup')
-            try:
-                output_table.write(output_name+'.csv', format='fits', overwrite=overwrite)
-                print('Output to "%s"!' % (output_name+'.csv'))
-            except:
-                print('Error! Failed to save the full table to "%s"!'%(output_name+'.csv'))
-                pass
+            output_table.write(output_name+'.csv', format='fits', overwrite=overwrite)
+            print('Output to "%s"!' % (output_name+'.csv'))
+            #try:
+            #    output_table.write(output_name+'.csv', format='fits', overwrite=overwrite)
+            #    print('Output to "%s"!' % (output_name+'.csv'))
+            #except:
+            #    print('Error! Failed to save the full table to "%s"!'%(output_name+'.csv'))
+            #    pass
         
         
         # output selected columns
