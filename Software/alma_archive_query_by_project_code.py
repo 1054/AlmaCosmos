@@ -121,10 +121,10 @@ for project_code in project_codes:
             #if colname == 'Proposal authors' or \
             #   colname == 'proposal_authors' or colname == 'proposal_abstract' or \
             #   colname == 'authors' or colname == 'pub_abstract' or colname == 'pub_title':
-            print('type(query_result[colname][0])', type(query_result[colname][0]))
-            print('isinstance(query_result[colname][0], bytes)', isinstance(query_result[colname][0], bytes))
-            print('isinstance(query_result[colname][0], str)', isinstance(query_result[colname][0], str))
-            print('isinstance(query_result[colname][0], unicode)', isinstance(query_result[colname][0], unicode))
+            #print('type(query_result[colname][0])', type(query_result[colname][0]))
+            #print('isinstance(query_result[colname][0], bytes)', isinstance(query_result[colname][0], bytes))
+            #print('isinstance(query_result[colname][0], str)', isinstance(query_result[colname][0], str))
+            #print('isinstance(query_result[colname][0], unicode)', isinstance(query_result[colname][0], unicode))
             if isinstance(query_result[colname][0], unicode):
                 query_result[colname]._sharedmask = False
                 for rownumb in range(len(query_result[colname])):
@@ -198,11 +198,11 @@ for project_code in project_codes:
             #    print('Error! Failed to save the full table to "%s"!'%(output_name+'.fits'))
             #    pass
             
-            # 
+            # also output csv
             if os.path.isfile(output_name+'.csv'):
                 print('Found existing "%s", backing up as "%s".'%(output_name+'.csv', output_name+'.csv.backup'))
                 shutil.move(output_name+'.csv', output_name+'.csv.backup')
-            output_table.write(output_name+'.csv', format='fits', overwrite=overwrite)
+            output_table.write(output_name+'.csv', format='csv', overwrite=overwrite)
             print('Output to "%s"!' % (output_name+'.csv'))
             #try:
             #    output_table.write(output_name+'.csv', format='fits', overwrite=overwrite)
