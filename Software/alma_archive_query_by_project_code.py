@@ -105,7 +105,7 @@ for project_code in project_codes:
         for colname in query_result.colnames:
             if colname == 'Proposal authors' or \
                colname == 'proposal_authors' or colname == 'proposal_abstract' or \
-               colname == 'authors' or colname == 'pub_abstract':
+               colname == 'authors' or colname == 'pub_abstract' or colname == 'pub_title':
                 query_result[colname]._sharedmask = False
                 for rownumb in range(len(query_result[colname])):
                     #print('-------------------------------')
