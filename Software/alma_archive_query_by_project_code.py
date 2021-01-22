@@ -85,9 +85,25 @@ for project_code in project_codes:
         query_result = Alma.query(payload = {'project_code':project_code}, public = Query_public)
         query_datetime = datetime.today().strftime('%Y-%m-%d %H:%M:%S %Z')
 
+        
+        #print("query_result.colnames:")
+        #print(query_result.colnames)
+        #-- new since the end of 2020: 
+        #   ['access_url', 'access_format', 'proposal_id', 'data_rights', 'gal_longitude', 'gal_latitude', 
+        #    'obs_publisher_did', 'obs_collection', 'facility_name', 'instrument_name', 'obs_id', 
+        #    'dataproduct_type', 'calib_level', 'target_name', 's_ra', 's_dec', 's_fov', 's_region', 
+        #    's_resolution', 't_min', 't_max', 't_exptime', 't_resolution', 'em_min', 'em_max', 'em_res_power', 
+        #    'pol_states', 'o_ucd', 'band_list', 'em_resolution', 'authors', 'pub_abstract', 'publication_year', 
+        #    'proposal_abstract', 'schedblock_name', 'proposal_authors', 'sensitivity_10kms', 'cont_sensitivity_bandwidth', 
+        #    'pwv', 'group_ous_uid', 'member_ous_uid', 'asdm_uid', 'obs_title', 'type', 'scan_intent', 'science_observation', 
+        #    'spatial_scale_max', 'bandwidth', 'antenna_arrays', 'is_mosaic', 'obs_release_date', 'spatial_resolution', 
+        #    'frequency_support', 'frequency', 'velocity_resolution', 'obs_creator_name', 'pub_title', 'first_author', 
+        #    'qa2_passed', 'bib_reference', 'science_keyword', 'scientific_category', 'lastModified']
+        
+        
         #print(query_result) #<bug><20170926> directly print it can get error like "UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position"
         for colname in query_result.colnames:
-            if colname == 'Proposal authors':
+            if colname == 'Proposal authors' or colname == 'proposal_authors':
                 query_result[colname]._sharedmask = False
                 for rownumb in range(len(query_result[colname])):
                     #print('-------------------------------')
@@ -102,20 +118,6 @@ for project_code in project_codes:
         #query_result = sorted(query_result_backup, key=itemgetter('Project code'))
         #query_result = query_result.group_by(['Project code', 'Member ous id']) # http://docs.astropy.org/en/stable/table/operations.html#table-operations
         #print(type(query_result))
-        #print("query_result.colnames:")
-        #print(query_result.colnames)
-        #-- new since the end of 2020: 
-        #   ['access_url', 'access_format', 'proposal_id', 'data_rights', 'gal_longitude', 'gal_latitude', 
-        #    'obs_publisher_did', 'obs_collection', 'facility_name', 'instrument_name', 'obs_id', 
-        #    'dataproduct_type', 'calib_level', 'target_name', 's_ra', 's_dec', 's_fov', 's_region', 
-        #    's_resolution', 't_min', 't_max', 't_exptime', 't_resolution', 'em_min', 'em_max', 'em_res_power', 
-        #    'pol_states', 'o_ucd', 'band_list', 'em_resolution', 'authors', 'pub_abstract', 'publication_year', 
-        #    'proposal_abstract', 'schedblock_name', 'proposal_authors', 'sensitivity_10kms', 'cont_sensitivity_bandwidth', 
-        #    'pwv', 'group_ous_uid', 'member_ous_uid', 'asdm_uid', 'obs_title', 'type', 'scan_intent', 'science_observation', 
-        #    'spatial_scale_max', 'bandwidth', 'antenna_arrays', 'is_mosaic', 'obs_release_date', 'spatial_resolution', 
-        #    'frequency_support', 'frequency', 'velocity_resolution', 'obs_creator_name', 'pub_title', 'first_author', 
-        #    'qa2_passed', 'bib_reference', 'science_keyword', 'scientific_category', 'lastModified']
-        # 
         #print(query_result)
         #print(query_result.groups.keys)
         #print(query_result[['proposal_id','target_name','band_list','t_min','t_max','t_exptime', 't_resolution']])
@@ -125,8 +127,8 @@ for project_code in project_codes:
             #sys.exit()
         
         # debug print
-        for key in query_result.colnames:
-            print('%s: %s'%(key, query_result[key][0]))
+        #for key in query_result.colnames:
+        #    print('%s: %s'%(key, query_result[key][0]))
         
         # fix colnames
         # 'Project code','Member ous id','Source name','Observation date','Integration','Band','Array','Mosaic'
