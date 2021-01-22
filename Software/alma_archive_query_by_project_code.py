@@ -103,7 +103,9 @@ for project_code in project_codes:
         
         #print(query_result) #<bug><20170926> directly print it can get error like "UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position"
         for colname in query_result.colnames:
-            if colname == 'Proposal authors' or colname == 'proposal_authors' or colname == 'proposal_abstract':
+            if colname == 'Proposal authors' or \
+               colname == 'proposal_authors' or colname == 'proposal_abstract' or \
+               colname == 'authors' or colname == 'pub_abstract':
                 query_result[colname]._sharedmask = False
                 for rownumb in range(len(query_result[colname])):
                     #print('-------------------------------')
