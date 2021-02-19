@@ -304,7 +304,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     echo "        \"${list_of_continuum_ms_data[l]}\", \\"                >> "${py_script}"
                     done
                     echo "    ], \\"                                                      >> "${py_script}"
-                    echo "    \"${output_concat_ms_data}\" )"                             >> "${py_script}"
+                    echo "    \"${output_concat_ms_data}\", \\"                           >> "${py_script}"
+                    echo "    )"                                                          >> "${py_script}"
                     echo ""                                                               >> "${py_script}"
                     echo "dzliu_clean.dzliu_clean(\\"                                     >> "${py_script}"
                     echo "    \"${output_concat_ms_data}\", \\"                           >> "${py_script}"
