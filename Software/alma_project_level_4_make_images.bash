@@ -272,6 +272,10 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo_output "Copying result \"${ms_name}_cube_clean.image.fits\""
                 cp "run_tclean_${ms_name}/${ms_name}_cube_clean.image.fits" ../
             fi
+            #if [[ ! -f ../"output_${source_name}.cube.I.image.fits" ]] && [[ "${width}" != "0" ]]; then
+            #    echo_output "Copying result \"${ms_name}_cube_clean.image.fits\" as \"output_${source_name}.cube.I.image.fits\""
+            #    cp "run_tclean_${ms_name}/${ms_name}_cube_clean.image.fits" ../"output_${source_name}.cube.I.image.fits"
+            #fi
             #if [[ ! -f ../"${ms_name}_cont_clean.image.fits" ]]; then
             #    echo_output "Copying result \"${ms_name}_cont_clean.image.fits\""
             #    cp "run_tclean_${ms_name}/${ms_name}_cont_clean.image.fits" ../
