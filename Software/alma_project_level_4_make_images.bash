@@ -1,8 +1,8 @@
 #!/bin/bash
 # 
 
-#source ~/Softwares/CASA/SETUP.bash 5.4.0
-#source ~/Softwares/GILDAS/SETUP.bash
+#source ~/Software/CASA/SETUP.bash 5.4.0
+#source ~/Software/GILDAS/SETUP.bash
 #source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
 
 
@@ -165,8 +165,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             ms_spw=$(echo "${ms_data}" | perl -p -e 's/split_.*_spw([0-9]+)_.*\.ms$/\1/g')
             
             # check existing images
-            if [[ -f "${ms_name}_cube_clean.image.fits" ]] && [[ -f "${ms_name}_cont_clean.image.fits" ]]; then
-                echo "Found image cube \"${ms_name}_cube_clean.image.fits\". Will not overwrite. Continue."
+            if ([[ -f "${ms_name}_cube_clean.image.fits" ]] && [[ "${width}" != "0" ]]) && ([[ -f "${ms_name}_cont_clean.image.fits" ]]); then
+                echo "Found image cube \"${ms_name}_{cube,cont}_clean.image.fits\". Will not overwrite. Continue."
                 continue
             fi
             
@@ -194,8 +194,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo "#!/bin/bash"                                                    >  "${run_script}"
                 echo "#"                                                              >> "${run_script}"
                 echo "if [[ \$(type casa 2>/dev/null | wc -l) -eq 0 ]]; then"         >> "${run_script}"
-                echo "    if [[ -f ~/Softwares/CASA/SETUP.bash ]]; then"              >> "${run_script}"
-                echo "        source ~/Softwares/CASA/SETUP.bash"                     >> "${run_script}" # here I try to see if we have CASA
+                echo "    if [[ -f ~/Software/CASA/SETUP.bash ]]; then"               >> "${run_script}"
+                echo "        source ~/Software/CASA/SETUP.bash"                      >> "${run_script}" # here I try to see if we have CASA
                 echo "    else"                                                       >> "${run_script}"
                 echo "        echo \"Error! casa command does not exist!\"; exit 255" >> "${run_script}"
                 echo "    fi"                                                         >> "${run_script}"
@@ -245,7 +245,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     exit 255
                 fi
             fi
-            if [[ ! -f ../"${ms_name}_cube_clean.image.fits" ]]; then
+            if [[ ! -f ../"${ms_name}_cube_clean.image.fits" ]] && [[ "${width}" != "0" ]]; then
                 echo_output "Copying result \"${ms_name}_cube_clean.image.fits\""
                 cp "run_tclean_${ms_name}/${ms_name}_cube_clean.image.fits" ../
             fi
@@ -276,8 +276,8 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     echo "#!/bin/bash"                                                    >  "${run_script}"
                     echo "#"                                                              >> "${run_script}"
                     echo "if [[ \$(type casa 2>/dev/null | wc -l) -eq 0 ]]; then"         >> "${run_script}"
-                    echo "    if [[ -f ~/Softwares/CASA/SETUP.bash ]]; then"              >> "${run_script}"
-                    echo "        source ~/Softwares/CASA/SETUP.bash"                     >> "${run_script}" # here I try to see if we have CASA
+                    echo "    if [[ -f ~/Software/CASA/SETUP.bash ]]; then"               >> "${run_script}"
+                    echo "        source ~/Software/CASA/SETUP.bash"                      >> "${run_script}" # here I try to see if we have CASA
                     echo "    else"                                                       >> "${run_script}"
                     echo "        echo \"Error! casa command does not exist!\"; exit 255" >> "${run_script}"
                     echo "    fi"                                                         >> "${run_script}"
