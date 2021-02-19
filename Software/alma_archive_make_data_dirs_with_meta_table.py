@@ -157,6 +157,10 @@ if CASA_path == '':
     if not os.path.isdir(CASA_path):
         CASA_path = ''
 if CASA_path == '':
+    CASA_path = os.path.expanduser('~')+'/Software/CASA/Portable/casa-release-5.7.2-4.el7' # try this path
+    if not os.path.isdir(CASA_path):
+        CASA_path = ''
+if CASA_path == '':
     print('Error! CASA_path not given! Please input -casa-path!')
     sys.exit(255)
 

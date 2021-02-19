@@ -80,6 +80,11 @@ else
     echo_output "Already downloaded raw data (found \"Level_1_Raw/${Project_code}.cache.done\")"
 fi
 
+if [[ $(find "Level_1_Raw/${Project_code}.cache" -maxdepth 1 type f -name "*.tar" | wc -l) -eq 0 ]]; then
+    echo "Error! Failed to run alma_archive_download_data_according_to_meta_table.py"
+    exit 255
+fi
+
 
 # now unpacking tar balls
 if [[ ! -f "Level_1_Raw/${Project_code}.unpack.done" ]]; then

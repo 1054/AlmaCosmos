@@ -252,7 +252,7 @@ for i in range(len(meta_table)):
         print('Running "%s.sh >> %s.log" in terminal!'%(Output_name, Output_name))
         
         os.system('chmod +x "%s.sh"'%(Output_name))
-        os.system('%s.sh >> %s.log'%(Output_name, Output_name))
+        os.system('%s.sh >> %s.log 2>&1'%(Output_name, Output_name))
         
         #--> Re-using Alma repeatedly causes cache problem. Calling Alma.__init__() fixes the problem.  
         Alma.__init__()
