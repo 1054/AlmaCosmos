@@ -24,6 +24,7 @@ Project_code="$1"; shift
 iarg=1
 width="25km/s"
 overwrite=0
+keepfiles=0
 select_dataset=()
 while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
@@ -35,6 +36,9 @@ while [[ $iarg -le $# ]]; do
     fi
     if [[ "$istr" == "-overwrite" ]]; then
         overwrite=$((overwrite+1))
+    fi
+    if [[ "$istr" == "-keepfiles" ]]; then
+        keepfiles=$((keepfiles+1))
     fi
     iarg=$((iarg+1))
 done
@@ -103,6 +107,9 @@ if [[ ! -d "$lib_python_dzliu_dir" ]]; then
 fi
 
 
+# prepare calibrator list
+
+
 # prepare Level_4_Data_Images folder
 if [[ ! -d Level_4_Data_Images ]]; then 
     mkdir Level_4_Data_Images
@@ -141,6 +148,21 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
     # loop list_of_unique_source_names and make dir for each source and link ms files
     for (( j = 0; j < ${#list_of_unique_source_names[@]}; j++ )); do
         source_name=${list_of_unique_source_names[j]}
+        
+        # check observe_target and skip calibrators
+        if [[ -f ../Level_3_Split/$DataSet_dir/calibrated.ms.listobs.txt ]]; then
+            if [[ $(cat ../Level_3_Split/$DataSet_dir/calibrated.ms.listobs.txt | grep "OBSERVE_TARGET" | wc -l) -gt 0 ]]; then
+                cat ../Level_3_Split/$DataSet_dir/calibrated.ms.listobs.txt | grep "OBSERVE_TARGET" > list_of_observe_target_in_$DataSet_dir.txt
+                if [[ $(grep " ${source_name} " list_of_observe_target_in_$DataSet_dir.txt | wc -l) -eq 0 ]]; then
+                    continue
+                fi
+            fi
+        fi
+        #if [[ " $source_name " =~ " ${calibrator_list} " ]]; then
+        #    continue
+        #fi
+        
+        # make source_name dataset_dir dir
         if [[ ! -d "${source_name}/$DataSet_dir" ]]; then
             echo_output mkdir -p "${source_name}/$DataSet_dir"
             mkdir -p "${source_name}/$DataSet_dir"
@@ -156,6 +178,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
         # prepare to get list of continuum ms data
         list_of_continuum_ms_data=()
         list_of_concatenated_spws=()
+        list_of_run_tclean_dirs=()
         
         # loop each ms data
         for (( k = 0; k < ${#list_of_ms_data[@]}; k++ )); do
@@ -254,8 +277,10 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             #    cp "run_tclean_${ms_name}/${ms_name}_cont_clean.image.fits" ../
             #fi
             
+            list_of_run_tclean_dirs+=("run_tclean_${ms_name}")
             list_of_continuum_ms_data+=("run_tclean_${ms_name}/${ms_name}_cont.ms")
             list_of_concatenated_spws+=("$ms_spw")
+            
             
             # concatenate continuum ms data
             if [[ ${#list_of_continuum_ms_data[@]} -eq ${#list_of_ms_data[@]} ]]; then
@@ -336,6 +361,17 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             cd ../
             
         done
+        
+        # clean up
+        if [[ $keepfiles -eq 0 ]]; then
+            if ([[ -f ../"${ms_name}_cube_clean.image.fits" ]] && [[ "${width}" != "0" ]]) && \
+               ([[ -f "output_${source_name}.cont.I.image.fits" ]]); then
+                for (( l = 0; l < ${#list_of_run_tclean_dirs[@]}; l++ )); do
+                    find "processing/${list_of_run_tclean_dirs[l]}" -type d -maxdepth 1 -print0 | xargs -0 -I % rm -rf %
+                    # clean up folders but keep fits, log and txt files
+                done
+            fi
+        fi
         
         # cd back (out of source_name dataset_dir dir)
         echo_output "cd ../../"
