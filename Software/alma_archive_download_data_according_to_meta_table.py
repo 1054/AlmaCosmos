@@ -292,7 +292,7 @@ for i in range(len(meta_table)):
     with open(output_dir_path+'.done', 'w') as fp:
         fp.write('STARTED: ' + start_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
         fp.write('FINISHED: ' + finish_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
-        fp.write('ELAPSED: ' + str(finish_time.time()-start_time.time()) + '\n')
+        fp.write('ELAPSED: ' + str(finish_time-start_time) + '\n')
     if os.path.isfile(output_dir_path+'.touch'):
         os.remove(output_dir_path+'.touch') # delete touch file
         
