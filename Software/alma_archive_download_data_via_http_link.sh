@@ -15,6 +15,9 @@ function start_session {
   if [[ $# -ge 1 ]]; then export USERNAME="$1"; else export USERNAME="anonymous"; fi #<Added><dzliu># 
   if [[ $# -ge 2 ]]; then export PASSWORD="$2"; else export PASSWORD="invalid"; fi #<Added><dzliu># 
   export AUTHENTICATION_STATUS=0
+  if [[ "${USERNAME}"x == ""x ]]; then
+      USERNAME="anonymous"
+  fi
   if [ "${USERNAME}" != "anonymous" ]; then
     if [ "${PASSWORD}" == "invalid" ]; then
       echo ""

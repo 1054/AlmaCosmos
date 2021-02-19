@@ -148,9 +148,9 @@ if EVLA_pipeline_path == '':
     EVLA_pipeline_path = os.path.expanduser('~')+'/Software/CASA/Portable/EVLA_pipeline1.4.0_CASA5.0.0' # try this path
     if not os.path.isdir(EVLA_pipeline_path):
         EVLA_pipeline_path = ''
-if EVLA_pipeline_path == '':
-    print('Error! EVLA_pipeline_path not given! Please input -vla-pipeline-path!')
-    sys.exit(255)
+#if EVLA_pipeline_path == '':
+#    print('Error! EVLA_pipeline_path not given! Please input -vla-pipeline-path!')
+#    sys.exit(255)
 
 if CASA_path == '':
     CASA_path = os.path.expanduser('~')+'/Software/CASA/Portable/casa-release-5.0.0-218.el6' # try this path
@@ -388,6 +388,9 @@ for t_Member_ous_id in t_Dataset_dict:
             # 
             # make calibration script
             # <TODO> EVLA pipeline CASA version ??
+            if EVLA_pipeline_path == '':
+                print('Error! EVLA_pipeline_path not given! Please input -vla-pipeline-path!')
+                sys.exit(255)
             t_EVLA_calib_script = os.path.join(EVLA_pipeline_path, 'EVLA_pipeline.py')
             t_Dataset_calib_script = 'Level_2_Calib/'+t_Dataset_dirname+'/calibrated/'+'scriptForDatasetRecalibration.py'
             Overwrite_calib_scripts = True

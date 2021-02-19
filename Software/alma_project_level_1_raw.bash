@@ -74,6 +74,7 @@ if [[ ! -f "Level_1_Raw/${Project_code}.cache.done" ]]; then
     echo_output "Now downloading raw data (it can take several days!)"
     echo alma_archive_download_data_according_to_meta_table.py "meta_data_table.txt" -out "Level_1_Raw/${Project_code}.cache"
     alma_archive_download_data_according_to_meta_table.py "meta_data_table.txt" -out "Level_1_Raw/${Project_code}.cache"
+    if [[ $? -ne 0 ]]; then echo "Error! Failed to run alma_archive_download_data_according_to_meta_table.py"; exit 255; fi
     date +"%Y-%m-%d %Hh%Mm%Ss %Z" > "Level_1_Raw/${Project_code}.cache.done"
 else
     echo_output "Already downloaded raw data (found \"Level_1_Raw/${Project_code}.cache.done\")"
@@ -87,6 +88,7 @@ if [[ ! -f "Level_1_Raw/${Project_code}.unpack.done" ]]; then
     cd Level_1_Raw/
     echo alma_archive_unpack_tar_files_with_verification.sh ${Project_code}.cache/*.tar
     alma_archive_unpack_tar_files_with_verification.sh ${Project_code}.cache/*.tar
+    if [[ $? -ne 0 ]]; then echo "Error! Failed to run alma_archive_unpack_tar_files_with_verification.py"; exit 255; fi
     cd ../
     set +e
     date +"%Y-%m-%d %Hh%Mm%Ss %Z" > "Level_1_Raw/${Project_code}.unpack.done"
@@ -99,6 +101,7 @@ fi
 echo_output "Now creating data directory structure"
 echo $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt" -out "meta_data_table.txt"
 $(dirname ${BASH_SOURCE[0]})/alma_archive_make_data_dirs_with_meta_table.py "meta_data_table.txt" -out "meta_data_table.txt"
+if [[ $? -ne 0 ]]; then echo "Error! Failed to run alma_archive_make_data_dirs_with_meta_table.py"; exit 255; fi
 
 
 # finish
