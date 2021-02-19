@@ -1031,17 +1031,18 @@ def prepare_clean_parameters(vis, imagename, imcell = None, imsize = None, niter
     # 
     print2('imsize = %s'%(imsize))
     # 
-    if np.isscalar(max_imsize):
-        max_imsize = [max_imsize, max_imsize]
-    else:
-        if len(max_imsize) == 1:
-            max_imsize = [max_imsize[0], max_imsize[0]]
-    if imsize[0] > max_imsize[0]:
-        imsize[0] = max_imsize[0]
-        print2('imsize[0] = %s, as limited by max_imsize[0] %s.'%(imsize[0], max_imsize[0]))
-    if imsize[1] > max_imsize[1]:
-        imsize[1] = max_imsize[1]
-        print2('imsize[1] = %s, as limited by max_imsize[1] %s.'%(imsize[1], max_imsize[1]))
+    if max_imsize is not None:
+        if np.isscalar(max_imsize):
+            max_imsize = [max_imsize, max_imsize]
+        else:
+            if len(max_imsize) == 1:
+                max_imsize = [max_imsize[0], max_imsize[0]]
+        if imsize[0] > max_imsize[0]:
+            imsize[0] = max_imsize[0]
+            print2('imsize[0] = %s, as limited by max_imsize[0] %s.'%(imsize[0], max_imsize[0]))
+        if imsize[1] > max_imsize[1]:
+            imsize[1] = max_imsize[1]
+            print2('imsize[1] = %s, as limited by max_imsize[1] %s.'%(imsize[1], max_imsize[1]))
     # 
     # We can also use analysisUtils, but the results are very similar to my above implementation.
     # 
