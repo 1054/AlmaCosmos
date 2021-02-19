@@ -212,6 +212,12 @@ for project_code in project_codes:
             #    pass
         
         
+        # fix white space in source name
+        for i in range(len(query_result['Source name'])):
+            if query_result['Source name'][i].find(' ') >= 0:
+                query_result['Source name'][i] = re.sub(r'[^a-zA-Z0-9_+-]', r'_', query_result['Source name'][i])
+        
+        
         # output selected columns
         output_table = query_result[['Project code','Member ous id','Source name','Observation date','Integration','Band','Array','Mosaic']]
         output_table['Observation date'] = [t.replace(' ','T') for t in output_table['Observation date']]
