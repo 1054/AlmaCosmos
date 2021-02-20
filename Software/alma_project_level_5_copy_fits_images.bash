@@ -131,7 +131,7 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
         exit 255
     fi
     mem_oud_id_str=$(echo "${mem_oud_id}" | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
-    image_name=$(basename "image_path" | sed -e 's/output_//g')
+    image_name=$(basename "${image_path}" | sed -e 's/output_//g')
     image_file="${project_code}.member.${mem_oud_id_str}.${image_name}"
     
     # copy fits file
