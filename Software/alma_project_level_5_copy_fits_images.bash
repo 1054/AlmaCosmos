@@ -15,7 +15,7 @@ if [[ $# -lt 2 ]]; then
 fi
 
 Project_code="$1"
-Deploy_dir=$(perl -MCwd -e 'print Cwd::abs_path shift' "$2") # get absolute path
+Deploy_dir=$(perl -MCwd -e 'print Cwd::abs_path shift' $(echo "$2" | sed -e 's%/$%%g')) # get absolute path, but remove trailing '/' first.
 Script_dir=$(dirname $(perl -MCwd -e 'print Cwd::abs_path shift' "${BASH_SOURCE[0]}"))
 overwrite=0
 
@@ -47,6 +47,10 @@ echo_output "Began processing ALMA project ${Project_code} with $(basename ${BAS
 echo_output "Project_code = ${Project_code}"
 echo_output "Deploy_dir = ${Deploy_dir}"
 echo_output "Script_dir = ${Script_dir}"
+if [[ "${Deploy_dir}"x == ""x ]]; then
+    echo_error "Error! Deploy_dir is empty?!"
+    exit 255
+fi
 
 
 # check wcstools gethead sethead
@@ -80,7 +84,7 @@ fi
 
 # make Deploy_dir and the "fits" subdirectory
 if [[ "$Deploy_dir" == *"/" ]]; then
-    Deploy_dir=$(echo "$Deploy_dir" | perl -p -e 's%/$%%g')
+    Deploy_dir=$(echo "$Deploy_dir" | sed -e 's%/$%%g')
 fi
 if [[ ! -d "$Deploy_dir/fits" ]]; then
     echo_output "mkdir -p \"$Deploy_dir/fits\""
