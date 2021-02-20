@@ -98,16 +98,55 @@ list_mem_ous_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") pr
 list_alma_band=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $6; }'))
 list_dataset_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $9; }'))
 
+if [[ ${#list_project_code[@]} -eq 0 ]]; then
+    echo_error "Error! Could not read the Project_code column in \"meta_data_table.txt\"!"
+    exit 255
+fi
+if [[ ${#list_mem_ous_id[@]} -eq 0 ]]; then
+    echo_error "Error! Could not read the Mem_ous_id column in \"meta_data_table.txt\"!"
+    exit 255
+fi
+if [[ ${#list_alma_band[@]} -eq 0 ]]; then
+    echo_error "Error! Could not read the Band column in \"meta_data_table.txt\"!"
+    exit 255
+fi
+if [[ ${#list_dataset_id[@]} -eq 0 ]]; then
+    echo_error "Error! Could not read the DataSet_dirname column in \"meta_data_table.txt\"!"
+    exit 255
+fi
+check_project_code=0
+for (( i = 0; i < ${#list_project_code[@]}; i++ )); do
+    if [[ "${list_project_code[i]}" == "${Project_code}" ]]; then
+        check_project_code=1
+        break
+    fi
+done
+if [[ $check_project_code -eq 0 ]]; then
+    echo_error "Error! The input Project_code ${Project_code} is not found in \"meta_data_table.txt\"!"
+    exit 255
+fi
 
-# check alma_project_meta_table.txt
+
+# check alma_project_meta_table.txt, 
+# if it exists, then we will append to it (but clear previous project), otherwise initialize one
 if [[ -f "${Deploy_dir}/alma_project_meta_table.txt" ]]; then
+    echo_output "Found existing \"${Deploy_dir}/alma_project_meta_table.txt\""
+    if [[ -f "${Deploy_dir}/alma_project_meta_table.txt.backup" ]]; then
+        echo_output "mv \"${Deploy_dir}/alma_project_meta_table.txt.backup\" \"${Deploy_dir}/alma_project_meta_table.txt.backup.backup\""
+        mv "${Deploy_dir}/alma_project_meta_table.txt.backup" "${Deploy_dir}/alma_project_meta_table.txt.backup.backup"
+    fi
     echo_output "mv \"${Deploy_dir}/alma_project_meta_table.txt\" \"${Deploy_dir}/alma_project_meta_table.txt.backup\""
     mv "${Deploy_dir}/alma_project_meta_table.txt" "${Deploy_dir}/alma_project_meta_table.txt.backup"
+    echo_output "cat \"${Deploy_dir}/alma_project_meta_table.txt.backup\" | head -n 1 > \"${Deploy_dir}/alma_project_meta_table.txt\""
+    cat "${Deploy_dir}/alma_project_meta_table.txt.backup" | head -n 1 > "${Deploy_dir}/alma_project_meta_table.txt"
+    echo_output "cat \"${Deploy_dir}/alma_project_meta_table.txt.backup\" | grep -v \'^#\' | grep -v \" ${Project_code} \" >> \"${Deploy_dir}/alma_project_meta_table.txt\""
+    cat "${Deploy_dir}/alma_project_meta_table.txt.backup" | grep -v '^#' | grep -v " ${Project_code} " >> "${Deploy_dir}/alma_project_meta_table.txt"
+else
+    echo_output "Initializing \"${Deploy_dir}/alma_project_meta_table.txt\""
+    printf "# %-15s %-20s %-25s %10s %15s %15s %12s %12s %12s %15s %15s   %-s\n" \
+        'project' 'source' 'mem_ous_id' 'band' 'wavelength' 'rms' 'beam_major' 'beam_minor' 'beam_angle' 'OBSRA' 'OBSDEC' 'image_file' \
+        > "${Deploy_dir}/alma_project_meta_table.txt"
 fi
-echo_output "Initializing \"${Deploy_dir}/alma_project_meta_table.txt\""
-printf "# %-15s %-20s %-25s %10s %15s %15s %12s %12s %12s %15s %15s   %-s\n" \
-    'project' 'source' 'mem_ous_id' 'band' 'wavelength' 'rms' 'beam_major' 'beam_minor' 'beam_angle' 'OBSRA' 'OBSDEC' 'image_file' \
-    > "${Deploy_dir}/alma_project_meta_table.txt"
 
 
 # list_dataset_dir
