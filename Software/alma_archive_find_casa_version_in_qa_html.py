@@ -4,9 +4,9 @@
 # 
 
 from __future__ import print_function
-import os, sys
+import os, sys, re
 from glob import glob
-import tarfile
+#import tarfile
 from bs4 import BeautifulSoup
 
 
@@ -33,25 +33,36 @@ casa_version = ''
 with open(weblog_html, 'r') as weblog_index_html:
     #print(weblog_index_html, file=sys.stderr)
     weblog_index_html_content = weblog_index_html.read()
+    #print(weblog_index_html_content)
 
     soup = BeautifulSoup(weblog_index_html_content, 'html.parser')
 
     #for soup_th in [t.parent for t in soup.findAll(text='CASA Version') if t.parent.name=='th']
-    for soup_th in soup.findAll('th', text='CASA Version'):
-        #print(soup_th) # soup_th.name # soup_th.text
-        for soup_td in soup_th.find_next_siblings():
-            #print(soup_td.text)
-            if len(soup_td.text) > 0:
-                if soup_td.text.find('.') > 0:
-                    if soup_td.text.find(' ') > 0:
-                        casa_version = soup_td.text.split()[0]
-                    else:
-                        casa_version = soup_td.text
+    if casa_version == '':
+        for soup_th in soup.findAll('th', text='CASA Version'):
+            #print(soup_th) # soup_th.name # soup_th.text
+            for soup_td in soup_th.find_next_siblings():
+                #print(soup_td.text)
+                if len(soup_td.text) > 0:
+                    if soup_td.text.find('.') > 0:
+                        if soup_td.text.find(' ') > 0:
+                            casa_version = soup_td.text.split()[0]
+                        else:
+                            casa_version = soup_td.text
+                if casa_version != '':
+                    break
+            
             if casa_version != '':
                 break
-        
-        if casa_version != '':
-            break
+    
+    # try again
+    if casa_version == '':
+        for soup_span in soup.findAll('span'):
+            if soup_span.text.startswith('CASA version:'):
+                #print(soup_span.text)
+                casa_version = re.sub(r'CASA version: ([0-9.]+).*', r'\1', soup_span.text)
+                if casa_version != '':
+                    break
 
 
 print('CASA version %s'%(casa_version))
