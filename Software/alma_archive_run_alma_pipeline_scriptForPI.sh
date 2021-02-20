@@ -286,7 +286,7 @@ for (( i = 0; i < ${#list_of_input_dirs[@]}; i++ )); do
         echo "check_and_extract_casa_version_in_readme_file \"$script_dir\""
         check_and_extract_casa_version_in_readme_file "$script_dir"
         check_return_code=$?
-        if [[ $check_return_code -lt 0 ]]; then
+        if [[ $check_return_code -ne 0 ]]; then
             echo "check_and_extract_casa_version_in_readme_file FAILED!"
             exit 1 # got error when running the function, exit
         fi

@@ -55,7 +55,7 @@ with open(weblog_html, 'r') as weblog_index_html:
             if casa_version != '':
                 break
     
-    # try again
+    # try again to find span that includes 'CASA version:'
     if casa_version == '':
         for soup_span in soup.findAll('span'):
             if soup_span.text.startswith('CASA version:'):
@@ -63,8 +63,29 @@ with open(weblog_html, 'r') as weblog_index_html:
                 casa_version = re.sub(r'CASA version: ([0-9.]+).*', r'\1', soup_span.text)
                 if casa_version != '':
                     break
+    
+    # try again to find span that include 'CASA version' and next is 'Report date'
+    if casa_version == '':
+        for soup_span in soup.findAll('span'):
+            if soup_span.text == 'CASA version':
+                #print(soup_span.text)
+                soup_tr = soup_span.find_parent('tr')
+                soup_tr_td = soup_tr.find_all('td')
+                soup_tr_td_text = [t.text.strip() for t in soup_tr_td]
+                soup_tr_td_index = soup_tr_td_text.index('CASA version')
+                #print(soup_tr)
+                soup_tr_next = soup_tr.find_next_sibling('tr')
+                #print(type(soup_tr_next))
+                soup_tr_next_td = soup_tr_next.find_all('td')
+                soup_tr_next_td_text = [t.text.strip() for t in soup_tr_next_td]
+                found_text = soup_tr_next_td_text[soup_tr_td_index]
+                #print(soup_tr_next)
+                if re.match(r'^[0-9.-]+$', found_text):
+                    casa_version = found_text
+                if casa_version != '':
+                    break
 
-
-print('CASA version %s'%(casa_version))
+if casa_version != '':
+    print('CASA version %s'%(casa_version))
 
 
