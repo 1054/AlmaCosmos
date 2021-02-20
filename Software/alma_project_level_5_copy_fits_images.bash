@@ -112,10 +112,13 @@ printf "# %-15s %-25s %15s %15s %10s   %-s\n" 'project' 'mem_ous_id' 'OBSRA' 'OB
 list_image_files=($(find Level_4_Data_Images -mindepth 3 -maxdepth 3 -type f -name "output_*.cont.I.image.fits"))
 for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     image_path="${list_image_files[i]}"
+    echo_output "Processing image_path \"image_path\""
     dataset_id=$(basename $(dirname "${image_path}"))
     project_code=""
     mem_oud_id=""
+    band=""
     for (( j = 0; j < ${#list_dataset_id[@]}; j++ )); do
+        echo "list_dataset_id: ${list_dataset_id[@]} (${#list_dataset_id[#]})"
         if [[ "${list_dataset_id[j]}" == "$dataset_id" ]]; then
             project_code="${list_project_code[j]}"
             mem_oud_id="${list_mem_oud_id[j]}"
