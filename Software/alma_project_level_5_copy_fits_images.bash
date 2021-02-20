@@ -143,7 +143,7 @@ if [[ -f "${Deploy_dir}/alma_project_meta_table.txt" ]]; then
     cat "${Deploy_dir}/alma_project_meta_table.txt.backup" | grep -v '^#' | grep -v " ${Project_code} " >> "${Deploy_dir}/alma_project_meta_table.txt"
 else
     echo_output "Initializing \"${Deploy_dir}/alma_project_meta_table.txt\""
-    printf "# %-15s %-20s %-25s %10s %15s %15s %12s %12s %12s %15s %15s   %-s\n" \
+    printf "# %-15s %-20s %-25s %8s %15s %15s %11s %11s %11s %15s %15s   %-s\n" \
         'project' 'source' 'mem_ous_id' 'band' 'wavelength' 'rms' 'beam_major' 'beam_minor' 'beam_angle' 'OBSRA' 'OBSDEC' 'image_file' \
         > "${Deploy_dir}/alma_project_meta_table.txt"
 fi
@@ -240,7 +240,7 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     cd "${Current_dir}"
     
     # write to alma_project_meta_table.txt
-    printf "  %-15s %-20s %-25s %10s %15g %15g %12g %12g %12g %15.10f %+15.10f   %-s\n" \
+    printf "  %-15s %-20s %-25s %8s %15g %15g %11g %11g %11g %15.10f %+15.10f   %-s\n" \
         "${project_code}" "${OBJECT}" "${mem_ous_id}" "${band}" $wavelength $rms $beam_major $beam_minor $beam_angle $OBSRA $OBSDEC "${image_file}" \
         >> "${Deploy_dir}/alma_project_meta_table.txt"
     echo_output "Written to \"${Deploy_dir}/alma_project_meta_table.txt\""
