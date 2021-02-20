@@ -17,6 +17,7 @@ fi
 Project_code="$1"
 Deploy_dir=$(perl -MCwd -e 'print Cwd::abs_path shift' "$2") # get absolute path
 Script_dir=$(dirname $(perl -MCwd -e 'print Cwd::abs_path shift' "${BASH_SOURCE[0]}"))
+overwrite=0
 
 # define logging files and functions
 error_log_file="$(pwd)/.$(basename ${BASH_SOURCE[0]}).err"
@@ -91,9 +92,9 @@ if [[ ! -d "$Deploy_dir/fits" ]]; then
 fi
 
 
-# read meta table and list mem_oud_id
+# read meta table and list mem_ous_id
 list_project_code=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $1; }'))
-list_mem_oud_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $2; }'))
+list_mem_ous_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $2; }'))
 list_alma_band=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $6; }'))
 list_dataset_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $9; }'))
 
@@ -115,28 +116,30 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     echo_output "Processing image_path \"${image_path}\""
     dataset_id=$(basename $(dirname "${image_path}"))
     project_code=""
-    mem_oud_id=""
+    mem_ous_id=""
     band=""
     for (( j = 0; j < ${#list_dataset_id[@]}; j++ )); do
-        echo "list_dataset_id: ${list_dataset_id[@]} (${#list_dataset_id[@]})"
+        #echo "list_dataset_id: ${list_dataset_id[@]} (${#list_dataset_id[@]})" #<DEBUG>#
         if [[ "${list_dataset_id[j]}" == "$dataset_id" ]]; then
             project_code="${list_project_code[j]}"
-            mem_oud_id="${list_mem_oud_id[j]}"
+            mem_ous_id="${list_mem_ous_id[j]}"
             band="${list_alma_band[j]}"
             break
         fi
     done
-    if [[ "${project_code}"x == ""x ]] || [[ "${mem_oud_id}"x == ""x ]]; then
+    if [[ "${project_code}"x == ""x ]] || [[ "${mem_ous_id}"x == ""x ]]; then
         echo_error "Error! Could not find dataset_id ${dataset_id} in meta_data_table.txt!"
         exit 255
     fi
-    mem_oud_id_str=$(echo "${mem_oud_id}" | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
+    mem_ous_id_str=$(echo "${mem_ous_id}" | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
     image_name=$(basename "${image_path}" | sed -e 's/output_//g')
-    image_file="${project_code}.member.${mem_oud_id_str}.${image_name}"
+    image_file="${project_code}.member.${mem_ous_id_str}.${image_name}"
     
     # copy fits file
-    echo_output "cp \"${image_path}\" \"${Deploy_dir}/fits/${image_file}\""
-    cp "${image_path}" "${Deploy_dir}/fits/${image_file}"
+    if [[ ! -f "${Deploy_dir}/fits/${image_file}" ]] || [[ $overwrite -gt 0 ]]; then
+        echo_output "cp \"${image_path}\" \"${Deploy_dir}/fits/${image_file}\""
+        cp "${image_path}" "${Deploy_dir}/fits/${image_file}"
+    fi
     
     # cd into the directory
     Current_dir=$(pwd -P)
@@ -144,11 +147,11 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     cd "${Deploy_dir}/fits"
     # write mem_ous_id into the fits header
     if [[ $(gethead "${image_file}" MEMBER 2>/dev/null | wc -l) -eq 0 ]]; then
-        echo_output "sethead \"${image_file}\" MEMBER=\"${mem_oud_id}\""
-        sethead "${image_file}" MEMBER="${mem_oud_id}"
+        echo_output "sethead \"${image_file}\" MEMBER=\"${mem_ous_id}\""
+        sethead "${image_file}" MEMBER="${mem_ous_id}"
     fi
     # compute rms
-    if [[ ! -f "${image_file}.pixel.statistics.txt" ]]; then
+    if [[ ! -f "${image_file}.pixel.statistics.txt" ]] || [[ $overwrite -gt 0 ]]; then
         echo_output "\"${Script_dir}\"/almacosmos_get_fits_image_pixel_histogram.py \"${image_file}\""
         "${Script_dir}"/almacosmos_get_fits_image_pixel_histogram.py "${image_file}" 2>&1 > "${image_file}.get.pixel.histogram.log"
         if [[ ! -f "${image_file}.pixel.statistics.txt" ]]; then
