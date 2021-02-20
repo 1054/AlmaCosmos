@@ -105,7 +105,8 @@ if [[ -f "${Deploy_dir}/alma_project_meta_table.txt" ]]; then
     mv "${Deploy_dir}/alma_project_meta_table.txt" "${Deploy_dir}/alma_project_meta_table.txt.backup"
 fi
 echo_output "Initializing \"${Deploy_dir}/alma_project_meta_table.txt\""
-printf "# %-15s %-25s %10s %15s %15s %15s   %-s\n" 'project' 'mem_ous_id' 'band' 'OBSRA' 'OBSDEC' 'RMS' 'image_file' \
+printf "# %-15s %-20s %-25s %10s %15s %15s %10s %10s %10s %15s %15s   %-s\n" \
+    'project' 'source' 'mem_ous_id' 'band' 'wavelength' 'rms' 'beam_major' 'beam_minor' 'beam_angle' 'OBSRA' 'OBSDEC' 'image_file' \
     > "${Deploy_dir}/alma_project_meta_table.txt"
 
 
@@ -150,19 +151,27 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
         echo_output "sethead \"${image_file}\" MEMBER=\"${mem_ous_id}\""
         sethead "${image_file}" MEMBER="${mem_ous_id}"
     fi
-    # compute RMS
+    # compute rms
     if [[ ! -f "${image_file}.pixel.statistics.txt" ]] || [[ $overwrite -gt 0 ]]; then
         echo_output "\"${Script_dir}\"/almacosmos_get_fits_image_pixel_histogram.py \"${image_file}\""
         "${Script_dir}"/almacosmos_get_fits_image_pixel_histogram.py "${image_file}" 2>&1 > "${image_file}.get.pixel.histogram.log"
         if [[ ! -f "${image_file}.pixel.statistics.txt" ]]; then
-            echo_error "Error! Could not compute pixel histogram and RMS!"
+            echo_error "Error! Could not compute pixel histogram and rms!"
             exit 255
         fi
     fi
-    RMS=$(cat "${image_file}.pixel.statistics.txt" | grep "^Gaussian_sigma" | cut -d '=' -f 2 | sed -e 's/^ //g')
-    if [[ "$RMS" == *"#"* ]]; then
-        RMS=$(echo "$RMS" | cut -d '#' -f 1)
+    rms=$(cat "${image_file}.pixel.statistics.txt" | grep "^Gaussian_sigma" | cut -d '=' -f 2 | sed -e 's/^ //g')
+    if [[ "$rms" == *"#"* ]]; then
+        rms=$(echo "$rms" | cut -d '#' -f 1)
     fi
+    rms=$(awk "BEGIN {print (${rms}) * 1e3;}") # converting from Jy/beam to mJy/beam.
+    # 
+    frequency=$(gethead "${image_file}" CRVAL3)
+    if [[ "$frequency"x == ""x ]]; then
+        echo_error "Error! Could not get CRVAL3 key in the fits header of \"${image_file}\"!"
+        exit 255
+    fi
+    wavelength=$(awk "BEGIN {print 2.99792458e5 / ((${frequency})/1e9);}") # convert frequency Hz to wavelength um
     # 
     OBSRA=$(gethead "${image_file}" OBSRA)
     OBSDEC=$(gethead "${image_file}" OBSDEC)
@@ -171,11 +180,29 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
         exit 255
     fi
     # 
+    BMAJ=$(gethead "${image_file}" BMAJ)
+    BMIN=$(gethead "${image_file}" BMIN)
+    BPA=$(gethead "${image_file}" BPA)
+    if [[ "$BMAJ"x == ""x ]] || [[ "$BMIN"x == ""x ]] || [[ "$BPA"x == ""x ]]; then
+        echo_error "Error! Could not get BMAJ, BMIN and BPA keys in the fits header of \"${image_file}\"!"
+        exit 255
+    fi
+    beam_major=$(awk "BEGIN {print (${BMAJ}) * 3600.0;}") # convert BMAJ deg to beam_major arcsec
+    beam_minor=$(awk "BEGIN {print (${BMIN}) * 3600.0;}") # convert BMAJ deg to beam_major arcsec
+    beam_angle=${BPA} # just in units of deg
+    # 
+    OBJECT=$(gethead "${image_file}" OBJECT)
+    if [[ "$OBJECT"x == ""x ]]; then
+        echo_error "Error! Could not get OBJECT key in the fits header of \"${image_file}\"!"
+        exit 255
+    fi
+    # 
     echo_output "cd \"${Current_dir}\""
     cd "${Current_dir}"
     
     # write to alma_project_meta_table.txt
-    printf "  %-15s %-25s %10s %15.10f %+15.10f %15g   %-s\n" "${project_code}" "${mem_ous_id}" "$band" $OBSRA $OBSDEC $RMS "${image_file}" \
+    printf "  %-15s %-20s %-25s %10s %15g %15g %10g %10g %10g %15.10f %+15.10f   %-s\n" \
+        "${project_code}" "${OBJECT}" "${mem_ous_id}" "${band}" $wavelength $rms $beam_major $beam_minor $beam_angle $OBSRA $OBSDEC "${image_file}" \
         >> "${Deploy_dir}/alma_project_meta_table.txt"
     echo_output "Written to \"${Deploy_dir}/alma_project_meta_table.txt\""
 done
