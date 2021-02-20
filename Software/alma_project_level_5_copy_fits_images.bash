@@ -92,10 +92,10 @@ fi
 
 
 # read meta table and list mem_oud_id
-list_project_code=$(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $1; }')
-list_mem_oud_id=$(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $2; }')
-list_alma_band=$(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $6; }')
-list_dataset_id=$(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $9; }')
+list_project_code=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $1; }'))
+list_mem_oud_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $2; }'))
+list_alma_band=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $6; }'))
+list_dataset_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $9; }'))
 
 
 # check alma_project_meta_table.txt
