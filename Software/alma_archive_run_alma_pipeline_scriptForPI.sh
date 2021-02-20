@@ -84,7 +84,7 @@ check_and_extract_casa_version_in_readme_file() {
                             $(dirname ${BASH_SOURCE[0]})/${script_finding_casa_version} "${list_of_found_files[0]}" > "$script_dir/README_CASA_VERSION"
                         else
                             echo "Error! Could not find command \"${script_finding_casa_version}\", which should be shipped together with this code!"
-                            return -1 # exit 1
+                            return 255 # exit 1
                         fi
                         # re-cehck if valid
                         if [[ $(cat "$script_dir/README_CASA_VERSION" | wc -l) -eq 0 ]]; then
@@ -95,20 +95,20 @@ check_and_extract_casa_version_in_readme_file() {
                             return 0 #source "$casa_setup_script_path" "$script_dir/README_CASA_VERSION"
                         else
                             echo "Error! Failed to run ${script_finding_casa_version} \"${list_of_found_files[0]}\"!"
-                            return -1 # exit 1
+                            return 255 # exit 1
                         fi
                     else
                         echo "Error! Could not find \"$script_dir/qa/{*.tgz,*.html}\"! Could not determine CASA Version!"
-                        return -1 # exit 1
+                        return 255 # exit 1
                     fi
                 else
                     echo "Error! Could not find either \"$script_dir/README_CASA_VERSION\" or \"$script_dir/README\" files or \"$script_dir/qa/\" folder! Could not determine CASA Version!"
-                    return -1 # exit 1
+                    return 255 # exit 1
                 fi
             fi
         fi
     else
-        return -1
+        return 255
     fi
 }
 
@@ -165,17 +165,24 @@ check_and_concat_calibrated_ms() {
                     elif [[ ${#list_of_ms_split_cal_dirs[@]} -gt 1 ]]; then
                         echo "Found \"$script_dir/calibrated\" and \"uid___*.ms.split.cal\" therein but no \"calibrated_final.ms\" nor \"calibrated.ms\"! Will try to concatenate them."
                         # check README file which contains CASA version and source CASA version
-                        list_of_readme_files=($(find -L "$script_dir" -name "README"))
+                        list_of_readme_files=()
+                        if [[ ${#list_of_readme_files[@]} -eq 0 ]]; then
+                            list_of_readme_files+=($(find -L "$script_dir" -name "README_CASA_VERSION"))
+                        fi
+                        if [[ ${#list_of_readme_files[@]} -eq 0 ]]; then
+                            list_of_readme_files+=($(find -L "$script_dir" -name "README"))
+                        fi
                         if [[ ${#list_of_readme_files[@]} -gt 0 ]]; then
+                            echo "source \"$casa_setup_script_path\" \"${list_of_readme_files[0]}\""
                             source "$casa_setup_script_path" "${list_of_readme_files[0]}"
-                        else
-                            list_of_readme_files=($(find -L "$script_dir" -name "README_CASA_VERSION"))
-                            if [[ ${#list_of_readme_files[@]} -gt 0 ]]; then
-                                source "$casa_setup_script_path" "${list_of_readme_files[0]}"
-                            else
-                                echo "Error! Failed to find README file under $script_dir!"
-                                return -1 # exit 1
+                            check_return_code=$?
+                            if [[ $check_return_code -ne 0 ]]; then
+                                echo "Error! Failed to source \"$casa_setup_script_path\" \"${list_of_readme_files[0]}\"! It should contain a line \"CASA version X.X.X\"."
+                                return 255
                             fi
+                        else
+                            echo "Error! Failed to find README_CASA_VERSION or README file under $script_dir!"
+                            return 255 # exit 1
                         fi
                         # run CASA concat
                         echo "Running alma_archive_run_alma_pipeline_concat_ms_split_cal.sh \"$script_dir/calibrated\""
@@ -185,12 +192,12 @@ check_and_concat_calibrated_ms() {
                             $(dirname ${BASH_SOURCE[0]})/alma_archive_run_alma_pipeline_concat_ms_split_cal.sh "$script_dir/calibrated"
                         else
                             echo "Error! Could not find command \"alma_archive_run_alma_pipeline_concat_ms_split_cal.sh\", which should be shipped together with this code!"
-                            return -1 # exit 1
+                            return 255 # exit 1
                         fi
                         # check the concat result
                         if [[ ! -d "$script_dir/calibrated/calibrated.ms" ]]; then
                             echo "Error! Failed to run alma_archive_run_alma_pipeline_concat_ms_split_cal.sh and produce \"calibrated.ms\"!"
-                            return -1 # exit 1
+                            return 255 # exit 1
                         else
                             echo "Successfully concatenated \"uid___*.ms.split.cal\" into \"calibrated.ms\"! No need to re-run the pipeline! Continue!"
                             return 0 # continue # OK, no need to re-make calibrated data
@@ -207,7 +214,7 @@ check_and_concat_calibrated_ms() {
         fi
         return 1 # Need to re-make calibrated data
     else
-        return -1
+        return 255
     fi
 }
 
@@ -295,10 +302,10 @@ for (( i = 0; i < ${#list_of_input_dirs[@]}; i++ )); do
         echo "check_and_concat_calibrated_ms \"$script_dir\""
         check_and_concat_calibrated_ms "$script_dir"
         check_return_code=$?
-        if [[ $check_return_code -lt 0 ]]; then
+        if [[ $check_return_code -ne 0 ]] && [[ $check_return_code -ne 1 ]]; then
             echo "check_and_concat_calibrated_ms FAILED!"
-            exit 1 # got error when running the function, exit
-        elif [[ $check_return_code -gt 0 ]]; then
+            exit 255 # got error when running the function, exit
+        elif [[ $check_return_code -eq 1 ]]; then
             # 
             # check directories for running pipeline
             if [[ ! -d "$script_dir/raw" ]] && [[ ! -L "$script_dir/raw" ]]; then
