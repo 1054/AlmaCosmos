@@ -191,7 +191,7 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     beam_minor=$(awk "BEGIN {print (${BMIN}) * 3600.0;}") # convert BMAJ deg to beam_major arcsec
     beam_angle=${BPA} # just in units of deg
     # 
-    OBJECT=$(gethead "${image_file}" OBJECT)
+    OBJECT=$(gethead "${image_file}" OBJECT | perl -p -e 's/ /_/g')
     if [[ "$OBJECT"x == ""x ]]; then
         echo_error "Error! Could not get OBJECT key in the fits header of \"${image_file}\"!"
         exit 255
