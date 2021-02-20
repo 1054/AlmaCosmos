@@ -30,7 +30,7 @@ if not os.path.isfile(weblog_html):
 casa_version = ''
 
 
-with open fp.open(weblog_html, 'r') as weblog_index_html:
+with open(weblog_html, 'r') as weblog_index_html:
     #print(weblog_index_html, file=sys.stderr)
     weblog_index_html_content = weblog_index_html.read()
 

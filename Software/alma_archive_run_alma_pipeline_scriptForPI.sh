@@ -65,16 +65,25 @@ check_and_extract_casa_version_in_readme_file() {
             else
                 # if no README file or failed to extract CASA Version from there, then we read "qa/*.tgz"
                 if [[ -d "$script_dir/qa" ]] || [[ -L "$script_dir/qa" ]]; then
-                    list_of_found_files=($(find -L "$script_dir/qa" -name "*.tgz"))
-                    if [[ ${#list_of_found_files[@]} -gt 0 ]]; then
+                    list_of_found_files=()
+                    script_finding_casa_version=""
+                    if [[ ${#list_of_found_files[@]} -eq 0 ]]; then
+                        list_of_found_files=($(find -L "$script_dir/qa" -name "*.tgz"))
+                        script_finding_casa_version=alma_archive_find_casa_version_in_qa_weblog.py
+                    fi
+                    if [[ ${#list_of_found_files[@]} -eq 0 ]]; then
+                        list_of_found_files=($(find -L "$script_dir/qa" -name "*.html"))
+                        script_finding_casa_version=alma_archive_find_casa_version_in_qa_html.py
+                    fi
+                    if [[ ${#list_of_found_files[@]} -gt 0 ]] && [[ "$script_finding_casa_version"x != ""x ]]; then
                         # run our python code to extract CASA Version from "qa/*.tgz"
-                        echo "Running alma_archive_find_casa_version_in_qa_weblog.py \"${list_of_found_files[0]}\" > \"$script_dir/README_CASA_VERSION\""
-                        if [[ $(type alma_archive_find_casa_version_in_qa_weblog.py 2>/dev/null | wc -l) -ge 1 ]]; then
-                            alma_archive_find_casa_version_in_qa_weblog.py "${list_of_found_files[0]}" > "$script_dir/README_CASA_VERSION"
-                        elif [[ -f $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py ]]; then
-                            $(dirname ${BASH_SOURCE[0]})/alma_archive_find_casa_version_in_qa_weblog.py "${list_of_found_files[0]}" > "$script_dir/README_CASA_VERSION"
+                        echo "Running ${script_finding_casa_version} \"${list_of_found_files[0]}\" > \"$script_dir/README_CASA_VERSION\""
+                        if [[ $(type ${script_finding_casa_version} 2>/dev/null | wc -l) -ge 1 ]]; then
+                            ${script_finding_casa_version} "${list_of_found_files[0]}" > "$script_dir/README_CASA_VERSION"
+                        elif [[ -f $(dirname ${BASH_SOURCE[0]})/${script_finding_casa_version} ]]; then
+                            $(dirname ${BASH_SOURCE[0]})/${script_finding_casa_version} "${list_of_found_files[0]}" > "$script_dir/README_CASA_VERSION"
                         else
-                            echo "Error! Could not find command \"alma_archive_find_casa_version_in_qa_weblog.py\", which should be shipped together with this code!"
+                            echo "Error! Could not find command \"${script_finding_casa_version}\", which should be shipped together with this code!"
                             return -1 # exit 1
                         fi
                         # re-cehck if valid
@@ -85,11 +94,11 @@ check_and_extract_casa_version_in_readme_file() {
                         if [[ -f "$script_dir/README_CASA_VERSION" ]] || [[ -L "$script_dir/README_CASA_VERSION" ]]; then
                             return 0 #source "$casa_setup_script_path" "$script_dir/README_CASA_VERSION"
                         else
-                            echo "Error! Failed to run alma_archive_find_casa_version_in_qa_weblog.py \"${list_of_found_files[0]}\"!"
+                            echo "Error! Failed to run ${script_finding_casa_version} \"${list_of_found_files[0]}\"!"
                             return -1 # exit 1
                         fi
                     else
-                        echo "Error! Could not find \"$script_dir/qa/*.tgz\"! Could not determine CASA Version!"
+                        echo "Error! Could not find \"$script_dir/qa/{*.tgz,*.html}\"! Could not determine CASA Version!"
                         return -1 # exit 1
                     fi
                 else
