@@ -15,7 +15,7 @@ if [[ $# -lt 2 ]]; then
 fi
 
 Project_code="$1"
-Deploy_dir="$2"
+Deploy_dir=$(perl -MCwd -e 'print Cwd::abs_path shift' "$2") # get absolute path
 Script_dir=$(dirname $(perl -MCwd -e 'print Cwd::abs_path shift' "${BASH_SOURCE[0]}"))
 
 # define logging files and functions
