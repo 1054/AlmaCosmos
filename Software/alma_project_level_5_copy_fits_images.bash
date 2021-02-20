@@ -43,6 +43,10 @@ echo_error()
 # begin
 echo_output "Began processing ALMA project ${Project_code} with $(basename ${BASH_SOURCE[0]})"
 
+echo_output "Project_code = ${Project_code}"
+echo_output "Deploy_dir = ${Deploy_dir}"
+echo_output "Script_dir = ${Script_dir}"
+
 
 # check wcstools gethead sethead
 for check_command in gethead sethead; do
