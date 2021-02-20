@@ -53,8 +53,6 @@ with open(weblog_html, 'r') as weblog_index_html:
         if casa_version != '':
             break
 
-    if casa_version != '':
-        break
 
 print('CASA version %s'%(casa_version))
 
