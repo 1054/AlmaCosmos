@@ -105,7 +105,7 @@ if [[ -f "${Deploy_dir}/alma_project_meta_table.txt" ]]; then
     mv "${Deploy_dir}/alma_project_meta_table.txt" "${Deploy_dir}/alma_project_meta_table.txt.backup"
 fi
 echo_output "Initializing \"${Deploy_dir}/alma_project_meta_table.txt\""
-printf "# %-15s %-25s %15s %15s %10s   %-s\n" 'project' 'mem_ous_id' 'OBSRA' 'OBSDEC' 'band' 'image_file' \
+printf "# %-15s %-25s %10s %15s %15s %15s   %-s\n" 'project' 'mem_ous_id' 'band' 'OBSRA' 'OBSDEC' 'RMS' 'image_file' \
     > "${Deploy_dir}/alma_project_meta_table.txt"
 
 
@@ -150,18 +150,18 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
         echo_output "sethead \"${image_file}\" MEMBER=\"${mem_ous_id}\""
         sethead "${image_file}" MEMBER="${mem_ous_id}"
     fi
-    # compute rms
+    # compute RMS
     if [[ ! -f "${image_file}.pixel.statistics.txt" ]] || [[ $overwrite -gt 0 ]]; then
         echo_output "\"${Script_dir}\"/almacosmos_get_fits_image_pixel_histogram.py \"${image_file}\""
         "${Script_dir}"/almacosmos_get_fits_image_pixel_histogram.py "${image_file}" 2>&1 > "${image_file}.get.pixel.histogram.log"
         if [[ ! -f "${image_file}.pixel.statistics.txt" ]]; then
-            echo_error "Error! Could not compute pixel histogram and rms!"
+            echo_error "Error! Could not compute pixel histogram and RMS!"
             exit 255
         fi
     fi
-    rms=$(cat "${image_file}.pixel.statistics.txt" | grep "^Gaussian_sigma" | cut -d '=' -f 2 | sed -e 's/^ //g')
-    if [[ "$rms" == *"#"* ]]; then
-        rms=$(echo "$rms" | cut -d '#' -f 1)
+    RMS=$(cat "${image_file}.pixel.statistics.txt" | grep "^Gaussian_sigma" | cut -d '=' -f 2 | sed -e 's/^ //g')
+    if [[ "$RMS" == *"#"* ]]; then
+        RMS=$(echo "$RMS" | cut -d '#' -f 1)
     fi
     # 
     OBSRA=$(gethead "${image_file}" OBSRA)
@@ -175,7 +175,7 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     cd "${Current_dir}"
     
     # write to alma_project_meta_table.txt
-    printf "  %-15s %-25s %15.10f %+15.10f %10s   %-s\n" "${project_code}" "${mem_ous_id}" $OBSRA $OBSDEC "$band" "${image_file}" \
+    printf "  %-15s %-25s %10s %15.10f %+15.10f %15g   %-s\n" "${project_code}" "${mem_ous_id}" "$band" $OBSRA $OBSDEC $RMS "${image_file}" \
         >> "${Deploy_dir}/alma_project_meta_table.txt"
     echo_output "Written to \"${Deploy_dir}/alma_project_meta_table.txt\""
 done
