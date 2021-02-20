@@ -171,8 +171,8 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
         echo_error "Error! Could not find dataset_id ${dataset_id} in meta_data_table.txt!"
         exit 255
     fi
-    mem_ous_id_str=$(echo "${mem_ous_id}" | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
-    image_name=$(basename "${image_path}" | sed -e 's/output_//g')
+    mem_ous_id_str=$(echo "${mem_ous_id}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
+    image_name=$(basename "${image_path}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/^output_//g')
     image_file="${project_code}.member.${mem_ous_id_str}.${image_name}"
     
     # copy fits file
