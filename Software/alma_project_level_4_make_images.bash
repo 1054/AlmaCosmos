@@ -13,6 +13,10 @@ if [[ $# -eq 0 ]]; then
     echo "    alma_project_level_5_make_images.bash Project_code [-dataset DataSet_01]"
     echo "Example: "
     echo "    alma_project_level_5_make_images.bash 2013.1.00034.S"
+    echo "Options: "
+    echo "    -width 25km/s"
+    echo "    -maximsize 2000"
+    echo "    -dataset DataSet_Merged_A"
     echo "Notes: "
     echo "    This code will make clean cube images using ms data under \"Level_3_Split\" and store into \"Level_4_Data_Images\" classified by source names."
     exit
@@ -23,6 +27,7 @@ Project_code="$1"; shift
 # read user input
 iarg=1
 width="25km/s"
+maximsize=2000
 overwrite=0
 keepfiles=0
 select_dataset=()
@@ -30,6 +35,9 @@ while [[ $iarg -le $# ]]; do
     istr=$(echo ${!iarg} | tr '[:upper:]' '[:lower:]')
     if [[ "$istr" == "-width" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); width="${!iarg}"; echo "Setting width=\"${!iarg}\""
+    fi
+    if [[ "$istr" == "-maximsize" ]] && [[ $((iarg+1)) -le $# ]]; then
+        iarg=$((iarg+1)); maximsize="${!iarg}"; echo "Setting maximsize=\"${!iarg}\""
     fi
     if [[ "$istr" == "-dataset" ]] && [[ $((iarg+1)) -le $# ]]; then
         iarg=$((iarg+1)); select_dataset+=("${!iarg}"); echo "Selecting dataset \"${!iarg}\""
@@ -246,7 +254,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo "    line_name='cube', \\"                                       >> "${py_script}"
                 echo "    line_velocity=-1, \\"                                       >> "${py_script}"
                 echo "    line_velocity_width=-1, \\"                                 >> "${py_script}"
-                echo "    max_imsize=2000, \\"                                        >> "${py_script}"
+                echo "    max_imsize=${maximsize}, \\"                                >> "${py_script}"
                 echo "    )"  >> "${py_script}"                                       >> "${py_script}"
                 echo ""                                                               >> "${py_script}"
                 fi
@@ -254,7 +262,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 echo "    \"${ms_data}\", \\"                                         >> "${py_script}"
                 echo "    make_line_cube=False, \\"                                   >> "${py_script}"
                 echo "    make_continuum=True, \\"                                    >> "${py_script}"
-                echo "    max_imsize=2000, \\"                                        >> "${py_script}"
+                echo "    max_imsize=${maximsize}, \\"                                >> "${py_script}"
                 echo "    )"                                                          >> "${py_script}"
                 echo ""                                                               >> "${py_script}"
                 chmod +x "${py_script}"
@@ -340,7 +348,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     echo "    \"${output_concat_ms_data}\", \\"                           >> "${py_script}"
                     echo "    make_line_cube=False, \\"                                   >> "${py_script}"
                     echo "    make_continuum=True, \\"                                    >> "${py_script}"
-                    echo "    max_imsize=2000, \\"                                        >> "${py_script}"
+                    echo "    max_imsize=${maximsize}, \\"                                >> "${py_script}"
                     echo "    )"                                                          >> "${py_script}"
                     echo ""                                                               >> "${py_script}"
                     chmod +x "${py_script}"
