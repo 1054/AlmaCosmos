@@ -79,9 +79,15 @@ check_and_extract_casa_version_in_readme_file() {
                         # run our python code to extract CASA Version from "qa/*.tgz"
                         echo "Running ${script_finding_casa_version} \"${list_of_found_files[0]}\" > \"$script_dir/README_CASA_VERSION\""
                         if [[ $(type ${script_finding_casa_version} 2>/dev/null | wc -l) -ge 1 ]]; then
+                            BACKUP_PYTHONPATH="$PYTHONPATH"
+                            export PYTHONPATH=""
                             ${script_finding_casa_version} "${list_of_found_files[0]}" > "$script_dir/README_CASA_VERSION"
+                            export PYTHONPATH="$BACKUP_PYTHONPATH"
                         elif [[ -f $(dirname ${BASH_SOURCE[0]})/${script_finding_casa_version} ]]; then
+                            BACKUP_PYTHONPATH="$PYTHONPATH"
+                            export PYTHONPATH=""
                             $(dirname ${BASH_SOURCE[0]})/${script_finding_casa_version} "${list_of_found_files[0]}" > "$script_dir/README_CASA_VERSION"
+                            export PYTHONPATH="$BACKUP_PYTHONPATH"
                         else
                             echo "Error! Could not find command \"${script_finding_casa_version}\", which should be shipped together with this code!"
                             return 255 # exit 1
