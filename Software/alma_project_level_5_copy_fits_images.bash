@@ -99,6 +99,7 @@ fi
 # read meta table and list mem_ous_id
 list_project_code=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $1; }'))
 list_mem_ous_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $2; }'))
+list_source_name=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $3; }'))
 list_alma_band=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $6; }'))
 list_dataset_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $9; }'))
 
@@ -108,6 +109,10 @@ if [[ ${#list_project_code[@]} -eq 0 ]]; then
 fi
 if [[ ${#list_mem_ous_id[@]} -eq 0 ]]; then
     echo_error "Error! Could not read the Mem_ous_id column in \"meta_data_table.txt\"!"
+    exit 255
+fi
+if [[ ${#list_source_name[@]} -eq 0 ]]; then
+    echo_error "Error! Could not read the Source_name column in \"meta_data_table.txt\"!"
     exit 255
 fi
 if [[ ${#list_alma_band[@]} -eq 0 ]]; then
@@ -162,18 +167,42 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     project_code=""
     mem_ous_id=""
     band=""
-    for (( j = 0; j < ${#list_dataset_id[@]}; j++ )); do
-        #echo "list_dataset_id: ${list_dataset_id[@]} (${#list_dataset_id[@]})" #<DEBUG>#
-        if [[ "${list_dataset_id[j]}" == "$dataset_id" ]]; then
-            project_code="${list_project_code[j]}"
-            mem_ous_id="${list_mem_ous_id[j]}"
-            band="${list_alma_band[j]}"
-            break
+    if [[ "$dataset_id" == "DataSet_Merged"* ]]; then
+        mem_ous_id=""
+        mem_ous_id_list=()
+        source_name=$(basename $(dirname $(dirname "$image_path")))
+        for (( j = 0; j < ${#list_source_name[@]}; j++ )); do
+            #echo "list_source_name: ${list_source_name[@]} (${#list_source_name[@]})" #<DEBUG>#
+            if [[ "${list_source_name[j]}" == "$source_name" ]]; then
+                if [[ "${mem_ous_id}"x == ""x ]]; then
+                    project_code="${list_project_code[j]}"
+                    mem_ous_id_list+=("${list_mem_ous_id[j]}") 
+                    mem_ous_id="${list_mem_ous_id[j]}"
+                    band="${list_alma_band[j]}"
+                elif [[ "${mem_ous_id}"x != *"${list_mem_ous_id[j]}"*x ]]; then
+                    mem_ous_id_list+=("${list_mem_ous_id[j]}")
+                    mem_ous_id="${mem_ous_id}+${list_mem_ous_id[j]}"
+                fi
+            fi
+        done
+        if [[ "${project_code}"x == ""x ]] || [[ "${mem_ous_id}"x == ""x ]]; then
+            echo_error "Error! Could not determine project_code and mem_ous_id from meta_data_table.txt for the input image ${image_path} source name ${source_name}!"
+            exit 255
         fi
-    done
-    if [[ "${project_code}"x == ""x ]] || [[ "${mem_ous_id}"x == ""x ]]; then
-        echo_error "Error! Could not find dataset_id ${dataset_id} in meta_data_table.txt!"
-        exit 255
+    else
+        for (( j = 0; j < ${#list_dataset_id[@]}; j++ )); do
+            #echo "list_dataset_id: ${list_dataset_id[@]} (${#list_dataset_id[@]})" #<DEBUG>#
+            if [[ "${list_dataset_id[j]}" == "$dataset_id" ]]; then
+                project_code="${list_project_code[j]}"
+                mem_ous_id="${list_mem_ous_id[j]}"
+                band="${list_alma_band[j]}"
+                break
+            fi
+        done
+        if [[ "${project_code}"x == ""x ]] || [[ "${mem_ous_id}"x == ""x ]]; then
+            echo_error "Error! Could not find dataset_id ${dataset_id} in meta_data_table.txt!"
+            exit 255
+        fi
     fi
     mem_ous_id_str=$(echo "${mem_ous_id}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
     image_name=$(basename "${image_path}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/^output_//g')
