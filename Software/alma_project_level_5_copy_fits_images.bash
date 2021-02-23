@@ -69,8 +69,12 @@ done
 
 
 # check meta data table file
-if [[ ! -f "meta_data_table.txt" ]]; then
-    echo_error "Error! \"meta_data_table.txt\" was not found! Please run previous steps first!"
+meta_data_table_file="meta_data_table.txt"
+if [[ -f "meta_data_table_with_dataset_names.txt" ]]; then
+    meta_data_table_file="meta_data_table_with_dataset_names.txt"
+fi
+if [[ ! -f "${meta_data_table_file}" ]]; then
+    echo_error "Error! \"${meta_data_table_file}\" was not found! Please run previous steps first!"
     exit 255
 fi
 
@@ -97,30 +101,30 @@ fi
 
 
 # read meta table and list mem_ous_id
-list_project_code=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $1; }'))
-list_mem_ous_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $2; }'))
-list_source_name=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $3; }'))
-list_alma_band=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $6; }'))
-list_dataset_id=($(cat "meta_data_table.txt" | awk '{ if(substr($1,0,1)!="#") print $9; }'))
+list_project_code=($(cat "${meta_data_table_file}" | awk '{ if(substr($1,0,1)!="#") print $1; }'))
+list_mem_ous_id=($(cat "${meta_data_table_file}" | awk '{ if(substr($1,0,1)!="#") print $2; }'))
+list_source_name=($(cat "${meta_data_table_file}" | awk '{ if(substr($1,0,1)!="#") print $3; }'))
+list_alma_band=($(cat "${meta_data_table_file}" | awk '{ if(substr($1,0,1)!="#") print $6; }'))
+list_dataset_id=($(cat "${meta_data_table_file}" | awk '{ if(substr($1,0,1)!="#") print $9; }'))
 
 if [[ ${#list_project_code[@]} -eq 0 ]]; then
-    echo_error "Error! Could not read the Project_code column in \"meta_data_table.txt\"!"
+    echo_error "Error! Could not read the Project_code column in \"${meta_data_table_file}\"!"
     exit 255
 fi
 if [[ ${#list_mem_ous_id[@]} -eq 0 ]]; then
-    echo_error "Error! Could not read the Mem_ous_id column in \"meta_data_table.txt\"!"
+    echo_error "Error! Could not read the Mem_ous_id column in \"${meta_data_table_file}\"!"
     exit 255
 fi
 if [[ ${#list_source_name[@]} -eq 0 ]]; then
-    echo_error "Error! Could not read the Source_name column in \"meta_data_table.txt\"!"
+    echo_error "Error! Could not read the Source_name column in \"${meta_data_table_file}\"!"
     exit 255
 fi
 if [[ ${#list_alma_band[@]} -eq 0 ]]; then
-    echo_error "Error! Could not read the Band column in \"meta_data_table.txt\"!"
+    echo_error "Error! Could not read the Band column in \"${meta_data_table_file}\"!"
     exit 255
 fi
 if [[ ${#list_dataset_id[@]} -eq 0 ]]; then
-    echo_error "Error! Could not read the DataSet_dirname column in \"meta_data_table.txt\"!"
+    echo_error "Error! Could not read the DataSet_dirname column in \"${meta_data_table_file}\"!"
     exit 255
 fi
 check_project_code=0
@@ -131,7 +135,7 @@ for (( i = 0; i < ${#list_project_code[@]}; i++ )); do
     fi
 done
 if [[ $check_project_code -eq 0 ]]; then
-    echo_error "Error! The input Project_code ${Project_code} is not found in \"meta_data_table.txt\"!"
+    echo_error "Error! The input Project_code ${Project_code} is not found in \"${meta_data_table_file}\"!"
     exit 255
 fi
 
@@ -186,7 +190,7 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
             fi
         done
         if [[ "${project_code}"x == ""x ]] || [[ "${mem_ous_id}"x == ""x ]]; then
-            echo_error "Error! Could not determine project_code and mem_ous_id from meta_data_table.txt for the input image ${image_path} source name ${source_name}!"
+            echo_error "Error! Could not determine project_code and mem_ous_id from ${meta_data_table_file} for the input image ${image_path} source name ${source_name}!"
             exit 255
         fi
     else
@@ -200,7 +204,7 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
             fi
         done
         if [[ "${project_code}"x == ""x ]] || [[ "${mem_ous_id}"x == ""x ]]; then
-            echo_error "Error! Could not find dataset_id ${dataset_id} in meta_data_table.txt!"
+            echo_error "Error! Could not find dataset_id ${dataset_id} in ${meta_data_table_file}!"
             exit 255
         fi
     fi
