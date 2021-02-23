@@ -178,6 +178,7 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     dataset_id=$(basename $(dirname "${image_path}"))
     project_code=""
     mem_ous_id=""
+    mem_ous_id_str="" # for file name
     band=""
     if [[ "$dataset_id" == "DataSet_Merged"* ]]; then
         mem_ous_id=""
@@ -190,16 +191,23 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
                     project_code="${list_project_code[j]}"
                     mem_ous_id_list+=("${list_mem_ous_id[j]}") 
                     mem_ous_id="${list_mem_ous_id[j]}"
+                    mem_ous_id_str=$(echo "${list_mem_ous_id[j]}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
                     band="${list_alma_band[j]}"
                 elif [[ "${mem_ous_id}"x != *"${list_mem_ous_id[j]}"*x ]]; then
                     mem_ous_id_list+=("${list_mem_ous_id[j]}")
                     mem_ous_id="${mem_ous_id}+${list_mem_ous_id[j]}"
+                    if [[ ${#mem_ous_id_list[@]} -le 6 ]]; then
+                        mem_ous_id_str="${mem_ous_id_str}+"$(echo "${list_mem_ous_id[j]}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
+                    fi
                 fi
             fi
         done
         if [[ "${project_code}"x == ""x ]] || [[ "${mem_ous_id}"x == ""x ]]; then
             echo_error "Error! Could not determine project_code and mem_ous_id from ${meta_data_table_file} for the input image ${image_path} source name ${source_name}!"
             exit 255
+        fi
+        if [[ ${#mem_ous_id_list[@]} -gt 6 ]]; then
+            mem_ous_id_str="${mem_ous_id_str}++truncated++"
         fi
     else
         for (( j = 0; j < ${#list_dataset_id[@]}; j++ )); do
@@ -215,8 +223,8 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
             echo_error "Error! Could not find dataset_id ${dataset_id} in ${meta_data_table_file}!"
             exit 255
         fi
+        mem_ous_id_str=$(echo "${mem_ous_id}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
     fi
-    mem_ous_id_str=$(echo "${mem_ous_id}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/[^a-zA-Z0-9_+-]/_/g')
     image_name=$(basename "${image_path}" | perl -p -e 's/[ \n\r]*$//g' | perl -p -e 's/^output_//g')
     image_file="${project_code}.member.${mem_ous_id_str}.${image_name}"
     
