@@ -140,6 +140,15 @@ if [[ $check_project_code -eq 0 ]]; then
 fi
 
 
+# search for image files, they must comply certain naming rules
+echo "Searching for \"Level_4_Data_Images/*/*/output_*.cont.I.image.fits\" ..."
+list_image_files=($(find Level_4_Data_Images -mindepth 3 -maxdepth 3 -type f -name "output_*.cont.I.image.fits"))
+if [[ ${#list_image_files[@]} -eq 0 ]]; then
+    echo "Error! Could not find any file! Please check the file names!"
+    exit 255
+fi
+
+
 # check alma_project_meta_table.txt, 
 # if it exists, then we will append to it (but clear previous project), otherwise initialize one
 if [[ -f "${Deploy_dir}/alma_project_meta_table.txt" ]]; then
@@ -163,7 +172,6 @@ fi
 
 
 # list_dataset_dir
-list_image_files=($(find Level_4_Data_Images -mindepth 3 -maxdepth 3 -type f -name "output_*.cont.I.image.fits"))
 for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     image_path="${list_image_files[i]}"
     echo_output "Processing image_path \"${image_path}\""
