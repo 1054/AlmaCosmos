@@ -18,6 +18,9 @@ Project_code="$1"
 Deploy_dir=$(perl -MCwd -e 'print Cwd::abs_path shift' $(echo "$2" | sed -e 's%/$%%g')) # get absolute path, but remove trailing '/' first.
 Script_dir=$(dirname $(perl -MCwd -e 'print Cwd::abs_path shift' "${BASH_SOURCE[0]}"))
 overwrite=0
+if [[ " $@ "x == *" -overwrite "*x ]]; then
+    overwrite=1
+fi
 
 # define logging files and functions
 error_log_file="$(pwd)/.$(basename ${BASH_SOURCE[0]}).err"
@@ -232,6 +235,19 @@ for (( i = 0; i < ${#list_image_files[@]}; i++ )); do
     if [[ ! -f "${Deploy_dir}/fits/${image_file}" ]] || [[ $overwrite -gt 0 ]]; then
         echo_output "cp \"${image_path}\" \"${Deploy_dir}/fits/${image_file}\""
         cp "${image_path}" "${Deploy_dir}/fits/${image_file}"
+        # also copy pb and pbcor files
+        pb_image_path=$(echo "${image_path}" | perl -p -e 's/.cont.I.image.fits$/.cont.I.pb.fits/g')
+        pb_image_file=$(echo "${image_file}" | perl -p -e 's/.cont.I.image.fits$/.cont.I.pb.fits/g')
+        if [[ -f "${pb_image_path}" ]]; then
+            echo_output "cp \"${pb_image_path}\" \"${Deploy_dir}/fits/${pb_image_file}\""
+            cp "${pb_image_path}" "${Deploy_dir}/fits/${pb_image_file}"
+        fi
+        pbcor_image_path=$(echo "${image_path}" | perl -p -e 's/.cont.I.image.fits$/.cont.I.image.pbcor.fits/g')
+        pbcor_image_file=$(echo "${image_file}" | perl -p -e 's/.cont.I.image.fits$/.cont.I.image.pbcor.fits/g')
+        if [[ -f "${pbcor_image_path}" ]]; then
+            echo_output "cp \"${pbcor_image_path}\" \"${Deploy_dir}/fits/${pbcor_image_file}\""
+            cp "${pbcor_image_path}" "${Deploy_dir}/fits/${pbcor_image_file}"
+        fi
     fi
     
     # cd into the directory
