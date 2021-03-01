@@ -279,6 +279,10 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
             if [[ ! -f ../"${ms_name}_cube_clean.image.fits" ]] && [[ "${width}" != "0" ]]; then
                 echo_output "Copying result \"${ms_name}_cube_clean.image.fits\""
                 cp "run_tclean_${ms_name}/${ms_name}_cube_clean.image.fits" ../
+                echo_output "Copying result \"${ms_name}_cube_clean.pb.fits\""
+                cp "run_tclean_${ms_name}/${ms_name}_cube_clean.pb.fits" ../
+                echo_output "Copying result \"${ms_name}_cube_clean.image.pbcor.fits\""
+                cp "run_tclean_${ms_name}/${ms_name}_cube_clean.image.pbcor.fits" ../
             fi
             #if [[ ! -f ../"output_${source_name}.cube.I.image.fits" ]] && [[ "${width}" != "0" ]]; then
             #    echo_output "Copying result \"${ms_name}_cube_clean.image.fits\" as \"output_${source_name}.cube.I.image.fits\""
@@ -365,6 +369,10 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                 if [[ ! -f ../"output_${source_name}.cont.I.image.fits" ]]; then
                     echo_output "Copying result \"${output_concat_ms_name}_cont_clean.image.fits\" as \"output_${source_name}.cont.I.image.fits\""
                     cp "run_tclean_${output_concat_ms_name}/${output_concat_ms_name}_cont_clean.image.fits" ../"output_${source_name}.cont.I.image.fits"
+                    echo_output "Copying result \"${output_concat_ms_name}_cont_clean.pb.fits\" as \"output_${source_name}.cont.I.pb.fits\""
+                    cp "run_tclean_${output_concat_ms_name}/${output_concat_ms_name}_cont_clean.pb.fits" ../"output_${source_name}.cont.I.pb.fits"
+                    echo_output "Copying result \"${output_concat_ms_name}_cont_clean.image.pbcor.fits\" as \"output_${source_name}.cont.I.image.pbcor.fits\""
+                    cp "run_tclean_${output_concat_ms_name}/${output_concat_ms_name}_cont_clean.image.pbcor.fits" ../"output_${source_name}.cont.I.image.pbcor.fits"
                 fi
             fi
             
