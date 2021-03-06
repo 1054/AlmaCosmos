@@ -353,6 +353,7 @@ for (( i = 0; i < ${#list_of_datasets[@]}; i++ )); do
                     echo "    make_line_cube=False, \\"                                   >> "${py_script}"
                     echo "    make_continuum=True, \\"                                    >> "${py_script}"
                     echo "    max_imsize=${maximsize}, \\"                                >> "${py_script}"
+                    echo "    skip_split=True, \\"                                        >> "${py_script}"
                     echo "    )"                                                          >> "${py_script}"
                     echo ""                                                               >> "${py_script}"
                     chmod +x "${py_script}"
