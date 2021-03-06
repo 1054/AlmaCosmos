@@ -1750,7 +1750,7 @@ def dzliu_clean(dataset_ms,
                 if os.path.isdir(line_ms+'.backup'):
                     shutil.rmtree(line_ms+'.backup')
                 shutil.move(line_ms, line_ms+'.backup')
-            shutil.copy2(dataset_ms, line_ms)
+            shutil.copytree(dataset_ms, line_ms)
         else:
             # 
             # Split line data and make channel averaging
@@ -1798,7 +1798,7 @@ def dzliu_clean(dataset_ms,
                 if os.path.isdir(continuum_ms+'.backup'):
                     shutil.rmtree(continuum_ms+'.backup')
                 shutil.move(continuum_ms, continuum_ms+'.backup')
-            shutil.copy2(dataset_ms, continuum_ms)
+            shutil.copytree(dataset_ms, continuum_ms)
         else:
             # 
             # we need to find out line-free channels
