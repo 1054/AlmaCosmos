@@ -1746,6 +1746,10 @@ def dzliu_clean(dataset_ms,
         # 
         # Check if skipping split
         if skip_split:
+            if os.path.isdir(line_ms):
+                if os.path.isdir(line_ms+'.backup'):
+                    shutil.rmtree(line_ms+'.backup')
+                shutil.move(line_ms, line_ms+'.backup')
             shutil.copy2(dataset_ms, line_ms)
         else:
             # 
@@ -1790,6 +1794,10 @@ def dzliu_clean(dataset_ms,
         # 
         # Check if skipping split
         if skip_split:
+            if os.path.isdir(continuum_ms):
+                if os.path.isdir(continuum_ms+'.backup'):
+                    shutil.rmtree(continuum_ms+'.backup')
+                shutil.move(continuum_ms, continuum_ms+'.backup')
             shutil.copy2(dataset_ms, continuum_ms)
         else:
             # 
