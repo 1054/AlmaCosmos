@@ -1078,7 +1078,7 @@ def prepare_clean_parameters(vis, imagename, imcell = None, imsize = None, niter
     clean_parameters['nterms'] = 1 # nterms must be ==1 when deconvolver='hogbom' is chosen
     clean_parameters['chanchunks'] = -1 # This feature is experimental and may have restrictions on how chanchunks is to be chosen. For now, please pick chanchunks so that nchan/chanchunks is an integer. 
     clean_parameters['interactive'] = False
-    clean_parameters['savemodel'] = 'virtual' # 'none', 'virtual', 'modelcolumn'. 'virtual' for simple gridding, 'modelcolumn' for gridder='awproject'.
+    #clean_parameters['savemodel'] = 'virtual' # 'none', 'virtual', 'modelcolumn'. 'virtual' for simple gridding, 'modelcolumn' for gridder='awproject'.
     #niter = 30000
     #calcres = True # calculate initial residual image at the beginning of the first major cycle
     #calcpsf = True
@@ -1662,6 +1662,7 @@ def dzliu_clean(dataset_ms,
                 continuum_clean_threshold = 3.5, 
                 line_clean_threshold = 3.5, 
                 max_imsize = None, 
+                skip_split = False, 
                 overwrite = False):
     # 
     casalog.origin('dzliu_clean')
@@ -1743,8 +1744,13 @@ def dzliu_clean(dataset_ms,
                     if os.path.isfile(check_dir+check_type+'.fits'):
                         os.remove(check_dir+check_type+'.fits')
         # 
-        # Split line data and make channel averaging
-        split_line_visibilities(dataset_ms, line_ms, galaxy_name, line_name[i], line_velocity[i], line_velocity_width[i], line_velocity_resolution[i])
+        # Check if skipping split
+        if skip_split:
+            shutil.copy2(dataset_ms, line_ms)
+        else:
+            # 
+            # Split line data and make channel averaging
+            split_line_visibilities(dataset_ms, line_ms, galaxy_name, line_name[i], line_velocity[i], line_velocity_width[i], line_velocity_resolution[i])
         # 
         # Make dirty image
         make_dirty_image(line_ms, line_dirty_cube, phasecenter = phasecenter, beamsize = beamsize, max_imsize = max_imsize)
@@ -1782,8 +1788,13 @@ def dzliu_clean(dataset_ms,
                     if os.path.isfile(check_dir+check_type+'.fits'):
                         os.remove(check_dir+check_type+'.fits')
         # 
-        # we need to find out line-free channels
-        split_continuum_visibilities(dataset_ms, continuum_ms, galaxy_name, galaxy_redshift = galaxy_redshift, line_name = line_name, line_velocity = line_velocity, line_velocity_width = line_velocity_width)
+        # Check if skipping split
+        if skip_split:
+            shutil.copy2(dataset_ms, continuum_ms)
+        else:
+            # 
+            # we need to find out line-free channels
+            split_continuum_visibilities(dataset_ms, continuum_ms, galaxy_name, galaxy_redshift = galaxy_redshift, line_name = line_name, line_velocity = line_velocity, line_velocity_width = line_velocity_width)
         # 
         # Make continuum
         make_dirty_image_of_continuum(continuum_ms, continuum_dirty_cube, phasecenter = phasecenter, beamsize = beamsize, max_imsize = max_imsize)
