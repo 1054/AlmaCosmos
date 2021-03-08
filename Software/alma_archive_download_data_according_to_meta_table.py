@@ -2,7 +2,7 @@
 # 
 
 from __future__ import print_function
-import os, sys, re, time, datetime, json 
+import os, sys, re, time, datetime, json, shutil
 # pkg_resources
 #pkg_resources.require('astroquery')
 #pkg_resources.require('keyrings.alt')
@@ -104,7 +104,14 @@ if not ('Project_code' in meta_table.colnames) or \
 # 
 # Loop each row
 # 
+output_dir_path_list = []
 for i in range(len(meta_table)):
+    # 
+    # get mem_ous_id
+    # 
+    Member_ous_id = meta_table['Member_ous_id'][i]
+    Member_ous_name = Member_ous_id.replace(':','_').replace('/','_').replace('+','_') # alternative?: Alma.clean_uid(Member_ous_id)
+    Output_name = 'alma_archive_download_tar_files_by_Mem_ous_id_%s'%(Member_ous_name)
     # 
     # prepare output dir
     # 
@@ -112,6 +119,12 @@ for i in range(len(meta_table)):
         output_dir_path = meta_table['Project_code'][i]+'.cache'
     else:
         output_dir_path = output_dir
+    # 
+    # append to output_dir_path_list
+    # 
+    output_dir_path = os.path.abspath(output_dir_path)
+    if output_dir_path not in output_dir_path_list:
+        output_dir_path_list.append(output_dir_path)
     # 
     # check exist output and do not overwrite
     # 
@@ -124,27 +137,12 @@ for i in range(len(meta_table)):
     if os.path.isfile(output_dir_path+'.done'):
         os.remove(output_dir_path+'.done')
     # 
-    # touch 
-    # 
-    start_time = datetime.datetime.now()
-    with open(output_dir_path+'.touch', 'w') as fp:
-        fp.write('START: ' + start_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
-    # 
     # change dir
     # 
     current_dir_path = os.getcwd()
     print('os.chdir("%s")' % (output_dir_path) )
     os.chdir(output_dir_path)
     print('os.getcwd()', os.getcwd())
-    # 
-    # query by Member_ous_id
-    # 
-    # result = Alma.query_region(orionkl, radius=0.034*u.deg)
-    # Member_ous_id = result['Member ous id']
-    #Member_ous_id = 'uid://A001/X148/X119'
-    Member_ous_id = meta_table['Member_ous_id'][i]
-    Member_ous_name = Member_ous_id.replace(':','_').replace('/','_').replace('+','_') # alternative?: Alma.clean_uid(Member_ous_id)
-    Output_name = 'alma_archive_download_tar_files_by_Mem_ous_id_%s'%(Member_ous_name)
     # 
     # check previous runs
     # 
@@ -153,11 +151,11 @@ for i in range(len(meta_table)):
             print('Found exisiting "%s.sh" and "%s.sh.done"! Will not re-run it!'%(Output_name,Output_name))
         else:
             print('Found exisiting "%s.sh"! But it seems not finished yet! Will launch it now!'%(Output_name))
-            os.system('echo "" >> %s.log'%(Output_name))
-            os.system('date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\" >> %s.log'%(Output_name))
-            os.system('echo "" >> %s.log'%(Output_name))
-            print('%s.sh >> %s.log'%(Output_name,Output_name))
-            os.system('%s.sh >> %s.log'%(Output_name,Output_name))
+            #os.system('echo "" >> %s.log'%(Output_name))
+            #os.system('date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\" >> %s.log'%(Output_name))
+            #os.system('echo "" >> %s.log'%(Output_name))
+            #print('%s.sh >> %s.log'%(Output_name,Output_name))
+            #os.system('%s.sh >> %s.log'%(Output_name,Output_name))
         # 
         # cd back and continue
         # 
@@ -166,115 +164,131 @@ for i in range(len(meta_table)):
         print('os.getcwd()', os.getcwd())
         continue
     
-    # archive url
-    # 'http://almascience.org',
-    # 'https://almascience.eso.org',
-    # 'https://almascience.nrao.edu',
-    # 'https://almascience.nao.ac.jp',
-    # 'https://beta.cadc-ccda.hia-iha.nrc-cnrc.gc.ca'
-    if Use_alma_site == 'eso':
-        Alma.archive_url = u'https://almascience.eso.org'
-    else:
-        Alma.archive_url = u'https://almascience.nrao.edu'
-    
-    # login
-    if Login_user_name != '':
-        print('Logging in as ALMA User "%s"'%(Login_user_name))
-        Alma.login(Login_user_name, store_password = True, reenter_password = False)
-    
-    print('Staging data for Member ObservingUnitSet ID "%s"'%(Member_ous_id))
-    uid_url_table = Alma.stage_data(Member_ous_id)
-    print(uid_url_table)
-    
-    #filelist = Alma.download_and_extract_files(uid_url_table['URL'], regex='.*README$')
-    #print(filelist)
-    
-    asciitable.write(uid_url_table, '%s.txt'%(Output_name), Writer=asciitable.FixedWidthTwoLine)
-    os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s.log'%(Output_name))
-    os.system('echo "%s %s" >> %s.log'%(sys.argv[0], sys.argv[1], Output_name))
-    
-    Use_Shell = True
-    if Use_Shell:
-        with open(Output_name+'.sh', 'w') as fp:
-            fp.write("#!/bin/bash\n")
-            fp.write("#\n")
-            fp.write("\n")
-            fp.write("set -e\n")
-            fp.write("\n")
-            fp.write("export PATH=\"$PATH:%s\"\n"%(os.path.dirname(sys.argv[0])))
-            fp.write("\n")
-            if Login_user_name != '':
-                fp.write("export INPUT_USERNAME=\"%s\"\n"%(Login_user_name))
-                fp.write("export INPUT_PASSWORD=$(python -c \"from __future__ import print_function; import keyring; print(keyring.get_password('astroquery:asa.alma.cl','%s'))\")\n"%(Login_user_name))
-                fp.write("\n")
-            else:
-                fp.write("export INPUT_USERNAME=\"\"\n")
-                fp.write("export INPUT_PASSWORD=\"\"\n")
-            for i in range(len(uid_url_table)):
-                fp.write("\n")
-                fp.write("alma_archive_download_data_via_http_link.sh \"%s\"\n"%(uid_url_table[i]['URL']))
-            fp.write("\n")
-            fp.write("date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\" > \"%s.sh.done\"\n"%(Output_name))
-            fp.write("\n")
-        
-        # 
-        # Old method
-        #for i in range(len(uid_url_table)):
-        #    if i == 0:
-        #        os.system('echo "#!/bin/bash" > %s.sh'%(Output_name)) # creating new file
-        #        os.system('echo "" >> %s.sh'%(Output_name))
-        #        os.system('echo "set -e" >> %s.sh'%(Output_name))
-        #        os.system('echo "" >> %s.sh'%(Output_name))
-        #        os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]), Output_name))
-        #        if Login_user_name != '':
-        #            os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
-        #            os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
-        #            
-        #            os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \" > /dev/tty" >> %s.sh'%(Login_user_name, Output_name))
-        #            os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
-        #            os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
-        #            os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Output_name))
-        #        else:
-        #            os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
-        #            os.system('echo "export INPUT_PASSWORD=\\\"\\\"" >> %s.sh'%(Output_name))
-        #    # 
-        #    os.system('echo "" >> %s.sh'%(Output_name))
-        #    # 
-        #    os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'], Output_name))
-        #    # 
-        #    if i == len(uid_url_table)-1:
-        #        os.system('echo "" >> %s.sh'%(Output_name))
-        #        os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name, Output_name))
-        #        os.system('echo "" >> %s.sh'%(Output_name))
-        # 
-        
-        print('Now prepared a shell script "%s.sh" to download the Tar files!'%(Output_name))
-        print('Running "%s.sh >> %s.log" in terminal!'%(Output_name, Output_name))
-        
-        os.system('chmod +x "%s.sh"; ./%s.sh 2>&1 >> %s.log'%(Output_name, Output_name, Output_name))
-        
-        #--> Re-using Alma repeatedly causes cache problem. Calling Alma.__init__() fixes the problem.  
-        Alma.__init__()
-    
     else:
         
-        Alma.retrieve_data_from_uid(Member_ous_id, cache = False)
+        # prepare download script and run os.system
         
+        # archive url
+        # 'http://almascience.org',
+        # 'https://almascience.eso.org',
+        # 'https://almascience.nrao.edu',
+        # 'https://almascience.nao.ac.jp',
+        # 'https://beta.cadc-ccda.hia-iha.nrc-cnrc.gc.ca'
+        if Use_alma_site == 'eso':
+            Alma.archive_url = u'https://almascience.eso.org'
+        else:
+            Alma.archive_url = u'https://almascience.nrao.edu'
         
+        # login
+        if Login_user_name != '':
+            print('Logging in as ALMA User "%s"'%(Login_user_name))
+            Alma.login(Login_user_name, store_password = True, reenter_password = False)
+        
+        print('Staging data for Member ObservingUnitSet ID "%s"'%(Member_ous_id))
+        uid_url_table = Alma.stage_data(Member_ous_id)
+        print(uid_url_table)
+        
+        #filelist = Alma.download_and_extract_files(uid_url_table['URL'], regex='.*README$')
+        #print(filelist)
+        
+        asciitable.write(uid_url_table, '%s.txt'%(Output_name), Writer=asciitable.FixedWidthTwoLine)
+        
+        Use_Shell = True
+        if Use_Shell:
+            with open(Output_name+'.sh', 'w') as fp:
+                fp.write("#!/bin/bash\n")
+                fp.write("#\n")
+                fp.write("\n")
+                fp.write("set -e\n")
+                fp.write("\n")
+                fp.write("export PATH=\"$PATH:%s\"\n"%(os.path.dirname(sys.argv[0])))
+                fp.write("\n")
+                if Login_user_name != '':
+                    fp.write("export INPUT_USERNAME=\"%s\"\n"%(Login_user_name))
+                    fp.write("export INPUT_PASSWORD=$(python -c \"from __future__ import print_function; import keyring; print(keyring.get_password('astroquery:asa.alma.cl','%s'))\")\n"%(Login_user_name))
+                    fp.write("\n")
+                else:
+                    fp.write("export INPUT_USERNAME=\"\"\n")
+                    fp.write("export INPUT_PASSWORD=\"\"\n")
+                for i in range(len(uid_url_table)):
+                    fp.write("\n")
+                    fp.write("alma_archive_download_data_via_http_link.sh \"%s\"\n"%(uid_url_table[i]['URL']))
+                fp.write("\n")
+                fp.write("date +\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\" > \"%s\"\n"%(Output_name+'.sh.done'))
+                fp.write("\n")
+            
+            # 
+            # Old method
+            #for i in range(len(uid_url_table)):
+            #    if i == 0:
+            #        os.system('echo "#!/bin/bash" > %s.sh'%(Output_name)) # creating new file
+            #        os.system('echo "" >> %s.sh'%(Output_name))
+            #        os.system('echo "set -e" >> %s.sh'%(Output_name))
+            #        os.system('echo "" >> %s.sh'%(Output_name))
+            #        os.system('echo "export PATH=\\\"\$PATH:%s\\\"" >> %s.sh'%(os.path.dirname(sys.argv[0]), Output_name))
+            #        if Login_user_name != '':
+            #            os.system('echo "export INPUT_USERNAME=\\\"%s\\\"" >> %s.sh'%(Login_user_name, Output_name))
+            #            os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
+            #            
+            #            os.system('echo "echo -n \"Please enter the password for ALMA account \"%s\": \" > /dev/tty" >> %s.sh'%(Login_user_name, Output_name))
+            #            os.system('echo "read -s INPUT_PASSWORD" >> %s.sh'%(Output_name))
+            #            os.system('echo "echo \"\" > /dev/tty" >> %s.sh'%(Output_name))
+            #            os.system('echo "export INPUT_PASSWORD" >> %s.sh'%(Output_name))
+            #        else:
+            #            os.system('echo "export INPUT_USERNAME=\\\"\\\"" >> %s.sh'%(Output_name))
+            #            os.system('echo "export INPUT_PASSWORD=\\\"\\\"" >> %s.sh'%(Output_name))
+            #    # 
+            #    os.system('echo "" >> %s.sh'%(Output_name))
+            #    # 
+            #    os.system('echo "alma_archive_download_data_via_http_link.sh \"%s\"" >> %s.sh'%(uid_url_table[i]['URL'], Output_name))
+            #    # 
+            #    if i == len(uid_url_table)-1:
+            #        os.system('echo "" >> %s.sh'%(Output_name))
+            #        os.system('echo \"date +\\\"%%Y-%%m-%%d %%H:%%M:%%S %%Z\\\" > %s.sh.done\" >> %s.sh'%(Output_name, Output_name))
+            #        os.system('echo "" >> %s.sh'%(Output_name))
+            # 
+            
+            print('Now prepared a shell script "%s" to download the Tar files!'%(Output_name+'.sh'))
+            
+            #--> Re-using Alma repeatedly causes cache problem. Calling Alma.__init__() fixes the problem.  
+            Alma.__init__()
+        
+        else:
+            
+            Alma.retrieve_data_from_uid(Member_ous_id, cache = False)
+            
+            
+        
+        # check log file <TODO>
+        #with open('%s.log'%(Output_name), 'r') as fp:
+        #    for fpline in fp.readlines():
+        #        if fpline.find('OK: credentials accepted.'):
+        #            ok
+        
+        #cache_location = os.getcwd() + os.path.sep + 'cache'
+        #if not os.path.isdir(cache_location):
+        #    os.mkdir(cache_location)
+        
+        #myAlma = Alma()
+        #myAlma.cache_location = os.getcwd() + os.path.sep + 'cache'
+        #myAlma.download_files(uid_url_table['URL'], cache=True)
     
-    # check log file <TODO>
-    #with open('%s.log'%(Output_name), 'r') as fp:
-    #    for fpline in fp.readlines():
-    #        if fpline.find('OK: credentials accepted.'):
-    #            ok
+    # 
+    # touch 
+    # 
+    start_time = datetime.datetime.now()
+    with open(output_dir_path+'.touch', 'w') as fp:
+        fp.write('START: ' + start_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
+        fp.write('EXEC:  ' + Output_name+'.sh' + '\n')
     
-    #cache_location = os.getcwd() + os.path.sep + 'cache'
-    #if not os.path.isdir(cache_location):
-    #    os.mkdir(cache_location)
     
-    #myAlma = Alma()
-    #myAlma.cache_location = os.getcwd() + os.path.sep + 'cache'
-    #myAlma.download_files(uid_url_table['URL'], cache=True)
+    # 
+    # run os.system
+    # 
+    print('Running "%s >> %s" in terminal!'%(Output_name+'.sh', Output_name+'.log'))
+    os.system('date +"%%Y-%%m-%%d %%H:%%M:%%S %%Z" > %s'%(Output_name+'.log'))
+    os.system('echo "%s %s" >> %s'%(sys.argv[0], sys.argv[1], Output_name+'.log'))
+    os.system('chmod +x "%s"; ./%s 2>&1 >> %s'%(Output_name+'.sh', Output_name+'.sh', Output_name+'.log'))
     
     
     # 
@@ -284,16 +298,30 @@ for i in range(len(meta_table)):
     os.chdir(current_dir_path)
     print('os.getcwd()', os.getcwd())
     
+    
     # 
     # finish
     # 
     finish_time = datetime.datetime.now()
-    with open(output_dir_path+'.done', 'w') as fp:
-        fp.write('STARTED: ' + start_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
-        fp.write('FINISHED: ' + finish_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
+    with open(output_dir_path+'.touch', 'a') as fp:
+        fp.write('FINISH:  ' + finish_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
         fp.write('ELAPSED: ' + str(finish_time-start_time) + '\n')
+        fp.write('\n')
+
+
+    
+# 
+# finish all
+# 
+for output_dir_path in output_dir_path_list:
     if os.path.isfile(output_dir_path+'.touch'):
-        os.remove(output_dir_path+'.touch') # delete touch file
+        shutil.move(output_dir_path+'.touch', output_dir_path+'.done') # rename touch file as done file
+#with open(output_dir_path+'.done', 'w') as fp:
+#    fp.write('STARTED: ' + start_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
+#    fp.write('FINISHED: ' + finish_time.strftime("%Y-%m-%d %H:%M:%S") + ' ' + time.strftime('%Z') + '\n')
+#    fp.write('ELAPSED: ' + str(finish_time-start_time) + '\n')
+#if os.path.isfile(output_dir_path+'.touch'):
+#    os.remove(output_dir_path+'.touch') # delete touch file
         
     
 
