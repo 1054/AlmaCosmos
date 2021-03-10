@@ -3,8 +3,8 @@
 
 # 20200215 dzliu: -trim-chan?
 
-#source ~/Softwares/CASA/SETUP.bash 5.4.0
-#source ~/Softwares/GILDAS/SETUP.bash
+#source ~/Software/CASA/SETUP.bash 5.4.0
+#source ~/Software/GILDAS/SETUP.bash
 #source ~/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash
 
 
@@ -89,26 +89,40 @@ fi
 
 
 # check CASA
-if [[ ! -d "$HOME/Softwares/CASA" ]]; then
-    echo_error "Error! \"$HOME/Softwares/CASA\" was not found!" \
-               "Sorry, we need to put all versions of CASA under \"$HOME/Softwares/CASA/Portable/\" directory!"
+if [[ ! -d "$HOME/Softwares/CASA" ]] && [[ ! -d "$HOME/Software/CASA" ]]; then
+    echo "Error! \"$HOME/Software/CASA\" was not found!"
+    echo "Sorry, we need to put all versions of CASA under \"$HOME/Software/CASA/Portable/\" directory!"
     exit 1
 fi
-if [[ ! -f "$HOME/Softwares/CASA/SETUP.bash" ]]; then
-    echo_error "Error! \"$HOME/Softwares/CASA/SETUP.bash\" was not found!" \
-               "Sorry, please ask Daizhong by emailing dzliu@mpia.de!"
+if [[ ! -f "$HOME/Softwares/CASA/SETUP.bash" ]] && [[ ! -f "$HOME/Software/CASA/SETUP.bash" ]]; then
+    echo "Error! \"$HOME/Software/CASA/SETUP.bash\" was not found!"
+    echo "Please copy \"$(dirname ${BASH_SOURCE[0]})/casa_setup/SETUP.bash\" to \"$HOME/Software/CASA/SETUP.bash\" and make it executable."
+    #echo "Sorry, please ask Daizhong by emailing dzliu@mpia.de!"
     exit 1
 fi
-casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
+if [[ ! -f "$HOME/Softwares/CASA/Portable/bin/bin_setup.bash" ]] && [[ ! -f "$HOME/Software/CASA/Portable/bin/bin_setup.bash" ]]; then
+    echo "Error! \"$HOME/Software/CASA/Portable/bin/bin_setup.bash\" was not found!"
+    echo "Please copy \"$(dirname ${BASH_SOURCE[0]})/casa_setup/bin_setup.bash\" to \"$HOME/Software/CASA/Portable/bin/bin_setup.bash\" and make it executable."
+    #echo "Sorry, please ask Daizhong by emailing dzliu@mpia.de!"
+    exit 1
+fi
+
+if [[ -f "$HOME/Software/CASA/SETUP.bash" ]]; then
+    casa_setup_script_path="$HOME/Software/CASA/SETUP.bash"
+elif [[ -f "$HOME/Softwares/CASA/SETUP.bash" ]] && [[ ! -f "$HOME/Software/CASA/SETUP.bash" ]]; then
+    casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
+fi
 
 
 # check GILDAS
 if [[ $(type mapping 2>/dev/null | wc -l) -eq 0 ]]; then
-    # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
-    if [[ -d "$HOME/Softwares/GILDAS" ]] && [[ -f "$HOME/Softwares/GILDAS/SETUP.bash" ]]; then
+    # if not executable in the command line, try to find it in "$HOME/Software/GILDAS/"
+    if [[ -d "$HOME/Software/GILDAS" ]] && [[ -f "$HOME/Software/GILDAS/SETUP.bash" ]]; then
+        source "$HOME/Software/GILDAS/SETUP.bash"
+    elif [[ -d "$HOME/Softwares/GILDAS" ]] && [[ -f "$HOME/Softwares/GILDAS/SETUP.bash" ]] && [[ ! -d "$HOME/Software/GILDAS" ]] && [[ ! -f "$HOME/Software/GILDAS/SETUP.bash" ]]; then
         source "$HOME/Softwares/GILDAS/SETUP.bash"
     else
-        # if not executable in the command line, nor in "$HOME/Softwares/GILDAS/", report error.
+        # if not executable in the command line, nor in "$HOME/Software/GILDAS/", report error.
         echo_error "Error! \"mapping\" is not executable in the command line! Please check your \$PATH!"
         exit 1
     fi
@@ -117,11 +131,11 @@ fi
 
 # check Crab.Toolkit.PdBI
 if [[ $(type casa-ms-split 2>/dev/null | wc -l) -eq 0 ]]; then
-    # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
+    # if not executable in the command line, try to find it in "$HOME/Software/GILDAS/"
     if [[ -d "$HOME/Cloud/Github/Crab.Toolkit.PdBI" ]] && [[ -f "$HOME/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash" ]]; then
         source "$HOME/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash"
     else
-        # if not executable in the command line, nor in "$HOME/Softwares/GILDAS/", report error.
+        # if not executable in the command line, nor in "$HOME/Software/GILDAS/", report error.
         echo_error "Error! \"casa-ms-split\" is not executable in the command line! Please check your \$PATH!"
         exit 1
     fi

@@ -56,17 +56,29 @@ echo_output "Began processing ALMA project ${Project_code} with $(basename ${BAS
 
 
 # check CASA
-if [[ ! -d "$HOME/Softwares/CASA" ]]; then
-    echo_error "Error! \"$HOME/Softwares/CASA\" was not found!" \
-               "Sorry, we need to put all versions of CASA under \"$HOME/Softwares/CASA/Portable/\" directory!"
+if [[ ! -d "$HOME/Softwares/CASA" ]] && [[ ! -d "$HOME/Software/CASA" ]]; then
+    echo "Error! \"$HOME/Software/CASA\" was not found!"
+    echo "Sorry, we need to put all versions of CASA under \"$HOME/Software/CASA/Portable/\" directory!"
     exit 1
 fi
-if [[ ! -f "$HOME/Softwares/CASA/SETUP.bash" ]]; then
-    echo_error "Error! \"$HOME/Softwares/CASA/SETUP.bash\" was not found!" \
-               "Sorry, please ask Daizhong by emailing dzliu@mpia.de!"
+if [[ ! -f "$HOME/Softwares/CASA/SETUP.bash" ]] && [[ ! -f "$HOME/Software/CASA/SETUP.bash" ]]; then
+    echo "Error! \"$HOME/Software/CASA/SETUP.bash\" was not found!"
+    echo "Please copy \"$(dirname ${BASH_SOURCE[0]})/casa_setup/SETUP.bash\" to \"$HOME/Software/CASA/SETUP.bash\" and make it executable."
+    #echo "Sorry, please ask Daizhong by emailing dzliu@mpia.de!"
     exit 1
 fi
-casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
+if [[ ! -f "$HOME/Softwares/CASA/Portable/bin/bin_setup.bash" ]] && [[ ! -f "$HOME/Software/CASA/Portable/bin/bin_setup.bash" ]]; then
+    echo "Error! \"$HOME/Software/CASA/Portable/bin/bin_setup.bash\" was not found!"
+    echo "Please copy \"$(dirname ${BASH_SOURCE[0]})/casa_setup/bin_setup.bash\" to \"$HOME/Software/CASA/Portable/bin/bin_setup.bash\" and make it executable."
+    #echo "Sorry, please ask Daizhong by emailing dzliu@mpia.de!"
+    exit 1
+fi
+
+if [[ -f "$HOME/Software/CASA/SETUP.bash" ]]; then
+    casa_setup_script_path="$HOME/Software/CASA/SETUP.bash"
+elif [[ -f "$HOME/Softwares/CASA/SETUP.bash" ]] && [[ ! -f "$HOME/Software/CASA/SETUP.bash" ]]; then
+    casa_setup_script_path="$HOME/Softwares/CASA/SETUP.bash"
+fi
 
 
 # check meta table

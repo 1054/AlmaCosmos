@@ -76,11 +76,13 @@ fi
 
 # check GILDAS
 if [[ $(type mapping 2>/dev/null | wc -l) -eq 0 ]]; then
-    # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
-    if [[ -d "$HOME/Softwares/GILDAS" ]] && [[ -f "$HOME/Softwares/GILDAS/SETUP.bash" ]]; then
+    # if not executable in the command line, try to find it in "$HOME/Software/GILDAS/"
+    if [[ -d "$HOME/Software/GILDAS" ]] && [[ -f "$HOME/Software/GILDAS/SETUP.bash" ]]; then
+        source "$HOME/Software/GILDAS/SETUP.bash"
+    elif [[ -d "$HOME/Softwares/GILDAS" ]] && [[ -f "$HOME/Softwares/GILDAS/SETUP.bash" ]] && [[ ! -d "$HOME/Software/GILDAS" ]] && [[ ! -f "$HOME/Software/GILDAS/SETUP.bash" ]]; then
         source "$HOME/Softwares/GILDAS/SETUP.bash"
     else
-        # if not executable in the command line, nor in "$HOME/Softwares/GILDAS/", report error.
+        # if not executable in the command line, nor in "$HOME/Software/GILDAS/", report error.
         echo_error "Error! \"mapping\" is not executable in the command line! Please check your \$PATH!"
         exit 1
     fi
@@ -89,11 +91,11 @@ fi
 
 # check Crab.Toolkit.PdBI
 if [[ $(type pdbi-uvt-go-uvfit 2>/dev/null | wc -l) -eq 0 ]]; then
-    # if not executable in the command line, try to find it in "$HOME/Softwares/GILDAS/"
+    # if not executable in the command line, try to find it in "$HOME/Software/GILDAS/"
     if [[ -d "$HOME/Cloud/Github/Crab.Toolkit.PdBI" ]] && [[ -f "$HOME/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash" ]]; then
         source "$HOME/Cloud/Github/Crab.Toolkit.PdBI/SETUP.bash"
     else
-        # if not executable in the command line, nor in "$HOME/Softwares/GILDAS/", report error.
+        # if not executable in the command line, nor in "$HOME/Software/GILDAS/", report error.
         echo_error "Error! \"pdbi-uvt-go-uvfit\" is not executable in the command line! Please check your \$PATH!"
         exit 1
     fi
